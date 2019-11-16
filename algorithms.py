@@ -51,7 +51,7 @@ def _get_params(ncomp: int) -> list:
     return params
 
 
-def _sort_params_by_location(params: list) -> list:
+def _sort_params_by_location_in_place(params: list) -> list:
     return params.sort(key=lambda element: element["location"])
 
 
@@ -64,7 +64,7 @@ def _get_lambda_string(ncomp:int, params) -> str:
     if ncomp == 1:
         return "lambda x, beta, eta: beta/eta*(x / eta)**(beta-1) * np.exp(-(x/eta)**beta)"
     elif ncomp > 1:
-        _sort_params_by_location(params)
+        _sort_params_by_location_in_place(params)
         parameter_list = ", ".join(["x"] + [param["name"] for param in params])
         # " + " to connect each `weibull` sub-function
         # the left list `["f{0}*weibull(x, beta{0}, eta{0})".format(i+1) for i in range(ncomp-1)]` means the n-1 sub-functions
