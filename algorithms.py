@@ -36,6 +36,8 @@ def _check_ncomp(ncomp: int):
 def _get_params(ncomp: int) -> list:
     params = []
     if ncomp == 1:
+        # if there is only one component, the fraction is not needful
+        # beta and eta also don't need the number to distinguish
         params.append({"name": "beta", "default": 1, "location": 0, "bounds": (INFINITESIMAL, None)})
         params.append({"name": "eta", "default": 1, "location": 1, "bounds": (INFINITESIMAL, None)})
     elif ncomp > 1:
@@ -89,6 +91,7 @@ def _get_lambda_string(ncomp:int, params) -> str:
         raise ValueError(ncomp)
 
 
+# call this func to get the mixed weibull function and related data
 def get_mixed_weibull(ncomp) -> (callable, list, list):
     local_params = {"__tempmMixedFunc": None}
     func_params = _get_params(ncomp)
