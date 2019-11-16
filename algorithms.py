@@ -74,6 +74,7 @@ def _get_defaults(params: list):
     defaults = []
     for param in params:
         defaults.append(param["default"])
+    return defaults
 
 
 def _get_lambda_string(ncomp:int, params) -> str:
@@ -92,14 +93,14 @@ def _get_lambda_string(ncomp:int, params) -> str:
 
 
 # call this func to get the mixed weibull function and related data
-def get_mixed_weibull(ncomp) -> (callable, list, list):
+def get_mixed_weibull(ncomp) -> (callable, list, list, list):
     local_params = {"__tempmMixedFunc": None}
     func_params = _get_params(ncomp)
     _sort_params_by_location_in_place(func_params)
     lambda_string = _get_lambda_string(ncomp, func_params)
     bounds = _get_bounds(func_params)
     constrains = _get_constrains(ncomp)
-    defaults == _get_defaults(func_params)
+    defaults = _get_defaults(func_params)
     exec("__tempmMixedFunc=" + lambda_string, None, local_params)
     return local_params["__tempmMixedFunc"], bounds, constrains, defaults
 
