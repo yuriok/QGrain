@@ -57,7 +57,6 @@ def _sort_params_by_location_in_place(params: list) -> list:
 
 def _get_bounds(params: list):
     bounds = []
-    _sort_params_by_location_in_place(params)
     for param in params:
         bounds.append(param["bounds"])
     return bounds
@@ -72,7 +71,6 @@ def _get_lambda_string(ncomp:int, params) -> str:
     if ncomp == 1:
         return "lambda x, beta, eta: beta/eta*(x / eta)**(beta-1) * np.exp(-(x/eta)**beta)"
     elif ncomp > 1:
-        _sort_params_by_location_in_place(params)
         parameter_list = ", ".join(["x"] + [param["name"] for param in params])
         # " + " to connect each `weibull` sub-function
         # the left list `["f{0}*weibull(x, beta{0}, eta{0})".format(i+1) for i in range(ncomp-1)]` means the n-1 sub-functions
@@ -84,10 +82,15 @@ def _get_lambda_string(ncomp:int, params) -> str:
         raise ValueError(ncomp)
 
 
-def get_mixed_weibull(ncomp) -> callable:
+def get_mixed_weibull(ncomp) -> (callable, list, list):
     local_params = {"__tempmMixedFunc": None}
-    exec("__tempmMixedFunc=" + _get_lambda_string(ncomp, _get_params(ncomp)), None, local_params)
-    return local_params["__tempmMixedFunc"]
+    func_params = _get_params(ncomp)
+    _sort_params_by_location_in_place(func_params)
+    lambda_string = _get_lambda_string(ncomp, func_params)
+    bounds = _get_bounds(func_params)
+    constrains = _get_constrains(ncomp)
+    exec("__tempmMixedFunc=" + lambda_string, None, local_params)
+    return local_params["__tempmMixedFunc"], bounds, constrains
 
 
 def mean(beta, eta):
