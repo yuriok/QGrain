@@ -36,15 +36,16 @@ def _check_ncomp(ncomp: int):
 def _get_params(ncomp: int) -> list:
     params = []
     if ncomp == 1:
-        params.append({"name": "beta", "location": 0, "bounds": (INFINITESIMAL, None)})
-        params.append({"name": "eta", "location": 1, "bounds": (INFINITESIMAL, None)})
+        params.append({"name": "beta", "default": 1, "location": 0, "bounds": (INFINITESIMAL, None)})
+        params.append({"name": "eta", "default": 1, "location": 1, "bounds": (INFINITESIMAL, None)})
     elif ncomp > 1:
         for i in range(ncomp):
-            # the shape params, a and c, of weibull distribution
-            params.append({"name": "beta{0}".format(i+1), "location": i*2, "bounds": (INFINITESIMAL, None)})
-            params.append({"name": "eta{0}".format(i+1), "location": i * 2 + 1, "bounds": (INFINITESIMAL, None)})
+            # the shape params, beta and eta, of each weibull distribution
+            params.append({"name": "beta{0}".format(i+1), "default": 1, "location": i*2, "bounds": (INFINITESIMAL, None)})
+            params.append({"name": "eta{0}".format(i+1), "default": 1, "location": i * 2 + 1, "bounds": (INFINITESIMAL, None)})
         for i in range(ncomp-1):
-            params.append({"name": "f{0}".format(i+1), "location": ncomp*2 + i, "bounds": (0, 1)})
+            # the fraction of each weibull distribution
+            params.append({"name": "f{0}".format(i+1), "default": 1/ncomp, "location": ncomp*2 + i, "bounds": (0, 1)})
     else:
         raise ValueError(ncomp)
     
@@ -65,6 +66,12 @@ def _get_bounds(params: list):
 def _get_constrains(ncomp: int):
     cons = ({'type': 'ineq', 'fun': lambda args:  1 - np.sum(args[ncomp-1:]) + INFINITESIMAL})
     return cons
+
+
+def _get_defaults(params: list):
+    defaults = []
+    for param in params:
+        defaults.append(param["default"])
 
 
 def _get_lambda_string(ncomp:int, params) -> str:
@@ -89,8 +96,9 @@ def get_mixed_weibull(ncomp) -> (callable, list, list):
     lambda_string = _get_lambda_string(ncomp, func_params)
     bounds = _get_bounds(func_params)
     constrains = _get_constrains(ncomp)
+    defaults == _get_defaults(func_params)
     exec("__tempmMixedFunc=" + lambda_string, None, local_params)
-    return local_params["__tempmMixedFunc"], bounds, constrains
+    return local_params["__tempmMixedFunc"], bounds, constrains, defaults
 
 
 def mean(beta, eta):
