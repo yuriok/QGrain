@@ -55,6 +55,14 @@ def _sort_params_by_location_in_place(params: list) -> list:
     return params.sort(key=lambda element: element["location"])
 
 
+def _get_bounds(params: list):
+    bounds = []
+    _sort_params_by_location_in_place(params)
+    for param in params:
+        bounds.append(param["bounds"])
+    return bounds
+
+
 def _get_constrains(ncomp: int):
     cons = ({'type': 'ineq', 'fun': lambda args:  1 - np.sum(args[ncomp-1:]) + INFINITESIMAL})
     return cons
