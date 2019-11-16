@@ -66,7 +66,7 @@ def _get_bounds(params: list):
 
 
 def _get_constrains(ncomp: int):
-    cons = ({'type': 'ineq', 'fun': lambda args:  1 - np.sum(args[ncomp-1:]) + INFINITESIMAL})
+    cons = ({'type': 'ineq', 'fun': lambda args:  1 - np.sum(args[1-ncomp:]) + INFINITESIMAL})
     return cons
 
 
