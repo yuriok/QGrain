@@ -66,7 +66,7 @@ def _get_bounds(params: list):
 
 
 def _get_constrains(ncomp: int):
-    cons = ({'type': 'ineq', 'fun': lambda args:  1 - np.sum(args[1-ncomp:]) + INFINITESIMAL})
+    cons = [{'type': 'ineq', 'fun': lambda args:  1 - np.sum(args[1-ncomp:]) + INFINITESIMAL}]
     return cons
 
 
@@ -93,7 +93,7 @@ def _get_lambda_string(ncomp:int, params) -> str:
 
 
 # call this func to get the mixed weibull function and related data
-def get_mixed_weibull(ncomp) -> (callable, list, list, list):
+def get_mixed_weibull(ncomp) -> (callable, list, list, list, list):
     local_params = {"__tempmMixedFunc": None}
     func_params = _get_params(ncomp)
     _sort_params_by_location_in_place(func_params)
@@ -102,7 +102,7 @@ def get_mixed_weibull(ncomp) -> (callable, list, list, list):
     constrains = _get_constrains(ncomp)
     defaults = _get_defaults(func_params)
     exec("__tempmMixedFunc=" + lambda_string, None, local_params)
-    return local_params["__tempmMixedFunc"], bounds, constrains, defaults
+    return local_params["__tempmMixedFunc"], bounds, constrains, defaults, func_params
 
 
 def mean(beta, eta):
