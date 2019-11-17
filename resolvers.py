@@ -1,3 +1,4 @@
+import time
 from enum import Enum, unique
 
 import numpy as np
@@ -19,11 +20,11 @@ class Resolver(QObject):
     sigEpochFinished = pyqtSignal(list)
     
     X_OFFSET = 0.2
-    def __init__(self, distribution_type=BaseDistribution.Weibull, ncomp=3, emit_iteration=False, display_details=False, ftol=1e-100, maxiter=1000):
+    def __init__(self, distribution_type=BaseDistribution.Weibull, ncomp=3, emit_iteration=False, time_interval=0.1, display_details=False, ftol=1e-100, maxiter=1000):
         super().__init__()
         self.__mutex = QMutex()
         self.__cancelFitting = False
-        # use `on_raw_data_changed` to modify these values
+        # use `on_target_data_changed` to modify these values
         self.__sample_id = None
         self.__x = None
         self.__y = None
@@ -39,6 +40,7 @@ class Resolver(QObject):
 
         # settings
         self.emit_iteration = emit_iteration
+        self.time_interval = time_interval
         self.display_details = display_details
         self.ftol = ftol
         self.maxiter = maxiter
@@ -74,7 +76,7 @@ class Resolver(QObject):
         self.refresh_by_settings()
 
 
-    def on_raw_data_changed(self, sample_id, x, y):
+    def on_target_data_changed(self, sample_id, x, y):
         if x is None:
             raise ValueError(x)
         if y is None:
@@ -153,6 +155,7 @@ class Resolver(QObject):
             return
 
         if self.emit_iteration:
+            time.sleep(self.time_interval)
             self.sigSingleIterationFinished.emit(self.get_visualization_data(fitted_params))
 
 
