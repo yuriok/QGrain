@@ -94,6 +94,7 @@ def _get_lambda_string(ncomp:int, params) -> str:
 
 # call this func to get the mixed weibull function and related data
 def get_mixed_weibull(ncomp) -> (callable, list, list, list, list):
+    _check_ncomp(ncomp)
     local_params = {"__tempmMixedFunc": None}
     func_params = _get_params(ncomp)
     _sort_params_by_location_in_place(func_params)
