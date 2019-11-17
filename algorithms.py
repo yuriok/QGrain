@@ -106,6 +106,38 @@ def get_mixed_weibull(ncomp) -> (callable, list, list, list, list):
     return local_params["__tempmMixedFunc"], bounds, constrains, defaults, func_params
 
 
+# prcess the raw params list to make it easy to use
+def process_params(ncomp: int, func_params: list, fitted_params: list) -> list:
+    if ncomp == 1:
+        assert len(fitted_params) == 2
+        return [tuple(fitted_params)]
+    elif ncomp > 1:
+        # initialize the result list
+        processed = []
+        for i in range(ncomp):
+            processed.append([None, None, 1])
+        
+        for func_param in func_params:
+            name = func_param["name"] # type: str
+            if name.startswith("beta"):
+                comp_index = int(name[4:]) - 1
+                processed[comp_index][0] = fitted_params[func_param["location"]]
+            elif name.startswith("eta"):
+                comp_index = int(name[3:]) - 1
+                processed[comp_index][1] = fitted_params[func_param["location"]]
+            elif name.startswith("f"):
+                comp_index = int(name[1:]) - 1
+                processed[comp_index][2] = fitted_params[func_param["location"]]
+                processed[-1][2] -= fitted_params[func_param["location"]]
+            else:
+                raise ValueError(func_param)
+        
+        assert sum([t[2] for t in processed]) == 1
+        return processed
+    else:
+        raise ValueError(ncomp)
+
+
 def mean(beta, eta):
     return eta*gamma(1/beta+1)
 
