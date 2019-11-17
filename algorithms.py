@@ -133,6 +133,9 @@ def process_params(ncomp: int, func_params: list, fitted_params: list) -> list:
                 raise ValueError(func_param)
         
         assert sum([t[2] for t in processed]) == 1
+
+        # sort the list by fraction
+        processed.sort(key=lambda element: element[2])
         return processed
     else:
         raise ValueError(ncomp)
