@@ -132,8 +132,8 @@ def process_params(ncomp: int, func_params: list, fitted_params: list) -> list:
             else:
                 raise ValueError(func_param)
         
-        # sort the list by fraction
-        processed.sort(key=lambda element: element[2])
+        # sort the list by mean
+        processed.sort(key=lambda element: mean(*element[:-1]))
         return processed
     else:
         raise ValueError(ncomp)
