@@ -95,6 +95,8 @@ class Resolver(QObject):
         self.__mutex.unlock()
         # and it's no need to call `refresh_by_settings`
 
+        self.try_fit()
+
 
     def get_squared_sum_of_residual_errors(self, values, targets):
         errors = np.sum(np.square(values - targets))
