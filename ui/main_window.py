@@ -209,11 +209,14 @@ class MainWindow(QMainWindow):
         if ncomp*9+2 > self.recorded_data_table.columnCount():
             self.recorded_data_table.setColumnCount(ncomp*9+2)
 
-        def write(row, col, value):
+        def write(row, col, value, e=False):
             if type(value) == str:
                 item = QTableWidgetItem(value) 
             else:
-                item = QTableWidgetItem("{0:.4f}".format(value))
+                if e:
+                    item = QTableWidgetItem("{0:.4e}".format(value))
+                else:
+                    item = QTableWidgetItem("{0:.4f}".format(value))
             item.setTextAlignment(Qt.AlignCenter)
             self.recorded_data_table.setItem(row, col, item)
 
@@ -236,7 +239,7 @@ class MainWindow(QMainWindow):
 
         row = self.recorded_data_count + 2
         write(row, 0, fitted_data.name)
-        write(row, 1, fitted_data.mse)
+        write(row, 1, fitted_data.mse, e=True)
         for i, comp in enumerate(fitted_data.statistic):
             write(row, i*9+3, comp.get("fraction"))
             write(row, i*9+4, comp.get("mean"))
