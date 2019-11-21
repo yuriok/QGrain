@@ -202,7 +202,8 @@ class MainWindow(QMainWindow):
                 self.raw_data_table.setItem(i, j, item)
 
     def on_data_recorded(self, fitted_data: FittedData):
-        if self.recorded_data_count >= self.recorded_data_table.rowCount():
+        # the 2 additional rows are headers
+        if self.recorded_data_count + 2 >= self.recorded_data_table.rowCount():
             self.recorded_data_table.setRowCount(self.recorded_data_table.rowCount() + 50)
         ncomp = len(fitted_data.statistic)
         if ncomp*9+2 > self.recorded_data_table.columnCount():
