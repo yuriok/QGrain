@@ -142,9 +142,9 @@ class Resolver(QObject):
                 median_value = x_to_real(weibull_median(beta, eta)).max()
                 mode_value = x_to_real(weibull_mode(beta, eta)).max()
             except ValueError:
-                mean_value = None
-                median_value = None
-                mode_value = None
+                mean_value = np.nan
+                median_value = np.nan
+                mode_value = np.nan
             statistic.append({
                 "name": "C{0}".format(i+1),
                 "fraction": fraction,
