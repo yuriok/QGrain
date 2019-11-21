@@ -133,15 +133,35 @@ def process_params(ncomp: int, func_params: list, fitted_params: list) -> list:
                 raise ValueError(func_param)
         
         # sort the list by mean
-        processed.sort(key=lambda element: mean(*element[:-1]))
+        processed.sort(key=lambda element: weibull_mean(*element[:-1]))
         return processed
     else:
         raise ValueError(ncomp)
 
 
-def mean(beta, eta):
+def weibull_mean(beta, eta):
     return eta*gamma(1/beta+1)
 
 
-def median(beta, eta):
+def weibull_median(beta, eta):
     return eta*(np.log(2)**(1/beta))
+
+
+def weibull_mode(beta, eta):
+    return eta*(1-1/beta)**(1/beta)
+
+
+def weibull_std_deviation(beta, eta):
+    return eta*np.sqrt(gamma(2/beta+1) - gamma(1/beta+1)**2)
+
+
+def weibull_variance(beta, eta):
+    return (eta**2)*(gamma(2/beta+1)-gamma(1/beta+1)**2)
+
+
+def weibull_skewness(beta, eta):
+    return (2*gamma(1/beta+1)**3 - 3*gamma(2/beta+1)*gamma(1/beta+1) + gamma(3/beta+1)) / (gamma(2/beta+1)-gamma(1/beta+1)**2)**(3/2)
+
+
+def weibull_kurtosis(beta, eta):
+    return (-3*gamma(1/beta+1)**4 + 6*gamma(2/beta+1)*gamma(1/beta+1)**2 - 4*gamma(3/beta+1)*gamma(1/beta+1) + gamma(4/beta+1)) / (gamma(2/beta+1)-gamma(1/beta+1)**2)**2
