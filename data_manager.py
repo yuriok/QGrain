@@ -70,7 +70,7 @@ class DataManager(QObject):
 
         print("Statistic for {0}:\n".format(data.name) +
               "|{0:12}|{1:12}|{2:12}|{3:12}|{4:12}|{5:12}|{6:24}|{7:12}|{8:12}|\n".format(
-                  "Component", "Fraction", "Mean (μm)", "Median (μm)", "Mode (μm)", "Variance", "Standard Deviation", "Skewness", "Kurtosis") +
+                  "Component", "Fraction", "Mean", "Median", "Mode", "Variance", "Standard Deviation", "Skewness", "Kurtosis") +
               "\n".join(["|{0:12}|{1:<12.2f}|{2:<12.2f}|{3:<12.2f}|{4:<12.2f}|{5:<12.2f}|{6:<24.2f}|{7:<12.2f}|{8:<12.2f}|".format(
                   i.get("name"), i.get("fraction"), i.get("mean"), i.get("median"), i.get("mode"), i.get("variance"), i.get("standard_deviation"), i.get("skewness"), i.get("kurtosis")) for i in data.statistic]))
         print("Mean Squared Error:", data.mse)
