@@ -1,44 +1,52 @@
+import logging
 import time
 from enum import Enum, unique
 
 import numpy as np
-from PyQt5.QtCore import QMutex, QObject, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal
 from scipy.interpolate import interp1d
 from scipy.optimize import minimize
 
-from algorithms import get_mixed_weibull, mean, median, process_params, weibull
+from algorithms import (get_mixed_weibull, process_params, weibull,
+                        weibull_kurtosis, weibull_mean, weibull_median,
+                        weibull_mode, weibull_skewness, weibull_std_deviation,
+                        weibull_variance)
+from data import FittedData
 
 
 @unique
-class BaseDistribution(Enum):
+class DistributionType(Enum):
     LogNormal = 1
     Weibull = 2
 
 
 class Resolver(QObject):
-    sigSingleIterationFinished = pyqtSignal(list)
-    sigEpochFinished = pyqtSignal(list)
-    
+    sigSingleIterationFinished = pyqtSignal(FittedData)
+    sigEpochFinished = pyqtSignal(FittedData)
+
     X_OFFSET = 0.2
-    def __init__(self, distribution_type=BaseDistribution.Weibull, ncomp=3, emit_iteration=False, time_interval=0.1, display_details=False, ftol=1e-100, maxiter=1000):
+
+    def __init__(self, distribution_type=DistributionType.Weibull, ncomp=2, auto_fit=True,
+                 inherit_params=True, emit_iteration=False, time_interval=0.1,
+                 display_details=False, ftol=1e-100, maxiter=1000):
         super().__init__()
-        self.__mutex = QMutex()
-        self.__cancelFitting = False
         # use `on_target_data_changed` to modify these values
-        self.__sample_id = None
-        self.__x = None
-        self.__y = None
-        self.__start = None
-        self.__end = None
-        self.__x_to_fit = None
-        self.__y_to_fit = None
+        self.sample_name = None
+        self.x = None
+        self.y = None
+        self.start_index = None
+        self.end_index = None
+        self.x_to_fit = None
+        self.y_to_fit = None
         # use `on_type_changed`
-        self.__distribution_type = distribution_type
+        self.distribution_type = distribution_type
         # use `on_ncomp_changed`
-        self.__ncomp = ncomp
+        self.ncomp = ncomp
         self.refresh_by_settings()
 
         # settings
+        self.auto_fit = True
+        self.inherit_params = inherit_params
         self.emit_iteration = emit_iteration
         self.time_interval = time_interval
         self.display_details = display_details
@@ -48,33 +56,27 @@ class Resolver(QObject):
     # generate some necessary data for fitting
     # if `ncomp` or `distribution_type` changed, this method must be called
     def refresh_by_settings(self):
-        self.__mutex.lock()
-        if self.__distribution_type == BaseDistribution.Weibull:
-            self.mixed_func, self.bounds, self.constrains, self.defaults, self.params = get_mixed_weibull(self.__ncomp)
+        if self.distribution_type == DistributionType.Weibull:
+            (self.mixed_func, self.bounds, self.constrains,
+             self.defaults, self.params) = get_mixed_weibull(self.ncomp)
             self.single_func = weibull
             self.last_fitted_params = self.defaults
-            self.process_fitted_params = lambda fitted_params: process_params(self.__ncomp, self.params, fitted_params)
+            self.process_fitted_params = lambda fitted_params: process_params(
+                self.ncomp, self.params, fitted_params)
         else:
-            self.__mutex.unlock()
-            raise NotImplementedError(self.__distribution_type)
-        self.__mutex.unlock()
-
+            raise NotImplementedError(self.distribution_type)
 
     def on_ncomp_changed(self, ncomp: int):
-        self.__mutex.lock()
-        self.__ncomp = ncomp
-        self.__cancelFitting = True
-        self.__mutex.unlock()
+        self.ncomp = ncomp
         self.refresh_by_settings()
 
-
-    def on_type_changed(self, distribution_type: BaseDistribution):
-        self.__mutex.lock()
-        self.__distribution_type = distribution_type
-        self.__cancelFitting = True
-        self.__mutex.unlock()
+    def on_type_changed(self, distribution_type: DistributionType):
+        self.distribution_type = distribution_type
         self.refresh_by_settings()
 
+    def on_settings_changed(self, kwargs: dict):
+        for setting, value in kwargs.items():
+            self.__setattr__(setting, value)
 
     def on_target_data_changed(self, sample_id, x, y):
         if x is None:
@@ -85,91 +87,99 @@ class Resolver(QObject):
             raise TypeError(x)
         if type(y) != np.ndarray:
             raise TypeError(y)
-        self.__mutex.lock()
-        self.__x = x
-        self.__y = y
-        self.__start, self.__end = self.get_valid_data_range()
-        self.__x_to_fit, self.__y_to_fit = self.get_processed_data()
-        # when x and y changed, the fitting task should be canceled
-        self.__cancelFitting = True
-        self.__mutex.unlock()
-        # and it's no need to call `refresh_by_settings`
-
-        self.try_fit()
-
-
+        self.sample_name = sample_id
+        self.x = x
+        self.y = y
+        self.start_index, self.end_index = self.get_valid_data_range()
+        self.x_to_fit, self.y_to_fit = self.get_processed_data()
+        if self.auto_fit:
+            self.try_fit()
+    
     def get_squared_sum_of_residual_errors(self, values, targets):
         errors = np.sum(np.square(values - targets))
         return errors
 
-
     def get_valid_data_range(self):
         start_index = 0
         end_index = -1
-        for i, value in enumerate(self.__y):
+        for i, value in enumerate(self.y):
             if value > 0.0:
                 start_index = i
                 break
-        for i, value in enumerate(self.__y[start_index+1:], start_index+1):
+        for i, value in enumerate(self.y[start_index+1:], start_index+1):
             if value == 0.0:
                 end_index = i
                 break
         return start_index, end_index
 
-
     def get_processed_data(self):
-        partial_x = np.array(range(self.__end-self.__start)) + self.X_OFFSET
-        partial_y = self.__y[self.__start: self.__end] / 100
+        partial_x = np.array(
+            range(self.end_index-self.start_index)) + self.X_OFFSET
+        partial_y = self.y[self.start_index: self.end_index] / 100
         return partial_x, partial_y
 
-
-    def get_visualization_data(self, fitted_params):
-        # calculate data for visualization
-        visualization_data = []
-        visualization_x = self.__x[self.__start:self.__end]
+    def get_fitted_data(self, fitted_params):
+        real_x = self.x[self.start_index:self.end_index]
         # the target data to fit
-        visualization_data.append((visualization_x, self.__y_to_fit))
+        target = (real_x, self.y_to_fit)
         # the fitted sum data of all components
-        visualization_data.append((visualization_x, self.mixed_func(self.__x_to_fit, *fitted_params)))
+        fitted_sum = (real_x, self.mixed_func(self.x_to_fit, *fitted_params))
         # the fitted data of each single component
         processed_params = self.process_fitted_params(fitted_params)
+        components = []
         for beta, eta, fraction in processed_params:
-            visualization_data.append((visualization_x, self.single_func(self.__x_to_fit, beta, eta)*fraction))
+            components.append((real_x, self.single_func(
+                self.x_to_fit, beta, eta)*fraction))
 
         # get the relationship (func) to convert x_to_fit to real x
-        x_to_real = interp1d(self.__x_to_fit, visualization_x)
-        statistic_values = []
-        for beta, eta, fraction in processed_params:
-            statistic_values.append({
+        x_to_real = interp1d(self.x_to_fit, real_x)
+        statistic = []
+        
+        for i, (beta, eta, fraction) in enumerate(processed_params):
+            try:
+                # use max operation to convert np.ndarray to float64
+                mean_value = x_to_real(weibull_mean(beta, eta)).max()
+                median_value = x_to_real(weibull_median(beta, eta)).max()
+                mode_value = x_to_real(weibull_mode(beta, eta)).max()
+            except ValueError:
+                mean_value = None
+                median_value = None
+                mode_value = None
+            statistic.append({
+                "name": "C{0}".format(i+1),
                 "fraction": fraction,
-                "mean": x_to_real(mean(beta, eta)),
-                "median": x_to_real(median(beta, eta))})
+                "mean": mean_value,
+                "median": median_value,
+                "mode": mode_value,
+                "variance": weibull_variance(beta, eta),
+                "standard_deviation": weibull_std_deviation(beta, eta),
+                "skewness": weibull_skewness(beta, eta),
+                "kurtosis": weibull_kurtosis(beta, eta)
+            })
 
-        visualization_data.append(statistic_values)
-        return visualization_data
-
+        mse = np.mean(np.square(target[1] - fitted_sum[1]))
+        fitted_data = FittedData(self.sample_name, target, fitted_sum, mse, components, statistic)
+        return fitted_data
 
     def iteration_callback(self, fitted_params):
-        if self.__cancelFitting:
-            self.__mutex.lock()
-            self.__cancelFitting = False
-            self.__mutex.unlock()
-            return
-
         if self.emit_iteration:
             time.sleep(self.time_interval)
-            self.sigSingleIterationFinished.emit(self.get_visualization_data(fitted_params))
-
+            self.sigSingleIterationFinished.emit(
+                self.get_fitted_data(fitted_params))
 
     def try_fit(self):
         def closure(args):
-            current_values = self.mixed_func(self.__x_to_fit, *args)
-            return self.get_squared_sum_of_residual_errors(current_values, self.__y_to_fit)*100
+            current_values = self.mixed_func(self.x_to_fit, *args)
+            return self.get_squared_sum_of_residual_errors(current_values, self.y_to_fit)*100
 
-        fitted_result = minimize(closure, method="SLSQP", x0=self.last_fitted_params, bounds=self.bounds, constraints=self.constrains,
-                       callback=self.iteration_callback, options={"maxiter": self.maxiter, "disp": self.display_details, "ftol": self.ftol})
-        
+        params_to_fit = self.defaults
+        if self.inherit_params:
+            params_to_fit = self.last_fitted_params
+
+        fitted_result = minimize(closure, method="SLSQP", x0=params_to_fit,
+                                 bounds=self.bounds, constraints=self.constrains, callback=self.iteration_callback,
+                                 options={"maxiter": self.maxiter, "disp": self.display_details, "ftol": self.ftol})
+
         # update this variable to inherit the fitted params
         self.last_fitted_params = fitted_result.x
-        visualization_data = self.get_visualization_data(fitted_result.x)
-        self.sigEpochFinished.emit(visualization_data)
+        self.sigEpochFinished.emit(self.get_fitted_data(fitted_result.x))
