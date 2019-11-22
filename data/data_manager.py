@@ -6,8 +6,8 @@ from PyQt5.QtCore import pyqtSignal, QThread, Qt, QObject
 import logging
 from resolvers import DistributionType
 from data import GrainSizeData, FittedData, SampleData
-from data_loader import DataLoader
-from data_writer import DataWriter
+from data import DataLoader
+from data import DataWriter
 import os
 from typing import List
 from PyQt5.QtWidgets import QFileDialog

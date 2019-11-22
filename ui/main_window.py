@@ -19,7 +19,7 @@ from data import GrainSizeData, FittedData
 from resolvers import Resolver
 from ui import ControlPanel, FittingCanvas
 from queue import Queue
-from data_manager import DataManager
+from data import DataManager
 import logging
 
 
