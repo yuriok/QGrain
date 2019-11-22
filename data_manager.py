@@ -1,7 +1,5 @@
 
 
-
-
 import numpy as np
 from PyQt5.QtCore import pyqtSignal, QThread, Qt, QObject
 
@@ -9,35 +7,47 @@ import logging
 from resolvers import DistributionType
 from data import GrainSizeData, FittedData, SampleData
 from data_loader import DataLoader
+from data_writer import DataWriter
 import os
 from typing import List
 from PyQt5.QtWidgets import QFileDialog
 
+
 class DataManager(QObject):
-    sigDataLoadingStrated = pyqtSignal(str) # filename
-    sigDataLoadingFinished = pyqtSignal(bool) # task result, if `True`, task succeed
+    sigDataLoadingStarted = pyqtSignal(str)  # filename
+    sigDataSavingStarted = pyqtSignal(str, np.ndarray, list, str)
+    # TODO: Check
+    # task result, if `True`, task succeed
+    sigDataLoadingFinished = pyqtSignal(bool)
     sigDataLoaded = pyqtSignal(GrainSizeData)
     sigTargetDataChanged = pyqtSignal(str, np.ndarray, np.ndarray)
     sigDataRecorded = pyqtSignal(FittedData)
+
     def __init__(self):
         super().__init__()
         self.grain_size_data = None  # type: GrainSizeData
         self.current_fitted_data = None  # type: FittedData
-        self.recorded_data_list = [] # type: List[FittedData]
+        self.recorded_data_list = []  # type: List[FittedData]
         self.file_dialog = QFileDialog()
         self.data_loader = DataLoader()
         self.load_data_thread = QThread()
         # move it before the signal-slots are connected
         self.data_loader.moveToThread(self.load_data_thread)
         self.load_data_thread.start()
-        
-        self.sigDataLoadingStrated.connect(self.data_loader.try_load_data)
-        self.data_loader.sigWorkFinished.connect(self.on_work_finished)
+
+        self.data_writer = DataWriter()
+        self.save_data_thread = QThread()
+        self.data_writer.moveToThread(self.save_data_thread)
+        self.save_data_thread.start()
+
+        self.sigDataLoadingStarted.connect(self.data_loader.try_load_data)
+        self.data_loader.sigWorkFinished.connect(self.on_loading_work_finished)
+        self.sigDataSavingStarted.connect(self.data_writer.try_save_data)
+        self.data_writer.sigWorkFinished.connect(self.on_saving_work_finished)
 
         self.auto_record = True
 
-
-    def on_load_data_clicked(self):
+    def load_data(self):
         filename, _ = self.file_dialog.getOpenFileName(
             None, self.tr("Select Data File"), None, "*.xls; *.xlsx; *.csv")
         logging.info(self.tr("File path is [{0}].").format(filename))
@@ -45,10 +55,9 @@ class DataManager(QObject):
             return
         if not os.path.exists(filename):
             return
-        self.sigDataLoadingStrated.emit(filename)
+        self.sigDataLoadingStarted.emit(filename)
 
-
-    def on_work_finished(self, grain_size_data: GrainSizeData):
+    def on_loading_work_finished(self, grain_size_data: GrainSizeData):
         if grain_size_data is not None:
             self.grain_size_data = grain_size_data
             self.sigDataLoadingFinished.emit(True)
@@ -65,9 +74,7 @@ class DataManager(QObject):
 
         self.sigTargetDataChanged.emit(sample_name, classes, sample_data)
 
-
     def on_epoch_finished(self, data: FittedData):
-
         print("Statistic for {0}:\n".format(data.name) +
               "|{0:12}|{1:12}|{2:12}|{3:12}|{4:12}|{5:12}|{6:24}|{7:12}|{8:12}|\n".format(
                   "Component", "Fraction", "Mean", "Median", "Mode", "Variance", "Standard Deviation", "Skewness", "Kurtosis") +
@@ -79,17 +86,41 @@ class DataManager(QObject):
         if self.auto_record:
             self.record_data()
 
-    def record_data(self):
-        self.recorded_data_list.append(self.current_fitted_data)
-        self.sigDataRecorded.emit(self.current_fitted_data)
-        
     def on_settings_changed(self, kwargs: dict):
         for setting, value in kwargs.items():
             self.__setattr__(setting, value)
 
+    def record_data(self):
+        self.recorded_data_list.append(self.current_fitted_data)
+        self.sigDataRecorded.emit(self.current_fitted_data)
+
     def remove_data(self, rows: List[int]):
+        print(rows)
         offset = 0
         for row in rows:
             value_to_remove = self.recorded_data_list[row-offset]
+            logging.info("Record of {0} has been removed.".format(value_to_remove.name))
             self.recorded_data_list.remove(value_to_remove)
-            offset+=1
+            offset += 1
+
+    def save_data(self):
+        filename, type_str = self.file_dialog.getSaveFileName(None, self.tr("Save Recorded Data"), None, "Excel Workbook (*.xlsx);;97-2003 Excel Workbook (*.xls);;CSV (*.csv)")
+        logging.info(self.tr("File path is [{0}].").format(filename))
+        if filename is None or filename == "":
+            return
+        if ".xlsx" in type_str:
+            file_type = "xlsx"
+        elif "97-2003" in type_str:
+            file_type = "xls"
+        elif ".csv" in type_str:
+            file_type = "csv"
+        else:
+            raise ValueError(type_str)
+        
+        self.sigDataSavingStarted.emit(filename, self.grain_size_data.classes, self.recorded_data_list, file_type)
+
+    def on_saving_work_finished(self, state):
+        if state:
+            logging.info("File saved.")
+        else:
+            logging.error("File unsaved.")
