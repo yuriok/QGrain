@@ -42,6 +42,7 @@ class GUILogHandler(logging.Handler):
 class MainWindow(QMainWindow):
     sigDataSelected = pyqtSignal(int)
     sigRemoveRecords = pyqtSignal(list)
+    TABLE_HEADER_ROWS = 2
     def __init__(self):
         super().__init__()
         self.init_ui()
@@ -64,8 +65,9 @@ class MainWindow(QMainWindow):
     def init_ui(self):
         
         self.dock_area = DockArea()
+        self.dock_area.setStyleSheet("""DockLabel {font-size: 16px}""")
         self.setCentralWidget(self.dock_area)
-
+        
         # Menu
         self.file_menu = self.menuBar().addMenu("File")
         self.load_action = self.file_menu.addAction("Load")
@@ -146,7 +148,8 @@ class MainWindow(QMainWindow):
         
         self.canvas.sigWidgetsEnable.connect(self.control_panel.on_widgets_enable_changed)
         
-        self.load_action.triggered.connect(self.data_manager.on_load_data_clicked)
+        self.load_action.triggered.connect(self.data_manager.load_data)
+        self.save_action.triggered.connect(self.data_manager.save_data)
         self.canvas_action.triggered.connect(self.show_canvas_dock)
         self.control_panel_action.triggered.connect(self.show_control_panel_dock)
         self.raw_data_table_action.triggered.connect(self.show_raw_data_dock)
@@ -203,7 +206,7 @@ class MainWindow(QMainWindow):
 
     def on_data_recorded(self, fitted_data: FittedData):
         # the 2 additional rows are headers
-        if self.recorded_data_count + 2 >= self.recorded_data_table.rowCount():
+        if self.recorded_data_count + self.TABLE_HEADER_ROWS >= self.recorded_data_table.rowCount():
             self.recorded_data_table.setRowCount(self.recorded_data_table.rowCount() + 50)
         ncomp = len(fitted_data.statistic)
         if ncomp*9+2 > self.recorded_data_table.columnCount():
@@ -222,9 +225,9 @@ class MainWindow(QMainWindow):
 
         # Write Header
         write(0, 0, "Sample Name")
-        self.recorded_data_table.setSpan(0, 0, 2, 1)
+        self.recorded_data_table.setSpan(0, 0, self.TABLE_HEADER_ROWS, 1)
         write(0, 1, "Mean Squared Error")
-        self.recorded_data_table.setSpan(0, 1, 2, 1)
+        self.recorded_data_table.setSpan(0, 1, self.TABLE_HEADER_ROWS, 1)
         for i, comp in enumerate(fitted_data.statistic):
             write(0, i*9+3, comp["name"])
             self.recorded_data_table.setSpan(0, i*9+3, 1, 8)
@@ -237,7 +240,7 @@ class MainWindow(QMainWindow):
             write(1, i*9+9, "Skewness")
             write(1, i*9+10, "Kurtosis")
 
-        row = self.recorded_data_count + 2
+        row = self.recorded_data_count + self.TABLE_HEADER_ROWS
         write(row, 0, fitted_data.name)
         write(row, 1, fitted_data.mse, e=True)
         for i, comp in enumerate(fitted_data.statistic):
@@ -268,17 +271,18 @@ class MainWindow(QMainWindow):
         self.recorded_table_menu.popup(QCursor.pos())
 
     def remove_recorded_selection(self):
-        rows_to_remove = []
+        rows_to_remove = set()
+        # The behaviour of `selectedRanges` differs when clicking in table or at the edge
+        # When clicking in table it returns multi ranges (each row)
+        # When clicking at the edge it returns a single range
         for item in self.recorded_data_table.selectedRanges():
-            assert item.topRow() == item.bottomRow()
-            rows_to_remove.append(item.topRow())
+            for i in range(item.topRow(), min(self.recorded_data_count+self.TABLE_HEADER_ROWS, item.bottomRow()+1)):
+                rows_to_remove.add(i)
+        rows_to_remove = list(rows_to_remove)
         rows_to_remove.sort()
         offset = 0
         for row in rows_to_remove:
-            self.recorded_data_table.removeRow(item.topRow()-offset)
-            offset+=1
-        
+            self.recorded_data_table.removeRow(row-offset)
+            offset += 1
         self.recorded_data_count -= offset
-        self.sigRemoveRecords.emit(rows_to_remove)
-
-        
+        self.sigRemoveRecords.emit([row-self.TABLE_HEADER_ROWS for row in rows_to_remove])

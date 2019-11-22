@@ -147,6 +147,10 @@ class Resolver(QObject):
                 mode_value = np.nan
             statistic.append({
                 "name": "C{0}".format(i+1),
+                "beta": beta,
+                "eta": eta,
+                "loc": self.start_index,
+                "x_offset": self.X_OFFSET,
                 "fraction": fraction,
                 "mean": mean_value,
                 "median": median_value,
