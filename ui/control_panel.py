@@ -1,12 +1,14 @@
-import numpy as np
-from PyQt5.QtCore import pyqtSignal, QThread, Qt, QTimer
-from PyQt5.QtWidgets import (QGridLayout, QLabel, QPushButton, QRadioButton, QSizePolicy, QFileDialog, QCheckBox,
-                             QWidget)
 import logging
-from resolvers import DistributionType
-from data import GrainSizeData, FittedData
 import os
-import qtawesome as qta
+
+import numpy as np
+from PyQt5.QtCore import Qt, QThread, QTimer, pyqtSignal
+from PyQt5.QtWidgets import (QCheckBox, QFileDialog, QGridLayout, QLabel,
+                             QPushButton, QRadioButton, QSizePolicy, QWidget)
+
+from data import FittedData, GrainSizeData
+from resolvers import DistributionType
+
 
 class ControlPanel(QWidget):
     sigDistributionTypeChanged = pyqtSignal(DistributionType)
@@ -220,7 +222,7 @@ class ControlPanel(QWidget):
             self.on_widgets_enable_changed(True)
 
         if self.auto_run_flag:
-            self.auto_run_timer.start(100)
+            self.auto_run_timer.start(5)
 
     def on_auto_run_timer_timeout(self):
         self.data_index += 1
