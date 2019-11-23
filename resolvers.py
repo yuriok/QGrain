@@ -7,22 +7,17 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from scipy.interpolate import interp1d
 from scipy.optimize import minimize
 
-from algorithms import (get_mixed_weibull, process_params, weibull,
+from algorithms import (get_mixed_weibull, process_params, weibull, normal, normal_mean,
                         weibull_kurtosis, weibull_mean, weibull_median,
                         weibull_mode, weibull_skewness, weibull_std_deviation,
-                        weibull_variance)
+                        weibull_variance, DistributionType, get_mixed_normal)
 from data import FittedData
-
-
-@unique
-class DistributionType(Enum):
-    LogNormal = 1
-    Weibull = 2
 
 
 class Resolver(QObject):
     sigSingleIterationFinished = pyqtSignal(FittedData)
     sigEpochFinished = pyqtSignal(FittedData)
+    logger = logging.getLogger(name="root.Resolver")
 
     X_OFFSET = 0.2
 
@@ -53,6 +48,8 @@ class Resolver(QObject):
         self.ftol = ftol
         self.maxiter = maxiter
 
+        self.logger.debug("Resolver is ready.")
+
     # generate some necessary data for fitting
     # if `ncomp` or `distribution_type` changed, this method must be called
     def refresh_by_settings(self):
@@ -60,25 +57,36 @@ class Resolver(QObject):
             (self.mixed_func, self.bounds, self.constrains,
              self.defaults, self.params) = get_mixed_weibull(self.ncomp)
             self.single_func = weibull
+            self.mean_func = weibull_mean
             self.last_fitted_params = self.defaults
             self.process_fitted_params = lambda fitted_params: process_params(
-                self.ncomp, self.params, fitted_params)
+                self.ncomp, self.params, fitted_params, self.distribution_type)
         else:
-            raise NotImplementedError(self.distribution_type)
+            (self.mixed_func, self.bounds, self.constrains,
+             self.defaults, self.params) = get_mixed_normal(self.ncomp)
+            self.single_func = normal
+            self.mean_func = normal_mean
+            self.last_fitted_params = self.defaults
+            self.process_fitted_params = lambda fitted_params: process_params(
+                self.ncomp, self.params, fitted_params, self.distribution_type)
+
 
     def on_ncomp_changed(self, ncomp: int):
         self.ncomp = ncomp
         self.refresh_by_settings()
+        self.logger.debug("Component Number has been changed to [%d].", ncomp)
 
     def on_type_changed(self, distribution_type: DistributionType):
         self.distribution_type = distribution_type
         self.refresh_by_settings()
+        self.logger.debug("Distribution type has been changed to [%s].", distribution_type)
 
     def on_settings_changed(self, kwargs: dict):
         for setting, value in kwargs.items():
             self.__setattr__(setting, value)
+        self.logger.debug("Settings have been changed. [%s]", kwargs)
 
-    def on_target_data_changed(self, sample_id, x, y):
+    def on_target_data_changed(self, sample_name, x, y):
         if x is None:
             raise ValueError(x)
         if y is None:
@@ -87,7 +95,8 @@ class Resolver(QObject):
             raise TypeError(x)
         if type(y) != np.ndarray:
             raise TypeError(y)
-        self.sample_name = sample_id
+        self.logger.debug("Target data has been changed to [%s].", sample_name)
+        self.sample_name = sample_name
         self.x = x
         self.y = y
         self.start_index, self.end_index = self.get_valid_data_range()
@@ -110,13 +119,15 @@ class Resolver(QObject):
             if value == 0.0:
                 end_index = i
                 break
+        self.logger.debug("The index of valid data ranges from [%d] to [%d] (exclusive).", start_index, end_index)
         return start_index, end_index
 
     def get_processed_data(self):
-        partial_x = np.array(
+        x_to_fit = np.array(
             range(self.end_index-self.start_index)) + self.X_OFFSET
-        partial_y = self.y[self.start_index: self.end_index] / 100
-        return partial_x, partial_y
+        y_to_fit = self.y[self.start_index: self.end_index] / 100
+        self.logger.debug("The raw data has been processed.")
+        return x_to_fit, y_to_fit
 
     def get_fitted_data(self, fitted_params):
         real_x = self.x[self.start_index:self.end_index]
@@ -138,7 +149,7 @@ class Resolver(QObject):
         for i, (beta, eta, fraction) in enumerate(processed_params):
             try:
                 # use max operation to convert np.ndarray to float64
-                mean_value = x_to_real(weibull_mean(beta, eta)).max()
+                mean_value = x_to_real(self.mean_func(beta, eta)).max()
                 median_value = x_to_real(weibull_median(beta, eta)).max()
                 mode_value = x_to_real(weibull_mode(beta, eta)).max()
             except ValueError:
@@ -163,6 +174,7 @@ class Resolver(QObject):
 
         mse = np.mean(np.square(target[1] - fitted_sum[1]))
         fitted_data = FittedData(self.sample_name, target, fitted_sum, mse, components, statistic)
+        self.logger.debug("One shot of fitting has finished, current mean squared error [%E].", mse)
         return fitted_data
 
     def iteration_callback(self, fitted_params):
@@ -179,11 +191,12 @@ class Resolver(QObject):
         params_to_fit = self.defaults
         if self.inherit_params:
             params_to_fit = self.last_fitted_params
-
+        # "L-BFGS-B", "SLSQP", "TNC"
         fitted_result = minimize(closure, method="SLSQP", x0=params_to_fit,
                                  bounds=self.bounds, constraints=self.constrains, callback=self.iteration_callback,
                                  options={"maxiter": self.maxiter, "disp": self.display_details, "ftol": self.ftol})
 
         # update this variable to inherit the fitted params
         self.last_fitted_params = fitted_result.x
+        self.logger.debug("The epoch of fitting has finished, the fitted parameters are: [%s]", fitted_result.x)
         self.sigEpochFinished.emit(self.get_fitted_data(fitted_result.x))
