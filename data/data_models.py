@@ -1,7 +1,7 @@
 from typing import Dict, List, Tuple
 
 import numpy as np
-
+import copy
 
 class SampleData:
     def __init__(self, name, distribution: np.ndarray):
@@ -28,3 +28,21 @@ class FittedData:
         self.mse = mse  # Mean Squared Error
         self.components = components
         self.statistic = statistic
+    
+    def get_non_nan_copy(self):
+        name = self.name
+        if name is None or name =="":
+            name = "Unknown"
+        mse = np.nan_to_num(self.mse)
+        target = (np.nan_to_num(self.target[0]), np.nan_to_num(self.target[1]))
+        fitted_sum = (np.nan_to_num(self.sum[0]), np.nan_to_num(self.sum[1]))
+        components = []
+        for component in self.components:
+            components.append((np.nan_to_num(component[0]), np.nan_to_num(component[1])))
+        statistic = copy.deepcopy(self.statistic)
+        for i, comp in enumerate(statistic):
+            for name, value in comp.items():
+                if value is np.nan:
+                    statistic[i][name] = 0.404
+
+        return FittedData(name, target, fitted_sum, mse, components, statistic)
