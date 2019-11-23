@@ -10,25 +10,10 @@ class SampleData:
 
 
 class GrainSizeData:
-    def __init__(self, classes: np.ndarray, sample_data_list: List[SampleData]):
+    def __init__(self, is_valid = False, classes: np.ndarray = None, sample_data_list: List[SampleData] = None):
+        self.is_valid = is_valid
         self.classes = classes
         self.sample_data_list = sample_data_list
-
-    @property
-    def is_valid(self) -> bool:
-        if self.classes is None:
-            return False
-        if self.sample_data_list is None:
-            return False
-
-        return True
-
-    @property
-    def count(self) -> bool:
-        if self.is_valid:
-            return len(self.sample_data_list)
-        else:
-            return 0
 
 
 class FittedData:
