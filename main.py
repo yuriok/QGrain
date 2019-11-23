@@ -1,21 +1,10 @@
+import logging
 import sys
+from logging.handlers import TimedRotatingFileHandler, RotatingFileHandler
 
-import numpy as np
-import pyqtgraph as pg
-import xlrd
-from PyQt5.QtCore import Qt, pyqtSignal, QThread, QTimer,QCoreApplication
-from PyQt5.QtWidgets import (QApplication, QGridLayout, QMainWindow,
-                             QSizePolicy, QSplitter, QWidget)
-from pyqtgraph.dockarea import Dock, DockArea
-from pyqtgraph.parametertree import ParameterTree
-from pyqtgraph.parametertree.parameterTypes import GroupParameter, Parameter
-from scipy.optimize import minimize
+from PySide2.QtWidgets import QApplication
 
 from ui import MainWindow, GUILogHandler
-import logging
-
-# pg.setConfigOptions(background=pg.mkColor("#ffffff00"), foreground=pg.mkColor("#000000ff"))
-
 
 
 if __name__ == "__main__":
@@ -23,13 +12,17 @@ if __name__ == "__main__":
     # May be it's related to QSS
     # QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     app = QApplication(sys.argv)
+    print(app)
     main_window = MainWindow()
+    # logging
+    format_str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    file_handler = TimedRotatingFileHandler("./logs/qgrain.log", when="D", backupCount=256)
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(logging.Formatter(format_str))
+    gui_handler = GUILogHandler(main_window)
+    gui_handler.setLevel(logging.INFO)
+    logging.basicConfig(level=logging.DEBUG, format=format_str, handlers=[file_handler])
 
-
-    
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    logging.getLogger().addHandler(GUILogHandler(main_window))
-    
     main_window.show()
-
+    print(main_window)
     sys.exit(app.exec_())

@@ -7,7 +7,7 @@ from typing import List
 import numpy as np
 import xlsxwriter
 import xlwt
-from PyQt5.QtCore import QObject, pyqtSignal
+from PySide2.QtCore import QObject, Signal
 
 from data import FittedData
 
@@ -27,20 +27,23 @@ def column_to_char(column_index: int):
 def to_cell_name(row: int, column: int):
     return "{0}{1}".format(column_to_char(column), row+1)
 
+# TODO: CHECK THE INPUT DATA
+# IF DATA HAS INVALID VALUE LIKE NAN OR NONE
 
+# TODO: SIMPLIFY THE CODES
 class DataWriter(QObject):
-    sigWorkFinished = pyqtSignal(bool)
-
-
+    sigWorkFinished = Signal(bool)
+    logger = logging.getLogger("root.data.DataWriter")
     def __init__(self):
         super().__init__()
 
 
-    def try_save_data(self, filename, classes: np.ndarray, data: List[FittedData], file_type="xls"):
+    def try_save_data(self, filename, classes: np.ndarray, data: List[FittedData], file_type: str):
         if filename is None or filename == "":
             raise ValueError(filename)
-        if not os.path.exists(filename):
-            logging.warning(self.tr("This file has existed and will be replaced.\nFilename: {0}").format(filename))
+        if os.path.exists(filename):
+            self.logger.warning("This file has existed and will be replaced. Filename: %s.", filename)
+        
         if file_type == "xlsx":
             self.try_save_as_xlsx(filename, classes, data)
         elif file_type == "xls":
@@ -48,7 +51,7 @@ class DataWriter(QObject):
         elif file_type == "csv":
             self.try_save_as_csv(filename, data)
         else:
-            raise ValueError(file_type)
+            raise NotImplementedError(file_type)
 
     # If type is csv,
     # it will use built-in csv module to handle this request.
@@ -100,7 +103,7 @@ class DataWriter(QObject):
             self.sigWorkFinished.emit(True)
 
         except Exception:
-            logging.exception("File saving failed.", stack_info=True)
+            self.logger.exception("File saving failed.", stack_info=True)
             self.sigWorkFinished.emit(False)
         finally:
             f.close()
