@@ -1,5 +1,6 @@
 import csv
 import logging
+from typing import Iterable, List
 
 import numpy as np
 from PyQt5.QtCore import QObject, pyqtSignal
@@ -7,7 +8,7 @@ from xlrd import open_workbook
 from xlrd.biffh import XLRDError
 
 from data import GrainSizeData, SampleData
-from typing import List, Iterable
+
 
 class DataInvalidError(Exception):
     def __ini__(self):
@@ -30,6 +31,14 @@ class DataLoader(QObject):
         self.setting = DataFormatSetting()
 
     def try_load_data(self, filename, file_type):
+        if filename is None or filename == "":
+            self.logger.error("The filename parameter is invalid.")
+            raise ValueError(filename)
+        if not os.path.exists(filename):
+            self.logger.error("There is no file called this. Filename: %s.", filename)
+            raise ValueError(filename)
+            return
+        
         if file_type == "excel":
             self.try_excel(filename)
         elif file_type == "csv":
@@ -138,4 +147,3 @@ class DataLoader(QObject):
         for state in sum_equals_hundred[1:]:
             if state != state0:
                 raise DataInvalidError("Not all sum values equals to the same value.")
-
