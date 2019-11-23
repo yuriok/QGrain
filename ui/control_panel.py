@@ -2,29 +2,33 @@ import logging
 import os
 
 import numpy as np
-from PyQt5.QtCore import Qt, QThread, QTimer, pyqtSignal
-from PyQt5.QtWidgets import (QCheckBox, QFileDialog, QGridLayout, QLabel,
+from PySide2.QtCore import Qt, QThread, QTimer, Signal
+from PySide2.QtWidgets import (QCheckBox, QFileDialog, QGridLayout, QLabel,
                              QPushButton, QRadioButton, QSizePolicy, QWidget)
+
+
+import sys
+
+sys.path.append(os.getcwd())
 
 from data import FittedData, GrainSizeData
 from resolvers import DistributionType
 
 
 class ControlPanel(QWidget):
-    sigDistributionTypeChanged = pyqtSignal(DistributionType)
-    sigNcompChanged = pyqtSignal(int) # ncomp
-    sigFocusSampleChanged = pyqtSignal(int) # index of that sample in list
-    sigResolverSettingsChanged = pyqtSignal(dict)
-    sigRuningSettingsChanged = pyqtSignal(dict)
-    sigDataSettingsChanged = pyqtSignal(dict)
-    sigRecordFittingData = pyqtSignal(str)
+    # sigDistributionTypeChanged = Signal(DistributionType)
+    sigNcompChanged = Signal(int) # ncomp
+    sigFocusSampleChanged = Signal(int) # index of that sample in list
+    sigResolverSettingsChanged = Signal(dict)
+    sigRuningSettingsChanged = Signal(dict)
+    sigDataSettingsChanged = Signal(dict)
+    sigRecordFittingData = Signal(str)
     
     def __init__(self, parent=None, **kargs):
         super().__init__(parent, **kargs)
         self.__ncomp = 2
         self.__data_index = 0
         self.__sample_names = None
-        
         self.auto_run_timer = QTimer()
         self.auto_run_timer.setSingleShot(True)
         self.auto_run_timer.timeout.connect(self.on_auto_run_timer_timeout)
@@ -46,6 +50,9 @@ class ControlPanel(QWidget):
         self.main_layout.addWidget(self.distribution_type_label, 0, 0, 1, 2)
         self.main_layout.addWidget(self.distribution_weibull_radio_button, 0, 2)
         self.main_layout.addWidget(self.distribution_lognormal_radio_button, 0, 3)
+        # TODO: Move when the lognormal is added
+        self.distribution_weibull_radio_button.setEnabled(False)
+        self.distribution_lognormal_radio_button.setEnabled(False)
 
         self.ncomp_label = QLabel("Components:")
         self.ncomp_display = QLabel("Unknown")
@@ -142,6 +149,8 @@ class ControlPanel(QWidget):
         # update the label to display the name of this sample
         self.data_index_display.setText(self.__sample_names[value])
         self.__data_index = value
+        if self.auto_fit_checkbox.isChecked():
+            self.on_widgets_enable_changed(False)
         self.sigFocusSampleChanged.emit(value)
 
     def on_ncomp_add_clicked(self):
@@ -195,8 +204,8 @@ class ControlPanel(QWidget):
     def on_widgets_enable_changed(self, enable: bool):
         if self.auto_run_flag and enable:
             return
-        self.distribution_weibull_radio_button.setEnabled(enable)
-        self.distribution_lognormal_radio_button.setEnabled(enable)
+        # self.distribution_weibull_radio_button.setEnabled(enable)
+        # self.distribution_lognormal_radio_button.setEnabled(enable)
         self.ncomp_add_button.setEnabled(enable)
         self.ncomp_reduce_button.setEnabled(enable)
         self.data_index_previous_button.setEnabled(enable)

@@ -1,9 +1,10 @@
 import csv
 import logging
+import os
 from typing import Iterable, List
 
 import numpy as np
-from PyQt5.QtCore import QObject, pyqtSignal
+from PySide2.QtCore import QObject, Signal
 from xlrd import open_workbook
 from xlrd.biffh import XLRDError
 
@@ -23,7 +24,7 @@ class DataFormatSetting:
         self.data_start_column = 1
 
 class DataLoader(QObject):
-    sigWorkFinished = pyqtSignal(GrainSizeData)
+    sigWorkFinished = Signal(GrainSizeData)
     logger = logging.getLogger("root.data.DataLoader")
     
     def __init__(self):
@@ -43,6 +44,8 @@ class DataLoader(QObject):
             self.try_excel(filename)
         elif file_type == "csv":
             self.try_csv(filename)
+        else:
+            raise NotImplementedError(file_type)
 
     def try_excel(self, filename):
         try:
@@ -106,11 +109,11 @@ class DataLoader(QObject):
 
     def process_raw_data(self, raw_data: List[List], setting: DataFormatSetting):
         # convert data
-        classes = np.array(raw_data[setting.classes_row][setting.data_start_column:], dtype=float)
+        classes = np.array(raw_data[setting.classes_row][setting.data_start_column:], dtype=np.float64)
         sample_data_list = []
         for row_values in raw_data[setting.data_start_row:]:
             sample_data_list.append(SampleData(row_values[setting.sample_name_column], np.array(
-                row_values[setting.data_start_column:], dtype=float)))
+                row_values[setting.data_start_column:], dtype=np.float64)))
         
         self.validate_data(classes, sample_data_list)
         grain_size_data = GrainSizeData(is_valid=True, classes=classes, sample_data_list=sample_data_list)
