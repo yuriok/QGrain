@@ -29,7 +29,7 @@ class FittingCanvas(QWidget):
         self.target_item = pg.PlotDataItem(name="Target", **self.target_style)
         self.plot_widget.plotItem.addItem(self.target_item)
 
-        self.sum_style = dict(pen=pg.mkPen("w", width=3, style=Qt.DashLine))
+        self.sum_style = dict(pen=pg.mkPen("b", width=3, style=Qt.DashLine))
         self.sum_item = pg.PlotDataItem(name="Fitted", **self.sum_style)
         self.plot_widget.plotItem.addItem(self.sum_item)
         self.plot_widget.plotItem.setLabels(
