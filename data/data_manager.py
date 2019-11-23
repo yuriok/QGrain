@@ -1,27 +1,25 @@
 
 
-import numpy as np
-from PyQt5.QtCore import pyqtSignal, QThread, Qt, QObject
-
 import logging
-from resolvers import DistributionType
-from data import GrainSizeData, FittedData, SampleData
-from data import DataLoader
-from data import DataWriter
 import os
 from typing import List
-from PyQt5.QtWidgets import QFileDialog
+
+import numpy as np
+from PySide2.QtCore import QObject, Qt, QThread, Signal
+from PySide2.QtWidgets import QFileDialog
+
+from data import DataLoader, DataWriter, FittedData, GrainSizeData, SampleData
+from resolvers import DistributionType
 
 
 class DataManager(QObject):
-    sigDataLoadingStarted = pyqtSignal(str)  # filename
-    sigDataSavingStarted = pyqtSignal(str, np.ndarray, list, str)
-    # TODO: Check
-    # task result, if `True`, task succeed
-    sigDataLoadingFinished = pyqtSignal(bool)
-    sigDataLoaded = pyqtSignal(GrainSizeData)
-    sigTargetDataChanged = pyqtSignal(str, np.ndarray, np.ndarray)
-    sigDataRecorded = pyqtSignal(FittedData)
+    sigDataLoadingStarted = Signal(str, str)  # filename, file type
+    sigDataLoadingFinished = Signal(bool) #TODO: CONNECT TO UI
+    sigDataSavingStarted = Signal(str, np.ndarray, list, str)
+    sigDataSavingFinished = Signal(bool) #TODO: CONNECT TO UI
+    sigDataLoaded = Signal(GrainSizeData)
+    sigTargetDataChanged = Signal(str, np.ndarray, np.ndarray)
+    sigDataRecorded = Signal(FittedData)
 
     def __init__(self):
         super().__init__()
@@ -48,22 +46,27 @@ class DataManager(QObject):
         self.auto_record = True
 
     def load_data(self):
-        filename, _ = self.file_dialog.getOpenFileName(
-            None, self.tr("Select Data File"), None, "*.xls; *.xlsx; *.csv")
-        logging.info(self.tr("File path is [{0}].").format(filename))
+        filename, type_str = self.file_dialog.getOpenFileName(None, self.tr("Select Data File"), None, "*.xls; *.xlsx;;*.csv")
         if filename is None or filename == "":
             return
         if not os.path.exists(filename):
             return
-        self.sigDataLoadingStarted.emit(filename)
+        if ".xls" in type_str:
+            file_type = "excel"
+        elif ".csv" in type_str:
+            file_type = "csv"
+        else:
+            raise ValueError(type_str)
+        logging.info("Selected data file is [%s].", filename)
+        self.sigDataLoadingStarted.emit(filename, file_type)
 
     def on_loading_work_finished(self, grain_size_data: GrainSizeData):
-        if grain_size_data is not None:
+        if grain_size_data.is_valid:
             self.grain_size_data = grain_size_data
             self.sigDataLoadingFinished.emit(True)
             self.sigDataLoaded.emit(grain_size_data)
         else:
-            self.sigDataLoadingFinished.emit(False)
+            self.sigDataLoadingFinished.emit(True)
 
     def on_focus_sample_changed(self, index: int):
         if self.grain_size_data is None:
@@ -74,6 +77,7 @@ class DataManager(QObject):
 
         self.sigTargetDataChanged.emit(sample_name, classes, sample_data)
 
+    # TODO: ADD DATA VALIDATATION
     def on_epoch_finished(self, data: FittedData):
         print("Statistic for {0}:\n".format(data.name) +
               "|{0:12}|{1:12}|{2:12}|{3:12}|{4:12}|{5:12}|{6:24}|{7:12}|{8:12}|\n".format(

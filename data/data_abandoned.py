@@ -3,8 +3,8 @@ import os.path
 import sys
 
 import numpy as np
-from PyQt5.QtCore import QObject, QThread, pyqtSignal, QMutex
-from PyQt5.QtWidgets import QFileDialog
+from PySide2.QtCore import QObject, QThread, Signal, QMutex
+from PySide2.QtWidgets import QFileDialog
 from pyqtgraph.parametertree import Parameter, ParameterTree
 from pyqtgraph.parametertree.parameterTypes import GroupParameter
 
@@ -17,7 +17,7 @@ from xlrd.sheet import Sheet
 
 
 class WorkbookLoader(QObject):
-    sigWorkFinished = pyqtSignal(Book)
+    sigWorkFinished = Signal(Book)
 
     def __init__(self):
         super().__init__()
@@ -41,7 +41,7 @@ class WorkbookLoader(QObject):
 
 # The settings are to complex, abandon this implementation
 class DataLoadParameter(GroupParameter):
-    sigDataLoaded = pyqtSignal(np.ndarray, list)
+    sigDataLoaded = Signal(np.ndarray, list)
     def __init__(self, **opts):
         opts["type"] = "bool"
         opts["value"] = False

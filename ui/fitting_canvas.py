@@ -1,15 +1,16 @@
 import math
 
+import numpy as np
 import pyqtgraph as pg
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QGridLayout, QSizePolicy, QWidget
+from PySide2.QtCore import Qt, Signal
+from PySide2.QtWidgets import QGridLayout, QSizePolicy, QWidget
 
 from data import FittedData
 
 pg.setConfigOptions(foreground=pg.mkColor("k"), background=pg.mkColor("w"), antialias=True, )
 
 class FittingCanvas(QWidget):
-    sigWidgetsEnable = pyqtSignal(bool)
+    sigWidgetsEnable = Signal(bool)
 
     def __init__(self, parent=None, **kargs):
         super().__init__(parent, **kargs)
@@ -90,25 +91,27 @@ class FittingCanvas(QWidget):
         # self.target_item.setData(x, y, **self.target_style)
 
     def on_epoch_finished(self, data: FittedData):
-        self.target_item.setData(*data.target, **self.target_style)
-        self.sum_item.setData(*data.sum, **self.sum_style)
+        non_nan_data = data.get_non_nan_copy()
+        self.target_item.setData(*non_nan_data.target, **self.target_style)
+        self.sum_item.setData(*non_nan_data.sum, **self.sum_style)
 
-        for (x, y), (name, curve_item), style in zip(data.components, self.component_curves, self.component_styles):
+        for (x, y), (name, curve_item), style in zip(non_nan_data.components, self.component_curves, self.component_styles):
             curve_item.setData(x, y, **style)
         for i, line_item in enumerate(self.component_lines):
-            line_item.setValue(math.log10(data.statistic[i]["mean"]))
+            line_item.setValue(math.log10(non_nan_data.statistic[i]["mean"]))
         self.sigWidgetsEnable.emit(True)
         self.current_iteration = 0
 
     def on_single_iteration_finished(self, data: FittedData):
+        non_nan_data = data.get_non_nan_copy()
         # Iteration will take too much times, so disable the ui to reject additional requests
         # UI will be enable at `on_epoch_finished` 
-        self.sigWidgetsEnable.emit(False)
-        self.target_item.setData(*data.target, **self.target_style)
-        self.sum_item.setData(*data.sum, **self.sum_style)
-        for (x, y), (name, curve_item), style in zip(data.components, self.component_curves, self.component_styles):
+        # self.sigWidgetsEnable.emit(False)
+        self.target_item.setData(*non_nan_data.target, **self.target_style)
+        self.sum_item.setData(*non_nan_data.sum, **self.sum_style)
+        for (x, y), (name, curve_item), style in zip(non_nan_data.components, self.component_curves, self.component_styles):
             curve_item.setData(x, y, **style)
         for i, line_item in enumerate(self.component_lines):
-            line_item.setValue(math.log10(data.statistic[i]["mean"]))
+            line_item.setValue(math.log10(non_nan_data.statistic[i]["mean"]))
         self.plot_widget.plotItem.setTitle("{0} iter({1})".format(self.sample_id, self.current_iteration))
         self.current_iteration += 1

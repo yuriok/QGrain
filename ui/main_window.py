@@ -1,27 +1,23 @@
+import logging
 import os
 import sys
 import time
+from queue import Queue
 
 import numpy as np
 import pyqtgraph as pg
 import xlrd
-
-from PyQt5.QtGui import QCursor
-from PyQt5.QtCore import QMutex, Qt, QThread, QTimer, pyqtSignal, QModelIndex
-from PyQt5.QtWidgets import (QApplication, QGridLayout, QLabel, QMainWindow,QTableWidget,QTableWidgetItem,QAbstractItemView,
-                             QPushButton, QSizePolicy, QSplitter, QWidget, QMenu)
-from pyqtgraph import TableWidget
 from pyqtgraph.dockarea import Dock, DockArea
-from pyqtgraph.parametertree import ParameterTree
-from pyqtgraph.parametertree.parameterTypes import GroupParameter, Parameter
+from PySide2.QtCore import QMutex, Qt, QThread, QTimer, Signal
+from PySide2.QtGui import QCursor
+from PySide2.QtWidgets import (QAbstractItemView, QApplication, QGridLayout,
+                               QLabel, QMainWindow, QMenu, QPushButton,
+                               QSizePolicy, QSplitter, QTableWidget,
+                               QTableWidgetItem, QWidget)
 
-from data import GrainSizeData, FittedData
+from data import DataManager, FittedData, GrainSizeData
 from resolvers import Resolver
 from ui import ControlPanel, FittingCanvas
-from queue import Queue
-from data import DataManager
-import logging
-
 
 
 class GUILogHandler(logging.Handler):
@@ -34,14 +30,14 @@ class GUILogHandler(logging.Handler):
         self.__mutex.lock()
         if record.levelno < self.level:
             return
-        message = "{0} - {1} - {2} - {3}".format(record.asctime, record.name, record.levelname, record.msg)
+        message = "{0} - {1}".format(record.levelname, record.msg)
         self.target.show_message(message)
         self.__mutex.unlock()
 
 
 class MainWindow(QMainWindow):
-    sigDataSelected = pyqtSignal(int)
-    sigRemoveRecords = pyqtSignal(list)
+    sigDataSelected = Signal(int) 
+    sigRemoveRecords = Signal(list)
     TABLE_HEADER_ROWS = 2
     def __init__(self):
         super().__init__()
@@ -122,7 +118,7 @@ class MainWindow(QMainWindow):
 
     def connect_all(self):
         # TODO: Type Switch
-        self.control_panel.sigDistributionTypeChanged.connect(self.resolver.on_type_changed)
+        # self.control_panel.sigDistributionTypeChanged.connect(self.resolver.on_type_changed)
         self.control_panel.sigNcompChanged.connect(self.resolver.on_ncomp_changed)
         self.control_panel.sigNcompChanged.connect(self.canvas.on_ncomp_changed)
         self.control_panel.sigFocusSampleChanged.connect(self.data_manager.on_focus_sample_changed)

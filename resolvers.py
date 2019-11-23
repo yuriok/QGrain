@@ -3,7 +3,7 @@ import time
 from enum import Enum, unique
 
 import numpy as np
-from PyQt5.QtCore import QObject, pyqtSignal
+from PySide2.QtCore import QObject, Signal
 from scipy.interpolate import interp1d
 from scipy.optimize import minimize
 
@@ -15,15 +15,15 @@ from data import FittedData
 
 
 class Resolver(QObject):
-    sigSingleIterationFinished = pyqtSignal(FittedData)
-    sigEpochFinished = pyqtSignal(FittedData)
+    sigSingleIterationFinished = Signal(FittedData)
+    sigEpochFinished = Signal(FittedData)
     logger = logging.getLogger(name="root.Resolver")
 
     X_OFFSET = 0.2
 
     def __init__(self, distribution_type=DistributionType.Weibull, ncomp=2, auto_fit=True,
-                 inherit_params=True, emit_iteration=False, time_interval=0.1,
-                 display_details=False, ftol=1e-100, maxiter=1000):
+                 inherit_params=True, emit_iteration=False, time_interval=0.02,
+                 display_details=False, ftol=1e-10, maxiter=100):
         super().__init__()
         # use `on_target_data_changed` to modify these values
         self.sample_name = None
@@ -47,8 +47,9 @@ class Resolver(QObject):
         self.display_details = display_details
         self.ftol = ftol
         self.maxiter = maxiter
+        self.max_retry_time = 5
+        self.max_mse = 4e-7
 
-        self.logger.debug("Resolver is ready.")
 
     # generate some necessary data for fitting
     # if `ncomp` or `distribution_type` changed, this method must be called
@@ -107,6 +108,10 @@ class Resolver(QObject):
     def get_squared_sum_of_residual_errors(self, values, targets):
         errors = np.sum(np.square(values - targets))
         return errors
+
+    def get_mean_squared_errors(self, values, targets):
+        mse = np.mean(np.square(values - targets))
+        return mse
 
     def get_valid_data_range(self):
         start_index = 0
@@ -174,7 +179,7 @@ class Resolver(QObject):
 
         mse = np.mean(np.square(target[1] - fitted_sum[1]))
         fitted_data = FittedData(self.sample_name, target, fitted_sum, mse, components, statistic)
-        self.logger.debug("One shot of fitting has finished, current mean squared error [%E].", mse)
+        # self.logger.debug("One shot of fitting has finished, current mean squared error [%E].", mse)
         return fitted_data
 
     def iteration_callback(self, fitted_params):
@@ -191,12 +196,22 @@ class Resolver(QObject):
         params_to_fit = self.defaults
         if self.inherit_params:
             params_to_fit = self.last_fitted_params
-        # "L-BFGS-B", "SLSQP", "TNC"
-        fitted_result = minimize(closure, method="SLSQP", x0=params_to_fit,
-                                 bounds=self.bounds, constraints=self.constrains, callback=self.iteration_callback,
-                                 options={"maxiter": self.maxiter, "disp": self.display_details, "ftol": self.ftol})
-
-        # update this variable to inherit the fitted params
-        self.last_fitted_params = fitted_result.x
-        self.logger.debug("The epoch of fitting has finished, the fitted parameters are: [%s]", fitted_result.x)
+        self.logger.debug("Fitting task started, max mean squared error is limited to [%E], and max retry time is [%d].", self.max_mse, self.max_retry_time)
+        ftol = self.ftol
+        for i in range(self.max_retry_time):
+            # "L-BFGS-B", "SLSQP", "TNC"
+            fitted_result = minimize(closure, method="SLSQP", x0=params_to_fit,
+                                    bounds=self.bounds, constraints=self.constrains, callback=self.iteration_callback,
+                                    options={"maxiter": self.maxiter, "disp": self.display_details, "ftol": ftol})
+            # update this variable to inherit the fitted params
+            params_to_fit = fitted_result.x
+            mse = self.get_mean_squared_errors(self.mixed_func(self.x_to_fit, *fitted_result.x), self.y_to_fit)
+            self.logger.debug("Try %d: mean squared error is %E.", i, mse)
+            if mse < self.max_mse:
+                break
+            else:
+                ftol = ftol*1e-50
+            
+        self.last_fitted_params = params_to_fit
+        self.logger.info("The epoch of fitting has finished, the fitted parameters are: [%s]", fitted_result.x)
         self.sigEpochFinished.emit(self.get_fitted_data(fitted_result.x))
