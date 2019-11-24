@@ -3,7 +3,7 @@ import time
 from enum import Enum, unique
 
 import numpy as np
-from PySide2.QtCore import QObject, Signal
+from PySide2.QtCore import QObject, Signal, Slot
 from scipy.interpolate import interp1d
 from scipy.optimize import minimize
 
@@ -17,12 +17,12 @@ from data import FittedData
 class Resolver(QObject):
     sigSingleIterationFinished = Signal(FittedData)
     sigEpochFinished = Signal(FittedData)
+    sigWidgetsEnable = Signal(bool)
     logger = logging.getLogger(name="root.Resolver")
-
     X_OFFSET = 0.2
 
     def __init__(self, distribution_type=DistributionType.Weibull, ncomp=2, auto_fit=True,
-                 inherit_params=True, emit_iteration=False, time_interval=0.02,
+                 inherit_params=True, emit_iteration=False, time_interval=0.1,
                  display_details=False, ftol=1e-10, maxiter=100):
         super().__init__()
         # use `on_target_data_changed` to modify these values
@@ -84,8 +84,8 @@ class Resolver(QObject):
 
     def on_settings_changed(self, kwargs: dict):
         for setting, value in kwargs.items():
-            self.__setattr__(setting, value)
-        self.logger.debug("Settings have been changed. [%s]", kwargs)
+            setattr(self, setting, value)
+            self.logger.debug("Setting [%s] have been changed to [%s].", setting, value)
 
     def on_target_data_changed(self, sample_name, x, y):
         if x is None:
@@ -185,10 +185,14 @@ class Resolver(QObject):
     def iteration_callback(self, fitted_params):
         if self.emit_iteration:
             time.sleep(self.time_interval)
-            self.sigSingleIterationFinished.emit(
-                self.get_fitted_data(fitted_params))
+            self.sigSingleIterationFinished.emit(self.get_fitted_data(fitted_params))
 
     def try_fit(self):
+        if self.x is None or self.y is None:
+            self.logger.warning("There is no valid data to fit, ignored.")
+            return
+        self.sigWidgetsEnable.emit(False)
+
         def closure(args):
             current_values = self.mixed_func(self.x_to_fit, *args)
             return self.get_squared_sum_of_residual_errors(current_values, self.y_to_fit)*100
