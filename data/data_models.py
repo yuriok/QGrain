@@ -43,6 +43,32 @@ class FittedData:
         for i, comp in enumerate(statistic):
             for name, value in comp.items():
                 if value is np.nan:
-                    statistic[i][name] = 0.404
+                    statistic[i][name] = 0.404404404
 
         return FittedData(name, target, fitted_sum, mse, components, statistic)
+
+
+    def has_nan(self) -> bool:
+        if self.name is None or self.name == "":
+            return True
+        if self.mse is np.nan:
+            return True
+        if np.any(np.isnan(self.target[0])):
+            return True
+        if np.any(np.isnan(self.target[1])):
+            return True
+        if np.any(np.isnan(self.sum[0])):
+            return True
+        if np.any(np.isnan(self.sum[1])):
+            return True
+        for comp in self.components:
+            if np.any(np.isnan(comp[0])):
+                return True
+            if np.any(np.isnan(comp[1])):
+                return True
+        for i, comp in enumerate(self.statistic):
+            for name, value in comp.items():
+                if value is np.nan:
+                    return True
+        
+        return False
