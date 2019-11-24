@@ -30,9 +30,9 @@ class FittedData:
         self.statistic = statistic
     
     def get_non_nan_copy(self):
-        name = self.name
-        if name is None or name =="":
-            name = "Unknown"
+        sample_name = self.name
+        if sample_name is None or sample_name =="":
+            sample_name = "Unknown"
         mse = np.nan_to_num(self.mse)
         target = (np.nan_to_num(self.target[0]), np.nan_to_num(self.target[1]))
         fitted_sum = (np.nan_to_num(self.sum[0]), np.nan_to_num(self.sum[1]))
@@ -45,7 +45,7 @@ class FittedData:
                 if value is np.nan:
                     statistic[i][name] = 0.404404404
 
-        return FittedData(name, target, fitted_sum, mse, components, statistic)
+        return FittedData(sample_name, target, fitted_sum, mse, components, statistic)
 
 
     def has_nan(self) -> bool:
