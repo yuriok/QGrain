@@ -6,7 +6,7 @@ from typing import List
 
 import numpy as np
 from PySide2.QtCore import QObject, Qt, QThread, Signal
-from PySide2.QtWidgets import QFileDialog
+from PySide2.QtWidgets import QFileDialog, QMessageBox
 
 from data import DataLoader, DataWriter, FittedData, GrainSizeData, SampleData
 from resolvers import DistributionType
@@ -44,6 +44,9 @@ class DataManager(QObject):
         self.data_writer.sigWorkFinished.connect(self.on_saving_work_finished)
 
         self.auto_record = True
+
+        self.msg_box = QMessageBox()
+        self.msg_box.setWindowFlags(Qt.Drawer)
 
     def load_data(self):
         filename, type_str = self.file_dialog.getOpenFileName(None, self.tr("Select Data File"), None, "*.xls; *.xlsx;;*.csv")
@@ -92,9 +95,15 @@ class DataManager(QObject):
 
     def on_settings_changed(self, kwargs: dict):
         for setting, value in kwargs.items():
-            self.__setattr__(setting, value)
+            setattr(self, setting, value)
+            # self.logger.debug("Setting [%s] have been changed to [%s].", setting, value)
 
     def record_data(self):
+        if self.current_fitted_data is None:
+            self.msg_box.setWindowTitle("Warning")
+            self.msg_box.setText("There is no fitted data to record.")
+            self.msg_box.exec_()
+            return
         self.recorded_data_list.append(self.current_fitted_data)
         self.sigDataRecorded.emit(self.current_fitted_data)
 
@@ -126,5 +135,7 @@ class DataManager(QObject):
     def on_saving_work_finished(self, state):
         if state:
             logging.info("File saved.")
+            self.sigDataSavingFinished.emit(state)
         else:
             logging.error("File unsaved.")
+            self.sigDataSavingFinished.emit(state)

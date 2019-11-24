@@ -9,8 +9,8 @@ import pyqtgraph as pg
 import xlrd
 from pyqtgraph.dockarea import Dock, DockArea
 from PySide2.QtCore import QMutex, Qt, QThread, QTimer, Signal
-from PySide2.QtGui import QCursor
-from PySide2.QtWidgets import (QAbstractItemView, QApplication, QGridLayout,
+from PySide2.QtGui import QCursor, QFont
+from PySide2.QtWidgets import (QAbstractItemView, QApplication, QGridLayout, QMessageBox,
                                QLabel, QMainWindow, QMenu, QPushButton,
                                QSizePolicy, QSplitter, QTableWidget,
                                QTableWidgetItem, QWidget)
@@ -30,8 +30,7 @@ class GUILogHandler(logging.Handler):
         self.__mutex.lock()
         if record.levelno < self.level:
             return
-        message = "{0} - {1}".format(record.levelname, record.msg)
-        self.target.show_message(message)
+        self.target.show_message(record.msg % record.args)
         self.__mutex.unlock()
 
 
@@ -39,6 +38,9 @@ class MainWindow(QMainWindow):
     sigDataSelected = Signal(int) 
     sigRemoveRecords = Signal(list)
     TABLE_HEADER_ROWS = 2
+    COPONENT_ITEMS = 12
+    logger = logging.getLogger("root.MainWindow")
+    gui_logger = logging.getLogger("GUI")
     def __init__(self):
         super().__init__()
         self.init_ui()
@@ -50,7 +52,8 @@ class MainWindow(QMainWindow):
         self.fitting_thread.start()
         self.data_manager = DataManager()
         self.connect_all()
-
+        self.msg_box = QMessageBox()
+        self.msg_box.setWindowFlags(Qt.Drawer)
         
     
     
@@ -60,7 +63,7 @@ class MainWindow(QMainWindow):
     
     def init_ui(self):
         
-        self.dock_area = DockArea()
+        self.dock_area = DockArea(self)
         self.dock_area.setStyleSheet("""DockLabel {font-size: 16px}""")
         self.setCentralWidget(self.dock_area)
         
@@ -74,7 +77,7 @@ class MainWindow(QMainWindow):
         self.raw_data_table_action = self.docks_menu.addAction("Raw Data Table")
         self.recorded_data_table_action = self.docks_menu.addAction("Recorded Data Table")
         self.reset_docks_actions = self.docks_menu.addAction("Reset")
-        self.settings_menu = self.menuBar().addMenu("Settings")
+        # self.settings_menu = self.menuBar().addMenu("Settings")
         
         # Canvas
         self.canvas_dock = Dock("Canvas", size=(200, 300), closable=True)
@@ -118,7 +121,7 @@ class MainWindow(QMainWindow):
 
     def connect_all(self):
         # TODO: Type Switch
-        # self.control_panel.sigDistributionTypeChanged.connect(self.resolver.on_type_changed)
+        self.control_panel.sigDistributionTypeChanged.connect(self.resolver.on_type_changed)
         self.control_panel.sigNcompChanged.connect(self.resolver.on_ncomp_changed)
         self.control_panel.sigNcompChanged.connect(self.canvas.on_ncomp_changed)
         self.control_panel.sigFocusSampleChanged.connect(self.data_manager.on_focus_sample_changed)
@@ -126,6 +129,7 @@ class MainWindow(QMainWindow):
         self.control_panel.sigResolverSettingsChanged.connect(self.resolver.on_settings_changed)
         self.control_panel.sigRuningSettingsChanged.connect(self.on_settings_changed)
         self.control_panel.sigDataSettingsChanged.connect(self.data_manager.on_settings_changed)
+        
         self.control_panel.try_fit_button.clicked.connect(self.resolver.try_fit)
         self.control_panel.record_button.clicked.connect(self.data_manager.record_data)
         
@@ -134,16 +138,17 @@ class MainWindow(QMainWindow):
         self.data_manager.sigTargetDataChanged.connect(self.resolver.on_target_data_changed)
         self.data_manager.sigTargetDataChanged.connect(self.canvas.on_target_data_changed)
         self.data_manager.sigDataRecorded.connect(self.on_data_recorded)
+        self.data_manager.sigDataLoadingFinished.connect(self.on_data_loading_finished)
+        self.data_manager.sigDataSavingFinished.connect(self.on_data_saving_finished)
         
 
         self.resolver.sigEpochFinished.connect(self.control_panel.on_epoch_finished)
         self.resolver.sigEpochFinished.connect(self.canvas.on_epoch_finished)
         self.resolver.sigEpochFinished.connect(self.data_manager.on_epoch_finished)
         self.resolver.sigSingleIterationFinished.connect(self.canvas.on_single_iteration_finished)
-        
+        self.resolver.sigWidgetsEnable.connect(self.control_panel.on_widgets_enable_changed)
         
         self.canvas.sigWidgetsEnable.connect(self.control_panel.on_widgets_enable_changed)
-        
         self.load_action.triggered.connect(self.data_manager.load_data)
         self.save_action.triggered.connect(self.data_manager.save_data)
         self.canvas_action.triggered.connect(self.show_canvas_dock)
@@ -160,11 +165,10 @@ class MainWindow(QMainWindow):
 
 
 
-
     def reset_dock_layout(self):
         self.dock_area.moveDock(self.canvas_dock, "left", None)
         self.dock_area.moveDock(self.raw_data_dock, "right", self.canvas_dock)
-        self.dock_area.moveDock(self.recorded_data_dock, "below", self.raw_data_dock)
+        self.dock_area.moveDock(self.recorded_data_dock, "right", self.raw_data_dock)
         self.dock_area.moveDock(self.control_panel_dock, "bottom", self.canvas_dock)
 
 
@@ -184,6 +188,25 @@ class MainWindow(QMainWindow):
         self.dock_area.moveDock(self.recorded_data_dock, "bottom", None)
         self.recorded_data_dock.setVisible(True)
 
+    def on_data_loading_finished(self, state: bool):
+        if state:
+            self.msg_box.setWindowTitle("Info")
+            self.msg_box.setText("The data has been loaded from the file.")
+            self.msg_box.exec_()
+        else:
+            self.msg_box.setWindowTitle("Error")
+            self.msg_box.setText("Data loading failed.")
+            self.msg_box.exec_()
+
+    def on_data_saving_finished(self, state: bool):
+        if state:
+            self.msg_box.setWindowTitle("Info")
+            self.msg_box.setText("The data has been saved to the file.")
+            self.msg_box.exec_()
+        else:
+            self.msg_box.setWindowTitle("Error")
+            self.msg_box.setText("Data saving failed.")
+            self.msg_box.exec_()
 
     def on_data_loaded(self, grain_size_data: GrainSizeData):
         nrows = len(grain_size_data.sample_data_list)
@@ -201,12 +224,14 @@ class MainWindow(QMainWindow):
                 self.raw_data_table.setItem(i, j, item)
 
     def on_data_recorded(self, fitted_data: FittedData):
+        
         # the 2 additional rows are headers
         if self.recorded_data_count + self.TABLE_HEADER_ROWS >= self.recorded_data_table.rowCount():
             self.recorded_data_table.setRowCount(self.recorded_data_table.rowCount() + 50)
         ncomp = len(fitted_data.statistic)
-        if ncomp*9+2 > self.recorded_data_table.columnCount():
-            self.recorded_data_table.setColumnCount(ncomp*9+2)
+        column_span = self.COPONENT_ITEMS + 1
+        if ncomp*self.COPONENT_ITEMS+self.TABLE_HEADER_ROWS > self.recorded_data_table.columnCount():
+            self.recorded_data_table.setColumnCount(ncomp*column_span+2)
 
         def write(row, col, value, e=False):
             if type(value) == str:
@@ -218,43 +243,58 @@ class MainWindow(QMainWindow):
                     item = QTableWidgetItem("{0:.4f}".format(value))
             item.setTextAlignment(Qt.AlignCenter)
             self.recorded_data_table.setItem(row, col, item)
+        try:
+            # Write Header
+            write(0, 0, "Sample Name")
+            self.recorded_data_table.setSpan(0, 0, self.TABLE_HEADER_ROWS, 1)
+            write(0, 1, "Mean Squared Error")
+            self.recorded_data_table.setSpan(0, 1, self.TABLE_HEADER_ROWS, 1)
+            for i, comp in enumerate(fitted_data.statistic):
+                write(0, i*column_span+3, comp["name"])
+                self.recorded_data_table.setSpan(0, i*column_span+3, 1, self.COPONENT_ITEMS)
+                write(1, i*column_span+3, "Fraction")
+                write(1, i*column_span+4, "Mean (μm)")
+                write(1, i*column_span+5, "Median (μm)")
+                write(1, i*column_span+6, "Mode (μm)")
+                write(1, i*column_span+7, "Variance")
+                write(1, i*column_span+8, "Standard Deviation")
+                write(1, i*column_span+9, "Skewness")
+                write(1, i*column_span+10, "Kurtosis")
+                write(1, i*column_span+11, "Beta")
+                write(1, i*column_span+12, "Eta")
+                write(1, i*column_span+13, "Location")
+                write(1, i*column_span+14, "X Offset")
 
-        # Write Header
-        write(0, 0, "Sample Name")
-        self.recorded_data_table.setSpan(0, 0, self.TABLE_HEADER_ROWS, 1)
-        write(0, 1, "Mean Squared Error")
-        self.recorded_data_table.setSpan(0, 1, self.TABLE_HEADER_ROWS, 1)
-        for i, comp in enumerate(fitted_data.statistic):
-            write(0, i*9+3, comp["name"])
-            self.recorded_data_table.setSpan(0, i*9+3, 1, 8)
-            write(1, i*9+3, "Fraction")
-            write(1, i*9+4, "Mean (μm)")
-            write(1, i*9+5, "Median (μm)")
-            write(1, i*9+6, "Mode (μm)")
-            write(1, i*9+7, "Variance")
-            write(1, i*9+8, "Standard Deviation")
-            write(1, i*9+9, "Skewness")
-            write(1, i*9+10, "Kurtosis")
-
-        row = self.recorded_data_count + self.TABLE_HEADER_ROWS
-        write(row, 0, fitted_data.name)
-        write(row, 1, fitted_data.mse, e=True)
-        for i, comp in enumerate(fitted_data.statistic):
-            write(row, i*9+3, comp.get("fraction"))
-            write(row, i*9+4, comp.get("mean"))
-            write(row, i*9+5, comp.get("median"))
-            write(row, i*9+6, comp.get("mode"))
-            write(row, i*9+7, comp.get("variance"))
-            write(row, i*9+8, comp.get("standard_deviation"))
-            write(row, i*9+9, comp.get("skewness"))
-            write(row, i*9+10, comp.get("kurtosis"))
-
-        self.recorded_data_count += 1
+            row = self.recorded_data_count + self.TABLE_HEADER_ROWS
+            write(row, 0, fitted_data.name)
+            write(row, 1, fitted_data.mse, e=True)
+            for i, comp in enumerate(fitted_data.statistic):
+                write(row, i*column_span+3, comp.get("fraction"))
+                write(row, i*column_span+4, comp.get("mean"))
+                write(row, i*column_span+5, comp.get("median"))
+                write(row, i*column_span+6, comp.get("mode"))
+                write(row, i*column_span+7, comp.get("variance"))
+                write(row, i*column_span+8, comp.get("standard_deviation"))
+                write(row, i*column_span+9, comp.get("skewness"))
+                write(row, i*column_span+10, comp.get("kurtosis"))
+                write(row, i*column_span+11, comp.get("beta"))
+                write(row, i*column_span+12, comp.get("eta"))
+                write(row, i*column_span+13, comp.get("loc"))
+                write(row, i*column_span+14, comp.get("x_offset"))
+            self.recorded_data_count += 1
+        except Exception:
+            self.logger.exception("Unknown exception occurred when writing fitted data to the table widget.")
+            self.gui_logger.exception("Unknown exception occurred when writing fitted data to the table widget.")
+            # remove
+            self.sigRemoveRecords(self.recorded_data_count)
+        finally:
+            pass
 
 
     def on_settings_changed(self, kwargs: dict):
         for setting, value in kwargs.items():
-            self.__setattr__(setting, value)
+            setattr(self, setting, value)
+            # self.logger.debug("Setting [%s] have been changed to [%s].", setting, value)
 
     
     def on_data_item_clicked(self, row, column):
