@@ -3,20 +3,14 @@ import os
 
 import numpy as np
 from PySide2.QtCore import Qt, QThread, QTimer, Signal
-from PySide2.QtWidgets import (QCheckBox, QFileDialog, QGridLayout, QLabel,
+from PySide2.QtWidgets import (QCheckBox, QFileDialog, QGridLayout, QLabel, QMessageBox,
                              QPushButton, QRadioButton, QSizePolicy, QWidget)
-
-
-import sys
-
-sys.path.append(os.getcwd())
-
+from PySide2.QtGui import QFont
 from data import FittedData, GrainSizeData
-from resolvers import DistributionType
-
+from enum import Enum
 
 class ControlPanel(QWidget):
-    # sigDistributionTypeChanged = Signal(DistributionType)
+    sigDistributionTypeChanged = Signal(Enum)
     sigNcompChanged = Signal(int) # ncomp
     sigFocusSampleChanged = Signal(int) # index of that sample in list
     sigResolverSettingsChanged = Signal(dict)
@@ -37,16 +31,22 @@ class ControlPanel(QWidget):
         self.init_ui()
         self.connect_all()
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        
+        self.msg_box = QMessageBox()
+        self.msg_box.setWindowFlags(Qt.Drawer)
+
+        # self.setStyleSheet("""QLabel, QPushButton, QRadioButton, QCheckBox {font: arial, sans-serif; font-size: 16px; font-weight: bold}""")
 
 
     def init_ui(self):
         
         self.main_layout = QGridLayout(self)
         
-        self.distribution_type_label = QLabel("Distribution Type:")
-        self.distribution_weibull_radio_button = QRadioButton("Weibull")
+        self.distribution_type_label = QLabel("Distribution Type:", self)
+        # self.distribution_type_label.setFont(QFont("Times New Roman"))
+        self.distribution_weibull_radio_button = QRadioButton("Weibull", self)
         self.distribution_weibull_radio_button.setChecked(True)
-        self.distribution_lognormal_radio_button = QRadioButton("Lognormal")
+        self.distribution_lognormal_radio_button = QRadioButton("Lognormal", self)
         self.main_layout.addWidget(self.distribution_type_label, 0, 0, 1, 2)
         self.main_layout.addWidget(self.distribution_weibull_radio_button, 0, 2)
         self.main_layout.addWidget(self.distribution_lognormal_radio_button, 0, 3)
@@ -143,19 +143,21 @@ class ControlPanel(QWidget):
 
     @data_index.setter
     def data_index(self, value: int):
+        if self.__sample_names is None or len(self.__sample_names) == 0:
+            self.msg_box.setWindowTitle("Warning")
+            self.msg_box.setText("The data has not been loaded, the operation is invalid.")
+            self.msg_box.exec_()
+            return
         if value < 0 or value >= len(self.__sample_names):
             logging.warning("It has reached the first/last sample.")
             return
         # update the label to display the name of this sample
         self.data_index_display.setText(self.__sample_names[value])
         self.__data_index = value
-        if self.auto_fit_checkbox.isChecked():
-            self.on_widgets_enable_changed(False)
         self.sigFocusSampleChanged.emit(value)
 
     def on_ncomp_add_clicked(self):
         self.ncomp += 1
-        
 
     def on_ncomp_reduce_clicked(self):
         self.ncomp -= 1
@@ -202,8 +204,6 @@ class ControlPanel(QWidget):
         self.data_index = index
 
     def on_widgets_enable_changed(self, enable: bool):
-        if self.auto_run_flag and enable:
-            return
         # self.distribution_weibull_radio_button.setEnabled(enable)
         # self.distribution_lognormal_radio_button.setEnabled(enable)
         self.ncomp_add_button.setEnabled(enable)
@@ -226,9 +226,14 @@ class ControlPanel(QWidget):
 
 
     def on_epoch_finished(self, data: FittedData):
+        if data.has_nan():
+            self.msg_box.setWindowTitle("Warning")
+            self.msg_box.setText("The fitted data may be invalid. It contains invalid values.")
+            self.msg_box.exec_()
+            self.auto_run_flag = False
+        
         if self.data_index == len(self.__sample_names)-1:
             self.auto_run_flag = False
-            self.on_widgets_enable_changed(True)
 
         if self.auto_run_flag:
             self.auto_run_timer.start(5)
@@ -238,10 +243,10 @@ class ControlPanel(QWidget):
 
     def on_auto_run_clicked(self):
         self.auto_run_flag = True
-        self.on_widgets_enable_changed(False)
-        self.data_index = 0
+        # from current sample to fit, to avoid that it need to resart from the first sample every time
+        self.data_index = self.data_index
+
 
     def on_cancel_run_clicked(self):
         if self.auto_run_flag:
             self.auto_run_flag = False
-            self.on_widgets_enable_changed(True)
