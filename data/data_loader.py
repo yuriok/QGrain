@@ -1,6 +1,7 @@
 import csv
 import logging
 import os
+import time
 from typing import Iterable, List
 
 import numpy as np
@@ -23,14 +24,15 @@ class DataFormatSetting:
         self.data_start_row = 1
         self.data_start_column = 1
 
+
 class DataLoader(QObject):
     sigWorkFinished = Signal(GrainSizeData)
     logger = logging.getLogger("root.data.DataLoader")
+    gui_logger = logging.getLogger("GUI")
     
     def __init__(self):
         super().__init__()
         self.setting = DataFormatSetting()
-
     def try_load_data(self, filename, file_type):
         if filename is None or filename == "":
             self.logger.error("The filename parameter is invalid.")
@@ -39,7 +41,6 @@ class DataLoader(QObject):
             self.logger.error("There is no file called this. Filename: %s.", filename)
             raise ValueError(filename)
             return
-        
         if file_type == "excel":
             self.try_excel(filename)
         elif file_type == "csv":
@@ -52,6 +53,7 @@ class DataLoader(QObject):
             sheet = open_workbook(filename).sheet_by_index(0)
         except XLRDError:
             self.logger.warning("The file format is not excel. Filename: [%s].", filename)
+            self.gui_logger.error(self.tr("The file format may be not excel or due to the permission and occupation condition, check please."))
             self.sigWorkFinished.emit(GrainSizeData())
             return
         try:
@@ -60,19 +62,24 @@ class DataLoader(QObject):
                 raw_data.append(sheet.row_values(i))
         except Exception:
             self.logger.exception("Unknown exception raised during reading the data table. Filename: [%s].", filename, stack_info=True)
+            self.gui_logger.error(self.tr("Can not read data from this file."))
+            
             self.sigWorkFinished.emit(GrainSizeData())
             return
         try:
             grain_size_data = self.process_raw_data(raw_data, self.setting)
             self.logger.info("Data has been loaded from the excel file. Filename: [%s].", filename)
+            self.gui_logger.info(self.tr("The data has been loaded from [%s]."), filename)
             self.sigWorkFinished.emit(grain_size_data)
             return
         except DataInvalidError:
             self.logger.exception("The data in it is not valid. Filename: [%s].", filename, stack_info=True)
+            self.gui_logger.error(self.tr("The raw data failed to pass the data validation, check please."))
             self.sigWorkFinished.emit(GrainSizeData())
             return
         except Exception:
-            self.logger.exception("Unknown exception raised. Maybe the data format is not qualified. Filename: [%s].", filename, stack_info=True)
+            self.logger.exception("Unknown exception raised. Maybe the data layout is not qualified. Filename: [%s].", filename, stack_info=True)
+            self.gui_logger.error(self.tr("Can not convert raw data to grain size distribution, check the data layout please."))
             self.sigWorkFinished.emit(GrainSizeData())
             return
 
@@ -82,6 +89,7 @@ class DataLoader(QObject):
             f = open(filename, encoding="utf-8")
         except Exception:
             self.logger.exception("Can not open the file. Filename: [%s].", filename, stack_info=True)
+            self.gui_logger.error(self.tr("Can not open the file, check the permission and occupation please."))
             self.sigWorkFinished.emit(GrainSizeData())
             return
         try:
@@ -90,19 +98,23 @@ class DataLoader(QObject):
             raw_data = [row for row in r]
         except Exception:
             self.logger.exception("Can not read the file as csv. Check the encode and make sure it's [utf-8]. Filename: [%s].", filename, stack_info=True)
+            self.gui_logger.error(self.tr("Can not read the file as csv, check the encode and maker sure it's [utf-8]."))
             self.sigWorkFinished.emit(GrainSizeData())
             return
         try:
             grain_size_data = self.process_raw_data(raw_data, self.setting)
             self.logger.info("Grain size data has been loaded from the csv file. Filename: [%s].", filename)
+            self.gui_logger.info(self.tr("The data has been loaded from [%s]."), filename)
             self.sigWorkFinished.emit(grain_size_data)
             return
         except DataInvalidError:
             self.logger.exception("The data in it is not valid. Filename: [%s].", filename, stack_info=True)
+            self.gui_logger.error(self.tr("The raw data failed to pass the data validation, check please."))
             self.sigWorkFinished.emit(GrainSizeData())
             return
         except Exception:
-            self.logger.exception("Unknown exception raised. Maybe the data format is not qualified. Filename: [%s].", filename, stack_info=True)
+            self.logger.exception("Unknown exception raised. Maybe the data layout is not qualified. Filename: [%s].", filename, stack_info=True)
+            self.gui_logger.error(self.tr("Can not convert raw data to grain size distribution, check the data layout please."))
             self.sigWorkFinished.emit(GrainSizeData())
             return
 
