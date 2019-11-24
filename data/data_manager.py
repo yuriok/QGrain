@@ -14,25 +14,27 @@ from resolvers import DistributionType
 
 class DataManager(QObject):
     sigDataLoadingStarted = Signal(str, str)  # filename, file type
-    sigDataLoadingFinished = Signal(bool) #TODO: CONNECT TO UI
     sigDataSavingStarted = Signal(str, np.ndarray, list, str)
-    sigDataSavingFinished = Signal(bool) #TODO: CONNECT TO UI
     sigDataLoaded = Signal(GrainSizeData)
     sigTargetDataChanged = Signal(str, np.ndarray, np.ndarray)
     sigDataRecorded = Signal(FittedData)
+    logger = logging.getLogger("root.data.DataManager")
+    gui_logger = logging.getLogger("GUI")
 
     def __init__(self):
         super().__init__()
+        # Data
         self.grain_size_data = None  # type: GrainSizeData
         self.current_fitted_data = None  # type: FittedData
         self.recorded_data_list = []  # type: List[FittedData]
-        self.file_dialog = QFileDialog()
+        
+        # Loader
         self.data_loader = DataLoader()
         self.load_data_thread = QThread()
         # move it before the signal-slots are connected
         self.data_loader.moveToThread(self.load_data_thread)
         self.load_data_thread.start()
-
+        # Writer
         self.data_writer = DataWriter()
         self.save_data_thread = QThread()
         self.data_writer.moveToThread(self.save_data_thread)
@@ -43,10 +45,22 @@ class DataManager(QObject):
         self.sigDataSavingStarted.connect(self.data_writer.try_save_data)
         self.data_writer.sigWorkFinished.connect(self.on_saving_work_finished)
 
+        # Settings
         self.auto_record = True
 
+        self.file_dialog = QFileDialog()
         self.msg_box = QMessageBox()
         self.msg_box.setWindowFlags(Qt.Drawer)
+        self.load_msg_box = QMessageBox()
+        self.load_msg_box.addButton(QMessageBox.StandardButton.Retry)
+        self.load_msg_box.addButton(QMessageBox.StandardButton.Ok)
+        self.load_msg_box.setDefaultButton(QMessageBox.StandardButton.Retry)
+        self.load_msg_box.setWindowFlags(Qt.Drawer)
+        self.record_msg_box = QMessageBox()
+        self.record_msg_box.addButton(QMessageBox.StandardButton.Discard)
+        self.record_msg_box.addButton(QMessageBox.StandardButton.Ok)
+        self.record_msg_box.setDefaultButton(QMessageBox.StandardButton.Discard)
+        self.record_msg_box.setWindowFlags(Qt.Drawer)
 
     def load_data(self):
         filename, type_str = self.file_dialog.getOpenFileName(None, self.tr("Select Data File"), None, "*.xls; *.xlsx;;*.csv")
@@ -60,66 +74,83 @@ class DataManager(QObject):
             file_type = "csv"
         else:
             raise ValueError(type_str)
-        logging.info("Selected data file is [%s].", filename)
+        self.logger.info("Try to load data, selected data file is [%s].", filename)
         self.sigDataLoadingStarted.emit(filename, file_type)
 
     def on_loading_work_finished(self, grain_size_data: GrainSizeData):
         if grain_size_data.is_valid:
             self.grain_size_data = grain_size_data
-            self.sigDataLoadingFinished.emit(True)
             self.sigDataLoaded.emit(grain_size_data)
+            self.logger.debug("Data has been loaded.")
+            self.gui_logger.info(self.tr("Data has been loaded."))
+            self.msg_box.setWindowTitle(self.tr("Info"))
+            self.msg_box.setText(self.tr("The data has been loaded from the file."))
+            self.msg_box.exec_()
         else:
-            self.sigDataLoadingFinished.emit(True)
+            self.logger.warning("Data has not been loaded correctly.")
+            self.gui_logger.error(self.tr("Data has not been loaded correctlt, check and try it again please."))
+            self.load_msg_box.setWindowTitle(self.tr("Error"))
+            self.load_msg_box.setText(self.tr("Data loading failed."))
+            result = self.load_msg_box.exec_()
+            if result == QMessageBox.Retry:
+                self.load_data()
 
     def on_focus_sample_changed(self, index: int):
         if self.grain_size_data is None:
+            self.logger.debug("Grain size data is still None, ignored.")
             return
         sample_name = self.grain_size_data.sample_data_list[index].name
         classes = self.grain_size_data.classes
         sample_data = self.grain_size_data.sample_data_list[index].distribution
-
         self.sigTargetDataChanged.emit(sample_name, classes, sample_data)
+        self.logger.debug("Focus sample data changed, the data has been emitted.")
 
-    # TODO: ADD DATA VALIDATATION
     def on_epoch_finished(self, data: FittedData):
-        print("Statistic for {0}:\n".format(data.name) +
-              "|{0:12}|{1:12}|{2:12}|{3:12}|{4:12}|{5:12}|{6:24}|{7:12}|{8:12}|\n".format(
-                  "Component", "Fraction", "Mean", "Median", "Mode", "Variance", "Standard Deviation", "Skewness", "Kurtosis") +
-              "\n".join(["|{0:12}|{1:<12.2f}|{2:<12.2f}|{3:<12.2f}|{4:<12.2f}|{5:<12.2f}|{6:<24.2f}|{7:<12.2f}|{8:<12.2f}|".format(
-                  i.get("name"), i.get("fraction"), i.get("mean"), i.get("median"), i.get("mode"), i.get("variance"), i.get("standard_deviation"), i.get("skewness"), i.get("kurtosis")) for i in data.statistic]))
-        print("Mean Squared Error:", data.mse)
+        non_nan = data.get_non_nan_copy()
+        self.logger.debug("Epoch for sample [%s] has finished, mean squared error is [%E], statistic is: [%s].", non_nan.name, non_nan.mse, non_nan.statistic)
         self.current_fitted_data = data
-
         if self.auto_record:
-            self.record_data()
+            if data.has_nan():
+                self.record_msg_box.setWindowTitle(self.tr("Warning"))
+                self.record_msg_box.setText(self.tr("The fitted data may be invalid, at least one NaN value occurs."))
+                result = self.record_msg_box.exec_()
+                if result == QMessageBox.Discard:
+                    self.logger.debug("Fitted data of sample [%s] was discarded by user.", data.name)
+                    return
+                else:
+                    self.record_data()
+            else:
+                self.record_data()
 
     def on_settings_changed(self, kwargs: dict):
         for setting, value in kwargs.items():
             setattr(self, setting, value)
-            # self.logger.debug("Setting [%s] have been changed to [%s].", setting, value)
+            self.logger.debug("Setting [%s] have been changed to [%s].", setting, value)
 
     def record_data(self):
         if self.current_fitted_data is None:
-            self.msg_box.setWindowTitle("Warning")
-            self.msg_box.setText("There is no fitted data to record.")
+            self.logger.debug("There is no fitted data to record, ignored.")
+            self.gui_logger.warning(self.tr("There is no fitted data to record."))
+            self.msg_box.setWindowTitle(self.tr("Warning"))
+            self.msg_box.setText(self.tr("There is no fitted data to record."))
             self.msg_box.exec_()
             return
         self.recorded_data_list.append(self.current_fitted_data)
         self.sigDataRecorded.emit(self.current_fitted_data)
 
     def remove_data(self, rows: List[int]):
-        print(rows)
         offset = 0
         for row in rows:
             value_to_remove = self.recorded_data_list[row-offset]
-            logging.info("Record of {0} has been removed.".format(value_to_remove.name))
             self.recorded_data_list.remove(value_to_remove)
+            self.logger.debug("Record of sample [%s] has been removed.", value_to_remove.name)
             offset += 1
 
     def save_data(self):
-        filename, type_str = self.file_dialog.getSaveFileName(None, self.tr("Save Recorded Data"), None, "Excel Workbook (*.xlsx);;97-2003 Excel Workbook (*.xls);;CSV (*.csv)")
-        logging.info(self.tr("File path is [{0}].").format(filename))
+        filename, type_str = self.file_dialog.getSaveFileName(None, self.tr("Save Recorded Data"), None, "Excel (*.xlsx);;97-2003 Excel (*.xls);;CSV (*.csv)")
+        self.logger.info("File path to save is [%s].", filename)
         if filename is None or filename == "":
+            self.logger.debug("The path is None or empty, ignored.")
             return
         if ".xlsx" in type_str:
             file_type = "xlsx"
@@ -129,13 +160,18 @@ class DataManager(QObject):
             file_type = "csv"
         else:
             raise ValueError(type_str)
-        
+        self.logger.debug("Selected file type is [%s].", file_type)
         self.sigDataSavingStarted.emit(filename, self.grain_size_data.classes, self.recorded_data_list, file_type)
 
     def on_saving_work_finished(self, state):
         if state:
-            logging.info("File saved.")
-            self.sigDataSavingFinished.emit(state)
+            self.logger.info("File saved.")
+            self.gui_logger.info(self.tr("File saved."))
+            self.msg_box.setWindowTitle("Info")
+            self.msg_box.setText(self.tr("The data has been saved to the file."))
+            self.msg_box.exec_()
         else:
-            logging.error("File unsaved.")
-            self.sigDataSavingFinished.emit(state)
+            self.logger.error("File unsaved.")
+            self.msg_box.setWindowTitle(self.tr("Error"))
+            self.msg_box.setText(self.tr("Data saving failed."))
+            self.msg_box.exec_()
