@@ -1,0 +1,102 @@
+{
+    "column_chart_number": 5,
+    "x_margin": 10,
+    "y_margin": 10,
+    "target_series": {
+        "line": {
+            "none": true
+        },
+        "marker": {
+            "type": "circle",
+            "size": 3,
+            "border": {
+                "none": true
+            }
+        },
+        "smooth": true
+    },
+    "fitted_series": {
+        "line": {
+            "width": 2.0
+        },
+        "marker": {
+            "type": "none"
+        },
+        "smooth": true
+    },
+    "component_series": {
+        "line": {
+            "width": 2.0,
+            "dash_type": "dash"
+        },
+        "marker": {
+            "type": "none"
+        },
+        "smooth": true
+    },
+    "x_axis": {
+        "name": "Grain size (\u03bcm)",
+        "num_font": {
+            "name": "Arial",
+            "size": 8
+        },
+        "name_font": {
+            "name": "Times New Roman",
+            "size": 10,
+            "bold": true
+        },
+        "log_base": 10,
+        "major_gridlines": {
+            "visible": true,
+            "line": {
+                "width": 0.8,
+                "color": "gray",
+                "transparency": 50
+            }
+        },
+        "crossing": 0.01,
+        "num_format": "General"
+    },
+    "y_axis": {
+        "name": "Grain size (\u03bcm)",
+        "num_font": {
+            "name": "Arial",
+            "size": 8
+        },
+        "name_font": {
+            "name": "Times New Roman",
+            "size": 10,
+            "bold": true
+        },
+        "major_gridlines": {
+            "visible": true,
+            "line": {
+                "width": 0.8,
+                "color": "gray",
+                "transparency": 50
+            }
+        },
+        "min": 0,
+        "num_format": "0.00"
+    },
+    "size": {
+        "x_scale": 1.0,
+        "y_scale": 1.0
+    },
+    "title": {
+        "name_font": {
+            "name": "Times New Roman",
+            "size": 12,
+            "bold": true
+        }
+    },
+    "legend": {
+        "font": {
+            "name": "Arial",
+            "size": 8,
+            "bold": true,
+            "italic": true
+        },
+        "position": "bottom"
+    }
+}
