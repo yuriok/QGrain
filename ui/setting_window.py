@@ -1,6 +1,6 @@
 from PySide2.QtWidgets import QMainWindow, QCheckBox, QLabel, QRadioButton, QPushButton, QGridLayout, QApplication, QSizePolicy, QWidget, QTabWidget
-
-
+from PySide2.QtCore import Qt
+from PySide2.QtGui import QIcon
 
 class SettingWindow(QMainWindow):
     def __init__(self):
@@ -13,7 +13,7 @@ class SettingWindow(QMainWindow):
         self.tab.setTabPosition(QTabWidget.TabPosition.West)
         
         self.data = DataSetting()
-        self.tab.addTab(self.data, "add")
+        self.tab.addTab(self.data, QIcon("./settings/icon.png"), None)
 
 
 class DataSetting(QWidget):

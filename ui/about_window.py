@@ -1,6 +1,7 @@
-from PySide2.QtWidgets import QMainWindow, QWidget, QTextBrowser, QGridLayout
-
 from PySide2.QtCore import Qt
+from PySide2.QtWidgets import (QApplication, QGridLayout, QMainWindow,
+                               QTextBrowser, QTextEdit, QWidget)
+
 
 class AboutWindow(QMainWindow):
     def __init__(self):
@@ -14,6 +15,7 @@ class AboutWindow(QMainWindow):
         self.setWindowTitle(self.tr("About"))
         self.setMinimumSize(600, 600)
         self.text = QTextBrowser()
+        
         self.layout.addWidget(self.text, 0, 0)
         self.setWindowFlags(Qt.Drawer)
         self.text.setHtml(
@@ -28,12 +30,21 @@ class AboutWindow(QMainWindow):
     <p>If you have any idea, you can contact the authors below.</p>
     <h4>Authors:</h4>
     <ul>
-        <li>Yuming Liu <a>liuyuming@ieecas.cn</a></li>
+        <li>Yuming Liu <i><a href="mailto:\\liuyuming@ieecas.cn">liuyuming@ieecas.cn</a></li></i>
     </ul>
 </font>
 """)
+        self.text.setOpenExternalLinks(True)
 
     def closeEvent(self, e):
         e.ignore()
         self.hide()
         self.saveGeometry()
+
+
+if __name__ == "__main__":
+    import sys
+    app = QApplication(sys.argv)
+    s = AboutWindow()
+    s.show()
+    app.exec_()
