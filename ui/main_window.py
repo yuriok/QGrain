@@ -18,6 +18,8 @@ from PySide2.QtWidgets import (QAbstractItemView, QApplication, QGridLayout, QMe
 from data import DataManager, FittedData, GrainSizeData
 from resolvers import Resolver
 from ui import ControlPanel, FittingCanvas
+from ui.setting_window import SettingWindow
+from ui.about_window import AboutWindow
 
 
 class GUILogHandler(logging.Handler):
@@ -54,15 +56,11 @@ class MainWindow(QMainWindow):
         self.connect_all()
         self.msg_box = QMessageBox()
         self.msg_box.setWindowFlags(Qt.Drawer)
-        
-    
-    
+
     def show_message(self, message):
         self.status_bar.showMessage(message)
 
-    
     def init_ui(self):
-        
         self.dock_area = DockArea(self)
         self.dock_area.setStyleSheet("""DockLabel {font-size: 16px}""")
         self.setCentralWidget(self.dock_area)
@@ -77,14 +75,14 @@ class MainWindow(QMainWindow):
         self.raw_data_table_action = self.docks_menu.addAction("Raw Data Table")
         self.recorded_data_table_action = self.docks_menu.addAction("Recorded Data Table")
         self.reset_docks_actions = self.docks_menu.addAction("Reset")
-        # self.settings_menu = self.menuBar().addMenu("Settings")
+        # self.settings_action = self.menuBar().addAction("Settings")
+        self.about_action = self.menuBar().addAction("About")
         
         # Canvas
         self.canvas_dock = Dock("Canvas", size=(200, 300), closable=True)
         self.dock_area.addDock(self.canvas_dock)
         self.canvas = FittingCanvas()
         self.canvas_dock.addWidget(self.canvas)
-
 
         # Control Panel
         self.control_panel_dock = Dock("Control Panel", size=(200, 100), closable=True)
@@ -93,7 +91,6 @@ class MainWindow(QMainWindow):
         self.control_panel = ControlPanel()
         self.control_panel_dock.addWidget(self.control_panel)
 
-        
         # Raw Data Table
         self.raw_data_dock = Dock("Raw Data Table", size=(300, 400), closable=True)
         self.dock_area.addDock(self.raw_data_dock)
@@ -115,9 +112,11 @@ class MainWindow(QMainWindow):
         self.recorded_table_menu = QMenu(self.recorded_data_table)
         self.recorded_table_remove_action = self.recorded_table_menu.addAction("Remove")
         
-        
-        self.reset_dock_layout()
 
+
+        # self.settings_window = SettingWindow()
+        self.about_window = AboutWindow()
+        self.reset_dock_layout()
 
     def connect_all(self):
         # TODO: Type Switch
@@ -129,7 +128,7 @@ class MainWindow(QMainWindow):
         self.control_panel.sigResolverSettingsChanged.connect(self.resolver.on_settings_changed)
         self.control_panel.sigRuningSettingsChanged.connect(self.on_settings_changed)
         self.control_panel.sigDataSettingsChanged.connect(self.data_manager.on_settings_changed)
-        
+        # Connect directly
         self.control_panel.try_fit_button.clicked.connect(self.resolver.try_fit)
         self.control_panel.record_button.clicked.connect(self.data_manager.record_data)
         
@@ -138,17 +137,14 @@ class MainWindow(QMainWindow):
         self.data_manager.sigTargetDataChanged.connect(self.resolver.on_target_data_changed)
         self.data_manager.sigTargetDataChanged.connect(self.canvas.on_target_data_changed)
         self.data_manager.sigDataRecorded.connect(self.on_data_recorded)
-        self.data_manager.sigDataLoadingFinished.connect(self.on_data_loading_finished)
-        self.data_manager.sigDataSavingFinished.connect(self.on_data_saving_finished)
         
-
         self.resolver.sigEpochFinished.connect(self.control_panel.on_epoch_finished)
         self.resolver.sigEpochFinished.connect(self.canvas.on_epoch_finished)
         self.resolver.sigEpochFinished.connect(self.data_manager.on_epoch_finished)
         self.resolver.sigSingleIterationFinished.connect(self.canvas.on_single_iteration_finished)
         self.resolver.sigWidgetsEnable.connect(self.control_panel.on_widgets_enable_changed)
         
-        self.canvas.sigWidgetsEnable.connect(self.control_panel.on_widgets_enable_changed)
+        # Dock menu actions
         self.load_action.triggered.connect(self.data_manager.load_data)
         self.save_action.triggered.connect(self.data_manager.save_data)
         self.canvas_action.triggered.connect(self.show_canvas_dock)
@@ -156,21 +152,21 @@ class MainWindow(QMainWindow):
         self.raw_data_table_action.triggered.connect(self.show_raw_data_dock)
         self.recorded_data_table_action.triggered.connect(self.show_recorded_data_dock)
         self.reset_docks_actions.triggered.connect(self.reset_dock_layout)
-
+        # self.settings_action.triggered.connect(self.settings_window.show)
+        self.about_action.triggered.connect(self.about_window.show)
+        
+        self.canvas.sigWidgetsEnable.connect(self.control_panel.on_widgets_enable_changed)
         self.raw_data_table.cellClicked.connect(self.on_data_item_clicked)
         self.recorded_table_remove_action.triggered.connect(self.remove_recorded_selection)
         self.recorded_data_table.customContextMenuRequested.connect(self.show_recorded_table_menu)
         self.sigDataSelected.connect(self.control_panel.on_data_selected)
         self.sigRemoveRecords.connect(self.data_manager.remove_data)
 
-
-
     def reset_dock_layout(self):
         self.dock_area.moveDock(self.canvas_dock, "left", None)
         self.dock_area.moveDock(self.raw_data_dock, "right", self.canvas_dock)
         self.dock_area.moveDock(self.recorded_data_dock, "right", self.raw_data_dock)
         self.dock_area.moveDock(self.control_panel_dock, "bottom", self.canvas_dock)
-
 
     def show_canvas_dock(self):
         self.dock_area.moveDock(self.canvas_dock, "bottom", None)
@@ -188,32 +184,11 @@ class MainWindow(QMainWindow):
         self.dock_area.moveDock(self.recorded_data_dock, "bottom", None)
         self.recorded_data_dock.setVisible(True)
 
-    def on_data_loading_finished(self, state: bool):
-        if state:
-            self.msg_box.setWindowTitle("Info")
-            self.msg_box.setText("The data has been loaded from the file.")
-            self.msg_box.exec_()
-        else:
-            self.msg_box.setWindowTitle("Error")
-            self.msg_box.setText("Data loading failed.")
-            self.msg_box.exec_()
-
-    def on_data_saving_finished(self, state: bool):
-        if state:
-            self.msg_box.setWindowTitle("Info")
-            self.msg_box.setText("The data has been saved to the file.")
-            self.msg_box.exec_()
-        else:
-            self.msg_box.setWindowTitle("Error")
-            self.msg_box.setText("Data saving failed.")
-            self.msg_box.exec_()
-
     def on_data_loaded(self, grain_size_data: GrainSizeData):
         nrows = len(grain_size_data.sample_data_list)
         ncols = len(grain_size_data.classes)
         self.raw_data_table.setRowCount(nrows)
         self.raw_data_table.setColumnCount(ncols)
-
         self.raw_data_table.setHorizontalHeaderLabels(["{0:.4f}".format(class_value) for class_value in grain_size_data.classes])
         self.raw_data_table.setVerticalHeaderLabels([str(sample_data.name) for sample_data in grain_size_data.sample_data_list])
         # self.data_table.setData(grain_size_data.table_view)
@@ -222,9 +197,9 @@ class MainWindow(QMainWindow):
                 item = QTableWidgetItem("{0:.4f}".format(value))
                 item.setTextAlignment(Qt.AlignCenter)
                 self.raw_data_table.setItem(i, j, item)
+        self.logger.debug("Data was loaded, and has been update to the table.")
 
     def on_data_recorded(self, fitted_data: FittedData):
-        
         # the 2 additional rows are headers
         if self.recorded_data_count + self.TABLE_HEADER_ROWS >= self.recorded_data_table.rowCount():
             self.recorded_data_table.setRowCount(self.recorded_data_table.rowCount() + 50)
@@ -282,23 +257,21 @@ class MainWindow(QMainWindow):
                 write(row, i*column_span+13, comp.get("loc"))
                 write(row, i*column_span+14, comp.get("x_offset"))
             self.recorded_data_count += 1
+            self.logger.debug("Fitted data of [%s] has been wrote to recorded data table.", fitted_data.name)
         except Exception:
             self.logger.exception("Unknown exception occurred when writing fitted data to the table widget.")
-            self.gui_logger.exception("Unknown exception occurred when writing fitted data to the table widget.")
+            self.gui_logger.exception(self.tr("Unknown exception occurred when writing fitted data to the table widget."))
             # remove
             self.sigRemoveRecords(self.recorded_data_count)
-        finally:
-            pass
-
 
     def on_settings_changed(self, kwargs: dict):
         for setting, value in kwargs.items():
             setattr(self, setting, value)
-            # self.logger.debug("Setting [%s] have been changed to [%s].", setting, value)
+            self.logger.debug("Setting [%s] have been changed to [%s].", setting, value)
 
-    
     def on_data_item_clicked(self, row, column):
         self.sigDataSelected.emit(row)
+        self.logger.debug("The item at [%d] row in raw data table was selected.", row)
 
     def on_focus_sample_changed(self, index):
         self.raw_data_table.setCurrentCell(index, 0)
@@ -321,4 +294,6 @@ class MainWindow(QMainWindow):
             self.recorded_data_table.removeRow(row-offset)
             offset += 1
         self.recorded_data_count -= offset
-        self.sigRemoveRecords.emit([row-self.TABLE_HEADER_ROWS for row in rows_to_remove])
+        records_to_remove = [row-self.TABLE_HEADER_ROWS for row in rows_to_remove]
+        self.sigRemoveRecords.emit(records_to_remove)
+        self.logger.debug("The rows of recorded data will be remove are: [%s].", records_to_remove)

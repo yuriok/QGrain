@@ -7,3 +7,5 @@ QLabel, QPushButton, QCheckBox, QRadioButton, QMenu, QMenuBar {font-family: Taho
 
 DockLabel[dim="true"] {font:italic; background-color: yellow;}
 DockLabel {font-family: Tahoma, Microsoft YaHei, Arial, sans-serif;}
+
+QTableWidget {font-family: Arial; font-size: 8pt;}
