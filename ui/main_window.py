@@ -9,9 +9,9 @@ import pyqtgraph as pg
 import xlrd
 from pyqtgraph.dockarea import Dock, DockArea
 from PySide2.QtCore import QMutex, Qt, QThread, QTimer, Signal
-from PySide2.QtGui import QCursor, QFont
+from PySide2.QtGui import QCursor, QFont, QIcon, QAction
 from PySide2.QtWidgets import (QAbstractItemView, QApplication, QGridLayout, QMessageBox,
-                               QLabel, QMainWindow, QMenu, QPushButton,
+                               QLabel, QMainWindow, QMenu, QPushButton, QToolBar,
                                QSizePolicy, QSplitter, QTableWidget,
                                QTableWidgetItem, QWidget)
 
@@ -62,37 +62,42 @@ class MainWindow(QMainWindow):
 
     def init_ui(self):
         self.dock_area = DockArea(self)
-        self.dock_area.setStyleSheet("""DockLabel {font-size: 16px}""")
         self.setCentralWidget(self.dock_area)
-        
         # Menu
-        self.file_menu = self.menuBar().addMenu("File")
-        self.load_action = self.file_menu.addAction("Load")
-        self.save_action = self.file_menu.addAction("Save")
-        self.docks_menu = self.menuBar().addMenu("Docks")
-        self.canvas_action = self.docks_menu.addAction("Canvas")
-        self.control_panel_action = self.docks_menu.addAction("Control Panel")
-        self.raw_data_table_action = self.docks_menu.addAction("Raw Data Table")
-        self.recorded_data_table_action = self.docks_menu.addAction("Recorded Data Table")
-        self.reset_docks_actions = self.docks_menu.addAction("Reset")
-        # self.settings_action = self.menuBar().addAction("Settings")
-        self.about_action = self.menuBar().addAction("About")
+        self.file_menu = self.menuBar().addMenu(self.tr("File"))
+        self.load_action = QAction(QIcon("./settings/icons/open.png"), self.tr("Load"), self)
+        self.file_menu.addAction(self.load_action)
+        self.save_action = QAction(QIcon("./settings/icons/save.png"), self.tr("Save"), self)
+        self.file_menu.addAction(self.save_action)
+        self.docks_menu = self.menuBar().addMenu(self.tr("Docks"))
+        self.canvas_action = QAction(QIcon("./settings/icons/canvas.png"), self.tr("Canvas"), self)
+        self.docks_menu.addAction(self.canvas_action)
+        self.control_panel_action = QAction(QIcon("./settings/icons/control.png"), self.tr("Control Panel"), self)
+        self.docks_menu.addAction(self.control_panel_action)
+        self.raw_data_table_action = QAction(QIcon("./settings/icons/raw_table.png"), self.tr("Raw Table"), self)
+        self.docks_menu.addAction(self.raw_data_table_action)
+        self.recorded_data_table_action = QAction(QIcon("./settings/icons/recorded_table.png"), self.tr("Recorded Table"), self)
+        self.docks_menu.addAction(self.recorded_data_table_action)
+        self.reset_docks_actions = QAction(QIcon("./settings/icons/reset.png"), self.tr("Reset"), self)
+        self.docks_menu.addAction(self.reset_docks_actions)
+        self.settings_action = self.menuBar().addAction(self.tr("Settings"))
+        self.about_action = self.menuBar().addAction(self.tr("About"))
         
         # Canvas
-        self.canvas_dock = Dock("Canvas", size=(200, 300), closable=True)
+        self.canvas_dock = Dock(self.tr("Canvas"), size=(200, 300), closable=True)
         self.dock_area.addDock(self.canvas_dock)
         self.canvas = FittingCanvas()
         self.canvas_dock.addWidget(self.canvas)
 
         # Control Panel
-        self.control_panel_dock = Dock("Control Panel", size=(200, 100), closable=True)
+        self.control_panel_dock = Dock(self.tr("Control Panel"), size=(200, 100), closable=True)
         self.control_panel_dock.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.dock_area.addDock(self.control_panel_dock)
         self.control_panel = ControlPanel()
         self.control_panel_dock.addWidget(self.control_panel)
 
         # Raw Data Table
-        self.raw_data_dock = Dock("Raw Data Table", size=(300, 400), closable=True)
+        self.raw_data_dock = Dock(self.tr("Raw Data Table"), size=(300, 400), closable=True)
         self.dock_area.addDock(self.raw_data_dock)
         self.raw_data_table = QTableWidget()
         self.raw_data_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -101,7 +106,7 @@ class MainWindow(QMainWindow):
         self.raw_data_dock.addWidget(self.raw_data_table)
 
         # Recorded Data Table
-        self.recorded_data_dock = Dock("Recorded Data Table", size=(300, 400), closable=True)
+        self.recorded_data_dock = Dock(self.tr("Recorded Data Table"), size=(300, 400), closable=True)
         self.dock_area.addDock(self.recorded_data_dock)
         self.recorded_data_table = QTableWidget()
         self.recorded_data_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -110,11 +115,9 @@ class MainWindow(QMainWindow):
         self.recorded_data_table.setContextMenuPolicy(Qt.CustomContextMenu)
         self.recorded_data_dock.addWidget(self.recorded_data_table)
         self.recorded_table_menu = QMenu(self.recorded_data_table)
-        self.recorded_table_remove_action = self.recorded_table_menu.addAction("Remove")
+        self.recorded_table_remove_action = self.recorded_table_menu.addAction(self.tr("Remove"))
         
-
-
-        # self.settings_window = SettingWindow()
+        self.settings_window = SettingWindow()
         self.about_window = AboutWindow()
         self.reset_dock_layout()
 
@@ -152,7 +155,7 @@ class MainWindow(QMainWindow):
         self.raw_data_table_action.triggered.connect(self.show_raw_data_dock)
         self.recorded_data_table_action.triggered.connect(self.show_recorded_data_dock)
         self.reset_docks_actions.triggered.connect(self.reset_dock_layout)
-        # self.settings_action.triggered.connect(self.settings_window.show)
+        self.settings_action.triggered.connect(self.settings_window.show)
         self.about_action.triggered.connect(self.about_window.show)
         
         self.canvas.sigWidgetsEnable.connect(self.control_panel.on_widgets_enable_changed)
@@ -220,25 +223,25 @@ class MainWindow(QMainWindow):
             self.recorded_data_table.setItem(row, col, item)
         try:
             # Write Header
-            write(0, 0, "Sample Name")
+            write(0, 0, self.tr("Sample Name"))
             self.recorded_data_table.setSpan(0, 0, self.TABLE_HEADER_ROWS, 1)
-            write(0, 1, "Mean Squared Error")
+            write(0, 1, self.tr("Mean Squared Error"))
             self.recorded_data_table.setSpan(0, 1, self.TABLE_HEADER_ROWS, 1)
             for i, comp in enumerate(fitted_data.statistic):
                 write(0, i*column_span+3, comp["name"])
                 self.recorded_data_table.setSpan(0, i*column_span+3, 1, self.COPONENT_ITEMS)
-                write(1, i*column_span+3, "Fraction")
-                write(1, i*column_span+4, "Mean (μm)")
-                write(1, i*column_span+5, "Median (μm)")
-                write(1, i*column_span+6, "Mode (μm)")
-                write(1, i*column_span+7, "Variance")
-                write(1, i*column_span+8, "Standard Deviation")
-                write(1, i*column_span+9, "Skewness")
-                write(1, i*column_span+10, "Kurtosis")
-                write(1, i*column_span+11, "Beta")
-                write(1, i*column_span+12, "Eta")
-                write(1, i*column_span+13, "Location")
-                write(1, i*column_span+14, "X Offset")
+                write(1, i*column_span+3, self.tr("Fraction"))
+                write(1, i*column_span+4, self.tr("Mean (μm)"))
+                write(1, i*column_span+5, self.tr("Median (μm)"))
+                write(1, i*column_span+6, self.tr("Mode (μm)"))
+                write(1, i*column_span+7, self.tr("Variance"))
+                write(1, i*column_span+8, self.tr("Standard Deviation"))
+                write(1, i*column_span+9, self.tr("Skewness"))
+                write(1, i*column_span+10, self.tr("Kurtosis"))
+                write(1, i*column_span+11, self.tr("Beta"))
+                write(1, i*column_span+12, self.tr("Eta"))
+                write(1, i*column_span+13, self.tr("Location"))
+                write(1, i*column_span+14, self.tr("X Offset"))
 
             row = self.recorded_data_count + self.TABLE_HEADER_ROWS
             write(row, 0, fitted_data.name)
