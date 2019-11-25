@@ -4,32 +4,32 @@ import sys
 
 sys.path.append(os.getcwd())
 
-from algorithms import _check_ncomp
+from algorithms import check_ncomp
 class TestCheckNcomp(unittest.TestCase):
     def test_check_ncomp(self):
         # There is at least one component, ncomp` should be int and greater than 0.
         with self.assertRaises(TypeError):
-            _check_ncomp("1")
+            check_ncomp("1")
         with self.assertRaises(TypeError):
-            _check_ncomp(1.4)
+            check_ncomp(1.4)
         with self.assertRaises(TypeError):
-            _check_ncomp([1])
+            check_ncomp([1])
         with self.assertRaises(ValueError):
-            _check_ncomp(0)
+            check_ncomp(0)
         with self.assertRaises(ValueError):
-            _check_ncomp(-1)
+            check_ncomp(-1)
 
-from algorithms import _get_params
+from algorithms import get_params
 import numpy as np
 class TestGetParams(unittest.TestCase):
     def test_count(self):
         i = np.random.randint(1, 100)
-        params = _get_params(i)
+        params = get_params(i)
         self.assertEqual(len(params), i*3-1)
 
     def test_location(self):
         i = np.random.randint(1, 100)
-        params = _get_params(i)
+        params = get_params(i)
 
         check_set = set()
         for param in params:
