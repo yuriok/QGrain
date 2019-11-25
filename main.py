@@ -2,7 +2,7 @@ import logging
 import sys
 from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
 
-from PySide2.QtGui import QFont
+from PySide2.QtGui import QFont, QIcon
 from PySide2.QtCore import QCoreApplication, Qt, QTextCodec
 from PySide2.QtWidgets import QApplication
 
@@ -15,6 +15,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     main_window = MainWindow()
     main_window.setWindowTitle("QGrain")
+    main_window.setWindowIcon(QIcon("./settings/icons/icon.png"))
     main_window.control_panel.init_conditions()
 
     template_styles = open("./settings/qss/aqua.qss").read()
