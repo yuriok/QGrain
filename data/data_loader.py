@@ -124,7 +124,8 @@ class DataLoader(QObject):
         classes = np.array(raw_data[setting.classes_row][setting.data_start_column:], dtype=np.float64)
         sample_data_list = []
         for row_values in raw_data[setting.data_start_row:]:
-            sample_data_list.append(SampleData(row_values[setting.sample_name_column], np.array(
+            # users may use puure number as the sample name
+            sample_data_list.append(SampleData(str(row_values[setting.sample_name_column]), np.array(
                 row_values[setting.data_start_column:], dtype=np.float64)))
         
         self.validate_data(classes, sample_data_list)
