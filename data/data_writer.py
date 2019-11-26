@@ -306,7 +306,7 @@ class DataWriter(QObject):
         if not is_xlsx:
             try:
                 book.save(filename)
-                self.logger.info("Excel (97-2003) workbook file has been saved. Filename: [%s].", filename, stack_info=True)
+                self.logger.info("Excel (97-2003) workbook file has been saved. Filename: [%s].", filename)
                 self.gui_logger.info(self.tr("File has been saved."))
                 self.sigWorkFinished.emit(True)
                 return
