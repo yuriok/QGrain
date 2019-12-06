@@ -6,6 +6,7 @@ import numpy as np
 from PySide2.QtCore import QObject, Signal, Slot
 from scipy.interpolate import interp1d
 from scipy.optimize import minimize
+from scipy.optimize import basinhopping
 
 from algorithms import (get_mixed_weibull, process_params, weibull, normal, normal_mean,
                         weibull_kurtosis, weibull_mean, weibull_median,
@@ -19,11 +20,10 @@ class Resolver(QObject):
     sigEpochFinished = Signal(FittedData)
     sigWidgetsEnable = Signal(bool)
     logger = logging.getLogger(name="root.Resolver")
-    X_OFFSET = 0.2
 
     def __init__(self, distribution_type=DistributionType.Weibull, ncomp=2, auto_fit=True,
-                 inherit_params=True, emit_iteration=False, time_interval=0.1,
-                 display_details=False, ftol=1e-10, maxiter=100):
+                 inherit_params=True, emit_iteration=False, time_interval=0.05,
+                 display_details=False, ftol=1e-100, maxiter=1000):
         super().__init__()
         # use `on_target_data_changed` to modify these values
         self.sample_name = None
@@ -47,8 +47,6 @@ class Resolver(QObject):
         self.display_details = display_details
         self.ftol = ftol
         self.maxiter = maxiter
-        self.max_retry_time = 5
-        self.max_mse = 4e-7
 
 
     # generate some necessary data for fitting
@@ -128,9 +126,8 @@ class Resolver(QObject):
         return start_index, end_index
 
     def get_processed_data(self):
-        x_to_fit = np.array(
-            range(self.end_index-self.start_index)) + self.X_OFFSET
-        y_to_fit = self.y[self.start_index: self.end_index] / 100
+        x_to_fit = np.array(range(self.end_index-self.start_index)) + 1
+        y_to_fit = self.y[self.start_index: self.end_index]
         self.logger.debug("The raw data has been processed.")
         return x_to_fit, y_to_fit
 
@@ -165,8 +162,7 @@ class Resolver(QObject):
                 "name": "C{0}".format(i+1),
                 "beta": beta,
                 "eta": eta,
-                "loc": self.start_index,
-                "x_offset": self.X_OFFSET,
+                "x_offset": self.start_index+1,
                 "fraction": fraction,
                 "mean": mean_value,
                 "median": median_value,
@@ -177,7 +173,7 @@ class Resolver(QObject):
                 "kurtosis": weibull_kurtosis(beta, eta)
             })
 
-        mse = np.mean(np.square(target[1] - fitted_sum[1]))
+        mse = self.get_mean_squared_errors(target[1], fitted_sum[1])
         fitted_data = FittedData(self.sample_name, target, fitted_sum, mse, components, statistic)
         # self.logger.debug("One shot of fitting has finished, current mean squared error [%E].", mse)
         return fitted_data
@@ -200,22 +196,21 @@ class Resolver(QObject):
         params_to_fit = self.defaults
         if self.inherit_params:
             params_to_fit = self.last_fitted_params
-        self.logger.debug("Fitting task started, max mean squared error is limited to [%E], and max retry time is [%d].", self.max_mse, self.max_retry_time)
-        ftol = self.ftol
-        for i in range(self.max_retry_time):
-            # "L-BFGS-B", "SLSQP", "TNC"
-            fitted_result = minimize(closure, method="SLSQP", x0=params_to_fit,
-                                    bounds=self.bounds, constraints=self.constrains, callback=self.iteration_callback,
-                                    options={"maxiter": self.maxiter, "disp": self.display_details, "ftol": ftol})
-            # update this variable to inherit the fitted params
-            params_to_fit = fitted_result.x
-            mse = self.get_mean_squared_errors(self.mixed_func(self.x_to_fit, *fitted_result.x), self.y_to_fit)
-            self.logger.debug("Try %d: mean squared error is %E.", i, mse)
-            if mse < self.max_mse:
-                break
-            else:
-                ftol = ftol*1e-50
-            
-        self.last_fitted_params = params_to_fit
+        
+        "L-BFGS-B", "SLSQP", "TNC"
+        # fitted_result = minimize(closure, method="SLSQP", x0=params_to_fit,
+        #                         bounds=self.bounds, constraints=self.constrains, callback=self.iteration_callback,
+        #                         options={"maxiter": self.maxiter, "disp": self.display_details, "ftol": self.ftol})
+        minimizer_kwargs = dict(method="SLSQP",
+                                bounds=self.bounds, constraints=self.constrains, callback=self.iteration_callback,
+                                options={"maxiter": self.maxiter, "disp": self.display_details, "ftol": 1e-8})
+
+        fitted_result = basinhopping(closure, x0=params_to_fit, minimizer_kwargs=minimizer_kwargs, niter_success=5, niter=100)
+
+        fitted_result = minimize(closure, method="SLSQP", x0=fitted_result.x,
+                                bounds=self.bounds, constraints=self.constrains, callback=self.iteration_callback,
+                                options={"maxiter": self.maxiter, "disp": self.display_details, "ftol": self.ftol})
+
+        self.last_fitted_params = fitted_result.x
         self.logger.info("The epoch of fitting has finished, the fitted parameters are: [%s]", fitted_result.x)
         self.sigEpochFinished.emit(self.get_fitted_data(fitted_result.x))
