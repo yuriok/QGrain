@@ -165,6 +165,9 @@ class MainWindow(QMainWindow):
         self.sigDataSelected.connect(self.control_panel.on_data_selected)
         self.sigRemoveRecords.connect(self.data_manager.remove_data)
 
+        self.settings_window.data.sigDataLoaderSettingChanged.connect(self.data_manager.data_loader.on_settings_changed)
+        self.settings_window.data.sigDataWriterSettingChanged.connect(self.data_manager.data_writer.on_settings_changed)
+
         
     def reset_dock_layout(self):
         self.dock_area.moveDock(self.canvas_dock, "left", None)

@@ -7,7 +7,7 @@ from typing import List
 import numpy as np
 import xlsxwriter
 import xlwt
-from PySide2.QtCore import QObject, QSettings, Signal
+from PySide2.QtCore import QObject, Signal
 
 from data import FittedData
 
@@ -32,27 +32,20 @@ class DataWriter(QObject):
     sigWorkFinished = Signal(bool)
     logger = logging.getLogger("root.data.DataWriter")
     gui_logger = logging.getLogger("GUI")
+
     def __init__(self):
         super().__init__()
         self.style_file_path = "./settings/chart_styles.json"
         # see https://xlsxwriter.readthedocs.io/chart.html
         self.draw_charts = True
 
-
-    def on_settings_changed(self, settings: QSettings):
-        settings.beginGroup("data_saving")
-        try:
-            print(settings.value("draw_charts"), "DataWriter")
-            if settings.value("draw_charts") == "True":
-                self.draw_charts = True
+    def on_settings_changed(self, settings: dict):
+        for key, value in settings.items():
+            if key == "draw_charts":
+                self.draw_charts = value
+                self.logger.debug("The draw_charts option has been turned to [%s].", value)
             else:
-                self.draw_charts = False
-            self.logger.debug("The draw_charts option has been turned to [%s].", self.draw_charts)
-        except Exception:
-            self.logger.exception("The value of `draw_charts` is not valid, the settings file might have been modified incorrected.", stack_info=True)
-            self.gui_logger.warning(self.tr("The setting [draw_charts] in settings file might have been modified incorrected."))
-        finally:
-            settings.endGroup()
+                raise NotImplementedError(key)
 
     def try_save_data(self, filename, classes: np.ndarray, data: List[FittedData], file_type: str):
         if filename is None or filename == "":
@@ -304,10 +297,13 @@ class DataWriter(QObject):
                             to_cell_name(data_index+2, component_index*COLUMN_SPAN+3))), current_global_style)
                 row += 1
 
-        # Save file if it is xls
-        if not is_xlsx:
+        # Save file if it is xls or no need to draw charts
+        if not is_xlsx or not self.draw_charts:
             try:
-                book.save(filename)
+                if is_xlsx:
+                    book.close()
+                else:
+                    book.save(filename)
                 self.logger.info("Excel (97-2003) workbook file has been saved. Filename: [%s].", filename)
                 self.gui_logger.info(self.tr("File has been saved."))
                 self.sigWorkFinished.emit(True)
