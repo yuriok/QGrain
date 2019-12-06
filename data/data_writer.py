@@ -7,7 +7,7 @@ from typing import List
 import numpy as np
 import xlsxwriter
 import xlwt
-from PySide2.QtCore import QObject, Signal
+from PySide2.QtCore import QObject, QSettings, Signal
 
 from data import FittedData
 
@@ -36,7 +36,23 @@ class DataWriter(QObject):
         super().__init__()
         self.style_file_path = "./settings/chart_styles.json"
         # see https://xlsxwriter.readthedocs.io/chart.html
+        self.draw_charts = True
 
+
+    def on_settings_changed(self, settings: QSettings):
+        settings.beginGroup("data_saving")
+        try:
+            print(settings.value("draw_charts"), "DataWriter")
+            if settings.value("draw_charts") == "True":
+                self.draw_charts = True
+            else:
+                self.draw_charts = False
+            self.logger.debug("The draw_charts option has been turned to [%s].", self.draw_charts)
+        except Exception:
+            self.logger.exception("The value of `draw_charts` is not valid, the settings file might have been modified incorrected.", stack_info=True)
+            self.gui_logger.warning(self.tr("The setting [draw_charts] in settings file might have been modified incorrected."))
+        finally:
+            settings.endGroup()
 
     def try_save_data(self, filename, classes: np.ndarray, data: List[FittedData], file_type: str):
         if filename is None or filename == "":
@@ -58,9 +74,9 @@ class DataWriter(QObject):
     # It will write the statistic data only.
     # If you need the detailed data including the target data to fit,
     # fitted data of summing all component, and fitted data of each component,
-    # please use `try_save_as_xls` or `try_save_as_xlsx` func.
+    # please use `try_save_as_excel`
     # If you need the charts automatically drew in workbook,
-    # please use `try_save_as_xlsx` func.
+    # please use `try_save_as_excel` func and pass `is_xlsx`=`True`.
     def try_save_as_csv(self, filename, data: List[FittedData]):
         try:
             f = open(filename, "w", newline="") # use `newline=""` to avoid redundant newlines
@@ -79,7 +95,6 @@ class DataWriter(QObject):
                 headers.append("Kurtosis")
                 headers.append("Beta")
                 headers.append("Eta")
-                headers.append("Location")
                 headers.append("X Offset")
             w.writerow(headers)
 
@@ -97,7 +112,6 @@ class DataWriter(QObject):
                     row.append(comp.get("kurtosis"))
                     row.append(comp.get("beta"))
                     row.append(comp.get("eta"))
-                    row.append(comp.get("loc"))
                     row.append(comp.get("x_offset"))
                 w.writerow(row)
             self.sigWorkFinished.emit(True)
@@ -109,15 +123,6 @@ class DataWriter(QObject):
         finally:
             f.close()
 
-    # If type is 97-2003 Excel Workbook,
-    # It will use xlwt to handle this request.
-    # It will write the statistic data as the sheet `Summary`.
-    # It also will write the detailed data as sheet `Detail`.
-    # With detailed data, users can redraw the plots in Excel or other apps.
-    # If you need the charts automatically drew in workbook,
-    # please use `try_save_as_xlsx` func.
-    
-    
     def try_save_as_excel(self, filename, classes, data: List[FittedData], is_xlsx: bool):
         def check(value):
             if value is None:
@@ -181,14 +186,14 @@ class DataWriter(QObject):
             detail_sheet = book.add_sheet(detail_sheet_name)
         
         max_ncomp = max([len(fitted.statistic) for fitted in data])
-        COMPONENTS = 12
+        COMPONENTS = 11
         COLUMN_SPAN = COMPONENTS + 1
         # Sheet 1.
         # Headers of summary sheet
         mwrite(summary_sheet, 0, 0, 1, 0, "Sample Name", header_style)
         mwrite(summary_sheet, 0, 1, 1, 1, "Mean Squared Error", header_style)
         for i in range(max_ncomp):
-            mwrite(summary_sheet, 0, i*COLUMN_SPAN+3, 0, i*COLUMN_SPAN+14, "Component {0}".format(i+1), header_style)
+            mwrite(summary_sheet, 0, i*COLUMN_SPAN+3, 0, i*COLUMN_SPAN+13, "Component {0}".format(i+1), header_style)
             write(summary_sheet, 1, i*COLUMN_SPAN+3, "Fraction", header_style)
             write(summary_sheet, 1, i*COLUMN_SPAN+4, "Mean (μm)", header_style)
             write(summary_sheet, 1, i*COLUMN_SPAN+5, "Median (μm)", header_style)
@@ -199,8 +204,7 @@ class DataWriter(QObject):
             write(summary_sheet, 1, i*COLUMN_SPAN+10, "Kurtosis", header_style)
             write(summary_sheet, 1, i*COLUMN_SPAN+11, "Beta", header_style)
             write(summary_sheet, 1, i*COLUMN_SPAN+12, "Eta", header_style)
-            write(summary_sheet, 1, i*COLUMN_SPAN+13, "Location", header_style)
-            write(summary_sheet, 1, i*COLUMN_SPAN+14, "X Offset", header_style)
+            write(summary_sheet, 1, i*COLUMN_SPAN+13, "X Offset", header_style)
     
         # set widths of columns
         set_col(summary_sheet, 0, 16)
@@ -222,18 +226,17 @@ class DataWriter(QObject):
             write(summary_sheet, row, 0, fitted_data.name, current_global_style)
             write(summary_sheet, row, 1, fitted_data.mse, current_mse_style)
             for i, comp in enumerate(fitted_data.statistic):
-                write(summary_sheet, row, i*13+3, comp.get("fraction"), current_fraction_style)
-                write(summary_sheet, row, i*13+4, comp.get("mean"), current_global_style)
-                write(summary_sheet, row, i*13+5, comp.get("median"), current_global_style)
-                write(summary_sheet, row, i*13+6, comp.get("mode"), current_global_style)
-                write(summary_sheet, row, i*13+7, comp.get("variance"), current_global_style)
-                write(summary_sheet, row, i*13+8, comp.get("standard_deviation"), current_global_style)
-                write(summary_sheet, row, i*13+9, comp.get("skewness"), current_global_style)
-                write(summary_sheet, row, i*13+10, comp.get("kurtosis"), current_global_style)
-                write(summary_sheet, row, i*13+11, comp.get("beta"), current_global_style)
-                write(summary_sheet, row, i*13+12, comp.get("eta"), current_global_style)
-                write(summary_sheet, row, i*13+13, comp.get("loc"), current_global_style)
-                write(summary_sheet, row, i*13+14, comp.get("x_offset"), current_global_style)
+                write(summary_sheet, row, i*COLUMN_SPAN+3, comp.get("fraction"), current_fraction_style)
+                write(summary_sheet, row, i*COLUMN_SPAN+4, comp.get("mean"), current_global_style)
+                write(summary_sheet, row, i*COLUMN_SPAN+5, comp.get("median"), current_global_style)
+                write(summary_sheet, row, i*COLUMN_SPAN+6, comp.get("mode"), current_global_style)
+                write(summary_sheet, row, i*COLUMN_SPAN+7, comp.get("variance"), current_global_style)
+                write(summary_sheet, row, i*COLUMN_SPAN+8, comp.get("standard_deviation"), current_global_style)
+                write(summary_sheet, row, i*COLUMN_SPAN+9, comp.get("skewness"), current_global_style)
+                write(summary_sheet, row, i*COLUMN_SPAN+10, comp.get("kurtosis"), current_global_style)
+                write(summary_sheet, row, i*COLUMN_SPAN+11, comp.get("beta"), current_global_style)
+                write(summary_sheet, row, i*COLUMN_SPAN+12, comp.get("eta"), current_global_style)
+                write(summary_sheet, row, i*COLUMN_SPAN+13, comp.get("x_offset"), current_global_style)
         
         # Sheet 2.
         # Headers of detail sheet
@@ -256,7 +259,8 @@ class DataWriter(QObject):
             ncomp = len(fitted_data.statistic)
             # rows: target + fitted sumn + components
             mwrite(detail_sheet, row, 0, row+ncomp+1, 0, fitted_data.name, current_global_style)
-            left = fitted_data.statistic[0]["loc"]
+            left = fitted_data.statistic[0]["x_offset"]-1
+            # left is the non-zero data start index
             
             # filling non-existent cells with 0
             for i in range(row, row+ncomp+2):
@@ -285,21 +289,19 @@ class DataWriter(QObject):
                     # write(detail_sheet, row, col, value, current_global_style)
                     # 2. use formula
                     if is_xlsx:
-                        write(detail_sheet, row, col, "=WEIBULL({0}!{1}+{2}, {0}!{3}, {0}!{4}, FALSE)*{0}!{5}".format(
+                        write(detail_sheet, row, col, "=WEIBULL({1}, {0}!{2}, {0}!{3}, FALSE)*{0}!{4}".format(
                             summary_sheet_name,
-                            to_cell_name(data_index+2, component_index*13+14),
-                            col-3-left,
-                            to_cell_name(data_index+2, component_index*13+11),
-                            to_cell_name(data_index+2, component_index*13+12),
-                            to_cell_name(data_index+2, component_index*13+3)), current_global_style)
+                            col-3-left+1,
+                            to_cell_name(data_index+2, component_index*COLUMN_SPAN+11),
+                            to_cell_name(data_index+2, component_index*COLUMN_SPAN+12),
+                            to_cell_name(data_index+2, component_index*COLUMN_SPAN+3)), current_global_style)
                     else:
-                        write(detail_sheet, row, col, xlwt.Formula("WEIBULL({0}!{1}+{2}, {0}!{3}, {0}!{4}, FALSE)*{0}!{5}".format(
+                        write(detail_sheet, row, col, xlwt.Formula("WEIBULL({1}, {0}!{2}, {0}!{3}, FALSE)*{0}!{4}".format(
                             summary_sheet_name,
-                            to_cell_name(data_index+2, component_index*13+14),
-                            col-3-left,
-                            to_cell_name(data_index+2, component_index*13+11),
-                            to_cell_name(data_index+2, component_index*13+12),
-                            to_cell_name(data_index+2, component_index*13+3))), current_global_style)
+                            col-3-left+1,
+                            to_cell_name(data_index+2, component_index*COLUMN_SPAN+11),
+                            to_cell_name(data_index+2, component_index*COLUMN_SPAN+12),
+                            to_cell_name(data_index+2, component_index*COLUMN_SPAN+3))), current_global_style)
                 row += 1
 
         # Save file if it is xls

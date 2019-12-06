@@ -14,11 +14,11 @@ if __name__ == "__main__":
     # QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     app = QApplication(sys.argv)
     main_window = MainWindow()
+    
     main_window.setWindowTitle("QGrain")
     main_window.setWindowIcon(QIcon("./settings/icons/icon.png"))
-    main_window.control_panel.init_conditions()
 
-    template_styles = open("./settings/qss/aqua.qss").read()
+    template_styles = open("./settings/qss/Ubuntu.qss").read()
     custom_style = open("./settings/custom.qss").read()
     app.setStyleSheet(template_styles+custom_style)
     # logging
@@ -32,7 +32,11 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format=format_str)
     logging.getLogger().addHandler(file_handler)
     logging.getLogger("GUI").addHandler(gui_handler)
+
     main_window.show()
+
+    main_window.control_panel.init_conditions()
+    main_window.settings_window.init_settings()
     sys.exit(app.exec_())
 
 

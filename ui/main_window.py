@@ -49,7 +49,7 @@ class MainWindow(QMainWindow):
         self.status_bar = self.statusBar()
         self.recorded_data_count = 0
         self.fitting_thread = QThread()
-        self.resolver = Resolver(display_details=True)
+        self.resolver = Resolver()
         self.resolver.moveToThread(self.fitting_thread)
         self.fitting_thread.start()
         self.data_manager = DataManager()
@@ -165,6 +165,7 @@ class MainWindow(QMainWindow):
         self.sigDataSelected.connect(self.control_panel.on_data_selected)
         self.sigRemoveRecords.connect(self.data_manager.remove_data)
 
+        
     def reset_dock_layout(self):
         self.dock_area.moveDock(self.canvas_dock, "left", None)
         self.dock_area.moveDock(self.raw_data_dock, "right", self.canvas_dock)
@@ -240,8 +241,7 @@ class MainWindow(QMainWindow):
                 write(1, i*column_span+10, self.tr("Kurtosis"))
                 write(1, i*column_span+11, self.tr("Beta"))
                 write(1, i*column_span+12, self.tr("Eta"))
-                write(1, i*column_span+13, self.tr("Location"))
-                write(1, i*column_span+14, self.tr("X Offset"))
+                write(1, i*column_span+13, self.tr("X Offset"))
 
             row = self.recorded_data_count + self.TABLE_HEADER_ROWS
             write(row, 0, fitted_data.name)
@@ -257,8 +257,7 @@ class MainWindow(QMainWindow):
                 write(row, i*column_span+10, comp.get("kurtosis"))
                 write(row, i*column_span+11, comp.get("beta"))
                 write(row, i*column_span+12, comp.get("eta"))
-                write(row, i*column_span+13, comp.get("loc"))
-                write(row, i*column_span+14, comp.get("x_offset"))
+                write(row, i*column_span+13, comp.get("x_offset"))
             self.recorded_data_count += 1
             self.logger.debug("Fitted data of [%s] has been wrote to recorded data table.", fitted_data.name)
         except Exception:
