@@ -88,7 +88,7 @@ class DataManager(QObject):
             self.msg_box.exec_()
         else:
             self.logger.warning("Data has not been loaded correctly.")
-            self.gui_logger.error(self.tr("Data has not been loaded correctlt, check and try it again please."))
+            self.gui_logger.error(self.tr("Data has not been loaded correctly, check and try it again please."))
             self.load_msg_box.setWindowTitle(self.tr("Error"))
             self.load_msg_box.setText(self.tr("Data loading failed."))
             result = self.load_msg_box.exec_()

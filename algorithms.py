@@ -24,18 +24,19 @@ def get_params(ncomp: int, distribution_type: DistributionType) -> list:
         # if there is only one component, the fraction is not needful
         # beta and eta also don't need the number to distinguish
         if distribution_type == DistributionType.Weibull:
-            params.append({"name": "beta", "default": 1, "location": 0, "bounds": (INFINITESIMAL, None)})
+            params.append({"name": "beta", "default": 2, "location": 0, "bounds": (INFINITESIMAL, None)})
         else:
             params.append({"name": "beta", "default": 0, "location": 0, "bounds": (None, None)})
         params.append({"name": "eta", "default": 1, "location": 1, "bounds": (INFINITESIMAL, None)})
     elif ncomp > 1:
         for i in range(ncomp):
             # the shape params, beta and eta, of each distribution
+            # it performs better while the params between components are different
             if distribution_type == DistributionType.Weibull:
-                params.append({"name": "beta{0}".format(i+1), "default": 1, "location": i*2, "bounds": (INFINITESIMAL, None)})
+                params.append({"name": "beta{0}".format(i+1), "default": 2+i, "location": i*2, "bounds": (INFINITESIMAL+2, None)})
             else:
                 params.append({"name": "beta{0}".format(i+1), "default": 0, "location": i*2, "bounds": (None, None)})
-            params.append({"name": "eta{0}".format(i+1), "default": 10, "location": i * 2 + 1, "bounds": (INFINITESIMAL, None)})
+            params.append({"name": "eta{0}".format(i+1), "default": 10+i*10, "location": i * 2 + 1, "bounds": (INFINITESIMAL, None)})
         for i in range(ncomp-1):
             # the fraction of each distribution
             params.append({"name": "f{0}".format(i+1), "default": 1/ncomp, "location": ncomp*2 + i, "bounds": (0, 1)})

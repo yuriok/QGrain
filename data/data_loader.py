@@ -5,7 +5,7 @@ import time
 from typing import Iterable, List
 
 import numpy as np
-from PySide2.QtCore import QObject, Signal
+from PySide2.QtCore import QObject, QSettings, Signal
 from xlrd import open_workbook
 from xlrd.biffh import XLRDError
 
@@ -17,12 +17,39 @@ class DataInvalidError(Exception):
         super().__init__()
 
 
-class DataFormatSetting:
-    def __init__(self):
-        self.classes_row = 0
-        self.sample_name_column = 0
-        self.data_start_row = 1
-        self.data_start_column = 1
+class DataLayoutSetting:
+    def __init__(self, classes_row=0, sample_name_column=0, data_start_row=1, data_start_column=1):
+        self.classes_row = classes_row
+        self.sample_name_column = sample_name_column
+        self.data_start_row = data_start_row
+        self.data_start_column = data_start_column
+
+    def is_valid(self):
+        if type(self.classes_row) != int:
+            return False
+        if type(self.sample_name_column) != int:
+            return False
+        if type(self.data_start_row) != int:
+            return False
+        if type(self.data_start_column) != int:
+            return False
+        if self.classes_row < 0:
+            return False
+        if self.sample_name_column < 0:
+            return False
+        if self.data_start_row < 0:
+            return False
+        if self.data_start_column < 0:
+            return False
+        if self.classes_row >= self.data_start_row:
+            return False
+        if self.sample_name_column >= self.data_start_column:
+            return False
+        
+        return True
+
+    def __str__(self):
+        return "Class Row Index: {0}, Sample Name Column: {1}, Data Start Row: {2}, Data Start Column: {3}.".format(self.classes_row, self.sample_name_column, self.data_start_row, self.data_start_column)
 
 
 class DataLoader(QObject):
@@ -32,7 +59,7 @@ class DataLoader(QObject):
     
     def __init__(self):
         super().__init__()
-        self.setting = DataFormatSetting()
+        self.data_layout_settings = DataLayoutSetting()
     def try_load_data(self, filename, file_type):
         if filename is None or filename == "":
             self.logger.error("The filename parameter is invalid.")
@@ -67,7 +94,7 @@ class DataLoader(QObject):
             self.sigWorkFinished.emit(GrainSizeData())
             return
         try:
-            grain_size_data = self.process_raw_data(raw_data, self.setting)
+            grain_size_data = self.process_raw_data(raw_data, self.data_layout_settings)
             self.logger.info("Data has been loaded from the excel file. Filename: [%s].", filename)
             self.gui_logger.info(self.tr("The data has been loaded from [%s]."), filename)
             self.sigWorkFinished.emit(grain_size_data)
@@ -102,7 +129,7 @@ class DataLoader(QObject):
             self.sigWorkFinished.emit(GrainSizeData())
             return
         try:
-            grain_size_data = self.process_raw_data(raw_data, self.setting)
+            grain_size_data = self.process_raw_data(raw_data, self.data_layout_settings)
             self.logger.info("Grain size data has been loaded from the csv file. Filename: [%s].", filename)
             self.gui_logger.info(self.tr("The data has been loaded from [%s]."), filename)
             self.sigWorkFinished.emit(grain_size_data)
@@ -118,8 +145,7 @@ class DataLoader(QObject):
             self.sigWorkFinished.emit(GrainSizeData())
             return
 
-
-    def process_raw_data(self, raw_data: List[List], setting: DataFormatSetting):
+    def process_raw_data(self, raw_data: List[List], setting: DataLayoutSetting):
         # convert data
         classes = np.array(raw_data[setting.classes_row][setting.data_start_column:], dtype=np.float64)
         sample_data_list = []
@@ -128,10 +154,13 @@ class DataLoader(QObject):
             sample_data_list.append(SampleData(str(row_values[setting.sample_name_column]), np.array(
                 row_values[setting.data_start_column:], dtype=np.float64)))
         
-        self.validate_data(classes, sample_data_list)
+        sum_equals_hundred = self.validate_data(classes, sample_data_list)
+        if sum_equals_hundred:
+            for sample_data in sample_data_list:
+                sample_data.distribution = sample_data.distribution/100.0
+
         grain_size_data = GrainSizeData(is_valid=True, classes=classes, sample_data_list=sample_data_list)
         return grain_size_data
-
 
     def is_incremental(self, nums: Iterable):
         for i in range(1, len(nums)):
@@ -163,3 +192,23 @@ class DataLoader(QObject):
         for state in sum_equals_hundred[1:]:
             if state != state0:
                 raise DataInvalidError("Not all sum values equals to the same value.")
+        
+        return state0
+
+    def on_settings_changed(self, settings: dict):
+        for key, value in settings.items():
+            if key == "data_layout":
+                layout = DataLayoutSetting()
+                try:
+                    for sub_key, sub_value in value:
+                        setattr(layout, sub_key, sub_value)
+                except Exception:
+                    self.logger.exception("Can not set the attributes of layout settings.")
+                if layout.is_valid():
+                    self.data_layout_settings = layout
+                    self.logger.debug("The data layout setting has been modified to [%s].", layout)
+                else:
+                    self.logger.exception("Data layout settings have not been modified because it's invalid, settings are [%s].", layout_settings)
+                    self.gui_logger.warning("Data layout settings have not been modified because it's invalid.")
+            else:
+                raise NotImplementedError(key)
