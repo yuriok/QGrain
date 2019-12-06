@@ -5,7 +5,7 @@ import time
 from typing import Iterable, List
 
 import numpy as np
-from PySide2.QtCore import QObject, QSettings, Signal
+from PySide2.QtCore import QObject, Signal
 from xlrd import open_workbook
 from xlrd.biffh import XLRDError
 
@@ -60,6 +60,7 @@ class DataLoader(QObject):
     def __init__(self):
         super().__init__()
         self.data_layout_settings = DataLayoutSetting()
+
     def try_load_data(self, filename, file_type):
         if filename is None or filename == "":
             self.logger.error("The filename parameter is invalid.")
