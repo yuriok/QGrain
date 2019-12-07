@@ -9,7 +9,7 @@ from scipy.optimize import basinhopping, minimize
 
 from algorithms import DistributionType
 from data import FittedData
-from resolvers import Resolver
+from resolvers import *
 
 
 class GUIResolver(QObject, Resolver):
@@ -48,14 +48,7 @@ class GUIResolver(QObject, Resolver):
             self.logger.debug("Setting [%s] have been changed to [%s].", setting, value)
 
     def on_target_data_changed(self, sample_name, x, y):
-        if x is None:
-            raise ValueError(x)
-        if y is None:
-            raise ValueError(y)
-        if type(x) != np.ndarray:
-            raise TypeError(x)
-        if type(y) != np.ndarray:
-            raise TypeError(y)
+
         self.logger.debug("Target data has been changed to [%s].", sample_name)
         self.sample_name = sample_name
 

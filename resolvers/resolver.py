@@ -6,13 +6,18 @@ from algorithms import *
 from data import FittedData
 
 
-class Resolver:
+class DataInvalidError(Exception):
+    def __init__(self, *args):
+        super().__init__(*args)
 
+
+class Resolver:
     def __init__(self, global_optimization_maxiter=100,
-                 global_optimization_success_iter=5, final_tolerance=1e-100,
+                 global_optimization_success_iter=3, final_tolerance=1e-100,
                  final_maxiter=1000, minimizer_tolerance=1e-8, minimizer_maxiter=500):
         self.__distribution_type = DistributionType.Weibull
         self.__ncomp = 2
+        # must call `refresh_by_distribution_type` first
         self.refresh_by_distribution_type()
         self.refresh_by_ncomp()
 
@@ -166,15 +171,19 @@ class Resolver:
     @staticmethod
     def validate_data(x, y) -> bool:
         # TODO: add more validation
+        if x is None:
+            raise DataInvalidError("`x` is `None`")
+        if y is None:
+            raise DataInvalidError("`y` is `None`")
+        if type(x) != np.ndarray:
+            raise DataInvalidError("type of `x` is not `numpy.ndarray`")
+        if type(y) != np.ndarray:
+            raise DataInvalidError("type of `y` is not `numpy.ndarray`")
         if len(x) != len(y):
-            return False
-
-        return True
+            raise DataInvalidError("the lengths of `x` and `y` are not equal")
 
     def feed_data(self, x, y):
-        if not Resolver.validate_data(x, y):
-            # TODO: handle exceptions
-            return
+        Resolver.validate_data(x, y)
 
         self.real_x = x
         self.y_data = y
