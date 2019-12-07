@@ -201,7 +201,7 @@ class DataLoader(QObject):
             if key == "data_layout":
                 layout = DataLayoutSetting()
                 try:
-                    for sub_key, sub_value in value:
+                    for sub_key, sub_value in value.items():
                         setattr(layout, sub_key, sub_value)
                 except Exception:
                     self.logger.exception("Can not set the attributes of layout settings.")
