@@ -13,7 +13,8 @@ class Resolver:
                  final_maxiter=1000, minimizer_tolerance=1e-8, minimizer_maxiter=500):
         self.__distribution_type = DistributionType.Weibull
         self.__ncomp = 2
-        self.refresh()
+        self.refresh_by_distribution_type()
+        self.refresh_by_ncomp()
 
         self.global_optimization_maxiter = global_optimization_maxiter
         self.global_optimization_success_iter = global_optimization_success_iter
@@ -42,7 +43,7 @@ class Resolver:
         if type(value) != DistributionType:
             return
         self.__distribution_type = value
-        self.refresh()
+        self.refresh_by_distribution_type()
 
     @property
     def ncomp(self):
@@ -55,19 +56,17 @@ class Resolver:
         if value <= 1:
             return
         self.__ncomp = value
-        self.refresh()
+        self.refresh_by_ncomp()
 
-    # generate some necessary data for fitting
-    # if `ncomp` or `distribution_type` changed, this method must be called
-    def refresh(self):
+    # TODO: use cache if necessary
+    def refresh_by_ncomp(self):
+        (self.mixed_func, self.bounds, self.constrains,
+         self.defaults, self.params) = self.get_mixed_func(self.ncomp)
+        self.initial_guess = self.defaults
+
+    def refresh_by_distribution_type(self):
         if self.distribution_type == DistributionType.Weibull:
-            (self.mixed_func, self.bounds, self.constrains,
-             self.defaults, self.params) = get_mixed_weibull(self.ncomp)
-            self.initial_guess = self.defaults
-            self.process_fitted_params = lambda fitted_params: process_params(
-                self.ncomp, self.params, fitted_params, self.distribution_type)
-
-            # TODO: it's no need when only ncomp changed
+            self.get_mixed_func = get_mixed_weibull
             self.single_func = weibull
             self.mean_func = weibull_mean
             self.median_func = weibull_median
@@ -76,7 +75,6 @@ class Resolver:
             self.std_deviation_func = weibull_std_deviation
             self.skewness_func = weibull_skewness
             self.kurtosis_func = weibull_kurtosis
-
         else:
             raise NotImplementedError(self.distribution_type)
 
@@ -85,10 +83,9 @@ class Resolver:
         # the target data to fit
         target = (partial_real_x, self.y_to_fit)
         # the fitted sum data of all components
-        fitted_sum = (partial_real_x, self.mixed_func(
-            self.x_to_fit, *fitted_params))
+        fitted_sum = (partial_real_x, self.mixed_func(self.x_to_fit, *fitted_params))
         # the fitted data of each single component
-        processed_params = self.process_fitted_params(fitted_params)
+        processed_params = process_params(self.ncomp, self.params, fitted_params, self.distribution_type)
         components = []
         for beta, eta, fraction in processed_params:
             components.append((partial_real_x, self.single_func(
