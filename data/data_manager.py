@@ -9,7 +9,7 @@ from PySide2.QtCore import QObject, Qt, QThread, Signal
 from PySide2.QtWidgets import QFileDialog, QMessageBox
 
 from data import DataLoader, DataWriter, FittedData, GrainSizeData, SampleData
-from resolvers import DistributionType
+from algorithms import DistributionType
 
 
 class DataManager(QObject):
