@@ -36,7 +36,7 @@ class ControlPanel(QWidget):
         
         self.init_ui()
         self.connect_all()
-        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.setMaximumHeight(320)
         
         self.msg_box = QMessageBox()
         self.msg_box.setWindowFlags(Qt.Drawer)
