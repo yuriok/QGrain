@@ -1,6 +1,6 @@
 from PySide2.QtWidgets import QMainWindow, QCheckBox, QLabel, QRadioButton, QPushButton, QGridLayout, QApplication, QSizePolicy, QWidget, QTabWidget, QComboBox, QLineEdit, QMessageBox
 from PySide2.QtCore import Qt, QSettings, Signal
-from PySide2.QtGui import QIcon,QValidator,QIntValidator
+from PySide2.QtGui import QIcon, QValidator, QIntValidator
 
 import logging
 
@@ -8,6 +8,7 @@ class DataSetting(QWidget):
     sigDataLoaderSettingChanged = Signal(dict)
     sigDataWriterSettingChanged = Signal(dict)
     logger = logging.getLogger("root.ui.DataSetting")
+    gui_logger = logging.getLogger("GUI")
     def __init__(self, settings: QSettings):
         super().__init__()
         self.settings = settings
@@ -61,14 +62,28 @@ class DataSetting(QWidget):
         data_start_row = self.data_start_row_edit.text()
         data_start_column = self.data_start_col_edit.text()
         # set values to `QSetting`
+        # note, the values set to `QSettings` must be str to avoid exceptions
+        # because if use int or other type of values, the types of values from current `QSettings` and the `ini` file are not equal
+        # `ini` files only yield `str`, and current `QSettings` will store the original type of values
         settings.setValue("classes_row", classes_row)
         settings.setValue("sample_name_column", sample_name_column)
         settings.setValue("data_start_row", data_start_row)
         settings.setValue("data_start_column", data_start_column)
         # emit signal
-        signal_data = dict(data_layout=dict(classes_row=int(classes_row), sample_name_column=int(sample_name_column), data_start_row=int(data_start_row), data_start_column=int(data_start_column)))
-        self.sigDataLoaderSettingChanged.emit(signal_data)
-        settings.endGroup()
+        try:
+            signal_data = dict(data_layout=dict(classes_row=int(classes_row), sample_name_column=int(sample_name_column), data_start_row=int(data_start_row), data_start_column=int(data_start_column)))
+            self.sigDataLoaderSettingChanged.emit(signal_data)
+        # raise while converting invalid `str` to `int`
+        except ValueError:
+            self.logger.exception("Some unknown exception raised, maybe the `QLineEdit` widget has not a valid `QValidator`.", stack_info=True)
+            self.gui_logger.error(self.tr("Some unknown exception raised. Settings of data loading did not be saved."))
+            # this exception raise when the `str` values can not be converted to int
+            # that means the `ini` file maybe modified incorrectly
+            self.msg_box.setWindowTitle(self.tr("Error"))
+            self.msg_box.setText(self.tr("Some unknown exception raised. Settings of data loading did not be saved."))
+            self.msg_box.exec_()
+        finally:
+            settings.endGroup()
 
         settings.beginGroup("data_saving")
         if self.draw_charts_checkbox.checkState() == Qt.Checked:
@@ -88,17 +103,19 @@ class DataSetting(QWidget):
             self.data_start_row_edit.setText(settings.value("data_start_row"))
             self.data_start_col_edit.setText(settings.value("data_start_column"))
         except Exception:
-            self.logger.exception("Unknown exception occurred.", stack_info=True)
+            self.logger.exception("Unknown exception occurred. Maybe the type of values which were set to `QSettings` is not `str`.", stack_info=True)
+            self.gui_logger.error(self.tr("Some unknown exception raised. Settings of data loading did not be restored."))
+            # this exception raise when the values are not `str`
+            # that means there are some bugs in the set progress
+            self.msg_box.setWindowTitle(self.tr("Error"))
+            self.msg_box.setText(self.tr("Some unknown exception raised. Settings of data loading did not be restored."))
+            self.msg_box.exec_()
         finally:
             settings.endGroup()
 
         settings.beginGroup("data_saving")
-        try:
-            if settings.value("draw_charts")=="True":
-                self.draw_charts_checkbox.setCheckState(Qt.Checked)
-            else:
-                self.draw_charts_checkbox.setCheckState(Qt.Unchecked)
-        except Exception:
-            self.logger.exception("Unknown exception occurred.", stack_info=True)
-        finally:
-            settings.endGroup()
+        if settings.value("draw_charts")=="True":
+            self.draw_charts_checkbox.setCheckState(Qt.Checked)
+        else:
+            self.draw_charts_checkbox.setCheckState(Qt.Unchecked)
+        settings.endGroup()
