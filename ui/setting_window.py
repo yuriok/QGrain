@@ -1,10 +1,10 @@
 from PySide2.QtWidgets import QMainWindow, QCheckBox, QLabel, QRadioButton, QPushButton, QGridLayout, QApplication, QSizePolicy, QWidget, QTabWidget, QComboBox, QLineEdit
 from PySide2.QtCore import Qt, QSettings, Signal
-from PySide2.QtGui import QIcon,QValidator,QIntValidator
+from PySide2.QtGui import QIcon, QValidator, QIntValidator
 import sys
 
-from ui.data_setting import DataSetting
-# from data_setting import DataSetting
+from ui import DataSetting
+
 
 class SettingWindow(QMainWindow):
     sigSaveSettings = Signal(QSettings)
@@ -13,7 +13,7 @@ class SettingWindow(QMainWindow):
         super().__init__()
         self.settings = QSettings("./settings/qgrain.ini", QSettings.Format.IniFormat)
         self.init_ui()
-        self.setWindowFlags(Qt.Drawer)
+        self.setWindowFlags(Qt.Drawer|Qt.WindowStaysOnTopHint)
         self.setWindowTitle(self.tr("Settings"))
         self.sigRestoreSettings.connect(self.data.restore_settings)
         self.sigSaveSettings.connect(self.data.save_settings)
@@ -52,6 +52,7 @@ if __name__ == "__main__":
     template_styles = open("./settings/qss/aqua.qss").read()
     custom_style = open("./settings/custom.qss").read()
     app.setStyleSheet(template_styles+custom_style)
-    s = SettingWindow() 
+    s = SettingWindow()
+    s.init_settings()
     s.show()
     app.exec_()
