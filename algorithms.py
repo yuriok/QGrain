@@ -14,7 +14,7 @@ def check_ncomp(ncomp: int):
     # Check the validity of `ncomp`
     if type(ncomp) != int:
         raise TypeError(ncomp)
-    if ncomp <= 0:
+    if ncomp <= 1:
         raise ValueError(ncomp)
 
 
