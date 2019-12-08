@@ -12,6 +12,7 @@ class DataInvalidError(Exception):
 
 
 class Resolver:
+
     def __init__(self, global_optimization_maxiter=100,
                  global_optimization_success_iter=3, final_tolerance=1e-100,
                  final_maxiter=1000, minimizer_tolerance=1e-8, minimizer_maxiter=500):
@@ -83,6 +84,83 @@ class Resolver:
         else:
             raise NotImplementedError(self.distribution_type)
 
+    @staticmethod
+    def get_squared_sum_of_residual_errors(values, targets):
+        errors = np.sum(np.square(values - targets))
+        return errors
+
+    @staticmethod
+    def get_mean_squared_errors(values, targets):
+        mse = np.mean(np.square(values - targets))
+        return mse
+
+    @staticmethod
+    def get_valid_data_range(y_data):
+        start_index = 0
+        end_index = -1
+        for i, value in enumerate(y_data):
+            if value > 0.0:
+                start_index = i
+                break
+        for i, value in enumerate(y_data[start_index+1:], start_index+1):
+            if value == 0.0:
+                end_index = i
+                break
+        return start_index, end_index
+
+    @staticmethod
+    def validate_data(x: np.ndarray, y: np.ndarray):
+        if x is None:
+            raise DataInvalidError("`x` is `None`.")
+        if y is None:
+            raise DataInvalidError("`y` is `None`.")
+        if type(x) != np.ndarray:
+            raise DataInvalidError("Type of `x` is not `numpy.ndarray`.")
+        if type(y) != np.ndarray:
+            raise DataInvalidError("Type of `y` is not `numpy.ndarray`.")
+        if len(x) != len(y):
+            raise DataInvalidError("The lengths of `x` and `y` are not equal.")
+        if np.any(np.isnan(x)):
+            raise DataInvalidError("There is `nan` in `x`.")
+        if np.any(np.isnan(y)):
+            raise DataInvalidError("There is `nan` in `y`.")
+
+    # hooks
+    def on_data_invalid(self, x: np.ndarray, y: np.ndarray, message: str):
+        pass
+
+    def on_data_fed(self):
+        pass
+
+    def local_iteration_callback(self, params, fitting_state):
+        pass
+
+    def global_iteration_callback(self, params, fitting_state):
+        pass
+
+    def preprocess_data(self):
+        self.start_index, self.end_index = Resolver.get_valid_data_range(self.y_data)
+        if self.distribution_type == DistributionType.Weibull:
+            length = len(self.y_data)
+            self.x_to_fit = np.array(
+                range(self.end_index-self.start_index)) + 1
+            self.y_to_fit = self.y_data[self.start_index: self.end_index]
+        else:
+            # TODO: Add support for other distributions
+            raise NotImplementedError(self.distribution_type)
+
+    def feed_data(self, x: np.ndarray, y: np.ndarray):
+        try:
+            Resolver.validate_data(x, y)
+        except DataInvalidError as e:
+            self.on_data_invalid(x, y, e.message)
+            return
+
+        self.real_x = x
+        self.y_data = y
+        self.preprocess_data()
+        self.on_data_fed()
+
     def get_fitted_data(self, fitted_params):
         partial_real_x = self.real_x[self.start_index:self.end_index]
         # the target data to fit
@@ -133,67 +211,7 @@ class Resolver:
         # self.logger.debug("One shot of fitting has finished, current mean squared error [%E].", mse)
         return fitted_data
 
-    @staticmethod
-    def get_squared_sum_of_residual_errors(values, targets):
-        errors = np.sum(np.square(values - targets))
-        return errors
-
-    @staticmethod
-    def get_mean_squared_errors(values, targets):
-        mse = np.mean(np.square(values - targets))
-        return mse
-
-    @staticmethod
-    def get_valid_data_range(y_data):
-        start_index = 0
-        end_index = -1
-        for i, value in enumerate(y_data):
-            if value > 0.0:
-                start_index = i
-                break
-        for i, value in enumerate(y_data[start_index+1:], start_index+1):
-            if value == 0.0:
-                end_index = i
-                break
-        return start_index, end_index
-
-    def preprocess_data(self):
-        self.start_index, self.end_index = Resolver.get_valid_data_range(self.y_data)
-        if self.distribution_type == DistributionType.Weibull:
-            length = len(self.y_data)
-            self.x_to_fit = np.array(
-                range(self.end_index-self.start_index)) + 1
-            self.y_to_fit = self.y_data[self.start_index: self.end_index]
-        else:
-            # TODO: Add support for other distributions
-            raise NotImplementedError(self.distribution_type)
-
-    @staticmethod
-    def validate_data(x, y) -> bool:
-        # TODO: add more validation
-        if x is None:
-            raise DataInvalidError("`x` is `None`")
-        if y is None:
-            raise DataInvalidError("`y` is `None`")
-        if type(x) != np.ndarray:
-            raise DataInvalidError("type of `x` is not `numpy.ndarray`")
-        if type(y) != np.ndarray:
-            raise DataInvalidError("type of `y` is not `numpy.ndarray`")
-        if len(x) != len(y):
-            raise DataInvalidError("the lengths of `x` and `y` are not equal")
-
-    def feed_data(self, x, y):
-        Resolver.validate_data(x, y)
-
-        self.real_x = x
-        self.y_data = y
-        self.preprocess_data()
-
-    def iteration_callback(self, params, fitting_state):
-        pass
-
     # TODO: add more hocks
-
     def try_fit(self):
         if self.x_to_fit is None or self.y_to_fit is None:
             return
@@ -203,14 +221,19 @@ class Resolver:
             return Resolver.get_squared_sum_of_residual_errors(current_values, self.y_to_fit)*100
 
         minimizer_kwargs = dict(method="SLSQP",
-                                bounds=self.bounds, constraints=self.constrains, callback=self.iteration_callback,
+                                bounds=self.bounds, constraints=self.constrains,
+                                callback=self.local_iteration_callback,
                                 options={"maxiter": self.minimizer_maxiter, "ftol": self.minimizer_tolerance})
 
-        global_fitted_result = basinhopping(closure, x0=self.initial_guess, minimizer_kwargs=minimizer_kwargs,
-                                            niter_success=self.global_optimization_success_iter, niter=self.global_optimization_maxiter)
+        global_fitted_result = basinhopping(closure, x0=self.initial_guess,
+                                            minimizer_kwargs=minimizer_kwargs,
+                                            callback=self.global_iteration_callback,
+                                            niter_success=self.global_optimization_success_iter,
+                                            niter=self.global_optimization_maxiter)
 
         fitted_result = minimize(closure, method="SLSQP", x0=global_fitted_result.x,
-                                 bounds=self.bounds, constraints=self.constrains, callback=self.iteration_callback,
-                                 options={"maxiter": self.minimizer_maxiter, "ftol": self.final_tolerance})
+                                 bounds=self.bounds, constraints=self.constrains,
+                                 callback=self.local_iteration_callback,
+                                 options={"maxiter": self.final_maxiter, "ftol": self.final_tolerance})
 
         return fitted_result
