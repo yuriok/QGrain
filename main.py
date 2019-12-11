@@ -9,9 +9,7 @@ from PySide2.QtWidgets import QApplication
 from ui import GUILogHandler, MainWindow
 
 if __name__ == "__main__":
-    # TODO: fix the problem that when use high dpi scaling, the dock bar will not display the title correctly.
-    # May be it's related to QSS
-    # QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+    QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     app = QApplication(sys.argv)
     main_window = MainWindow()
     
@@ -35,6 +33,7 @@ if __name__ == "__main__":
 
     main_window.show()
 
+    # TODO: use interface
     main_window.control_panel.init_conditions()
     main_window.settings_window.init_settings()
     sys.exit(app.exec_())
