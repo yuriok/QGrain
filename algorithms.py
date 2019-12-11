@@ -92,6 +92,7 @@ def get_lambda_string(ncomp:int, params: list, distribution_type: DistributionTy
 
 # prcess the raw params list to make it easy to use
 def process_params(ncomp: int, func_params: list, fitted_params: list, distribution_type: DistributionType) -> list:
+    # TODO: add support for ncomp=1
     if ncomp == 1:
         assert len(fitted_params) == 2
         return [tuple(fitted_params)]
@@ -99,6 +100,7 @@ def process_params(ncomp: int, func_params: list, fitted_params: list, distribut
         # initialize the result list
         processed = []
         for i in range(ncomp):
+            # TODO: handle different distribution type becasuse the param numbers are not equal
             processed.append([None, None, 1])
         
         for func_param in func_params:
@@ -116,6 +118,7 @@ def process_params(ncomp: int, func_params: list, fitted_params: list, distribut
             else:
                 raise ValueError(func_param)
         
+        # TODO: raise error while ncomp=1
         # sort the list by mean
         if distribution_type == DistributionType.Weibull:
             processed.sort(key=lambda element: weibull_mean(*element[:-1]))
@@ -176,11 +179,7 @@ def weibull_skewness(beta, eta):
 def weibull_kurtosis(beta, eta):
     return (-3*gamma(1/beta+1)**4 + 6*gamma(2/beta+1)*gamma(1/beta+1)**2 - 4*gamma(3/beta+1)*gamma(1/beta+1) + gamma(4/beta+1)) / (gamma(2/beta+1)-gamma(1/beta+1)**2)**2
 
-
-
-
 def normal(x, beta, eta):
-    # return (1 / (x*eta*np.sqrt(2*np.pi))) * np.exp(-np.square((np.log(x)-beta) / eta) / 2)
     return (1 / np.sqrt(2*np.pi*eta))*np.exp(-(x-beta)**2/(2*eta**2))
 
 def get_mixed_normal(ncomp) -> (callable, list, list, list, list):
