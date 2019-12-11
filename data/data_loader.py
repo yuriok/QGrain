@@ -151,9 +151,13 @@ class DataLoader(QObject):
         classes = np.array(raw_data[setting.classes_row][setting.data_start_column:], dtype=np.float64)
         sample_data_list = []
         for row_values in raw_data[setting.data_start_row:]:
-            # users may use puure number as the sample name
-            sample_data_list.append(SampleData(str(row_values[setting.sample_name_column]), np.array(
-                row_values[setting.data_start_column:], dtype=np.float64)))
+            # users may use pure number as the sample name
+            sample_name = str(row_values[setting.sample_name_column])
+            if sample_name is None:
+                sample_name = "NONE"
+            elif sample_name == "":
+                sample_name == "EMPTY"
+            sample_data_list.append(SampleData(sample_name, np.array(row_values[setting.data_start_column:], dtype=np.float64)))
         
         sum_equals_hundred = self.validate_data(classes, sample_data_list)
         if sum_equals_hundred:
