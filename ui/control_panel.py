@@ -20,6 +20,7 @@ class ControlPanel(QWidget):
     sigRuningSettingsChanged = Signal(dict)
     sigDataSettingsChanged = Signal(dict)
     sigRecordFittingData = Signal(str)
+    sigTaskCanceled = Signal()
     logger = logging.getLogger("root.ui.ControlPanel")
     gui_logger = logging.getLogger("GUI")
 
@@ -230,8 +231,6 @@ class ControlPanel(QWidget):
         self.auto_fit_checkbox.setEnabled(enable)
         self.auto_record_checkbox.setEnabled(enable)
         self.auto_run.setEnabled(enable)
-        if not self.auto_run_flag:
-            self.cancel_run.setEnabled(enable)
         self.try_fit_button.setEnabled(enable)
         self.record_button.setEnabled(enable)
 
@@ -239,7 +238,7 @@ class ControlPanel(QWidget):
         self.sigRecordFittingData.emit(self.current_name)
         self.logger.debug("Record data signal emitted.")
 
-    def on_epoch_finished(self, data: FittedData):
+    def on_fitting_epoch_suceed(self, data: FittedData):
         if data.has_nan():
             self.logger.warning("The fitted data may be not valid, auto run stoped.")
             self.gui_logger.warning(self.tr("The fitted data may be not valid, auto run stoped."))
@@ -265,8 +264,12 @@ class ControlPanel(QWidget):
         self.logger.debug("Auto run started from sample [%s].", self.current_name)
 
     def on_cancel_run_clicked(self):
-        self.auto_run_flag = False
-        self.logger.debug("Auto run was canceled.")
+        if self.auto_run_flag:
+            self.auto_run_flag = False
+            self.logger.debug("Auto run was canceled.")
+        
+        self.sigTaskCanceled.emit()
+        
 
     def init_conditions(self):
         self.ncomp = 3
