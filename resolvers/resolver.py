@@ -1,15 +1,25 @@
+from enum import Enum, unique
+
 import numpy as np
 from scipy.interpolate import interp1d
-from scipy.optimize import minimize
-from scipy.optimize import basinhopping
+from scipy.optimize import basinhopping, minimize
+
 from algorithms import *
 from data import FittedData
 
 
-class DataInvalidError(Exception):
-    def __init__(self, *args):
-        super().__init__(*args)
-
+@unique
+class DataValidationResult(Enum):
+    Valid = -1
+    NameNone = 0
+    NameEmpty = 1
+    XNone = 2
+    YNone = 3
+    XTypeInvalid = 4
+    YTypeInvalid = 5
+    XHasNan = 6
+    YHasNan = 7
+    LengthNotEqual = 8
 
 class Resolver:
 
@@ -31,6 +41,7 @@ class Resolver:
         self.minimizer_tolerance = minimizer_tolerance
         self.minimizer_maxiter = minimizer_maxiter
 
+        self.sample_name = None
         self.real_x = None
         self.y_data = None
 
@@ -39,6 +50,7 @@ class Resolver:
 
         self.x_to_fit = None
         self.y_to_fit = None
+
 
     @property
     def distribution_type(self):
@@ -109,57 +121,82 @@ class Resolver:
         return start_index, end_index
 
     @staticmethod
-    def validate_data(x: np.ndarray, y: np.ndarray):
+    def validate_data(sample_name: str, x: np.ndarray, y: np.ndarray) -> DataValidationResult:
+        if sample_name is None:
+            return DataValidationResult.NameNone
+        if sample_name == "":
+            return DataValidationResult.NameEmpty
         if x is None:
-            raise DataInvalidError("`x` is `None`.")
+            return DataValidationResult.XNone
         if y is None:
-            raise DataInvalidError("`y` is `None`.")
+            return DataValidationResult.YNone
         if type(x) != np.ndarray:
-            raise DataInvalidError("Type of `x` is not `numpy.ndarray`.")
+            return DataValidationResult.XTypeInvalid
         if type(y) != np.ndarray:
-            raise DataInvalidError("Type of `y` is not `numpy.ndarray`.")
+            return DataValidationResult.YTypeInvalid
         if len(x) != len(y):
-            raise DataInvalidError("The lengths of `x` and `y` are not equal.")
+            return DataValidationResult.LengthNotEqual
         if np.any(np.isnan(x)):
-            raise DataInvalidError("There is `nan` in `x`.")
+            return DataValidationResult.XHasNan
         if np.any(np.isnan(y)):
-            raise DataInvalidError("There is `nan` in `y`.")
+            return DataValidationResult.YHasNan
+
+        return DataValidationResult.Valid
 
     # hooks
-    def on_data_invalid(self, x: np.ndarray, y: np.ndarray, message: str):
+    def on_data_invalid(self, x: np.ndarray, y: np.ndarray, validation_result: DataValidationResult):
         pass
 
-    def on_data_fed(self):
+    def on_data_fed(self, sample_name):
         pass
 
-    def local_iteration_callback(self, params, fitting_state):
+    def on_data_not_prepared(self):
         pass
 
-    def global_iteration_callback(self, params, fitting_state):
+    def on_fitting_started(self):
+        pass
+
+    def on_fitting_finished(self):
+        pass
+
+    def on_global_fitting_failed(self, fitted_result):
+        pass
+
+    def on_final_fitting_failed(self, fitted_result):
+        pass
+
+    def on_exception_raised_while_fitting(self, exception):
+        pass
+
+    def local_iteration_callback(self, fitted_params):
+        pass
+
+    def global_iteration_callback(self, fitted_params, function_value, accept):
+        pass
+
+    def on_fitting_success(self, fitted_result):
         pass
 
     def preprocess_data(self):
         self.start_index, self.end_index = Resolver.get_valid_data_range(self.y_data)
+        # weibull needs to be fitted under bin number space
         if self.distribution_type == DistributionType.Weibull:
-            length = len(self.y_data)
-            self.x_to_fit = np.array(
-                range(self.end_index-self.start_index)) + 1
+            self.x_to_fit = np.array(range(self.end_index-self.start_index)) + 1
             self.y_to_fit = self.y_data[self.start_index: self.end_index]
         else:
-            # TODO: Add support for other distributions
+            # TODO: add support for other distributions
             raise NotImplementedError(self.distribution_type)
 
-    def feed_data(self, x: np.ndarray, y: np.ndarray):
-        try:
-            Resolver.validate_data(x, y)
-        except DataInvalidError as e:
-            self.on_data_invalid(x, y, e.message)
+    def feed_data(self, sample_name: str, x: np.ndarray, y: np.ndarray):
+        validation_result = Resolver.validate_data(sample_name, x, y)
+        if validation_result is not DataValidationResult.Valid:
+            self.on_data_invalid(x, y, validation_result)
             return
-
+        self.sample_name = sample_name
         self.real_x = x
         self.y_data = y
         self.preprocess_data()
-        self.on_data_fed()
+        self.on_data_fed(sample_name)
 
     def get_fitted_data(self, fitted_params):
         partial_real_x = self.real_x[self.start_index:self.end_index]
@@ -211,11 +248,11 @@ class Resolver:
         # self.logger.debug("One shot of fitting has finished, current mean squared error [%E].", mse)
         return fitted_data
 
-    # TODO: add more hocks
     def try_fit(self):
         if self.x_to_fit is None or self.y_to_fit is None:
+            self.on_data_not_prepared()
             return
-
+        self.on_fitting_started()
         def closure(args):
             current_values = self.mixed_func(self.x_to_fit, *args)
             return Resolver.get_squared_sum_of_residual_errors(current_values, self.y_to_fit)*100
@@ -224,16 +261,32 @@ class Resolver:
                                 bounds=self.bounds, constraints=self.constrains,
                                 callback=self.local_iteration_callback,
                                 options={"maxiter": self.minimizer_maxiter, "ftol": self.minimizer_tolerance})
-
-        global_fitted_result = basinhopping(closure, x0=self.initial_guess,
-                                            minimizer_kwargs=minimizer_kwargs,
-                                            callback=self.global_iteration_callback,
-                                            niter_success=self.global_optimization_success_iter,
-                                            niter=self.global_optimization_maxiter)
-
-        fitted_result = minimize(closure, method="SLSQP", x0=global_fitted_result.x,
-                                 bounds=self.bounds, constraints=self.constrains,
-                                 callback=self.local_iteration_callback,
-                                 options={"maxiter": self.final_maxiter, "ftol": self.final_tolerance})
-
-        return fitted_result
+        try:
+            # TODO: use flag to control whether use global optimization
+            global_fitted_result = basinhopping(closure, x0=self.initial_guess,
+                                                minimizer_kwargs=minimizer_kwargs,
+                                                callback=self.global_iteration_callback,
+                                                niter_success=self.global_optimization_success_iter,
+                                                niter=self.global_optimization_maxiter)
+            
+            # TODO: use better way to judge
+            if "success condition satisfied" not in global_fitted_result.message:
+                self.on_global_fitting_failed(global_fitted_result)
+                self.on_fitting_finished()
+                return
+            fitted_result = minimize(closure, method="SLSQP", x0=global_fitted_result.x,
+                                    bounds=self.bounds, constraints=self.constrains,
+                                    callback=self.local_iteration_callback,
+                                    options={"maxiter": self.final_maxiter, "ftol": self.final_tolerance})
+            # judge if the final fitting succeed
+            if not fitted_result.success:
+                self.on_final_fitting_failed(fitted_result)
+                self.on_fitting_finished()
+                return
+            else:
+                self.on_fitting_success(fitted_result)
+                self.on_fitting_finished()
+                return
+        except Exception as e:
+            self.on_exception_raised_while_fitting(e)
+            self.on_fitting_finished()

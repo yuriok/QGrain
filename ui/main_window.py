@@ -51,7 +51,8 @@ class MainWindow(QMainWindow):
         self.recorded_data_count = 0
         self.fitting_thread = QThread()
         self.gui_resolver = GUIResolver()
-        # self.gui_resolver.moveToThread(self.fitting_thread)
+        # disable multi-thread for debug
+        self.gui_resolver.moveToThread(self.fitting_thread)
         self.fitting_thread.start()
         self.data_manager = DataManager()
         self.connect_all()
@@ -126,6 +127,7 @@ class MainWindow(QMainWindow):
         self.control_panel.sigResolverSettingsChanged.connect(self.gui_resolver.on_settings_changed)
         self.control_panel.sigRuningSettingsChanged.connect(self.on_settings_changed)
         self.control_panel.sigDataSettingsChanged.connect(self.data_manager.on_settings_changed)
+        self.control_panel.sigTaskCanceled.connect(self.on_task_canceled)
         # Connect directly
         self.control_panel.try_fit_button.clicked.connect(self.gui_resolver.try_fit)
         self.control_panel.record_button.clicked.connect(self.data_manager.record_data)
@@ -136,9 +138,9 @@ class MainWindow(QMainWindow):
         self.data_manager.sigTargetDataChanged.connect(self.canvas.on_target_data_changed)
         self.data_manager.sigDataRecorded.connect(self.on_data_recorded)
         
-        self.gui_resolver.sigEpochFinished.connect(self.control_panel.on_epoch_finished)
-        self.gui_resolver.sigEpochFinished.connect(self.canvas.on_epoch_finished)
-        self.gui_resolver.sigEpochFinished.connect(self.data_manager.on_epoch_finished)
+        self.gui_resolver.sigFittingEpochSucceed.connect(self.control_panel.on_fitting_epoch_suceed)
+        self.gui_resolver.sigFittingEpochSucceed.connect(self.canvas.on_fitting_epoch_suceed)
+        self.gui_resolver.sigFittingEpochSucceed.connect(self.data_manager.on_fitting_epoch_suceed)
         self.gui_resolver.sigSingleIterationFinished.connect(self.canvas.on_single_iteration_finished)
         self.gui_resolver.sigWidgetsEnable.connect(self.control_panel.on_widgets_enable_changed)
         
@@ -153,7 +155,7 @@ class MainWindow(QMainWindow):
         self.settings_action.triggered.connect(self.settings_window.show)
         self.about_action.triggered.connect(self.about_window.show)
         
-        self.canvas.sigWidgetsEnable.connect(self.control_panel.on_widgets_enable_changed)
+        # self.canvas.sigWidgetsEnable.connect(self.control_panel.on_widgets_enable_changed)
         self.raw_data_table.cellClicked.connect(self.on_data_item_clicked)
         self.recorded_table_remove_action.triggered.connect(self.remove_recorded_selection)
         self.recorded_data_table.customContextMenuRequested.connect(self.show_recorded_table_menu)
@@ -163,7 +165,6 @@ class MainWindow(QMainWindow):
         self.settings_window.data.sigDataLoaderSettingChanged.connect(self.data_manager.data_loader.on_settings_changed)
         self.settings_window.data.sigDataWriterSettingChanged.connect(self.data_manager.data_writer.on_settings_changed)
 
-        
     def reset_dock_layout(self):
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.canvas_dock)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.raw_data_dock)
@@ -293,3 +294,6 @@ class MainWindow(QMainWindow):
         records_to_remove = [row-self.TABLE_HEADER_ROWS for row in rows_to_remove]
         self.sigRemoveRecords.emit(records_to_remove)
         self.logger.debug("The rows of recorded data will be remove are: [%s].", records_to_remove)
+
+    def on_task_canceled(self):
+        self.gui_resolver.cancel()
