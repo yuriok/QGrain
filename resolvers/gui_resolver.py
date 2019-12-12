@@ -18,7 +18,7 @@ class GUIResolver(QObject, Resolver):
     sigFittingEpochSucceeded = Signal(FittedData)
     sigWidgetsEnable = Signal(bool)
     sigFittingFailed = Signal(str) # emit hint text
-    logger = logging.getLogger(name="root.GUIResolver")
+    logger = logging.getLogger(name="root.resolvers.GUIResolver")
 
     def __init__(self, auto_fit=True, inherit_params=True, emit_iteration=False, time_interval=0.05):
         super().__init__()
@@ -35,11 +35,11 @@ class GUIResolver(QObject, Resolver):
         self.cancel_flag = False
         self.cancel_mutex = QMutex()
 
-    def on_ncomp_changed(self, ncomp: int):
+    def on_component_number_changed(self, ncomp: int):
         self.ncomp = ncomp
         self.logger.debug("Component Number has been changed to [%d].", ncomp)
 
-    def on_type_changed(self, distribution_type: DistributionType):
+    def on_distribution_type_changed(self, distribution_type: DistributionType):
         self.distribution_type = distribution_type
         self.logger.debug("Distribution type has been changed to [%s].", distribution_type)
 
