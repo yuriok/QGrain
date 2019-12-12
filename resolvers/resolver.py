@@ -21,8 +21,8 @@ class DataValidationResult(Enum):
     YHasNan = 7
     LengthNotEqual = 8
 
-class Resolver:
 
+class Resolver:
     def __init__(self, global_optimization_maxiter=100,
                  global_optimization_success_iter=3, final_tolerance=1e-100,
                  final_maxiter=1000, minimizer_tolerance=1e-8, minimizer_maxiter=500):
@@ -50,7 +50,6 @@ class Resolver:
 
         self.x_to_fit = None
         self.y_to_fit = None
-
 
     @property
     def distribution_type(self):
@@ -270,6 +269,7 @@ class Resolver:
             self.on_data_not_prepared()
             return
         self.on_fitting_started()
+
         def closure(args):
             current_values = self.mixed_func(self.x_to_fit, *args)
             return Resolver.get_squared_sum_of_residual_errors(current_values, self.y_to_fit)*100
@@ -285,16 +285,16 @@ class Resolver:
                                                 callback=self.global_iteration_callback,
                                                 niter_success=self.global_optimization_success_iter,
                                                 niter=self.global_optimization_maxiter)
-            
+
             # TODO: use better way to judge
             if "success condition satisfied" not in global_fitted_result.message:
                 self.on_global_fitting_failed(global_fitted_result)
                 self.on_fitting_finished()
                 return
             fitted_result = minimize(closure, method="SLSQP", x0=global_fitted_result.x,
-                                    bounds=self.bounds, constraints=self.constrains,
-                                    callback=self.local_iteration_callback,
-                                    options={"maxiter": self.final_maxiter, "ftol": self.final_tolerance})
+                                     bounds=self.bounds, constraints=self.constrains,
+                                     callback=self.local_iteration_callback,
+                                     options={"maxiter": self.final_maxiter, "ftol": self.final_tolerance})
             # judge if the final fitting succeed
             if not fitted_result.success:
                 self.on_final_fitting_failed(fitted_result)
