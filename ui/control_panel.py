@@ -21,6 +21,7 @@ class ControlPanel(QWidget):
     sigDataSettingsChanged = Signal(dict)
     sigRecordFittingData = Signal(str)
     sigTaskCanceled = Signal()
+    sigMultiTaskStarted = Signal()
     logger = logging.getLogger("root.ui.ControlPanel")
     gui_logger = logging.getLogger("GUI")
 
@@ -96,7 +97,7 @@ class ControlPanel(QWidget):
         self.main_layout.addWidget(self.data_index_next_button, 4, 3)
 
         # Control bottons
-        self.auto_run = QPushButton(self.tr("Auto Run"))
+        self.auto_run = QPushButton(self.tr("Auto Run Orderly"))
         self.auto_run.setToolTip(self.tr("Click to auto run the program.\nThe samples from current to the end will be processed one by one."))
         self.cancel_run = QPushButton(self.tr("Cancel"))
         self.cancel_run.setToolTip(self.tr("Click to cancel the auto run.\n"))
@@ -108,6 +109,11 @@ class ControlPanel(QWidget):
         self.main_layout.addWidget(self.cancel_run, 5, 1)
         self.main_layout.addWidget(self.try_fit_button, 5, 2)
         self.main_layout.addWidget(self.record_button, 5, 3)
+
+        self.multiprocessing_button = QPushButton(self.tr("Multi Cores Fitting"))
+        self.multiprocessing_button.setToolTip(self.tr("Click to fit all samples. It will utilize more cores of cpu to accelerate calculation."))
+        self.main_layout.addWidget(self.multiprocessing_button, 6, 0, 1, 4)
+
 
     def connect_all(self):
         self.ncomp_add_button.clicked.connect(self.on_ncomp_add_clicked)
@@ -123,6 +129,7 @@ class ControlPanel(QWidget):
 
         self.auto_run.clicked.connect(self.on_auto_run_clicked)
         self.cancel_run.clicked.connect(self.on_cancel_run_clicked)
+        self.multiprocessing_button.clicked.connect(self.on_multiprocessing_clicked)
 
     @property
     def ncomp(self):
@@ -233,6 +240,7 @@ class ControlPanel(QWidget):
         self.auto_run.setEnabled(enable)
         self.try_fit_button.setEnabled(enable)
         self.record_button.setEnabled(enable)
+        self.multiprocessing_button.setEnabled(enable)
 
     def on_record_clickedd(self):
         self.sigRecordFittingData.emit(self.current_name)
@@ -269,7 +277,18 @@ class ControlPanel(QWidget):
             self.logger.debug("Auto run was canceled.")
         
         self.sigTaskCanceled.emit()
-        
+
+    def on_multiprocessing_clicked(self):
+        self.sigMultiTaskStarted.emit()
+    
+    def on_fitting_failed(self, message):
+        if self.auto_run_flag:
+            self.auto_run_flag = False
+            self.logger.debug("Auto run was canceled.")
+        self.gui_logger.error(self.tr("Fitting failed. {0}").format(message))
+        self.msg_box.setWindowTitle(self.tr("Error"))
+        self.msg_box.setText(self.tr("Fitting failed. {0}").format(message))
+        self.msg_box.exec_()
 
     def init_conditions(self):
         self.ncomp = 3
