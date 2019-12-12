@@ -122,6 +122,12 @@ class DataManager(QObject):
             else:
                 self.record_data()
 
+    def on_multiprocessing_task_finished(self, succeeded_results, failed_tasks):
+        for fitted_data in succeeded_results:
+            non_nan = fitted_data.get_non_nan_copy()
+            self.recorded_data_list.append(non_nan)
+            self.sigDataRecorded.emit(non_nan)
+
     def on_settings_changed(self, kwargs: dict):
         for setting, value in kwargs.items():
             setattr(self, setting, value)

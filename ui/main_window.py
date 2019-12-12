@@ -17,10 +17,9 @@ from PySide2.QtWidgets import (QAbstractItemView, QApplication, QDockWidget,
                                QToolBar, QWidget)
 
 from data import DataManager, FittedData, GrainSizeData
-from resolvers import GUIResolver
-from ui import ControlPanel, FittingCanvas
-from ui.about_window import AboutWindow
-from ui.setting_window import SettingWindow
+from resolvers import GUIResolver, MultiProcessingResolver
+from ui import (AboutWindow, ControlPanel, FittingCanvas, SettingWindow,
+                TaskWindow)
 
 
 class GUILogHandler(logging.Handler):
@@ -54,6 +53,10 @@ class MainWindow(QMainWindow):
         # disable multi-thread for debug
         self.gui_resolver.moveToThread(self.fitting_thread)
         self.fitting_thread.start()
+        self.multi_fitting_thread = QThread()
+        self.multi_resolver = MultiProcessingResolver()
+        self.multi_resolver.moveToThread(self.multi_fitting_thread)
+        self.multi_fitting_thread.start()
         self.data_manager = DataManager()
         self.connect_all()
         self.msg_box = QMessageBox()
@@ -115,6 +118,7 @@ class MainWindow(QMainWindow):
         
         self.settings_window = SettingWindow()
         self.about_window = AboutWindow()
+        self.task_window = TaskWindow()
         self.reset_dock_layout()
 
     def connect_all(self):
@@ -128,12 +132,14 @@ class MainWindow(QMainWindow):
         self.control_panel.sigRuningSettingsChanged.connect(self.on_settings_changed)
         self.control_panel.sigDataSettingsChanged.connect(self.data_manager.on_settings_changed)
         self.control_panel.sigTaskCanceled.connect(self.on_task_canceled)
+        self.control_panel.sigMultiTaskStarted.connect(self.multi_resolver.execute_tasks)
         # Connect directly
         self.control_panel.try_fit_button.clicked.connect(self.gui_resolver.try_fit)
         self.control_panel.record_button.clicked.connect(self.data_manager.record_data)
         
         self.data_manager.sigDataLoaded.connect(self.on_data_loaded)
         self.data_manager.sigDataLoaded.connect(self.control_panel.on_data_loaded)
+        self.data_manager.sigDataLoaded.connect(self.multi_resolver.on_data_loaded)
         self.data_manager.sigTargetDataChanged.connect(self.gui_resolver.on_target_data_changed)
         self.data_manager.sigTargetDataChanged.connect(self.canvas.on_target_data_changed)
         self.data_manager.sigDataRecorded.connect(self.on_data_recorded)
@@ -143,6 +149,12 @@ class MainWindow(QMainWindow):
         self.gui_resolver.sigFittingEpochSucceed.connect(self.data_manager.on_fitting_epoch_suceed)
         self.gui_resolver.sigSingleIterationFinished.connect(self.canvas.on_single_iteration_finished)
         self.gui_resolver.sigWidgetsEnable.connect(self.control_panel.on_widgets_enable_changed)
+        self.gui_resolver.sigFittingFailed.connect(self.control_panel.on_fitting_failed)
+
+        self.multi_resolver.sigTaskInitialized.connect(self.task_window.on_task_initialized)
+        self.multi_resolver.sigTaskStateUpdated.connect(self.task_window.on_task_state_updated)
+        self.multi_resolver.sigTaskFinished.connect(self.task_window.on_task_finished)
+        self.multi_resolver.sigTaskFinished.connect(self.data_manager.on_multiprocessing_task_finished)
         
         # Dock menu actions
         self.load_action.triggered.connect(self.data_manager.load_data)
