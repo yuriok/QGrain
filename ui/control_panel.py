@@ -14,13 +14,13 @@ from data import FittedData, GrainSizeData
 
 class ControlPanel(QWidget):
     sigDistributionTypeChanged = Signal(Enum)
-    sigNcompChanged = Signal(int) # ncomp
+    sigComponentNumberChanged = Signal(int)
     sigFocusSampleChanged = Signal(int) # index of that sample in list
-    sigResolverSettingsChanged = Signal(dict)
+    sigGUIResolverSettingsChanged = Signal(dict)
     sigRuningSettingsChanged = Signal(dict)
     sigDataSettingsChanged = Signal(dict)
     sigRecordFittingData = Signal(str)
-    sigTaskCanceled = Signal()
+    sigGUIResolverTaskCanceled = Signal()
     sigMultiProcessingTaskStarted = Signal()
     logger = logging.getLogger("root.ui.ControlPanel")
     gui_logger = logging.getLogger("GUI")
@@ -146,7 +146,7 @@ class ControlPanel(QWidget):
         # update the label to display the value
         self.ncomp_display.setText(str(value))
         self.__ncomp = value
-        self.sigNcompChanged.emit(value)
+        self.sigComponentNumberChanged.emit(value)
         # auto emit target data change signal again when ncomp changed
         if self.__sample_names is not None:
             self.data_index = self.data_index
@@ -192,21 +192,21 @@ class ControlPanel(QWidget):
 
     def on_show_iteration_changed(self, state):
         if state == Qt.Checked:
-            self.sigResolverSettingsChanged.emit({"emit_iteration": True})
+            self.sigGUIResolverSettingsChanged.emit({"emit_iteration": True})
         else:
-            self.sigResolverSettingsChanged.emit({"emit_iteration": False})
+            self.sigGUIResolverSettingsChanged.emit({"emit_iteration": False})
 
     def on_inherit_params_changed(self, state):
         if state == Qt.Checked:
-            self.sigResolverSettingsChanged.emit({"inherit_params": True})
+            self.sigGUIResolverSettingsChanged.emit({"inherit_params": True})
         else:
-            self.sigResolverSettingsChanged.emit({"inherit_params": False})
+            self.sigGUIResolverSettingsChanged.emit({"inherit_params": False})
 
     def on_auto_fit_changed(self, state):
         if state == Qt.Checked:
-            self.sigResolverSettingsChanged.emit({"auto_fit": True})
+            self.sigGUIResolverSettingsChanged.emit({"auto_fit": True})
         else:
-            self.sigResolverSettingsChanged.emit({"auto_fit": False})
+            self.sigGUIResolverSettingsChanged.emit({"auto_fit": False})
 
     def on_auto_record_changed(self, state):
         if state == Qt.Checked:
@@ -276,7 +276,7 @@ class ControlPanel(QWidget):
             self.auto_run_flag = False
             self.logger.debug("Auto run was canceled.")
         
-        self.sigTaskCanceled.emit()
+        self.sigGUIResolverTaskCanceled.emit()
 
     def on_multiprocessing_clicked(self):
         self.sigMultiProcessingTaskStarted.emit()
