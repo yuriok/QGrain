@@ -1,10 +1,12 @@
 
+import logging
 import time
 from multiprocessing import Pool, cpu_count
 from typing import List
 
 from PySide2.QtCore import QObject, Signal
 
+from algorithms import DistributionType
 from data import GrainSizeData
 from resolvers import FittingTask, HeadlessResolver
 
@@ -18,14 +20,30 @@ class MultiProcessingResolver(QObject):
     sigTaskStateUpdated = Signal(tuple)
     sigTaskFinished = Signal(list, list)
     sigTaskInitialized = Signal(list)
-
+    logger = logging.getLogger(name="root.resolvers.MultiProcessingResolver")
     STATE_CHECK_TIME_INTERVAL = 0.1
 
     def __init__(self):
         super().__init__()
+        self.component_number = 2
+        self.distribution_type = DistributionType.Weibull
+        self.algorithm_settings = None
+
         self.grain_size_data = None # type: GrainSizeData
         self.tasks = None # type: List[FittingTask]
         self.pool = Pool(cpu_count())
+
+    def on_component_number_changed(self, component_number: int):
+        self.component_number = component_number
+        self.logger.debug("Component number has been changed to [%d].", component_number)
+
+    def on_distribution_type_changed(self, distribution_type: DistributionType):
+        self.distribution_type = distribution_type
+        self.logger.debug("Distribution type has been changed to [%s].", distribution_type)
+
+    def on_algorithm_settings_changed(self, settings: dict):
+        self.algorithm_settings = settings
+        self.logger.debug("Algorithm settings have been changed to [%s].", settings)
 
     def on_data_loaded(self, data: GrainSizeData):
         if data is None:
@@ -38,7 +56,10 @@ class MultiProcessingResolver(QObject):
     def init_tasks(self):
         tasks = []
         for i, sample_data in enumerate(self.grain_size_data.sample_data_list):
-            task = FittingTask(i, sample_data.name, self.grain_size_data.classes, sample_data.distribution)
+            task = FittingTask(i, sample_data.name,
+            self.grain_size_data.classes, sample_data.distribution,
+            component_number=self.component_number, distribution_type=self.distribution_type,
+            algorithm_settings=self.algorithm_settings)
             tasks.append(task)
         self.tasks = tasks
         self.sigTaskInitialized.emit(tasks)
