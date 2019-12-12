@@ -1,15 +1,12 @@
 import logging
 import time
-from enum import Enum, unique
 
 import numpy as np
 from PySide2.QtCore import QMutex, QObject, Signal, Slot
-from scipy.interpolate import interp1d
-from scipy.optimize import basinhopping, minimize
 
 from algorithms import DistributionType
 from data import FittedData
-from resolvers import *
+from resolvers import DataValidationResult, Resolver
 
 
 class CancelError(Exception):
@@ -18,7 +15,7 @@ class CancelError(Exception):
 
 class GUIResolver(QObject, Resolver):
     sigSingleIterationFinished = Signal(int, FittedData)
-    sigFittingEpochSucceed = Signal(FittedData)
+    sigFittingEpochSucceeded = Signal(FittedData)
     sigWidgetsEnable = Signal(bool)
     sigFittingFailed = Signal(str) # emit hint text
     logger = logging.getLogger(name="root.GUIResolver")
@@ -119,6 +116,7 @@ class GUIResolver(QObject, Resolver):
         if type(exception) == CancelError:
             self.logger.info("The fitting progress was canceled by user.")
         else:
+            self.sigFittingFailed(self.tr("Unknown exception raise in fitting progress."))
             self.logger.exception("Unknown exception raise in fitting progress.", stack_info=True)
 
     def local_iteration_callback(self, fitted_params):
@@ -128,7 +126,6 @@ class GUIResolver(QObject, Resolver):
             self.cancel_mutex.unlock()
             # use exception to stop the fitting progress
             # need to handle the exception in `on_exception_raised_while_fitting` func
-            self.logger.debug("Current fitting task was canceled by user.")
             raise CancelError()
         else:
             self.cancel_mutex.unlock()
@@ -141,11 +138,11 @@ class GUIResolver(QObject, Resolver):
     def global_iteration_callback(self, fitted_params, function_value, accept):
         pass
 
-    def on_fitting_success(self, fitted_result):
+    def on_fitting_succeed(self, fitted_result):
         if self.inherit_params:
             self.initial_guess = fitted_result.x
         self.logger.info("The epoch of fitting has finished, the fitted parameters are: [%s]", fitted_result.x)
-        self.sigFittingEpochSucceed.emit(self.get_fitted_data(fitted_result.x))
+        self.sigFittingEpochSucceeded.emit(self.get_fitted_data(fitted_result.x))
 
     # call this func by another thread
     # so, lock is necessary

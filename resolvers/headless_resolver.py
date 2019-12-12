@@ -25,7 +25,7 @@ class HeadlessResolver(Resolver):
         self.current_task = None
         self.current_result = None
 
-    def on_fitting_succeed(self, fitted_result):
+    def on_fitting_succeeded(self, fitted_result):
         fitted_data = self.get_fitted_data(fitted_result.x)
         sample_id = self.current_task.sample_id
         self.current_result = (sample_id, fitted_data)
