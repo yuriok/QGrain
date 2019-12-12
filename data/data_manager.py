@@ -105,7 +105,7 @@ class DataManager(QObject):
         self.sigTargetDataChanged.emit(sample_name, classes, sample_data)
         self.logger.debug("Focus sample data changed, the data has been emitted.")
 
-    def on_fitting_epoch_suceed(self, data: FittedData):
+    def on_fitting_epoch_suceeded(self, data: FittedData):
         non_nan = data.get_non_nan_copy()
         self.logger.debug("Epoch for sample [%s] has finished, mean squared error is [%E], statistic is: [%s].", non_nan.name, non_nan.mse, non_nan.statistic)
         self.current_fitted_data = data

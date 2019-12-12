@@ -21,7 +21,7 @@ class ControlPanel(QWidget):
     sigDataSettingsChanged = Signal(dict)
     sigRecordFittingData = Signal(str)
     sigTaskCanceled = Signal()
-    sigMultiTaskStarted = Signal()
+    sigMultiProcessingTaskStarted = Signal()
     logger = logging.getLogger("root.ui.ControlPanel")
     gui_logger = logging.getLogger("GUI")
 
@@ -246,7 +246,7 @@ class ControlPanel(QWidget):
         self.sigRecordFittingData.emit(self.current_name)
         self.logger.debug("Record data signal emitted.")
 
-    def on_fitting_epoch_suceed(self, data: FittedData):
+    def on_fitting_epoch_suceeded(self, data: FittedData):
         if data.has_nan():
             self.logger.warning("The fitted data may be not valid, auto run stoped.")
             self.gui_logger.warning(self.tr("The fitted data may be not valid, auto run stoped."))
@@ -279,7 +279,7 @@ class ControlPanel(QWidget):
         self.sigTaskCanceled.emit()
 
     def on_multiprocessing_clicked(self):
-        self.sigMultiTaskStarted.emit()
+        self.sigMultiProcessingTaskStarted.emit()
     
     def on_fitting_failed(self, message):
         if self.auto_run_flag:
