@@ -138,7 +138,7 @@ class GUIResolver(QObject, Resolver):
     def global_iteration_callback(self, fitted_params, function_value, accept):
         pass
 
-    def on_fitting_succeed(self, fitted_result):
+    def on_fitting_succeeded(self, fitted_result):
         if self.inherit_params:
             self.initial_guess = fitted_result.x
         self.logger.info("The epoch of fitting has finished, the fitted parameters are: [%s]", fitted_result.x)

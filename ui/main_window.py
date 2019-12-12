@@ -132,7 +132,7 @@ class MainWindow(QMainWindow):
         self.control_panel.sigRuningSettingsChanged.connect(self.on_settings_changed)
         self.control_panel.sigDataSettingsChanged.connect(self.data_manager.on_settings_changed)
         self.control_panel.sigTaskCanceled.connect(self.on_task_canceled)
-        self.control_panel.sigMultiTaskStarted.connect(self.multi_resolver.execute_tasks)
+        self.control_panel.sigMultiProcessingTaskStarted.connect(self.multi_resolver.execute_tasks)
         # Connect directly
         self.control_panel.try_fit_button.clicked.connect(self.gui_resolver.try_fit)
         self.control_panel.record_button.clicked.connect(self.data_manager.record_data)
@@ -144,9 +144,9 @@ class MainWindow(QMainWindow):
         self.data_manager.sigTargetDataChanged.connect(self.canvas.on_target_data_changed)
         self.data_manager.sigDataRecorded.connect(self.on_data_recorded)
         
-        self.gui_resolver.sigFittingEpochSucceeded.connect(self.control_panel.on_fitting_epoch_suceed)
-        self.gui_resolver.sigFittingEpochSucceeded.connect(self.canvas.on_fitting_epoch_suceed)
-        self.gui_resolver.sigFittingEpochSucceeded.connect(self.data_manager.on_fitting_epoch_suceed)
+        self.gui_resolver.sigFittingEpochSucceeded.connect(self.control_panel.on_fitting_epoch_suceeded)
+        self.gui_resolver.sigFittingEpochSucceeded.connect(self.canvas.on_fitting_epoch_suceeded)
+        self.gui_resolver.sigFittingEpochSucceeded.connect(self.data_manager.on_fitting_epoch_suceeded)
         self.gui_resolver.sigSingleIterationFinished.connect(self.canvas.on_single_iteration_finished)
         self.gui_resolver.sigWidgetsEnable.connect(self.control_panel.on_widgets_enable_changed)
         self.gui_resolver.sigFittingFailed.connect(self.control_panel.on_fitting_failed)

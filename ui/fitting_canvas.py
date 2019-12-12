@@ -98,7 +98,7 @@ class FittingCanvas(QWidget):
         self.plot_widget.plotItem.setTitle(self.title_format % sample_id)
         self.logger.debug("Target data has been changed to [%s].", sample_id)
 
-    def on_fitting_epoch_suceed(self, data: FittedData):
+    def on_fitting_epoch_suceeded(self, data: FittedData):
         non_nan_data = data.get_non_nan_copy()
         self.target_item.setData(*non_nan_data.target, **self.target_style)
         self.sum_item.setData(*non_nan_data.sum, **self.sum_style)
