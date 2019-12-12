@@ -174,7 +174,7 @@ class Resolver:
     def global_iteration_callback(self, fitted_params, function_value, accept):
         pass
 
-    def on_fitting_success(self, fitted_result):
+    def on_fitting_succeeded(self, fitted_result):
         pass
 
     def preprocess_data(self):
@@ -197,6 +197,23 @@ class Resolver:
         self.y_data = y
         self.preprocess_data()
         self.on_data_fed(sample_name)
+
+    def change_settings(self, **kwargs):
+        for key, value in kwargs.items():
+            if key == "global_optimization_maxiter":
+                self.global_optimization_maxiter = value
+            elif key == "global_optimization_success_iter":
+                self.global_optimization_success_iter = value
+            elif key == "final_tolerance":
+                self.final_tolerance = value
+            elif key == "final_maxiter":
+                self.final_maxiter = value
+            elif key == "minimizer_tolerance":
+                self.minimizer_tolerance = value
+            elif key == "minimizer_maxiter":
+                self.minimizer_maxiter = value
+            else:
+                raise NotImplementedError(key)
 
     def get_fitted_data(self, fitted_params):
         partial_real_x = self.real_x[self.start_index:self.end_index]
@@ -284,7 +301,7 @@ class Resolver:
                 self.on_fitting_finished()
                 return
             else:
-                self.on_fitting_success(fitted_result)
+                self.on_fitting_succeeded(fitted_result)
                 self.on_fitting_finished()
                 return
         except Exception as e:
