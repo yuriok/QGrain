@@ -8,7 +8,7 @@ class FittingTask:
     def __init__(self, sample_id: int, sample_name: str,
                  x: np.ndarray, y: np.ndarray,
                  distribution_type=DistributionType.Weibull,
-                 component_number=3,
+                 component_number=2,
                  algorithm_settings=None):
         self.sample_id = sample_id
         self.sample_name = sample_name

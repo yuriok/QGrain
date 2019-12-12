@@ -53,10 +53,10 @@ class MainWindow(QMainWindow):
         # disable multi-thread for debug
         self.gui_resolver.moveToThread(self.fitting_thread)
         self.fitting_thread.start()
-        self.multi_fitting_thread = QThread()
-        self.multi_resolver = MultiProcessingResolver()
-        self.multi_resolver.moveToThread(self.multi_fitting_thread)
-        self.multi_fitting_thread.start()
+        self.multiprocessing_fitting_thread = QThread()
+        self.multiprocessing_resolver = MultiProcessingResolver()
+        self.multiprocessing_resolver.moveToThread(self.multiprocessing_fitting_thread)
+        self.multiprocessing_fitting_thread.start()
         self.data_manager = DataManager()
         self.connect_all()
         self.msg_box = QMessageBox()
@@ -123,23 +123,25 @@ class MainWindow(QMainWindow):
 
     def connect_all(self):
         # TODO: Type Switch
-        self.control_panel.sigDistributionTypeChanged.connect(self.gui_resolver.on_type_changed)
-        self.control_panel.sigNcompChanged.connect(self.gui_resolver.on_ncomp_changed)
-        self.control_panel.sigNcompChanged.connect(self.canvas.on_ncomp_changed)
+        self.control_panel.sigDistributionTypeChanged.connect(self.gui_resolver.on_distribution_type_changed)
+        self.control_panel.sigDistributionTypeChanged.connect(self.multiprocessing_resolver.on_distribution_type_changed)
+        self.control_panel.sigComponentNumberChanged.connect(self.gui_resolver.on_component_number_changed)
+        self.control_panel.sigComponentNumberChanged.connect(self.multiprocessing_resolver.on_component_number_changed)
+        self.control_panel.sigComponentNumberChanged.connect(self.canvas.on_ncomp_changed)
         self.control_panel.sigFocusSampleChanged.connect(self.data_manager.on_focus_sample_changed)
         self.control_panel.sigFocusSampleChanged.connect(self.on_focus_sample_changed)
-        self.control_panel.sigResolverSettingsChanged.connect(self.gui_resolver.on_settings_changed)
+        self.control_panel.sigGUIResolverSettingsChanged.connect(self.gui_resolver.on_settings_changed)
         self.control_panel.sigRuningSettingsChanged.connect(self.on_settings_changed)
         self.control_panel.sigDataSettingsChanged.connect(self.data_manager.on_settings_changed)
-        self.control_panel.sigTaskCanceled.connect(self.on_task_canceled)
-        self.control_panel.sigMultiProcessingTaskStarted.connect(self.multi_resolver.execute_tasks)
+        self.control_panel.sigGUIResolverTaskCanceled.connect(self.on_task_canceled)
+        self.control_panel.sigMultiProcessingTaskStarted.connect(self.multiprocessing_resolver.execute_tasks)
         # Connect directly
         self.control_panel.try_fit_button.clicked.connect(self.gui_resolver.try_fit)
         self.control_panel.record_button.clicked.connect(self.data_manager.record_data)
         
         self.data_manager.sigDataLoaded.connect(self.on_data_loaded)
         self.data_manager.sigDataLoaded.connect(self.control_panel.on_data_loaded)
-        self.data_manager.sigDataLoaded.connect(self.multi_resolver.on_data_loaded)
+        self.data_manager.sigDataLoaded.connect(self.multiprocessing_resolver.on_data_loaded)
         self.data_manager.sigTargetDataChanged.connect(self.gui_resolver.on_target_data_changed)
         self.data_manager.sigTargetDataChanged.connect(self.canvas.on_target_data_changed)
         self.data_manager.sigDataRecorded.connect(self.on_data_recorded)
@@ -151,10 +153,10 @@ class MainWindow(QMainWindow):
         self.gui_resolver.sigWidgetsEnable.connect(self.control_panel.on_widgets_enable_changed)
         self.gui_resolver.sigFittingFailed.connect(self.control_panel.on_fitting_failed)
 
-        self.multi_resolver.sigTaskInitialized.connect(self.task_window.on_task_initialized)
-        self.multi_resolver.sigTaskStateUpdated.connect(self.task_window.on_task_state_updated)
-        self.multi_resolver.sigTaskFinished.connect(self.task_window.on_task_finished)
-        self.multi_resolver.sigTaskFinished.connect(self.data_manager.on_multiprocessing_task_finished)
+        self.multiprocessing_resolver.sigTaskInitialized.connect(self.task_window.on_task_initialized)
+        self.multiprocessing_resolver.sigTaskStateUpdated.connect(self.task_window.on_task_state_updated)
+        self.multiprocessing_resolver.sigTaskFinished.connect(self.task_window.on_task_finished)
+        self.multiprocessing_resolver.sigTaskFinished.connect(self.data_manager.on_multiprocessing_task_finished)
         
         # Dock menu actions
         self.load_action.triggered.connect(self.data_manager.load_data)
