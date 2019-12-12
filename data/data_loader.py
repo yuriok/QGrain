@@ -68,7 +68,6 @@ class DataLoader(QObject):
         if not os.path.exists(filename):
             self.logger.error("There is no file called this. Filename: %s.", filename)
             raise ValueError(filename)
-            return
         if file_type == "excel":
             self.try_excel(filename)
         elif file_type == "csv":
