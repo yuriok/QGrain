@@ -30,7 +30,7 @@ class ControlPanel(QWidget):
         super().__init__(parent, **kargs)
         self.__ncomp = 2
         self.__data_index = 0
-        self.__sample_names = None
+        self.sample_names = None
         self.auto_run_timer = QTimer()
         self.auto_run_timer.setSingleShot(True)
         self.auto_run_timer.timeout.connect(self.on_auto_run_timer_timeout)
@@ -148,7 +148,7 @@ class ControlPanel(QWidget):
         self.__ncomp = value
         self.sigComponentNumberChanged.emit(value)
         # auto emit target data change signal again when ncomp changed
-        if self.__sample_names is not None:
+        if self.sample_names is not None:
             self.data_index = self.data_index
 
     @property
@@ -157,23 +157,23 @@ class ControlPanel(QWidget):
 
     @data_index.setter
     def data_index(self, value: int):
-        if self.__sample_names is None or len(self.__sample_names) == 0:
+        if self.sample_names is None or len(self.sample_names) == 0:
             self.msg_box.setWindowTitle(self.tr("Warning"))
             self.msg_box.setText(self.tr("The data has not been loaded, the operation is invalid."))
             self.msg_box.exec_()
             return
-        if value < 0 or value >= len(self.__sample_names):
+        if value < 0 or value >= len(self.sample_names):
             self.gui_logger.info(self.tr("It has reached the first/last sample."))
             return
         # update the label to display the name of this sample
-        self.data_index_display.setText(self.__sample_names[value])
+        self.data_index_display.setText(self.sample_names[value])
         self.__data_index = value
         self.logger.debug("Data index has been set to [%d].", value)
         self.sigFocusSampleChanged.emit(value)
 
     @property
     def current_name(self) -> str:
-        return self.__sample_names[self.data_index]
+        return self.sample_names[self.data_index]
 
     def on_ncomp_add_clicked(self):
         self.ncomp += 1
@@ -215,7 +215,7 @@ class ControlPanel(QWidget):
             self.sigDataSettingsChanged.emit({"auto_record": False})
 
     def on_data_loaded(self, grain_size_data: GrainSizeData):
-        self.__sample_names = [sample.name for sample in grain_size_data.sample_data_list]
+        self.sample_names = [sample.name for sample in grain_size_data.sample_data_list]
         self.logger.debug("Data was loaded.")
         self.data_index = 0
         self.logger.debug("Data index has been set to 0.")
@@ -253,7 +253,7 @@ class ControlPanel(QWidget):
             self.auto_run_flag = False
             self.on_widgets_enable_changed(True)
         
-        if self.data_index == len(self.__sample_names)-1:
+        if self.data_index == len(self.sample_names)-1:
             self.logger.info("The auto run has reached the last sample and stoped.")
             self.gui_logger.info(self.tr("The auto run has reached the last sample and stoped."))
             self.auto_run_flag = False
@@ -279,7 +279,7 @@ class ControlPanel(QWidget):
         self.sigGUIResolverTaskCanceled.emit()
 
     def on_multiprocessing_clicked(self):
-        if self.__sample_names is None or len(self.__sample_names) == 0:
+        if self.sample_names is None or len(self.sample_names) == 0:
             self.msg_box.setWindowTitle(self.tr("Warning"))
             self.msg_box.setText(self.tr("The data has not been loaded, the operation is invalid."))
             self.msg_box.exec_()
