@@ -24,8 +24,12 @@ class DataValidationResult(Enum):
 
 class Resolver:
     def __init__(self, global_optimization_maxiter=100,
-                 global_optimization_success_iter=3, final_tolerance=1e-100,
-                 final_maxiter=1000, minimizer_tolerance=1e-8, minimizer_maxiter=500):
+                 global_optimization_success_iter=3,
+                 global_optimization_stepsize = 1,
+                 final_tolerance=1e-100,
+                 final_maxiter=1000,
+                 minimizer_tolerance=1e-8,
+                 minimizer_maxiter=500):
         self.__distribution_type = DistributionType.Weibull
         self.__ncomp = 2
         # must call `refresh_by_distribution_type` first
@@ -34,12 +38,13 @@ class Resolver:
 
         self.global_optimization_maxiter = global_optimization_maxiter
         self.global_optimization_success_iter = global_optimization_success_iter
-
-        self.final_tolerance = final_tolerance
-        self.final_maxiter = final_maxiter
+        self.global_optimization_stepsize = global_optimization_stepsize
 
         self.minimizer_tolerance = minimizer_tolerance
         self.minimizer_maxiter = minimizer_maxiter
+
+        self.final_tolerance = final_tolerance
+        self.final_maxiter = final_maxiter
 
         self.sample_name = None
         self.real_x = None
@@ -203,14 +208,16 @@ class Resolver:
                 self.global_optimization_maxiter = value
             elif key == "global_optimization_success_iter":
                 self.global_optimization_success_iter = value
-            elif key == "final_tolerance":
-                self.final_tolerance = value
-            elif key == "final_maxiter":
-                self.final_maxiter = value
+            elif key == "global_optimization_stepsize":
+                self.global_optimization_stepsize = value
             elif key == "minimizer_tolerance":
                 self.minimizer_tolerance = value
             elif key == "minimizer_maxiter":
                 self.minimizer_maxiter = value
+            elif key == "final_tolerance":
+                self.final_tolerance = value
+            elif key == "final_maxiter":
+                self.final_maxiter = value
             else:
                 raise NotImplementedError(key)
 
@@ -284,7 +291,8 @@ class Resolver:
                                                 minimizer_kwargs=minimizer_kwargs,
                                                 callback=self.global_iteration_callback,
                                                 niter_success=self.global_optimization_success_iter,
-                                                niter=self.global_optimization_maxiter)
+                                                niter=self.global_optimization_maxiter,
+                                                stepsize=self.global_optimization_stepsize)
 
             # TODO: use better way to judge
             if "success condition satisfied" not in global_fitted_result.message:
