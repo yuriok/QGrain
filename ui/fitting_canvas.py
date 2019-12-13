@@ -12,13 +12,11 @@ from data import FittedData
 pg.setConfigOptions(foreground=pg.mkColor("k"), background=pg.mkColor("#FFFFFF00"), antialias=True)
 
 class FittingCanvas(QWidget):
-    sigWidgetsEnable = Signal(bool)
     logger = logging.getLogger("root.ui.FittingCanvas")
     gui_logger = logging.getLogger("GUI")
     
     def __init__(self, parent=None, **kargs):
         super().__init__(parent, **kargs)
-        self.current_iteration = 0
         self.sample_id = self.tr("Unknown")
         self.init_ui()
 
@@ -36,9 +34,9 @@ class FittingCanvas(QWidget):
         self.plot_widget.plotItem.addItem(self.sum_item)
         self.label_styles = {"font-family": "Times New Roman"}
         self.plot_widget.plotItem.setLabel("left", self.tr("Probability Density"), **self.label_styles)
-        self.plot_widget.plotItem.setLabel("bottom", self.tr("Grain size (μm)"), **self.label_styles)
+        self.plot_widget.plotItem.setLabel("bottom", self.tr("Grain size"), **self.label_styles)
         self.title_format = """<font face="Times New Roman">%s</font>"""
-        self.plot_widget.plotItem.setTitle(self.title_format % "Fitting Canvas")
+        self.plot_widget.plotItem.setTitle(self.title_format % self.tr("Fitting Canvas"))
         self.plot_widget.plotItem.showGrid(True, True)
         self.tickFont = QFont("Arial")
         self.tickFont.setPointSize(8)
@@ -98,9 +96,9 @@ class FittingCanvas(QWidget):
     def on_target_data_changed(self, sample_id, x, y):
         self.sample_id = sample_id
         self.plot_widget.plotItem.setTitle(self.title_format % sample_id)
-        self.logger.debug("Target data has changed to %s.", sample_id)
+        self.logger.debug("Target data has been changed to [%s].", sample_id)
 
-    def on_epoch_finished(self, data: FittedData):
+    def on_fitting_epoch_suceeded(self, data: FittedData):
         non_nan_data = data.get_non_nan_copy()
         self.target_item.setData(*non_nan_data.target, **self.target_style)
         self.sum_item.setData(*non_nan_data.sum, **self.sum_style)
@@ -110,19 +108,15 @@ class FittingCanvas(QWidget):
         for i, line_item in enumerate(self.component_lines):
             line_item.setValue(math.log10(non_nan_data.statistic[i]["mean"]))
         self.logger.debug("Epoch fitting finished. Data of DataItem has updated.")
-        self.sigWidgetsEnable.emit(True)
-        self.current_iteration = 0
 
-    def on_single_iteration_finished(self, data: FittedData):
+
+    def on_single_iteration_finished(self, current_iteration, data: FittedData):
         non_nan_data = data.get_non_nan_copy()
-        # Iteration will take too much times, so disable the ui to reject additional requests
-        # UI will be enable at `on_epoch_finished` 
-        # self.sigWidgetsEnable.emit(False)
         self.target_item.setData(*non_nan_data.target, **self.target_style)
         self.sum_item.setData(*non_nan_data.sum, **self.sum_style)
         for (x, y), (name, curve_item), style in zip(non_nan_data.components, self.component_curves, self.component_styles):
             curve_item.setData(x, y, **style)
         for i, line_item in enumerate(self.component_lines):
             line_item.setValue(math.log10(non_nan_data.statistic[i]["mean"]))
-        self.plot_widget.plotItem.setTitle(self.title_format % "{0} iter({1})".format(self.sample_id, self.current_iteration))
-        self.current_iteration += 1
+        self.plot_widget.plotItem.setTitle(self.title_format % "{0} iter({1})".format(self.sample_id, current_iteration))
+

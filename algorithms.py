@@ -14,7 +14,7 @@ def check_ncomp(ncomp: int):
     # Check the validity of `ncomp`
     if type(ncomp) != int:
         raise TypeError(ncomp)
-    if ncomp <= 0:
+    if ncomp <= 1:
         raise ValueError(ncomp)
 
 
@@ -24,18 +24,19 @@ def get_params(ncomp: int, distribution_type: DistributionType) -> list:
         # if there is only one component, the fraction is not needful
         # beta and eta also don't need the number to distinguish
         if distribution_type == DistributionType.Weibull:
-            params.append({"name": "beta", "default": 1, "location": 0, "bounds": (INFINITESIMAL, None)})
+            params.append({"name": "beta", "default": 2, "location": 0, "bounds": (INFINITESIMAL, None)})
         else:
             params.append({"name": "beta", "default": 0, "location": 0, "bounds": (None, None)})
         params.append({"name": "eta", "default": 1, "location": 1, "bounds": (INFINITESIMAL, None)})
     elif ncomp > 1:
         for i in range(ncomp):
             # the shape params, beta and eta, of each distribution
+            # it performs better while the params between components are different
             if distribution_type == DistributionType.Weibull:
-                params.append({"name": "beta{0}".format(i+1), "default": 1, "location": i*2, "bounds": (INFINITESIMAL, None)})
+                params.append({"name": "beta{0}".format(i+1), "default": 2+i, "location": i*2, "bounds": (INFINITESIMAL+2, None)})
             else:
                 params.append({"name": "beta{0}".format(i+1), "default": 0, "location": i*2, "bounds": (None, None)})
-            params.append({"name": "eta{0}".format(i+1), "default": 10, "location": i * 2 + 1, "bounds": (INFINITESIMAL, None)})
+            params.append({"name": "eta{0}".format(i+1), "default": 10+i*10, "location": i * 2 + 1, "bounds": (INFINITESIMAL, None)})
         for i in range(ncomp-1):
             # the fraction of each distribution
             params.append({"name": "f{0}".format(i+1), "default": 1/ncomp, "location": ncomp*2 + i, "bounds": (0, 1)})
@@ -91,6 +92,7 @@ def get_lambda_string(ncomp:int, params: list, distribution_type: DistributionTy
 
 # prcess the raw params list to make it easy to use
 def process_params(ncomp: int, func_params: list, fitted_params: list, distribution_type: DistributionType) -> list:
+    # TODO: add support for ncomp=1
     if ncomp == 1:
         assert len(fitted_params) == 2
         return [tuple(fitted_params)]
@@ -98,6 +100,7 @@ def process_params(ncomp: int, func_params: list, fitted_params: list, distribut
         # initialize the result list
         processed = []
         for i in range(ncomp):
+            # TODO: handle different distribution type becasuse the param numbers are not equal
             processed.append([None, None, 1])
         
         for func_param in func_params:
@@ -115,6 +118,7 @@ def process_params(ncomp: int, func_params: list, fitted_params: list, distribut
             else:
                 raise ValueError(func_param)
         
+        # TODO: raise error while ncomp=1
         # sort the list by mean
         if distribution_type == DistributionType.Weibull:
             processed.sort(key=lambda element: weibull_mean(*element[:-1]))
@@ -175,11 +179,7 @@ def weibull_skewness(beta, eta):
 def weibull_kurtosis(beta, eta):
     return (-3*gamma(1/beta+1)**4 + 6*gamma(2/beta+1)*gamma(1/beta+1)**2 - 4*gamma(3/beta+1)*gamma(1/beta+1) + gamma(4/beta+1)) / (gamma(2/beta+1)-gamma(1/beta+1)**2)**2
 
-
-
-
 def normal(x, beta, eta):
-    # return (1 / (x*eta*np.sqrt(2*np.pi))) * np.exp(-np.square((np.log(x)-beta) / eta) / 2)
     return (1 / np.sqrt(2*np.pi*eta))*np.exp(-(x-beta)**2/(2*eta**2))
 
 def get_mixed_normal(ncomp) -> (callable, list, list, list, list):
