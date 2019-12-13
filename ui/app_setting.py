@@ -34,7 +34,7 @@ class AppSetting(QWidget):
         name, lang = self.language_options[self.language_combox.currentIndex()]
         settings.setValue("language", lang)
         self.logger.debug("Language has been changed to [%s].", name)
-        self.gui_logger.info(self.tr("Language has been changed to [%s]. Please restart the app."), name)
+        self.gui_logger.info(self.tr("Language has been changed to [%s]. Please restart the app to apply this setting."), name)
         settings.endGroup()
 
     def restore_settings(self, settings:QSettings):
