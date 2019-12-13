@@ -279,6 +279,11 @@ class ControlPanel(QWidget):
         self.sigGUIResolverTaskCanceled.emit()
 
     def on_multiprocessing_clicked(self):
+        if self.__sample_names is None or len(self.__sample_names) == 0:
+            self.msg_box.setWindowTitle(self.tr("Warning"))
+            self.msg_box.setText(self.tr("The data has not been loaded, the operation is invalid."))
+            self.msg_box.exec_()
+            return
         self.sigMultiProcessingTaskStarted.emit()
     
     def on_fitting_failed(self, message):
