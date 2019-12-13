@@ -1,23 +1,33 @@
 import logging
 import sys
 from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
+from multiprocessing import freeze_support
 
-from PySide2.QtGui import QFont
-from PySide2.QtCore import QCoreApplication, Qt, QTextCodec
+from PySide2.QtCore import QSettings, QTranslator
+from PySide2.QtGui import QFont, QIcon
 from PySide2.QtWidgets import QApplication
 
 from ui import GUILogHandler, MainWindow
 
-if __name__ == "__main__":
-    # TODO: fix the problem that when use high dpi scaling, the dock bar will not display the title correctly.
-    # May be it's related to QSS
-    # QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+
+def get_language():
+    settings = QSettings("./settings/qgrain.ini", QSettings.Format.IniFormat)
+    settings.beginGroup("app")
+    lang = settings.value("language")
+    settings.endGroup()
+    return lang
+
+def main():
     app = QApplication(sys.argv)
+    translator = QTranslator()
+    translator.load("./i18n/"+get_language())
+    app.installTranslator(translator)
+
     main_window = MainWindow()
     main_window.setWindowTitle("QGrain")
-    main_window.control_panel.init_conditions()
-
-    template_styles = open("./settings/qss/aqua.qss").read()
+    main_window.setWindowIcon(QIcon("./settings/icons/icon.png"))
+    # use qss
+    template_styles = open("./settings/qss/Ubuntu.qss").read()
     custom_style = open("./settings/custom.qss").read()
     app.setStyleSheet(template_styles+custom_style)
     # logging
@@ -27,15 +37,15 @@ if __name__ == "__main__":
     file_handler.setFormatter(logging.Formatter(format_str))
     gui_handler = GUILogHandler(main_window)
     gui_handler.setLevel(logging.INFO)
-
     logging.basicConfig(level=logging.DEBUG, format=format_str)
     logging.getLogger().addHandler(file_handler)
     logging.getLogger("GUI").addHandler(gui_handler)
     main_window.show()
+    # TODO: use interface
+    main_window.control_panel.init_conditions()
+    main_window.settings_window.init_settings()
     sys.exit(app.exec_())
 
-
-#  translator = QtCore.QTranslator()
-#  translator.load('i18n/eo_EO')
-#  app = QtGui.QApplication(sys.argv)
-#  app.installTranslator(translator)
+if __name__ == "__main__":
+    freeze_support()
+    main()

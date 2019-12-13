@@ -14,12 +14,14 @@ from data import FittedData, GrainSizeData
 
 class ControlPanel(QWidget):
     sigDistributionTypeChanged = Signal(Enum)
-    sigNcompChanged = Signal(int) # ncomp
+    sigComponentNumberChanged = Signal(int)
     sigFocusSampleChanged = Signal(int) # index of that sample in list
-    sigResolverSettingsChanged = Signal(dict)
+    sigGUIResolverSettingsChanged = Signal(dict)
     sigRuningSettingsChanged = Signal(dict)
     sigDataSettingsChanged = Signal(dict)
     sigRecordFittingData = Signal(str)
+    sigGUIResolverTaskCanceled = Signal()
+    sigMultiProcessingTaskStarted = Signal()
     logger = logging.getLogger("root.ui.ControlPanel")
     gui_logger = logging.getLogger("GUI")
 
@@ -36,7 +38,7 @@ class ControlPanel(QWidget):
         
         self.init_ui()
         self.connect_all()
-        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.setMaximumHeight(320)
         
         self.msg_box = QMessageBox()
         self.msg_box.setWindowFlags(Qt.Drawer)
@@ -95,18 +97,23 @@ class ControlPanel(QWidget):
         self.main_layout.addWidget(self.data_index_next_button, 4, 3)
 
         # Control bottons
-        self.auto_run = QPushButton(self.tr("Auto Run"))
+        self.auto_run = QPushButton(self.tr("Auto Run Orderly"))
         self.auto_run.setToolTip(self.tr("Click to auto run the program.\nThe samples from current to the end will be processed one by one."))
         self.cancel_run = QPushButton(self.tr("Cancel"))
-        self.cancel_run.setToolTip(self.tr("Click to cancel the auto run.\n"))
+        self.cancel_run.setToolTip(self.tr("Click to cancel the fitting progress."))
         self.try_fit_button = QPushButton(self.tr("Try Fit"))
-        self.try_fit_button.setToolTip(self.tr("Click to fit the current sample manually.\n"))
+        self.try_fit_button.setToolTip(self.tr("Click to fit the current sample manually."))
         self.record_button = QPushButton(self.tr("Record"))
-        self.record_button.setToolTip(self.tr("Click to record the current fitted data manually.\nNote: It will only record the LAST fitted data, NOT CURRENT SAMPLE. \n"))
+        self.record_button.setToolTip(self.tr("Click to record the current fitted data manually.\nNote: It will only record the LAST fitted data, NOT CURRENT SAMPLE."))
         self.main_layout.addWidget(self.auto_run, 5, 0)
         self.main_layout.addWidget(self.cancel_run, 5, 1)
         self.main_layout.addWidget(self.try_fit_button, 5, 2)
         self.main_layout.addWidget(self.record_button, 5, 3)
+
+        self.multiprocessing_button = QPushButton(self.tr("Multi Cores Fitting"))
+        self.multiprocessing_button.setToolTip(self.tr("Click to fit all samples. It will utilize more cores of cpu to accelerate calculation."))
+        self.main_layout.addWidget(self.multiprocessing_button, 6, 0, 1, 4)
+
 
     def connect_all(self):
         self.ncomp_add_button.clicked.connect(self.on_ncomp_add_clicked)
@@ -122,6 +129,7 @@ class ControlPanel(QWidget):
 
         self.auto_run.clicked.connect(self.on_auto_run_clicked)
         self.cancel_run.clicked.connect(self.on_cancel_run_clicked)
+        self.multiprocessing_button.clicked.connect(self.on_multiprocessing_clicked)
 
     @property
     def ncomp(self):
@@ -138,7 +146,7 @@ class ControlPanel(QWidget):
         # update the label to display the value
         self.ncomp_display.setText(str(value))
         self.__ncomp = value
-        self.sigNcompChanged.emit(value)
+        self.sigComponentNumberChanged.emit(value)
         # auto emit target data change signal again when ncomp changed
         if self.__sample_names is not None:
             self.data_index = self.data_index
@@ -184,21 +192,21 @@ class ControlPanel(QWidget):
 
     def on_show_iteration_changed(self, state):
         if state == Qt.Checked:
-            self.sigResolverSettingsChanged.emit({"emit_iteration": True})
+            self.sigGUIResolverSettingsChanged.emit({"emit_iteration": True})
         else:
-            self.sigResolverSettingsChanged.emit({"emit_iteration": False})
+            self.sigGUIResolverSettingsChanged.emit({"emit_iteration": False})
 
     def on_inherit_params_changed(self, state):
         if state == Qt.Checked:
-            self.sigResolverSettingsChanged.emit({"inherit_params": True})
+            self.sigGUIResolverSettingsChanged.emit({"inherit_params": True})
         else:
-            self.sigResolverSettingsChanged.emit({"inherit_params": False})
+            self.sigGUIResolverSettingsChanged.emit({"inherit_params": False})
 
     def on_auto_fit_changed(self, state):
         if state == Qt.Checked:
-            self.sigResolverSettingsChanged.emit({"auto_fit": True})
+            self.sigGUIResolverSettingsChanged.emit({"auto_fit": True})
         else:
-            self.sigResolverSettingsChanged.emit({"auto_fit": False})
+            self.sigGUIResolverSettingsChanged.emit({"auto_fit": False})
 
     def on_auto_record_changed(self, state):
         if state == Qt.Checked:
@@ -230,16 +238,15 @@ class ControlPanel(QWidget):
         self.auto_fit_checkbox.setEnabled(enable)
         self.auto_record_checkbox.setEnabled(enable)
         self.auto_run.setEnabled(enable)
-        if not self.auto_run_flag:
-            self.cancel_run.setEnabled(enable)
         self.try_fit_button.setEnabled(enable)
         self.record_button.setEnabled(enable)
+        self.multiprocessing_button.setEnabled(enable)
 
     def on_record_clickedd(self):
         self.sigRecordFittingData.emit(self.current_name)
         self.logger.debug("Record data signal emitted.")
 
-    def on_epoch_finished(self, data: FittedData):
+    def on_fitting_epoch_suceeded(self, data: FittedData):
         if data.has_nan():
             self.logger.warning("The fitted data may be not valid, auto run stoped.")
             self.gui_logger.warning(self.tr("The fitted data may be not valid, auto run stoped."))
@@ -265,8 +272,23 @@ class ControlPanel(QWidget):
         self.logger.debug("Auto run started from sample [%s].", self.current_name)
 
     def on_cancel_run_clicked(self):
-        self.auto_run_flag = False
-        self.logger.debug("Auto run was canceled.")
+        if self.auto_run_flag:
+            self.auto_run_flag = False
+            self.logger.debug("Auto run was canceled.")
+        
+        self.sigGUIResolverTaskCanceled.emit()
+
+    def on_multiprocessing_clicked(self):
+        self.sigMultiProcessingTaskStarted.emit()
+    
+    def on_fitting_failed(self, message):
+        if self.auto_run_flag:
+            self.auto_run_flag = False
+            self.logger.debug("Auto run was canceled.")
+        self.gui_logger.error(self.tr("Fitting failed. {0}").format(message))
+        self.msg_box.setWindowTitle(self.tr("Error"))
+        self.msg_box.setText(self.tr("Fitting failed. {0}").format(message))
+        self.msg_box.exec_()
 
     def init_conditions(self):
         self.ncomp = 3

@@ -9,7 +9,7 @@ from PySide2.QtCore import QObject, Qt, QThread, Signal
 from PySide2.QtWidgets import QFileDialog, QMessageBox
 
 from data import DataLoader, DataWriter, FittedData, GrainSizeData, SampleData
-from resolvers import DistributionType
+from algorithms import DistributionType
 
 
 class DataManager(QObject):
@@ -88,7 +88,7 @@ class DataManager(QObject):
             self.msg_box.exec_()
         else:
             self.logger.warning("Data has not been loaded correctly.")
-            self.gui_logger.error(self.tr("Data has not been loaded correctlt, check and try it again please."))
+            self.gui_logger.error(self.tr("Data has not been loaded correctly, check and try it again please."))
             self.load_msg_box.setWindowTitle(self.tr("Error"))
             self.load_msg_box.setText(self.tr("Data loading failed."))
             result = self.load_msg_box.exec_()
@@ -105,7 +105,7 @@ class DataManager(QObject):
         self.sigTargetDataChanged.emit(sample_name, classes, sample_data)
         self.logger.debug("Focus sample data changed, the data has been emitted.")
 
-    def on_epoch_finished(self, data: FittedData):
+    def on_fitting_epoch_suceeded(self, data: FittedData):
         non_nan = data.get_non_nan_copy()
         self.logger.debug("Epoch for sample [%s] has finished, mean squared error is [%E], statistic is: [%s].", non_nan.name, non_nan.mse, non_nan.statistic)
         self.current_fitted_data = data
@@ -121,6 +121,12 @@ class DataManager(QObject):
                     self.record_data()
             else:
                 self.record_data()
+
+    def on_multiprocessing_task_finished(self, succeeded_results, failed_tasks):
+        for fitted_data in succeeded_results:
+            non_nan = fitted_data.get_non_nan_copy()
+            self.recorded_data_list.append(non_nan)
+            self.sigDataRecorded.emit(non_nan)
 
     def on_settings_changed(self, kwargs: dict):
         for setting, value in kwargs.items():
