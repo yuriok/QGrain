@@ -48,6 +48,10 @@ class GUIResolver(QObject, Resolver):
             setattr(self, setting, value)
             self.logger.debug("Setting [%s] have been changed to [%s].", setting, value)
 
+    def on_algorithm_settings_changed(self, settings: dict):
+        self.change_settings(**settings)
+        self.logger.debug("Algorithm settings have been changed to [%s].", settings)
+
     def on_target_data_changed(self, sample_name, x, y):
         self.logger.debug("Target data has been changed to [%s].", sample_name)
 

@@ -1,15 +1,28 @@
 import logging
 import sys
 from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
+from multiprocessing import freeze_support
 
+from PySide2.QtCore import QSettings, QTranslator
 from PySide2.QtGui import QFont, QIcon
-from PySide2.QtCore import QCoreApplication, Qt, QTextCodec
 from PySide2.QtWidgets import QApplication
 
 from ui import GUILogHandler, MainWindow
 
-if __name__ == "__main__":
+
+def get_language():
+    settings = QSettings("./settings/qgrain.ini", QSettings.Format.IniFormat)
+    settings.beginGroup("app")
+    lang = settings.value("language")
+    settings.endGroup()
+    return lang
+
+def main():
     app = QApplication(sys.argv)
+    translator = QTranslator()
+    translator.load("./i18n/"+get_language())
+    app.installTranslator(translator)
+
     main_window = MainWindow()
     main_window.setWindowTitle("QGrain")
     main_window.setWindowIcon(QIcon("./settings/icons/icon.png"))
@@ -33,8 +46,6 @@ if __name__ == "__main__":
     main_window.settings_window.init_settings()
     sys.exit(app.exec_())
 
-
-#  translator = QtCore.QTranslator()
-#  translator.load('i18n/eo_EO')
-#  app = QtGui.QApplication(sys.argv)
-#  app.installTranslator(translator)
+if __name__ == "__main__":
+    freeze_support()
+    main()

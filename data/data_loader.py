@@ -125,7 +125,7 @@ class DataLoader(QObject):
             raw_data = [row for row in r]
         except Exception:
             self.logger.exception("Can not read the file as csv. Check the encode and make sure it's [utf-8]. Filename: [%s].", filename, stack_info=True)
-            self.gui_logger.error(self.tr("Can not read the file as csv, check the encode and maker sure it's [utf-8]."))
+            self.gui_logger.error(self.tr("Can not read the file as csv, check the encode and make sure it's [utf-8]."))
             self.sigWorkFinished.emit(GrainSizeData())
             return
         try:

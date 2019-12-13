@@ -9,11 +9,11 @@ class DataSetting(QWidget):
     sigDataWriterSettingChanged = Signal(dict)
     logger = logging.getLogger("root.ui.DataSetting")
     gui_logger = logging.getLogger("GUI")
-    def __init__(self, settings: QSettings):
+    def __init__(self):
         super().__init__()
-        self.settings = settings
         self.msg_box = QMessageBox()
         self.msg_box.setWindowFlags(Qt.Drawer)
+        self.setAttribute(Qt.WA_StyledBackground, True)
         self.init_ui()
 
     def init_ui(self):
@@ -21,38 +21,42 @@ class DataSetting(QWidget):
         self.int_validator = QIntValidator()
         self.int_validator.setBottom(0)
 
+        self.title_label = QLabel(self.tr("Data Settings:"))
+        self.title_label.setStyleSheet("QLabel {font: bold;}")
+        self.main_layout.addWidget(self.title_label, 0, 0)
+
         self.class_row_label = QLabel(self.tr("Class Row"))
         self.class_row_label.setToolTip(self.tr("The row index (starts with 0) of grain size classes that stored in data file."))
-        self.main_layout.addWidget(self.class_row_label, 0, 0)
+        self.main_layout.addWidget(self.class_row_label, 1, 0)
         self.class_row_edit = QLineEdit()
         self.class_row_edit.setValidator(self.int_validator)
-        self.main_layout.addWidget(self.class_row_edit, 0, 1)
+        self.main_layout.addWidget(self.class_row_edit, 1, 1)
 
         self.sample_name_col_label = QLabel(self.tr("Sample Name Column"))
         self.sample_name_col_label.setToolTip(self.tr("The column index (starts with 0) of sample names that stored in data file."))
-        self.main_layout.addWidget(self.sample_name_col_label, 1, 0)
+        self.main_layout.addWidget(self.sample_name_col_label, 2, 0)
         self.sample_name_col_edit = QLineEdit()
         self.sample_name_col_edit.setValidator(self.int_validator)
-        self.main_layout.addWidget(self.sample_name_col_edit, 1, 1)
+        self.main_layout.addWidget(self.sample_name_col_edit, 2, 1)
 
         self.data_start_row_label = QLabel(self.tr("Data Start Row"))
         self.data_start_row_label.setToolTip(self.tr("The start row index (starts with 0) of sample data that stored in data file.\nIt should be greater than the index of Class Row."))
-        self.main_layout.addWidget(self.data_start_row_label, 2, 0)
+        self.main_layout.addWidget(self.data_start_row_label, 3, 0)
         self.data_start_row_edit = QLineEdit()
         self.data_start_row_edit.setValidator(self.int_validator)
-        self.main_layout.addWidget(self.data_start_row_edit, 2, 1)
+        self.main_layout.addWidget(self.data_start_row_edit, 3, 1)
 
         self.data_start_col_label = QLabel(self.tr("Data Start Column"))
         self.data_start_col_label.setToolTip(self.tr("The start column index (starts with 0) of sample data that stored in data file.\nIt should be greater than the index of Sample Name Column."))
-        self.main_layout.addWidget(self.data_start_col_label, 3, 0)
+        self.main_layout.addWidget(self.data_start_col_label, 4, 0)
         self.data_start_col_edit = QLineEdit()
         self.data_start_col_edit.setValidator(self.int_validator)
-        self.main_layout.addWidget(self.data_start_col_edit, 3, 1)
+        self.main_layout.addWidget(self.data_start_col_edit, 4, 1)
 
         self.draw_charts_checkbox = QCheckBox(self.tr("Draw Charts"))
         self.draw_charts_checkbox.setChecked(True)
         self.draw_charts_checkbox.setToolTip(self.tr("This option controls whether it will draw charts when saving data as xlsx file.\nIf your samples are too many, the massive charts will slow the excel runing heavily.\nThen you can disable this option or save your data separately."))
-        self.main_layout.addWidget(self.draw_charts_checkbox, 4, 0, 1, 2)
+        self.main_layout.addWidget(self.draw_charts_checkbox, 5, 0, 1, 2)
 
     def save_settings(self, settings:QSettings):
         settings.beginGroup("data_loading")
@@ -75,12 +79,12 @@ class DataSetting(QWidget):
             self.sigDataLoaderSettingChanged.emit(signal_data)
         # raise while converting invalid `str` to `int`
         except ValueError:
-            self.logger.exception("Some unknown exception raised, maybe the `QLineEdit` widget has not a valid `QValidator`.", stack_info=True)
-            self.gui_logger.error(self.tr("Some unknown exception raised. Settings of data loading did not be saved."))
+            self.logger.exception("Unknown exception raised, maybe the `QLineEdit` widget has not a valid `QValidator`.", stack_info=True)
+            self.gui_logger.error(self.tr("Unknown exception raised. Settings of data loading did not be saved."))
             # this exception raise when the `str` values can not be converted to int
             # that means the `ini` file maybe modified incorrectly
             self.msg_box.setWindowTitle(self.tr("Error"))
-            self.msg_box.setText(self.tr("Some unknown exception raised. Settings of data loading did not be saved."))
+            self.msg_box.setText(self.tr("Unknown exception raised. Settings of data loading did not be saved."))
             self.msg_box.exec_()
         finally:
             settings.endGroup()
@@ -104,11 +108,11 @@ class DataSetting(QWidget):
             self.data_start_col_edit.setText(settings.value("data_start_column"))
         except Exception:
             self.logger.exception("Unknown exception occurred. Maybe the type of values which were set to `QSettings` is not `str`.", stack_info=True)
-            self.gui_logger.error(self.tr("Some unknown exception raised. Settings of data loading did not be restored."))
+            self.gui_logger.error(self.tr("Unknown exception raised. Settings of data loading did not be restored."))
             # this exception raise when the values are not `str`
             # that means there are some bugs in the set progress
             self.msg_box.setWindowTitle(self.tr("Error"))
-            self.msg_box.setText(self.tr("Some unknown exception raised. Settings of data loading did not be restored."))
+            self.msg_box.setText(self.tr("Unknown exception raised. Settings of data loading did not be restored."))
             self.msg_box.exec_()
         finally:
             settings.endGroup()
@@ -119,3 +123,5 @@ class DataSetting(QWidget):
         else:
             self.draw_charts_checkbox.setCheckState(Qt.Unchecked)
         settings.endGroup()
+
+    

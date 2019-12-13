@@ -34,9 +34,9 @@ class FittingCanvas(QWidget):
         self.plot_widget.plotItem.addItem(self.sum_item)
         self.label_styles = {"font-family": "Times New Roman"}
         self.plot_widget.plotItem.setLabel("left", self.tr("Probability Density"), **self.label_styles)
-        self.plot_widget.plotItem.setLabel("bottom", self.tr("Grain size (μm)"), **self.label_styles)
+        self.plot_widget.plotItem.setLabel("bottom", self.tr("Grain size"), **self.label_styles)
         self.title_format = """<font face="Times New Roman">%s</font>"""
-        self.plot_widget.plotItem.setTitle(self.title_format % "Fitting Canvas")
+        self.plot_widget.plotItem.setTitle(self.title_format % self.tr("Fitting Canvas"))
         self.plot_widget.plotItem.showGrid(True, True)
         self.tickFont = QFont("Arial")
         self.tickFont.setPointSize(8)

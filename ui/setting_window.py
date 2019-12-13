@@ -3,8 +3,10 @@ from PySide2.QtCore import Qt, QSettings, Signal
 from PySide2.QtGui import QIcon, QValidator, QIntValidator
 import sys
 
-from ui import DataSetting
-
+from ui import AlgorithmSetting, DataSetting, AppSetting
+# from data_setting import DataSetting
+# from algorithm_setting import AlgorithmSetting
+# from app_setting import AppSetting
 
 class SettingWindow(QMainWindow):
     sigSaveSettings = Signal(QSettings)
@@ -15,8 +17,12 @@ class SettingWindow(QMainWindow):
         self.init_ui()
         self.setWindowFlags(Qt.Drawer|Qt.WindowStaysOnTopHint)
         self.setWindowTitle(self.tr("Settings"))
-        self.sigRestoreSettings.connect(self.data.restore_settings)
-        self.sigSaveSettings.connect(self.data.save_settings)
+        self.sigRestoreSettings.connect(self.data_setting.restore_settings)
+        self.sigRestoreSettings.connect(self.algorithm_setting.restore_settings)
+        self.sigRestoreSettings.connect(self.app_setting.restore_settings)
+        self.sigSaveSettings.connect(self.data_setting.save_settings)
+        self.sigSaveSettings.connect(self.algorithm_setting.save_settings)
+        self.sigSaveSettings.connect(self.app_setting.save_settings)
         self.restore_button.clicked.connect(self.on_restore_clicked)
         self.save_button.clicked.connect(self.on_save_clicked)
 
@@ -24,14 +30,20 @@ class SettingWindow(QMainWindow):
         self.central_widget = QWidget(self)
         self.setCentralWidget(self.central_widget)
         self.main_layout = QGridLayout(self.central_widget)
-        self.data = DataSetting(self.settings)
-        self.data.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.data_setting = DataSetting()
+        self.data_setting.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.main_layout.addWidget(self.data_setting, 0, 0, 1, 2)
+        self.algorithm_setting = AlgorithmSetting()
+        self.algorithm_setting.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.main_layout.addWidget(self.algorithm_setting, 1, 0, 1, 2)
+        self.app_setting = AppSetting()
+        self.app_setting.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.main_layout.addWidget(self.app_setting, 2, 0, 1, 2)
         
-        self.main_layout.addWidget(self.data, 0, 0, 1, 2)
         self.restore_button = QPushButton(self.tr("Restore"))
         self.save_button = QPushButton(self.tr("Save"))
-        self.main_layout.addWidget(self.restore_button, 1, 0)
-        self.main_layout.addWidget(self.save_button, 1, 1)
+        self.main_layout.addWidget(self.restore_button, 3, 0)
+        self.main_layout.addWidget(self.save_button, 3, 1)
 
 
     def init_settings(self):

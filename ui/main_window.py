@@ -176,14 +176,20 @@ class MainWindow(QMainWindow):
         self.sigDataSelected.connect(self.control_panel.on_data_selected)
         self.sigRemoveRecords.connect(self.data_manager.remove_data)
 
-        self.settings_window.data.sigDataLoaderSettingChanged.connect(self.data_manager.data_loader.on_settings_changed)
-        self.settings_window.data.sigDataWriterSettingChanged.connect(self.data_manager.data_writer.on_settings_changed)
+        self.settings_window.data_setting.sigDataLoaderSettingChanged.connect(self.data_manager.data_loader.on_settings_changed)
+        self.settings_window.data_setting.sigDataWriterSettingChanged.connect(self.data_manager.data_writer.on_settings_changed)
+        self.settings_window.algorithm_setting.sigAlgorithmSettingChanged.connect(self.gui_resolver.on_algorithm_settings_changed)
+        self.settings_window.algorithm_setting.sigAlgorithmSettingChanged.connect(self.multiprocessing_resolver.on_algorithm_settings_changed)
 
     def reset_dock_layout(self):
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.canvas_dock)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.raw_data_dock)
         self.splitDockWidget(self.raw_data_dock, self.recorded_data_dock, Qt.Orientation.Horizontal)
         self.splitDockWidget(self.canvas_dock, self.control_panel_dock, Qt.Orientation.Vertical)
+        self.canvas_dock.show()
+        self.raw_data_dock.show()
+        self.recorded_data_dock.show()
+        self.control_panel_dock.show()
 
     def show_canvas_dock(self):
         self.canvas_dock.setVisible(True)
@@ -241,9 +247,9 @@ class MainWindow(QMainWindow):
                 write(0, i*column_span+3, comp["name"])
                 self.recorded_data_table.setSpan(0, i*column_span+3, 1, self.COPONENT_ITEMS)
                 write(1, i*column_span+3, self.tr("Fraction"))
-                write(1, i*column_span+4, self.tr("Mean (μm)"))
-                write(1, i*column_span+5, self.tr("Median (μm)"))
-                write(1, i*column_span+6, self.tr("Mode (μm)"))
+                write(1, i*column_span+4, self.tr("Mean"))
+                write(1, i*column_span+5, self.tr("Median"))
+                write(1, i*column_span+6, self.tr("Mode"))
                 write(1, i*column_span+7, self.tr("Variance"))
                 write(1, i*column_span+8, self.tr("Standard Deviation"))
                 write(1, i*column_span+9, self.tr("Skewness"))
