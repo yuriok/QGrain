@@ -157,12 +157,12 @@ class ControlPanel(QWidget):
 
     @data_index.setter
     def data_index(self, value: int):
-        if self.sample_names is None or len(self.sample_names) == 0:
+        if not self.has_data:
             self.msg_box.setWindowTitle(self.tr("Warning"))
             self.msg_box.setText(self.tr("The data has not been loaded, the operation is invalid."))
             self.msg_box.exec_()
             return
-        if value < 0 or value >= len(self.sample_names):
+        if value < 0 or value >= self.data_length:
             self.gui_logger.info(self.tr("It has reached the first/last sample."))
             return
         # update the label to display the name of this sample
@@ -174,6 +174,20 @@ class ControlPanel(QWidget):
     @property
     def current_name(self) -> str:
         return self.sample_names[self.data_index]
+
+    @property
+    def has_data(self) -> bool:
+        if self.data_length <= 0:
+            return False
+        else:
+            return True
+
+    @property
+    def data_length(self) -> int:
+        if self.sample_names is None:
+            return 0
+        else:
+            return len(self.sample_names)
 
     def on_ncomp_add_clicked(self):
         self.ncomp += 1
@@ -253,7 +267,7 @@ class ControlPanel(QWidget):
             self.auto_run_flag = False
             self.on_widgets_enable_changed(True)
         
-        if self.data_index == len(self.sample_names)-1:
+        if self.data_index == self.data_length-1:
             self.logger.info("The auto run has reached the last sample and stoped.")
             self.gui_logger.info(self.tr("The auto run has reached the last sample and stoped."))
             self.auto_run_flag = False
@@ -279,7 +293,7 @@ class ControlPanel(QWidget):
         self.sigGUIResolverTaskCanceled.emit()
 
     def on_multiprocessing_clicked(self):
-        if self.sample_names is None or len(self.sample_names) == 0:
+        if not self.has_data:
             self.msg_box.setWindowTitle(self.tr("Warning"))
             self.msg_box.setText(self.tr("The data has not been loaded, the operation is invalid."))
             self.msg_box.exec_()
