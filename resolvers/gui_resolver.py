@@ -52,7 +52,7 @@ class GUIResolver(QObject, Resolver):
         self.change_settings(**settings)
         self.logger.debug("Algorithm settings have been changed to [%s].", settings)
 
-    def on_target_data_changed(self, sample_name, x, y):
+    def on_target_data_changed(self, sample_name: str, x, y):
         self.logger.debug("Target data has been changed to [%s].", sample_name)
 
         self.feed_data(sample_name, x, y)
@@ -60,36 +60,36 @@ class GUIResolver(QObject, Resolver):
         if self.auto_fit:
             self.try_fit()
 
-    def on_data_invalid(self, x, y, validation_result):
-        if validation_result == DataValidationResult.NameNone:
-            self.sigFittingFailed(self.tr("Name of current sample is None."))
-            self.logger.error("Name of current sample is None.")
-        elif validation_result == DataValidationResult.NameEmpty:
-            self.sigFittingFailed(self.tr("Name of current sample is empty."))
-            self.logger.error("Name of current sample is empty.")
-        elif validation_result == DataValidationResult.XNone:
-            self.sigFittingFailed(self.tr("x data of current sample is None."))
-            self.logger.error("x data of current sample is None.")
-        elif validation_result == DataValidationResult.YNone:
-            self.sigFittingFailed(self.tr("y data of current sample is None."))
-            self.logger.error("y data of current sample is None.")
-        elif validation_result == DataValidationResult.XTypeInvalid:
-            self.sigFittingFailed(self.tr("The x data type of current sample is invalid."))
-            self.logger.error("The x data type of current sample is invalid.")
-        elif validation_result == DataValidationResult.YTypeInvalid:
-            self.sigFittingFailed(self.tr("The y data type of current sample is invalid."))
-            self.logger.error("The y data type of current sample is invalid.")
-        elif validation_result == DataValidationResult.LengthNotEqual:
-            self.sigFittingFailed(self.tr("The lengths of x and y data are not equal."))
-            self.logger.error("The lengths of x and y data are not equal.")
-        elif validation_result == DataValidationResult.XHasNan:
-            self.sigFittingFailed(self.tr("There is NaN value in x data of current sample."))
-            self.logger.error("There is NaN value in x data of current sample.")
-        elif validation_result == DataValidationResult.YHasNan:
-            self.sigFittingFailed(self.tr("There is NaN value in y data of current sample."))
-            self.logger.error("There is NaN value in y data of current sample.")
+    def on_data_invalid(self, sample_name: str, x: np.ndarray, y:np.ndarray, result: DataValidationResult):
+        if result == DataValidationResult.NameNone:
+            self.sigFittingFailed(self.tr("Name of sample [%s] is None."), sample_name)
+            self.logger.error("Name of sample [%s] is None.", sample_name)
+        elif result == DataValidationResult.NameEmpty:
+            self.sigFittingFailed(self.tr("Name of sample [%s] is empty."), sample_name)
+            self.logger.error("Name of sample [%s] is empty.", sample_name)
+        elif result == DataValidationResult.XNone:
+            self.sigFittingFailed(self.tr("x data of sample [%s] is None."), sample_name)
+            self.logger.error("x data of sample [%s] is None.", sample_name)
+        elif result == DataValidationResult.YNone:
+            self.sigFittingFailed(self.tr("y data of sample [%s] is None."), sample_name)
+            self.logger.error("y data of sample [%s] is None.", sample_name)
+        elif result == DataValidationResult.XTypeInvalid:
+            self.sigFittingFailed(self.tr("The x data type of sample [%s] is invalid."), sample_name)
+            self.logger.error("The x data type of sample [%s] is invalid.", sample_name)
+        elif result == DataValidationResult.YTypeInvalid:
+            self.sigFittingFailed(self.tr("The y data type of sample [%s] is invalid."), sample_name)
+            self.logger.error("The y data type of sample [%s] is invalid.", sample_name)
+        elif result == DataValidationResult.LengthNotEqual:
+            self.sigFittingFailed(self.tr("The lengths of x and y data in sample [%s] are not equal."), sample_name)
+            self.logger.error("The lengths of x and y data in sample [%s] are not equal.", sample_name)
+        elif result == DataValidationResult.XHasNan:
+            self.sigFittingFailed(self.tr("There is NaN value in x data of sample [%s]."), sample_name)
+            self.logger.error("There is NaN value in x data of sample [%s].", sample_name)
+        elif result == DataValidationResult.YHasNan:
+            self.sigFittingFailed(self.tr("There is NaN value in y data of sample [%s]."), sample_name)
+            self.logger.error("There is NaN value in y data of sample [%s].", sample_name)
         else:
-            raise NotImplementedError(validation_result)
+            raise NotImplementedError(result)
 
     def on_data_feed(self, sample_name):
         self.logger.debug("Sample [%s] has been fed.", sample_name)

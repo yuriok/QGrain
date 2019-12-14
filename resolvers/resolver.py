@@ -147,7 +147,7 @@ class Resolver:
         return DataValidationResult.Valid
 
     # hooks
-    def on_data_invalid(self, x: np.ndarray, y: np.ndarray, validation_result: DataValidationResult):
+    def on_data_invalid(self, sample_name: str, x: np.ndarray, y: np.ndarray, validation_result: DataValidationResult):
         pass
 
     def on_data_fed(self, sample_name):
@@ -193,7 +193,7 @@ class Resolver:
     def feed_data(self, sample_name: str, x: np.ndarray, y: np.ndarray):
         validation_result = Resolver.validate_data(sample_name, x, y)
         if validation_result is not DataValidationResult.Valid:
-            self.on_data_invalid(x, y, validation_result)
+            self.on_data_invalid(sample_name, x, y, validation_result)
             return
         self.sample_name = sample_name
         self.real_x = x

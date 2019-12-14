@@ -157,7 +157,12 @@ It means the iteration number of reaching the same minimum.</source>
     <message>
         <location filename="ui/app_setting.py" line="37"/>
         <source>Language has been changed to [%s]. Please restart the app.</source>
-        <translation>语言已经变为[%s]。请重新启动应用。</translation>
+        <translation type="obsolete">语言已经变为[%s]。请重新启动应用。</translation>
+    </message>
+    <message>
+        <location filename="ui/app_setting.py" line="37"/>
+        <source>Language has been changed to [%s]. Please restart the app to apply this setting.</source>
+        <translation>语言已经变为[%s]。请重新启动App以应用设置。</translation>
     </message>
 </context>
 <context>
@@ -337,12 +342,12 @@ The samples from current to the end will be processed one by one.</source>
         <translation>组分数量应该大于1，且小于等于10。</translation>
     </message>
     <message>
-        <location filename="ui/control_panel.py" line="161"/>
+        <location filename="ui/control_panel.py" line="297"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="ui/control_panel.py" line="162"/>
+        <location filename="ui/control_panel.py" line="298"/>
         <source>The data has not been loaded, the operation is invalid.</source>
         <translation>数据还未加载，操作无效。</translation>
     </message>
@@ -352,22 +357,22 @@ The samples from current to the end will be processed one by one.</source>
         <translation>已经达到了第一个/最后一个样品。</translation>
     </message>
     <message>
-        <location filename="ui/control_panel.py" line="252"/>
+        <location filename="ui/control_panel.py" line="266"/>
         <source>The fitted data may be not valid, auto run stoped.</source>
         <translation>拟合的数据可能是无效的，自动运行已经停止。</translation>
     </message>
     <message>
-        <location filename="ui/control_panel.py" line="258"/>
+        <location filename="ui/control_panel.py" line="272"/>
         <source>The auto run has reached the last sample and stoped.</source>
         <translation>自动运行已经到达最后一个样品，并停止。</translation>
     </message>
     <message>
-        <location filename="ui/control_panel.py" line="290"/>
+        <location filename="ui/control_panel.py" line="309"/>
         <source>Fitting failed. {0}</source>
         <translation>拟合失败。 {0}</translation>
     </message>
     <message>
-        <location filename="ui/control_panel.py" line="289"/>
+        <location filename="ui/control_panel.py" line="308"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
@@ -430,42 +435,42 @@ Note: It will only record the LAST fitted data, NOT CURRENT SAMPLE.</source>
 <context>
     <name>DataManager</name>
     <message>
-        <location filename="data/data_manager.py" line="65"/>
+        <location filename="data/data_manager.py" line="66"/>
         <source>Select Data File</source>
         <translation>选择数据文件</translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="84"/>
+        <location filename="data/data_manager.py" line="85"/>
         <source>Data has been loaded.</source>
         <translation>数据已加载。</translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="85"/>
+        <location filename="data/data_manager.py" line="86"/>
         <source>Info</source>
         <translation>信息</translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="86"/>
+        <location filename="data/data_manager.py" line="87"/>
         <source>The data has been loaded from the file.</source>
         <translation>数据已从文件中加载。</translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="90"/>
+        <location filename="data/data_manager.py" line="91"/>
         <source>Data has not been loaded correctly, check and try it again please.</source>
         <translation>数据未被正确加载，请检查后再试。</translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="180"/>
+        <location filename="data/data_manager.py" line="185"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="92"/>
+        <location filename="data/data_manager.py" line="93"/>
         <source>Data loading failed.</source>
         <translation>数据加载失败。</translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="139"/>
+        <location filename="data/data_manager.py" line="144"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
@@ -475,29 +480,39 @@ Note: It will only record the LAST fitted data, NOT CURRENT SAMPLE.</source>
         <translation>拟合的数据可能是无效的，至少出现了一个NaN值。</translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="140"/>
+        <location filename="data/data_manager.py" line="145"/>
         <source>There is no fitted data to record.</source>
         <translation>没有拟合好的数据可以记录。</translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="155"/>
+        <location filename="data/data_manager.py" line="160"/>
         <source>Save Recorded Data</source>
         <translation>保存记录的数据</translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="174"/>
+        <location filename="data/data_manager.py" line="179"/>
         <source>File saved.</source>
         <translation>文件已保存。</translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="176"/>
+        <location filename="data/data_manager.py" line="181"/>
         <source>The data has been saved to the file.</source>
         <translation>数据已经保存到文件中。</translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="181"/>
+        <location filename="data/data_manager.py" line="186"/>
         <source>Data saving failed.</source>
         <translation>数据保存失败。</translation>
+    </message>
+    <message>
+        <location filename="data/data_manager.py" line="128"/>
+        <source>There is invalid value in the fitted data of sample [%s].</source>
+        <translation>样品[%s]的拟合数据中存在无效的值。</translation>
+    </message>
+    <message>
+        <location filename="data/data_manager.py" line="133"/>
+        <source>Fitting task of sample [%s] failed.</source>
+        <translation>样品[%s]的拟合任务失败了。</translation>
     </message>
 </context>
 <context>
@@ -584,17 +599,17 @@ Then you can disable this option or save your data separately.</source>
 <context>
     <name>DataWriter</name>
     <message>
-        <location filename="data/data_writer.py" line="379"/>
+        <location filename="data/data_writer.py" line="391"/>
         <source>File saving failed, check the permission and occupation please.</source>
         <translation>文件保存是失败，请检查用户权限和文件占用情况。</translation>
     </message>
     <message>
-        <location filename="data/data_writer.py" line="374"/>
+        <location filename="data/data_writer.py" line="386"/>
         <source>File has been saved.</source>
         <translation>文件已保存。</translation>
     </message>
     <message>
-        <location filename="data/data_writer.py" line="334"/>
+        <location filename="data/data_writer.py" line="346"/>
         <source>The chart style file can not been opened, use default styles next.</source>
         <translation>无法打开图表样式文件，使用默认的样式。</translation>
     </message>
@@ -604,30 +619,30 @@ Then you can disable this option or save your data separately.</source>
     <message>
         <location filename="ui/fitting_canvas.py" line="21"/>
         <source>Unknown</source>
-        <translation>未知</translation>
+        <translation type="obsolete">未知</translation>
     </message>
     <message>
-        <location filename="ui/fitting_canvas.py" line="36"/>
+        <location filename="ui/fitting_canvas.py" line="35"/>
         <source>Probability Density</source>
         <translation>概率密度</translation>
     </message>
     <message>
-        <location filename="ui/fitting_canvas.py" line="50"/>
+        <location filename="ui/fitting_canvas.py" line="49"/>
         <source>Target</source>
         <translation>目标</translation>
     </message>
     <message>
-        <location filename="ui/fitting_canvas.py" line="51"/>
+        <location filename="ui/fitting_canvas.py" line="50"/>
         <source>Fitted Sum</source>
         <translation>拟合总和</translation>
     </message>
     <message>
-        <location filename="ui/fitting_canvas.py" line="39"/>
+        <location filename="ui/fitting_canvas.py" line="38"/>
         <source>Fitting Canvas</source>
         <translation>拟合图表</translation>
     </message>
     <message>
-        <location filename="ui/fitting_canvas.py" line="37"/>
+        <location filename="ui/fitting_canvas.py" line="36"/>
         <source>Grain size</source>
         <translation>粒径</translation>
     </message>
@@ -636,47 +651,47 @@ Then you can disable this option or save your data separately.</source>
     <name>GUIResolver</name>
     <message>
         <location filename="resolvers/gui_resolver.py" line="65"/>
-        <source>Name of current sample is None.</source>
+        <source>Name of sample [%s] is None.</source>
         <translation>当前样品名为None。</translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="68"/>
-        <source>Name of current sample is empty.</source>
+        <source>Name of sample [%s] is empty.</source>
         <translation>当前样品名为空。</translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="71"/>
-        <source>x data of current sample is None.</source>
+        <source>x data of sample [%s] is None.</source>
         <translation>当前样品的x数据是None。</translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="74"/>
-        <source>y data of current sample is None.</source>
+        <source>y data of sample [%s] is None.</source>
         <translation>当前样品的y数据是None。</translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="77"/>
-        <source>The x data type of current sample is invalid.</source>
+        <source>The x data type of sample [%s] is invalid.</source>
         <translation>当前样品的x数据的类型是无效的。</translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="80"/>
-        <source>The y data type of current sample is invalid.</source>
+        <source>The y data type of sample [%s] is invalid.</source>
         <translation>当前样品的y数据的类型是无效的。</translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="83"/>
-        <source>The lengths of x and y data are not equal.</source>
+        <source>The lengths of x and y data in sample [%s] are not equal.</source>
         <translation>当前样品的x、y数据的长度不一致。</translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="86"/>
-        <source>There is NaN value in x data of current sample.</source>
+        <source>There is NaN value in x data of sample [%s].</source>
         <translation>当前样品的x数据中存在NaN的值。</translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="89"/>
-        <source>There is NaN value in y data of current sample.</source>
+        <source>There is NaN value in y data of sample [%s].</source>
         <translation>当前样品的y数据中存在NaN的值。</translation>
     </message>
     <message>
@@ -773,72 +788,72 @@ Then you can disable this option or save your data separately.</source>
         <translation>删除</translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="242"/>
+        <location filename="ui/main_window.py" line="248"/>
         <source>Sample Name</source>
         <translation>样品名称</translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="244"/>
+        <location filename="ui/main_window.py" line="250"/>
         <source>Mean Squared Error</source>
         <translation>平均平方误差</translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="249"/>
+        <location filename="ui/main_window.py" line="255"/>
         <source>Fraction</source>
         <translation>含量</translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="253"/>
+        <location filename="ui/main_window.py" line="259"/>
         <source>Variance</source>
         <translation>方差</translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="254"/>
+        <location filename="ui/main_window.py" line="260"/>
         <source>Standard Deviation</source>
         <translation>标准差</translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="255"/>
+        <location filename="ui/main_window.py" line="261"/>
         <source>Skewness</source>
         <translation>斜度</translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="256"/>
+        <location filename="ui/main_window.py" line="262"/>
         <source>Kurtosis</source>
         <translation>峰度</translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="257"/>
+        <location filename="ui/main_window.py" line="263"/>
         <source>Beta</source>
         <translation>β</translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="258"/>
+        <location filename="ui/main_window.py" line="264"/>
         <source>Eta</source>
         <translation>η</translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="259"/>
+        <location filename="ui/main_window.py" line="265"/>
         <source>X Offset</source>
         <translation>X偏移</translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="280"/>
+        <location filename="ui/main_window.py" line="286"/>
         <source>Unknown exception occurred when writing fitted data to the table widget.</source>
         <translation>将拟合的数据写入到表格控件时发生未知的异常。</translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="250"/>
+        <location filename="ui/main_window.py" line="256"/>
         <source>Mean</source>
         <translation>平均粒径</translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="251"/>
+        <location filename="ui/main_window.py" line="257"/>
         <source>Median</source>
         <translation>中值粒径</translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="252"/>
+        <location filename="ui/main_window.py" line="258"/>
         <source>Mode</source>
         <translation>模态粒径</translation>
     </message>
