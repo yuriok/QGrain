@@ -8,8 +8,9 @@ import numpy as np
 from PySide2.QtCore import QObject, Qt, QThread, Signal
 from PySide2.QtWidgets import QFileDialog, QMessageBox
 
-from data import DataLoader, DataWriter, FittedData, GrainSizeData, SampleData
 from algorithms import DistributionType
+from data import DataLoader, DataWriter, FittedData, GrainSizeData, SampleData
+from resolvers import FittingTask
 
 
 class DataManager(QObject):
@@ -46,7 +47,7 @@ class DataManager(QObject):
         self.data_writer.sigWorkFinished.connect(self.on_saving_work_finished)
 
         # Settings
-        self.auto_record = True
+        self.auto_record_flag = True
 
         self.file_dialog = QFileDialog()
         self.msg_box = QMessageBox()
@@ -106,11 +107,10 @@ class DataManager(QObject):
         self.logger.debug("Focus sample data changed, the data has been emitted.")
 
     def on_fitting_epoch_suceeded(self, data: FittedData):
-        non_nan = data.get_non_nan_copy()
-        self.logger.debug("Epoch for sample [%s] has finished, mean squared error is [%E], statistic is: [%s].", non_nan.name, non_nan.mse, non_nan.statistic)
+        self.logger.debug("Epoch for sample [%s] has finished, mean squared error is [%E], statistic is: [%s].", data.name, data.mse, data.statistic)
         self.current_fitted_data = data
-        if self.auto_record:
-            if data.has_nan():
+        if self.auto_record_flag:
+            if data.has_invalid_value():
                 self.record_msg_box.setWindowTitle(self.tr("Warning"))
                 self.record_msg_box.setText(self.tr("The fitted data may be invalid, at least one NaN value occurs."))
                 result = self.record_msg_box.exec_()
@@ -118,22 +118,27 @@ class DataManager(QObject):
                     self.logger.debug("Fitted data of sample [%s] was discarded by user.", data.name)
                     return
                 else:
-                    self.record_data()
+                    self.record_current_data()
             else:
-                self.record_data()
+                self.record_current_data()
 
-    def on_multiprocessing_task_finished(self, succeeded_results, failed_tasks):
+    def on_multiprocessing_task_finished(self, succeeded_results: List[FittedData], failed_tasks: List[FittingTask]):
         for fitted_data in succeeded_results:
-            non_nan = fitted_data.get_non_nan_copy()
+            if fitted_data.has_invalid_value():
+                self.logger.warning("There is invalid value in the fitted data of sample [%s].", fitted_data.name)
+                self.gui_logger.warning(self.tr("There is invalid value in the fitted data of sample [%s]."), fitted_data.name)
             self.recorded_data_list.append(non_nan)
             self.sigDataRecorded.emit(non_nan)
+        for failed_task in failed_tasks:
+            self.logger.warning("Fitting task of sample [%s] failed.", failed_task.sample_name)
+            self.gui_logger.warning(self.tr("Fitting task of sample [%s] failed."), failed_task.sample_name)
 
     def on_settings_changed(self, kwargs: dict):
         for setting, value in kwargs.items():
             setattr(self, setting, value)
             self.logger.debug("Setting [%s] have been changed to [%s].", setting, value)
 
-    def record_data(self):
+    def record_current_data(self):
         if self.current_fitted_data is None:
             self.logger.debug("There is no fitted data to record, ignored.")
             self.gui_logger.warning(self.tr("There is no fitted data to record."))

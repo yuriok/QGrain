@@ -17,7 +17,6 @@ class FittingCanvas(QWidget):
     
     def __init__(self, parent=None, **kargs):
         super().__init__(parent, **kargs)
-        self.sample_id = self.tr("Unknown")
         self.init_ui()
 
     def init_ui(self):
@@ -93,30 +92,38 @@ class FittingCanvas(QWidget):
             self.component_lines.append(line)
         self.logger.debug("Items added.")
 
-    def on_target_data_changed(self, sample_id, x, y):
-        self.sample_id = sample_id
-        self.plot_widget.plotItem.setTitle(self.title_format % sample_id)
-        self.logger.debug("Target data has been changed to [%s].", sample_id)
+    def on_target_data_changed(self, sample_name, x, y):
+        self.logger.debug("Target data has been changed to [%s].", sample_name)
+
+    def update_canvas_by_data(self, data: FittedData, current_iteration=None):
+        # update the title of canvas
+        sample_name = data.name
+        if sample_name is None or sample_name =="":
+            sample_name = "UNKNOWN"
+        if current_iteration is None:
+            self.plot_widget.plotItem.setTitle(self.title_format % sample_name)
+        else:
+            self.plot_widget.plotItem.setTitle(self.title_format % "{0} iter({1})".format(sample_name, current_iteration))
+        # update target
+        # target data (i.e. grain size classes and distribution) should have no nan value indeed
+        # it should be checked during load data progress
+        self.target_item.setData(*data.target, **self.target_style)
+        # update sum
+        sum_x, sum_y = data.sum
+        self.sum_item.setData(sum_x, np.nan_to_num(sum_y), **self.sum_style)
+        # update components
+        for (x, y), (name, curve_item), style in zip(data.components, self.component_curves, self.component_styles):
+            curve_item.setData(x, np.nan_to_num(y), **style)
+        for i, line_item in enumerate(self.component_lines):
+            mean_value = data.statistic[i]["mean"]
+            # jump this iteration if value is nan or inf
+            if np.isnan(mean_value) or np.isinf(mean_value):
+                continue
+            # because x axis is in log mode, it's necessary to calculate the log10 to make it correct
+            line_item.setValue(math.log10(mean_value))
 
     def on_fitting_epoch_suceeded(self, data: FittedData):
-        non_nan_data = data.get_non_nan_copy()
-        self.target_item.setData(*non_nan_data.target, **self.target_style)
-        self.sum_item.setData(*non_nan_data.sum, **self.sum_style)
-
-        for (x, y), (name, curve_item), style in zip(non_nan_data.components, self.component_curves, self.component_styles):
-            curve_item.setData(x, y, **style)
-        for i, line_item in enumerate(self.component_lines):
-            line_item.setValue(math.log10(non_nan_data.statistic[i]["mean"]))
-        self.logger.debug("Epoch fitting finished. Data of DataItem has updated.")
-
+        self.update_canvas_by_data(data)
 
     def on_single_iteration_finished(self, current_iteration, data: FittedData):
-        non_nan_data = data.get_non_nan_copy()
-        self.target_item.setData(*non_nan_data.target, **self.target_style)
-        self.sum_item.setData(*non_nan_data.sum, **self.sum_style)
-        for (x, y), (name, curve_item), style in zip(non_nan_data.components, self.component_curves, self.component_styles):
-            curve_item.setData(x, y, **style)
-        for i, line_item in enumerate(self.component_lines):
-            line_item.setValue(math.log10(non_nan_data.statistic[i]["mean"]))
-        self.plot_widget.plotItem.setTitle(self.title_format % "{0} iter({1})".format(self.sample_id, current_iteration))
-
+        self.update_canvas_by_data(data, current_iteration=current_iteration)

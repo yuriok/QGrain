@@ -261,7 +261,7 @@ class ControlPanel(QWidget):
         self.logger.debug("Record data signal emitted.")
 
     def on_fitting_epoch_suceeded(self, data: FittedData):
-        if data.has_nan():
+        if self.auto_run_flag and data.has_invalid_value():
             self.logger.warning("The fitted data may be not valid, auto run stoped.")
             self.gui_logger.warning(self.tr("The fitted data may be not valid, auto run stoped."))
             self.auto_run_flag = False
