@@ -22,8 +22,10 @@ class DataManager(QObject):
     logger = logging.getLogger("root.data.DataManager")
     gui_logger = logging.getLogger("GUI")
 
-    def __init__(self):
+    def __init__(self, host_widget):
         super().__init__()
+        # to attach msg boxed on this widget
+        self.host_widget = host_widget
         # Data
         self.grain_size_data = None  # type: GrainSizeData
         self.current_fitted_data = None  # type: FittedData
@@ -49,15 +51,15 @@ class DataManager(QObject):
         # Settings
         self.auto_record_flag = True
 
-        self.file_dialog = QFileDialog()
-        self.msg_box = QMessageBox()
+        self.file_dialog = QFileDialog(self.host_widget)
+        self.msg_box = QMessageBox(self.host_widget)
         self.msg_box.setWindowFlags(Qt.Drawer)
-        self.load_msg_box = QMessageBox()
+        self.load_msg_box = QMessageBox(self.host_widget)
         self.load_msg_box.addButton(QMessageBox.StandardButton.Retry)
         self.load_msg_box.addButton(QMessageBox.StandardButton.Ok)
         self.load_msg_box.setDefaultButton(QMessageBox.StandardButton.Retry)
         self.load_msg_box.setWindowFlags(Qt.Drawer)
-        self.record_msg_box = QMessageBox()
+        self.record_msg_box = QMessageBox(self.host_widget)
         self.record_msg_box.addButton(QMessageBox.StandardButton.Discard)
         self.record_msg_box.addButton(QMessageBox.StandardButton.Ok)
         self.record_msg_box.setDefaultButton(QMessageBox.StandardButton.Discard)

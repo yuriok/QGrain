@@ -57,9 +57,9 @@ class MainWindow(QMainWindow):
         self.multiprocessing_resolver = MultiProcessingResolver()
         self.multiprocessing_resolver.moveToThread(self.multiprocessing_fitting_thread)
         self.multiprocessing_fitting_thread.start()
-        self.data_manager = DataManager()
+        self.data_manager = DataManager(self)
         self.connect_all()
-        self.msg_box = QMessageBox()
+        self.msg_box = QMessageBox(self)
         self.msg_box.setWindowFlags(Qt.Drawer)
 
     def show_message(self, message):

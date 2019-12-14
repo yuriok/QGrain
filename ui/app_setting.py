@@ -12,7 +12,7 @@ class AppSetting(QWidget):
         super().__init__()
         self.language_options = [(self.tr("Simplified Chinese"), "zh_CN"),
                                  (self.tr("English"), "en")]
-        self.msg_box = QMessageBox()
+        self.msg_box = QMessageBox(self)
         self.msg_box.setWindowFlags(Qt.Drawer)
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.init_ui()
