@@ -127,8 +127,8 @@ class DataManager(QObject):
             if fitted_data.has_invalid_value():
                 self.logger.warning("There is invalid value in the fitted data of sample [%s].", fitted_data.name)
                 self.gui_logger.warning(self.tr("There is invalid value in the fitted data of sample [%s]."), fitted_data.name)
-            self.recorded_data_list.append(non_nan)
-            self.sigDataRecorded.emit(non_nan)
+            self.recorded_data_list.append(fitted_data)
+            self.sigDataRecorded.emit(fitted_data)
         for failed_task in failed_tasks:
             self.logger.warning("Fitting task of sample [%s] failed.", failed_task.sample_name)
             self.gui_logger.warning(self.tr("Fitting task of sample [%s] failed."), failed_task.sample_name)
