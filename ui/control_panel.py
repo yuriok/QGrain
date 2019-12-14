@@ -230,9 +230,9 @@ class ControlPanel(QWidget):
 
     def on_data_loaded(self, grain_size_data: GrainSizeData):
         self.sample_names = [sample.name for sample in grain_size_data.sample_data_list]
-        self.logger.debug("Data was loaded.")
+        self.logger.info("Data was loaded.")
         self.data_index = 0
-        self.logger.debug("Data index has been set to 0.")
+        self.logger.info("Data index has been set to 0.")
 
     def on_data_selected(self, index):
         self.data_index = index
@@ -283,12 +283,12 @@ class ControlPanel(QWidget):
         # from current sample to fit, to avoid that it need to resart from the first sample every time
         self.data_index = self.data_index
         self.auto_run_flag = True
-        self.logger.debug("Auto run started from sample [%s].", self.current_name)
+        self.logger.info("Auto run started from sample [%s].", self.current_name)
 
     def on_cancel_run_clicked(self):
         if self.auto_run_flag:
             self.auto_run_flag = False
-            self.logger.debug("Auto run was canceled.")
+            self.logger.info("Auto run was canceled.")
         
         self.sigGUIResolverTaskCanceled.emit()
 
@@ -303,7 +303,7 @@ class ControlPanel(QWidget):
     def on_fitting_failed(self, message):
         if self.auto_run_flag:
             self.auto_run_flag = False
-            self.logger.debug("Auto run was canceled.")
+            self.logger.info("Auto run was canceled.")
         self.gui_logger.error(self.tr("Fitting failed. {0}").format(message))
         self.msg_box.setWindowTitle(self.tr("Error"))
         self.msg_box.setText(self.tr("Fitting failed. {0}").format(message))

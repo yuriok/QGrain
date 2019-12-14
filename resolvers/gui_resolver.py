@@ -37,20 +37,20 @@ class GUIResolver(QObject, Resolver):
 
     def on_component_number_changed(self, ncomp: int):
         self.ncomp = ncomp
-        self.logger.debug("Component Number has been changed to [%d].", ncomp)
+        self.logger.info("Component Number has been changed to [%d].", ncomp)
 
     def on_distribution_type_changed(self, distribution_type: DistributionType):
         self.distribution_type = distribution_type
-        self.logger.debug("Distribution type has been changed to [%s].", distribution_type)
+        self.logger.info("Distribution type has been changed to [%s].", distribution_type)
 
     def on_settings_changed(self, kwargs: dict):
         for setting, value in kwargs.items():
             setattr(self, setting, value)
-            self.logger.debug("Setting [%s] have been changed to [%s].", setting, value)
+            self.logger.info("Setting [%s] have been changed to [%s].", setting, value)
 
     def on_algorithm_settings_changed(self, settings: dict):
         self.change_settings(**settings)
-        self.logger.debug("Algorithm settings have been changed to [%s].", settings)
+        self.logger.info("Algorithm settings have been changed to [%s].", settings)
 
     def on_target_data_changed(self, sample_name: str, x, y):
         self.logger.debug("Target data has been changed to [%s].", sample_name)
