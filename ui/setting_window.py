@@ -11,8 +11,8 @@ from ui import AlgorithmSetting, DataSetting, AppSetting
 class SettingWindow(QMainWindow):
     sigSaveSettings = Signal(QSettings)
     sigRestoreSettings = Signal(QSettings)
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.settings = QSettings("./settings/qgrain.ini", QSettings.Format.IniFormat)
         self.init_ui()
         # self.setWindowFlags(Qt.Drawer | Qt.WindowStaysOnTopHint)
@@ -47,7 +47,7 @@ class SettingWindow(QMainWindow):
         self.main_layout.addWidget(self.save_button, 3, 1)
 
 
-    def init_settings(self):
+    def setup_all(self):
         self.sigRestoreSettings.emit(self.settings)
         self.sigSaveSettings.emit(self.settings)
 
