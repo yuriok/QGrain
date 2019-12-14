@@ -137,7 +137,7 @@ class MainWindow(QMainWindow):
         self.control_panel.sigMultiProcessingTaskStarted.connect(self.multiprocessing_resolver.execute_tasks)
         # Connect directly
         self.control_panel.try_fit_button.clicked.connect(self.gui_resolver.try_fit)
-        self.control_panel.record_button.clicked.connect(self.data_manager.record_data)
+        self.control_panel.record_button.clicked.connect(self.data_manager.record_current_data)
         
         self.data_manager.sigDataLoaded.connect(self.on_data_loaded)
         self.data_manager.sigDataLoaded.connect(self.control_panel.on_data_loaded)
@@ -228,17 +228,23 @@ class MainWindow(QMainWindow):
             self.recorded_data_table.setColumnCount(ncomp*column_span+2)
 
         def write(row, col, value, e=False):
-            if type(value) == str:
-                item = QTableWidgetItem(value) 
-            else:
-                if e:
-                    item = QTableWidgetItem("{0:.4e}".format(value))
+            str_value = "UNKNOWN"
+            if np.isreal(value):
+                if np.isnan(value):
+                    str_value = "NaN"
+                elif np.isinf(value):
+                    str_value = "Inf"
+                elif e:
+                    str_value = "{0:.4e}".format(value)
                 else:
-                    item = QTableWidgetItem("{0:.4f}".format(value))
+                    str_value = "{0:.4f}".format(value)
+            else:
+                str_value = str(value)
+            item = QTableWidgetItem(str_value)
             item.setTextAlignment(Qt.AlignCenter)
             self.recorded_data_table.setItem(row, col, item)
         try:
-            # Write Header
+            # write headers
             write(0, 0, self.tr("Sample Name"))
             self.recorded_data_table.setSpan(0, 0, self.TABLE_HEADER_ROWS, 1)
             write(0, 1, self.tr("Mean Squared Error"))

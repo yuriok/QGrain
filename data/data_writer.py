@@ -2,12 +2,14 @@ import csv
 import json
 import logging
 import os
+from datetime import date, datetime, time
 from typing import List
 
 import numpy as np
 import xlsxwriter
 import xlwt
 from PySide2.QtCore import QObject, Signal
+from xlwt import Formula
 
 from data import FittedData
 
@@ -117,28 +119,40 @@ class DataWriter(QObject):
             f.close()
 
     def try_save_as_excel(self, filename, classes, data: List[FittedData], is_xlsx: bool):
-        def check(value):
+        # the local func to check the value validation
+        # must block unaccepted values before calling the `write` func of worksheet
+        def check_value(value):
+            accepted_types = (bool, datetime, date, time, Formula)
             if value is None:
                 return "None"
-            elif value is np.nan:
-                return "NaN"
-            elif value == "":
-                return "Unknown"
-            else:
+            # if value is real number (i.e. int, float, numpy.int32, numpy.float32, etc.)
+            elif np.isreal(value):
+                # this func will both recognize float("nan") and numpy.nan
+                if np.isnan(value):
+                    return "NaN"
+                # similar to above
+                elif np.isinf(value):
+                    return "Inf"
+                else:
+                    return value
+            elif type(value) in accepted_types:
                 return value
+            # if the type of value is unaccepted, use its readable str to write
+            else:
+                return str(value)
         
         def write(sheet, row, col, value, style):
-            sheet.write(row, col, check(value), style)
+            sheet.write(row, col, check_value(value), style)
 
         if is_xlsx:
             # see https://xlsxwriter.readthedocs.io/worksheet.html#merge_range
             def mwrite(sheet, lrow, lcol, rrow, rcol, value, style):
-                sheet.merge_range(lrow, lcol, rrow, rcol, check(value), style)
+                sheet.merge_range(lrow, lcol, rrow, rcol, check_value(value), style)
             def set_col(sheet, col, width):
                 sheet.set_column(col, col, width)
         else:
             def mwrite(sheet, lrow, lcol, rrow, rcol, value, style):
-                sheet.write_merge(lrow, rrow, lcol, rcol, check(value), style)
+                sheet.write_merge(lrow, rrow, lcol, rcol, check_value(value), style)
             def set_col(sheet, col, width):
                 sheet.col(col).width = width*256
         
@@ -215,7 +229,6 @@ class DataWriter(QObject):
                 current_global_style = dark_global_style
                 current_mse_style = dark_mse_style
                 current_fraction_style = dark_fraction_style
-
             write(summary_sheet, row, 0, fitted_data.name, current_global_style)
             write(summary_sheet, row, 1, fitted_data.mse, current_mse_style)
             for i, comp in enumerate(fitted_data.statistic):
@@ -248,7 +261,6 @@ class DataWriter(QObject):
                 current_global_style = detail_global_style
             else:
                 current_global_style = dark_detail_global_style
-            
             ncomp = len(fitted_data.statistic)
             # rows: target + fitted sumn + components
             mwrite(detail_sheet, row, 0, row+ncomp+1, 0, fitted_data.name, current_global_style)

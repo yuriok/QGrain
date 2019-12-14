@@ -28,27 +28,8 @@ class FittedData:
         self.mse = mse  # Mean Squared Error
         self.components = components
         self.statistic = statistic
-    
-    def get_non_nan_copy(self):
-        sample_name = self.name
-        if sample_name is None or sample_name =="":
-            sample_name = "Unknown"
-        mse = np.nan_to_num(self.mse)
-        target = (np.nan_to_num(self.target[0]), np.nan_to_num(self.target[1]))
-        fitted_sum = (np.nan_to_num(self.sum[0]), np.nan_to_num(self.sum[1]))
-        components = []
-        for component in self.components:
-            components.append((np.nan_to_num(component[0]), np.nan_to_num(component[1])))
-        statistic = copy.deepcopy(self.statistic)
-        for i, comp in enumerate(statistic):
-            for name, value in comp.items():
-                if value is np.nan:
-                    statistic[i][name] = 0.404404404
 
-        return FittedData(sample_name, target, fitted_sum, mse, components, statistic)
-
-
-    def has_nan(self) -> bool:
+    def has_invalid_value(self) -> bool:
         if self.name is None or self.name == "":
             return True
         if self.mse is np.nan:
@@ -68,7 +49,6 @@ class FittedData:
                 return True
         for i, comp in enumerate(self.statistic):
             for name, value in comp.items():
-                if value is np.nan:
+                if np.isreal(value) and np.isnan(value):
                     return True
-        
         return False
