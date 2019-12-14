@@ -65,8 +65,8 @@ def main():
     setup_logging(main_window)
     main_window.show()
     # TODO: use interface
-    main_window.control_panel.init_conditions()
-    main_window.settings_window.init_settings()
+    main_window.setup_all()
+
     sys.exit(app.exec_())
 
 if __name__ == "__main__":

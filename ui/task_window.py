@@ -21,8 +21,8 @@ class TaskWindow(QMainWindow):
     WIDTH_WEIGHT = 16
     HEIGHT_WEIGHT = 9
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.init_ui()
         self.task_state_labels = {}
 

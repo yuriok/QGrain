@@ -38,7 +38,6 @@ class ControlPanel(QWidget):
         
         self.init_ui()
         self.connect_all()
-        self.setMaximumHeight(320)
         
         self.msg_box = QMessageBox(self)
         self.msg_box.setWindowFlags(Qt.Drawer)
@@ -316,7 +315,7 @@ class ControlPanel(QWidget):
         self.msg_box.setText(self.tr("Fitting failed. {0}").format(message))
         self.msg_box.exec_()
 
-    def init_conditions(self):
+    def setup_all(self):
         self.ncomp = 3
         self.distribution_weibull_radio_button.setChecked(True)
         # TODO: Move when the lognormal is added
