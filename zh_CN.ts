@@ -156,11 +156,6 @@ It means the iteration number of reaching the same minimum.</source>
     </message>
     <message>
         <location filename="ui/app_setting.py" line="37"/>
-        <source>Language has been changed to [%s]. Please restart the app.</source>
-        <translation type="obsolete">语言已经变为[%s]。请重新启动应用。</translation>
-    </message>
-    <message>
-        <location filename="ui/app_setting.py" line="37"/>
         <source>Language has been changed to [%s]. Please restart the app to apply this setting.</source>
         <translation>语言已经变为[%s]。请重新启动App以应用设置。</translation>
     </message>
@@ -616,11 +611,6 @@ Then you can disable this option or save your data separately.</source>
 </context>
 <context>
     <name>FittingCanvas</name>
-    <message>
-        <location filename="ui/fitting_canvas.py" line="21"/>
-        <source>Unknown</source>
-        <translation type="obsolete">未知</translation>
-    </message>
     <message>
         <location filename="ui/fitting_canvas.py" line="35"/>
         <source>Probability Density</source>
