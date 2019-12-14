@@ -99,7 +99,6 @@ class DataManager(QObject):
     def on_focus_sample_changed(self, index: int):
         if self.grain_size_data is None:
             self.logger.info("Grain size data is still None, ignored.")
-            # TODO: add msg box to hint that whether to load data
             return
         sample_name = self.grain_size_data.sample_data_list[index].name
         classes = self.grain_size_data.classes
