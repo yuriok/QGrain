@@ -648,12 +648,12 @@ Then you can disable this option or save your data separately.</source>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="86"/>
-        <source>There is `Nan` value in x data of current sample.</source>
+        <source>There is NaN value in x data of current sample.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="89"/>
-        <source>There is `Nan` value in y data of current sample.</source>
+        <source>There is NaN value in y data of current sample.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
