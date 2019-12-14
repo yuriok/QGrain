@@ -98,7 +98,8 @@ class DataManager(QObject):
 
     def on_focus_sample_changed(self, index: int):
         if self.grain_size_data is None:
-            self.logger.debug("Grain size data is still None, ignored.")
+            self.logger.info("Grain size data is still None, ignored.")
+            # TODO: add msg box to hint that whether to load data
             return
         sample_name = self.grain_size_data.sample_data_list[index].name
         classes = self.grain_size_data.classes
@@ -107,7 +108,7 @@ class DataManager(QObject):
         self.logger.debug("Focus sample data changed, the data has been emitted.")
 
     def on_fitting_epoch_suceeded(self, data: FittedData):
-        self.logger.debug("Epoch for sample [%s] has finished, mean squared error is [%E], statistic is: [%s].", data.name, data.mse, data.statistic)
+        self.logger.info("Epoch for sample [%s] has finished, mean squared error is [%E], statistic is: [%s].", data.name, data.mse, data.statistic)
         self.current_fitted_data = data
         if self.auto_record_flag:
             if data.has_invalid_value():
@@ -115,7 +116,7 @@ class DataManager(QObject):
                 self.record_msg_box.setText(self.tr("The fitted data may be invalid, at least one NaN value occurs."))
                 result = self.record_msg_box.exec_()
                 if result == QMessageBox.Discard:
-                    self.logger.debug("Fitted data of sample [%s] was discarded by user.", data.name)
+                    self.logger.info("Fitted data of sample [%s] was discarded by user.", data.name)
                     return
                 else:
                     self.record_current_data()
@@ -136,11 +137,11 @@ class DataManager(QObject):
     def on_settings_changed(self, kwargs: dict):
         for setting, value in kwargs.items():
             setattr(self, setting, value)
-            self.logger.debug("Setting [%s] have been changed to [%s].", setting, value)
+            self.logger.info("Setting [%s] have been changed to [%s].", setting, value)
 
     def record_current_data(self):
         if self.current_fitted_data is None:
-            self.logger.debug("There is no fitted data to record, ignored.")
+            self.logger.info("There is no fitted data to record, ignored.")
             self.gui_logger.warning(self.tr("There is no fitted data to record."))
             self.msg_box.setWindowTitle(self.tr("Warning"))
             self.msg_box.setText(self.tr("There is no fitted data to record."))
@@ -154,14 +155,14 @@ class DataManager(QObject):
         for row in rows:
             value_to_remove = self.recorded_data_list[row-offset]
             self.recorded_data_list.remove(value_to_remove)
-            self.logger.debug("Record of sample [%s] has been removed.", value_to_remove.name)
+            self.logger.info("Record of sample [%s] has been removed.", value_to_remove.name)
             offset += 1
 
     def save_data(self):
         filename, type_str = self.file_dialog.getSaveFileName(None, self.tr("Save Recorded Data"), None, "Excel (*.xlsx);;97-2003 Excel (*.xls);;CSV (*.csv)")
         self.logger.info("File path to save is [%s].", filename)
         if filename is None or filename == "":
-            self.logger.debug("The path is None or empty, ignored.")
+            self.logger.info("The path is None or empty, ignored.")
             return
         if ".xlsx" in type_str:
             file_type = "xlsx"
@@ -171,7 +172,7 @@ class DataManager(QObject):
             file_type = "csv"
         else:
             raise ValueError(type_str)
-        self.logger.debug("Selected file type is [%s].", file_type)
+        self.logger.info("Selected file type is [%s].", file_type)
         self.sigDataSavingStarted.emit(filename, self.grain_size_data.classes, self.recorded_data_list, file_type)
 
     def on_saving_work_finished(self, state):

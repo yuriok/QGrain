@@ -216,7 +216,7 @@ class MainWindow(QMainWindow):
                 item = QTableWidgetItem("{0:.4f}".format(value))
                 item.setTextAlignment(Qt.AlignCenter)
                 self.raw_data_table.setItem(i, j, item)
-        self.logger.debug("Data was loaded, and has been update to the table.")
+        self.logger.info("Data was loaded, and has been update to the table.")
 
     def on_data_recorded(self, fitted_data: FittedData):
         # the 2 additional rows are headers
@@ -290,7 +290,7 @@ class MainWindow(QMainWindow):
     def on_settings_changed(self, kwargs: dict):
         for setting, value in kwargs.items():
             setattr(self, setting, value)
-            self.logger.debug("Setting [%s] have been changed to [%s].", setting, value)
+            self.logger.info("Setting [%s] have been changed to [%s].", setting, value)
 
     def on_data_item_clicked(self, row, column):
         self.sigDataSelected.emit(row)
@@ -319,7 +319,7 @@ class MainWindow(QMainWindow):
         self.recorded_data_count -= offset
         records_to_remove = [row-self.TABLE_HEADER_ROWS for row in rows_to_remove]
         self.sigRemoveRecords.emit(records_to_remove)
-        self.logger.debug("The rows of recorded data will be remove are: [%s].", records_to_remove)
+        self.logger.info("The rows of recorded data will be remove are: [%s].", records_to_remove)
 
     def on_task_canceled(self):
         self.gui_resolver.cancel()
