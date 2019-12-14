@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="en">
+<!DOCTYPE TS><TS version="1.1">
 <context>
     <name>AboutWindow</name>
     <message>
@@ -140,7 +140,7 @@ Max Iteration</source>
     </message>
     <message>
         <location filename="ui/app_setting.py" line="37"/>
-        <source>Language has been changed to [%s]. Please restart the app.</source>
+        <source>Language has been changed to [%s]. Please restart the app to apply this setting.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -335,12 +335,12 @@ Note: It will only record the LAST fitted data, NOT CURRENT SAMPLE.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/control_panel.py" line="161"/>
+        <location filename="ui/control_panel.py" line="297"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/control_panel.py" line="162"/>
+        <location filename="ui/control_panel.py" line="298"/>
         <source>The data has not been loaded, the operation is invalid.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -350,22 +350,22 @@ Note: It will only record the LAST fitted data, NOT CURRENT SAMPLE.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/control_panel.py" line="252"/>
+        <location filename="ui/control_panel.py" line="266"/>
         <source>The fitted data may be not valid, auto run stoped.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/control_panel.py" line="258"/>
+        <location filename="ui/control_panel.py" line="272"/>
         <source>The auto run has reached the last sample and stoped.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/control_panel.py" line="290"/>
+        <location filename="ui/control_panel.py" line="309"/>
         <source>Fitting failed. {0}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/control_panel.py" line="289"/>
+        <location filename="ui/control_panel.py" line="308"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -411,42 +411,42 @@ Note: It will only record the LAST fitted data, NOT CURRENT SAMPLE.</source>
 <context>
     <name>DataManager</name>
     <message>
-        <location filename="data/data_manager.py" line="65"/>
+        <location filename="data/data_manager.py" line="66"/>
         <source>Select Data File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="84"/>
+        <location filename="data/data_manager.py" line="85"/>
         <source>Data has been loaded.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="85"/>
+        <location filename="data/data_manager.py" line="86"/>
         <source>Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="86"/>
+        <location filename="data/data_manager.py" line="87"/>
         <source>The data has been loaded from the file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="90"/>
+        <location filename="data/data_manager.py" line="91"/>
         <source>Data has not been loaded correctly, check and try it again please.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="180"/>
+        <location filename="data/data_manager.py" line="185"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="92"/>
+        <location filename="data/data_manager.py" line="93"/>
         <source>Data loading failed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="139"/>
+        <location filename="data/data_manager.py" line="144"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -456,27 +456,37 @@ Note: It will only record the LAST fitted data, NOT CURRENT SAMPLE.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="140"/>
+        <location filename="data/data_manager.py" line="128"/>
+        <source>There is invalid value in the fitted data of sample [%s].</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="data/data_manager.py" line="133"/>
+        <source>Fitting task of sample [%s] failed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="data/data_manager.py" line="145"/>
         <source>There is no fitted data to record.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="155"/>
+        <location filename="data/data_manager.py" line="160"/>
         <source>Save Recorded Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="174"/>
+        <location filename="data/data_manager.py" line="179"/>
         <source>File saved.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="176"/>
+        <location filename="data/data_manager.py" line="181"/>
         <source>The data has been saved to the file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="data/data_manager.py" line="181"/>
+        <location filename="data/data_manager.py" line="186"/>
         <source>Data saving failed.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -561,17 +571,17 @@ Then you can disable this option or save your data separately.</source>
 <context>
     <name>DataWriter</name>
     <message>
-        <location filename="data/data_writer.py" line="379"/>
+        <location filename="data/data_writer.py" line="391"/>
         <source>File saving failed, check the permission and occupation please.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="data/data_writer.py" line="374"/>
+        <location filename="data/data_writer.py" line="386"/>
         <source>File has been saved.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="data/data_writer.py" line="334"/>
+        <location filename="data/data_writer.py" line="346"/>
         <source>The chart style file can not been opened, use default styles next.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -579,32 +589,27 @@ Then you can disable this option or save your data separately.</source>
 <context>
     <name>FittingCanvas</name>
     <message>
-        <location filename="ui/fitting_canvas.py" line="21"/>
-        <source>Unknown</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="ui/fitting_canvas.py" line="36"/>
+        <location filename="ui/fitting_canvas.py" line="35"/>
         <source>Probability Density</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/fitting_canvas.py" line="37"/>
+        <location filename="ui/fitting_canvas.py" line="36"/>
         <source>Grain size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/fitting_canvas.py" line="39"/>
+        <location filename="ui/fitting_canvas.py" line="38"/>
         <source>Fitting Canvas</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/fitting_canvas.py" line="50"/>
+        <location filename="ui/fitting_canvas.py" line="49"/>
         <source>Target</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/fitting_canvas.py" line="51"/>
+        <location filename="ui/fitting_canvas.py" line="50"/>
         <source>Fitted Sum</source>
         <translation type="unfinished"></translation>
     </message>
@@ -613,47 +618,47 @@ Then you can disable this option or save your data separately.</source>
     <name>GUIResolver</name>
     <message>
         <location filename="resolvers/gui_resolver.py" line="65"/>
-        <source>Name of current sample is None.</source>
+        <source>Name of sample [%s] is None.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="68"/>
-        <source>Name of current sample is empty.</source>
+        <source>Name of sample [%s] is empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="71"/>
-        <source>x data of current sample is None.</source>
+        <source>x data of sample [%s] is None.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="74"/>
-        <source>y data of current sample is None.</source>
+        <source>y data of sample [%s] is None.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="77"/>
-        <source>The x data type of current sample is invalid.</source>
+        <source>The x data type of sample [%s] is invalid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="80"/>
-        <source>The y data type of current sample is invalid.</source>
+        <source>The y data type of sample [%s] is invalid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="83"/>
-        <source>The lengths of x and y data are not equal.</source>
+        <source>The lengths of x and y data in sample [%s] are not equal.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="86"/>
-        <source>There is NaN value in x data of current sample.</source>
+        <source>There is NaN value in x data of sample [%s].</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="89"/>
-        <source>There is NaN value in y data of current sample.</source>
+        <source>There is NaN value in y data of sample [%s].</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -750,72 +755,72 @@ Then you can disable this option or save your data separately.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="242"/>
+        <location filename="ui/main_window.py" line="248"/>
         <source>Sample Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="244"/>
+        <location filename="ui/main_window.py" line="250"/>
         <source>Mean Squared Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="249"/>
+        <location filename="ui/main_window.py" line="255"/>
         <source>Fraction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="250"/>
+        <location filename="ui/main_window.py" line="256"/>
         <source>Mean</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="251"/>
+        <location filename="ui/main_window.py" line="257"/>
         <source>Median</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="252"/>
+        <location filename="ui/main_window.py" line="258"/>
         <source>Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="253"/>
+        <location filename="ui/main_window.py" line="259"/>
         <source>Variance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="254"/>
+        <location filename="ui/main_window.py" line="260"/>
         <source>Standard Deviation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="255"/>
+        <location filename="ui/main_window.py" line="261"/>
         <source>Skewness</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="256"/>
+        <location filename="ui/main_window.py" line="262"/>
         <source>Kurtosis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="257"/>
+        <location filename="ui/main_window.py" line="263"/>
         <source>Beta</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="258"/>
+        <location filename="ui/main_window.py" line="264"/>
         <source>Eta</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="259"/>
+        <location filename="ui/main_window.py" line="265"/>
         <source>X Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/main_window.py" line="280"/>
+        <location filename="ui/main_window.py" line="286"/>
         <source>Unknown exception occurred when writing fitted data to the table widget.</source>
         <translation type="unfinished"></translation>
     </message>
