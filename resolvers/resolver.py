@@ -80,7 +80,6 @@ class Resolver:
         self.__ncomp = value
         self.refresh_by_ncomp()
 
-    # TODO: use cache if necessary
     def refresh_by_ncomp(self):
         (self.mixed_func, self.bounds, self.constrains,
          self.defaults, self.params) = self.get_mixed_func(self.ncomp)
@@ -249,7 +248,7 @@ class Resolver:
                 mean_value = np.nan
                 median_value = np.nan
                 mode_value = np.nan
-            # TODO: maybe not some distribution types has not all statistic values
+            # TODO: maybe some distribution types has not all statistic values
             statistic.append({
                 "name": "C{0}".format(i+1),
                 "beta": beta,
@@ -286,7 +285,6 @@ class Resolver:
                                 callback=self.local_iteration_callback,
                                 options={"maxiter": self.minimizer_maxiter, "ftol": self.minimizer_tolerance})
         try:
-            # TODO: use flag to control whether use global optimization
             global_fitted_result = basinhopping(closure, x0=self.initial_guess,
                                                 minimizer_kwargs=minimizer_kwargs,
                                                 callback=self.global_iteration_callback,
@@ -294,7 +292,8 @@ class Resolver:
                                                 niter=self.global_optimization_maxiter,
                                                 stepsize=self.global_optimization_stepsize)
 
-            # TODO: use better way to judge
+            # the basinhopping method do not implement the `OptimizeResult` correctly
+            # it don't contains `success`
             if "success condition satisfied" not in global_fitted_result.message:
                 self.on_global_fitting_failed(global_fitted_result)
                 self.on_fitting_finished()
