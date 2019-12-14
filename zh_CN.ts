@@ -636,8 +636,8 @@ Then you can disable this option or save your data separately.</source>
     <name>GUIResolver</name>
     <message>
         <location filename="resolvers/gui_resolver.py" line="65"/>
-        <source>Name of current sample is `None`.</source>
-        <translation>当前样品名为`None`。</translation>
+        <source>Name of current sample is None.</source>
+        <translation>当前样品名为None。</translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="68"/>
@@ -646,13 +646,13 @@ Then you can disable this option or save your data separately.</source>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="71"/>
-        <source>x data of current sample is `None`.</source>
-        <translation>当前样品的x数据是`None`。</translation>
+        <source>x data of current sample is None.</source>
+        <translation>当前样品的x数据是None。</translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="74"/>
-        <source>y data of current sample is `None`.</source>
-        <translation>当前样品的y数据是`None`。</translation>
+        <source>y data of current sample is None.</source>
+        <translation>当前样品的y数据是None。</translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="77"/>
