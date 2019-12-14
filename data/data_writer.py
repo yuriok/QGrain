@@ -45,7 +45,7 @@ class DataWriter(QObject):
         for key, value in settings.items():
             if key == "draw_charts":
                 self.draw_charts = value
-                self.logger.debug("The draw_charts option has been turned to [%s].", value)
+                self.logger.info("The draw_charts option has been turned to [%s].", value)
             else:
                 raise NotImplementedError(key)
 
