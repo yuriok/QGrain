@@ -40,7 +40,7 @@ class ControlPanel(QWidget):
         self.connect_all()
         self.setMaximumHeight(320)
         
-        self.msg_box = QMessageBox()
+        self.msg_box = QMessageBox(self)
         self.msg_box.setWindowFlags(Qt.Drawer)
 
     def init_ui(self):
@@ -158,9 +158,6 @@ class ControlPanel(QWidget):
     @data_index.setter
     def data_index(self, value: int):
         if not self.has_data:
-            self.msg_box.setWindowTitle(self.tr("Warning"))
-            self.msg_box.setText(self.tr("The data has not been loaded, the operation is invalid."))
-            self.msg_box.exec_()
             return
         if value < 0 or value >= self.data_length:
             self.gui_logger.info(self.tr("It has reached the first/last sample."))
@@ -189,6 +186,16 @@ class ControlPanel(QWidget):
         else:
             return len(self.sample_names)
 
+    def check_data_loaded(self, show_msg=True):
+        if not self.has_data:
+            if show_msg:
+                self.msg_box.setWindowTitle(self.tr("Warning"))
+                self.msg_box.setText(self.tr("The data has not been loaded, the operation is invalid."))
+                self.msg_box.exec_()
+            return False
+        else:
+            return True
+
     def on_ncomp_add_clicked(self):
         self.ncomp += 1
 
@@ -196,13 +203,14 @@ class ControlPanel(QWidget):
         self.ncomp -= 1
 
     def on_data_index_previous_clicked(self):
+        if not self.check_data_loaded():
+            return
         self.data_index -= 1
 
     def on_data_index_next_clicked(self):
+        if not self.check_data_loaded():
+            return
         self.data_index += 1
-
-    def on_retry_clicked(self):
-        self.data_index = self.data_index
 
     def on_show_iteration_changed(self, state):
         if state == Qt.Checked:
@@ -280,6 +288,8 @@ class ControlPanel(QWidget):
         self.data_index += 1
 
     def on_auto_run_clicked(self):
+        if not self.check_data_loaded():
+            return
         # from current sample to fit, to avoid that it need to resart from the first sample every time
         self.data_index = self.data_index
         self.auto_run_flag = True
@@ -293,10 +303,7 @@ class ControlPanel(QWidget):
         self.sigGUIResolverTaskCanceled.emit()
 
     def on_multiprocessing_clicked(self):
-        if not self.has_data:
-            self.msg_box.setWindowTitle(self.tr("Warning"))
-            self.msg_box.setText(self.tr("The data has not been loaded, the operation is invalid."))
-            self.msg_box.exec_()
+        if not self.check_data_loaded():
             return
         self.sigMultiProcessingTaskStarted.emit()
     

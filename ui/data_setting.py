@@ -11,7 +11,7 @@ class DataSetting(QWidget):
     gui_logger = logging.getLogger("GUI")
     def __init__(self):
         super().__init__()
-        self.msg_box = QMessageBox()
+        self.msg_box = QMessageBox(self)
         self.msg_box.setWindowFlags(Qt.Drawer)
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.init_ui()
