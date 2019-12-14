@@ -613,7 +613,7 @@ Then you can disable this option or save your data separately.</source>
     <name>GUIResolver</name>
     <message>
         <location filename="resolvers/gui_resolver.py" line="65"/>
-        <source>Name of current sample is `None`.</source>
+        <source>Name of current sample is None.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -623,12 +623,12 @@ Then you can disable this option or save your data separately.</source>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="71"/>
-        <source>x data of current sample is `None`.</source>
+        <source>x data of current sample is None.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="74"/>
-        <source>y data of current sample is `None`.</source>
+        <source>y data of current sample is None.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

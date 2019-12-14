@@ -62,17 +62,17 @@ class GUIResolver(QObject, Resolver):
 
     def on_data_invalid(self, x, y, validation_result):
         if validation_result == DataValidationResult.NameNone:
-            self.sigFittingFailed(self.tr("Name of current sample is `None`."))
-            self.logger.error("Name of current sample is `None`.")
+            self.sigFittingFailed(self.tr("Name of current sample is None."))
+            self.logger.error("Name of current sample is None.")
         elif validation_result == DataValidationResult.NameEmpty:
             self.sigFittingFailed(self.tr("Name of current sample is empty."))
             self.logger.error("Name of current sample is empty.")
         elif validation_result == DataValidationResult.XNone:
-            self.sigFittingFailed(self.tr("x data of current sample is `None`."))
-            self.logger.error("x data of current sample is `None`.")
+            self.sigFittingFailed(self.tr("x data of current sample is None."))
+            self.logger.error("x data of current sample is None.")
         elif validation_result == DataValidationResult.YNone:
-            self.sigFittingFailed(self.tr("y data of current sample is `None`."))
-            self.logger.error("y data of current sample is `None`.")
+            self.sigFittingFailed(self.tr("y data of current sample is None."))
+            self.logger.error("y data of current sample is None.")
         elif validation_result == DataValidationResult.XTypeInvalid:
             self.sigFittingFailed(self.tr("The x data type of current sample is invalid."))
             self.logger.error("The x data type of current sample is invalid.")
