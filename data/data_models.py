@@ -1,15 +1,17 @@
 from typing import Dict, List, Tuple
 
 import numpy as np
-import copy
+
 
 class SampleData:
+    __slots__ = "name", "distribution"
     def __init__(self, name, distribution: np.ndarray):
         self.name = name
         self.distribution = distribution
 
 
 class GrainSizeData:
+    __slots__ = "is_valid", "classes", "sample_data_list"
     def __init__(self, is_valid = False, classes: np.ndarray = None, sample_data_list: List[SampleData] = None):
         self.is_valid = is_valid
         self.classes = classes
@@ -17,7 +19,7 @@ class GrainSizeData:
 
 
 class FittedData:
-
+    __slots__ = "name", "target", "sum", "mse", "components", "statistic"
     def __init__(self, name: str, target: Tuple[np.ndarray, np.ndarray],
                  sum_data: Tuple[np.ndarray, np.ndarray], mse: float,
                  components: List[Tuple[np.ndarray, np.ndarray]],
