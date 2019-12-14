@@ -472,7 +472,7 @@ Note: It will only record the LAST fitted data, NOT CURRENT SAMPLE.</source>
     <message>
         <location filename="data/data_manager.py" line="114"/>
         <source>The fitted data may be invalid, at least one NaN value occurs.</source>
-        <translation>拟合的数据可能是无效的，至少出现了一个`Nan`值。</translation>
+        <translation>拟合的数据可能是无效的，至少出现了一个NaN值。</translation>
     </message>
     <message>
         <location filename="data/data_manager.py" line="140"/>
@@ -671,13 +671,13 @@ Then you can disable this option or save your data separately.</source>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="86"/>
-        <source>There is `Nan` value in x data of current sample.</source>
-        <translation>当前样品的x数据中存在`Nan`的值。</translation>
+        <source>There is NaN value in x data of current sample.</source>
+        <translation>当前样品的x数据中存在NaN的值。</translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="89"/>
-        <source>There is `Nan` value in y data of current sample.</source>
-        <translation>当前样品的y数据中存在`Nan`的值。</translation>
+        <source>There is NaN value in y data of current sample.</source>
+        <translation>当前样品的y数据中存在NaN的值。</translation>
     </message>
     <message>
         <location filename="resolvers/gui_resolver.py" line="98"/>

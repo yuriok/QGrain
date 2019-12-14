@@ -83,11 +83,11 @@ class GUIResolver(QObject, Resolver):
             self.sigFittingFailed(self.tr("The lengths of x and y data are not equal."))
             self.logger.error("The lengths of x and y data are not equal.")
         elif validation_result == DataValidationResult.XHasNan:
-            self.sigFittingFailed(self.tr("There is `Nan` value in x data of current sample."))
-            self.logger.error("There is `Nan` value in x data of current sample.")
+            self.sigFittingFailed(self.tr("There is NaN value in x data of current sample."))
+            self.logger.error("There is NaN value in x data of current sample.")
         elif validation_result == DataValidationResult.YHasNan:
-            self.sigFittingFailed(self.tr("There is `Nan` value in y data of current sample."))
-            self.logger.error("There is `Nan` value in y data of current sample.")
+            self.sigFittingFailed(self.tr("There is NaN value in y data of current sample."))
+            self.logger.error("There is NaN value in y data of current sample.")
         else:
             raise NotImplementedError(validation_result)
 
