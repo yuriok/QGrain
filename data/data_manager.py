@@ -36,12 +36,11 @@ class DataManager(QObject):
         self.load_data_thread = QThread()
         # move it before the signal-slots are connected
         self.data_loader.moveToThread(self.load_data_thread)
-        self.load_data_thread.start()
         # Writer
         self.data_writer = DataWriter()
         self.save_data_thread = QThread()
         self.data_writer.moveToThread(self.save_data_thread)
-        self.save_data_thread.start()
+        
 
         self.sigDataLoadingStarted.connect(self.data_loader.try_load_data)
         self.data_loader.sigWorkFinished.connect(self.on_loading_work_finished)
@@ -188,3 +187,11 @@ class DataManager(QObject):
             self.msg_box.setWindowTitle(self.tr("Error"))
             self.msg_box.setText(self.tr("Data saving failed."))
             self.msg_box.exec_()
+
+    def setup_all(self):
+        self.load_data_thread.start()
+        self.save_data_thread.start()
+
+    def cleanup_all(self):
+        self.load_data_thread.terminate()
+        self.save_data_thread.terminate()
