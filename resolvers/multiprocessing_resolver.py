@@ -31,7 +31,7 @@ class MultiProcessingResolver(QObject):
 
         self.grain_size_data = None # type: GrainSizeData
         self.tasks = None # type: List[FittingTask]
-        self.pool = Pool(cpu_count())
+        
 
     def on_component_number_changed(self, component_number: int):
         self.component_number = component_number
@@ -95,3 +95,12 @@ class MultiProcessingResolver(QObject):
                 failed_tasks.append(task)
 
         self.sigTaskFinished.emit(succeeded_results, failed_tasks)
+
+
+    def setup_all(self):
+        self.pool = Pool(cpu_count())
+
+
+    def cleanup_all(self):
+        self.pool.terminate()
+        self.pool.join()
