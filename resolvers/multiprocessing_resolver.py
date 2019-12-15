@@ -31,19 +31,19 @@ class MultiProcessingResolver(QObject):
 
         self.grain_size_data = None # type: GrainSizeData
         self.tasks = None # type: List[FittingTask]
-        self.pool = Pool(cpu_count())
+        
 
     def on_component_number_changed(self, component_number: int):
         self.component_number = component_number
-        self.logger.debug("Component number has been changed to [%d].", component_number)
+        self.logger.info("Component number has been changed to [%d].", component_number)
 
     def on_distribution_type_changed(self, distribution_type: DistributionType):
         self.distribution_type = distribution_type
-        self.logger.debug("Distribution type has been changed to [%s].", distribution_type)
+        self.logger.info("Distribution type has been changed to [%s].", distribution_type)
 
     def on_algorithm_settings_changed(self, settings: dict):
         self.algorithm_settings = settings
-        self.logger.debug("Algorithm settings have been changed to [%s].", settings)
+        self.logger.info("Algorithm settings have been changed to [%s].", settings)
 
     def on_data_loaded(self, data: GrainSizeData):
         if data is None:
@@ -95,3 +95,12 @@ class MultiProcessingResolver(QObject):
                 failed_tasks.append(task)
 
         self.sigTaskFinished.emit(succeeded_results, failed_tasks)
+
+
+    def setup_all(self):
+        self.pool = Pool(cpu_count())
+
+
+    def cleanup_all(self):
+        self.pool.terminate()
+        self.pool.join()

@@ -1,12 +1,15 @@
-from PySide2.QtCore import Qt
-from PySide2.QtWidgets import (
-    QApplication, QGridLayout, QMainWindow, QLabel, QWidget)
-
-from typing import List, Tuple
-from resolvers import FittingTask
 from enum import Enum, unique
 from math import sqrt
+from typing import List, Tuple
+
+from PySide2.QtCore import Qt
+from PySide2.QtWidgets import (QApplication, QGridLayout, QLabel, QMainWindow,
+                               QSizePolicy, QWidget)
+
 from data import FittedData
+from resolvers import FittingTask
+
+
 @unique
 class ProcessState(Enum):
     Unknown = 0
@@ -18,8 +21,8 @@ class TaskWindow(QMainWindow):
     WIDTH_WEIGHT = 16
     HEIGHT_WEIGHT = 9
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.init_ui()
         self.task_state_labels = {}
 
@@ -34,7 +37,8 @@ class TaskWindow(QMainWindow):
         
 
         self.setWindowTitle(self.tr("The States of Fitting Tasks"))
-        self.setWindowFlags(Qt.Drawer | Qt.WindowStaysOnTopHint)
+        # self.setWindowFlags(Qt.Drawer | Qt.WindowStaysOnTopHint)
+        self.setWindowFlags(Qt.Drawer)
 
     def change_label_state(self, label: QLabel, state: ProcessState):
         if state == ProcessState.Unknown:

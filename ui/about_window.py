@@ -4,8 +4,8 @@ from PySide2.QtWidgets import (QApplication, QGridLayout, QMainWindow,
 
 
 class AboutWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.init_ui()
 
     def init_ui(self):
