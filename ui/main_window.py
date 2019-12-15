@@ -192,6 +192,10 @@ class MainWindow(QMainWindow):
         self.settings_window.algorithm_setting.sigAlgorithmSettingChanged.connect(self.multiprocessing_resolver.on_algorithm_settings_changed)
 
     def reset_dock_layout(self):
+        self.canvas_dock.setFloating(False)
+        self.control_panel_dock.setFloating(False)
+        self.raw_data_dock.setFloating(False)
+        self.recorded_data_dock.setFloating(False)
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.canvas_dock)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.raw_data_dock)
         self.splitDockWidget(self.raw_data_dock, self.recorded_data_dock, Qt.Orientation.Horizontal)
@@ -200,19 +204,20 @@ class MainWindow(QMainWindow):
         self.raw_data_dock.show()
         self.recorded_data_dock.show()
         self.control_panel_dock.show()
-        self.resizeDocks((self.canvas_dock, self.control_panel_dock), (self.height()*0.6//1, self.height()*0.4//1), Qt.Orientation.Vertical)
+        self.resizeDocks((self.canvas_dock, self.control_panel_dock), (self.height()*0.6, self.height()*0.4), Qt.Orientation.Vertical)
+        self.resizeDocks((self.canvas_dock, self.control_panel_dock, self.raw_data_dock, self.recorded_data_dock), (self.width()*0.5, self.width()*0.5, self.width()*0.25, self.width()*0.25), Qt.Orientation.Horizontal)
 
     def show_canvas_dock(self):
-        self.canvas_dock.setVisible(True)
+        self.canvas_dock.show()
 
     def show_control_panel_dock(self):
-        self.control_panel_dock.setVisible(True)
+        self.control_panel_dock.show()
 
     def show_raw_data_dock(self):
-        self.raw_data_dock.setVisible(True)
+        self.raw_data_dock.show()
 
     def show_recorded_data_dock(self):
-        self.recorded_data_dock.setVisible(True)
+        self.recorded_data_dock.show()
 
     def on_data_loaded(self, grain_size_data: GrainSizeData):
         nrows = len(grain_size_data.sample_data_list)
