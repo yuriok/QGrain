@@ -30,7 +30,7 @@ class ControlPanel(QWidget):
         super().__init__(parent, **kargs)
         self.__ncomp = 2
         self.__data_index = 0
-        self.__sample_names = None
+        self.sample_names = None
         self.auto_run_timer = QTimer()
         self.auto_run_timer.setSingleShot(True)
         self.auto_run_timer.timeout.connect(self.on_auto_run_timer_timeout)
@@ -38,9 +38,8 @@ class ControlPanel(QWidget):
         
         self.init_ui()
         self.connect_all()
-        self.setMaximumHeight(320)
         
-        self.msg_box = QMessageBox()
+        self.msg_box = QMessageBox(self)
         self.msg_box.setWindowFlags(Qt.Drawer)
 
     def init_ui(self):
@@ -148,7 +147,7 @@ class ControlPanel(QWidget):
         self.__ncomp = value
         self.sigComponentNumberChanged.emit(value)
         # auto emit target data change signal again when ncomp changed
-        if self.__sample_names is not None:
+        if self.sample_names is not None:
             self.data_index = self.data_index
 
     @property
@@ -157,23 +156,44 @@ class ControlPanel(QWidget):
 
     @data_index.setter
     def data_index(self, value: int):
-        if self.__sample_names is None or len(self.__sample_names) == 0:
-            self.msg_box.setWindowTitle(self.tr("Warning"))
-            self.msg_box.setText(self.tr("The data has not been loaded, the operation is invalid."))
-            self.msg_box.exec_()
+        if not self.has_data:
             return
-        if value < 0 or value >= len(self.__sample_names):
+        if value < 0 or value >= self.data_length:
             self.gui_logger.info(self.tr("It has reached the first/last sample."))
             return
         # update the label to display the name of this sample
-        self.data_index_display.setText(self.__sample_names[value])
+        self.data_index_display.setText(self.sample_names[value])
         self.__data_index = value
         self.logger.debug("Data index has been set to [%d].", value)
         self.sigFocusSampleChanged.emit(value)
 
     @property
     def current_name(self) -> str:
-        return self.__sample_names[self.data_index]
+        return self.sample_names[self.data_index]
+
+    @property
+    def has_data(self) -> bool:
+        if self.data_length <= 0:
+            return False
+        else:
+            return True
+
+    @property
+    def data_length(self) -> int:
+        if self.sample_names is None:
+            return 0
+        else:
+            return len(self.sample_names)
+
+    def check_data_loaded(self, show_msg=True):
+        if not self.has_data:
+            if show_msg:
+                self.msg_box.setWindowTitle(self.tr("Warning"))
+                self.msg_box.setText(self.tr("The data has not been loaded, the operation is invalid."))
+                self.msg_box.exec_()
+            return False
+        else:
+            return True
 
     def on_ncomp_add_clicked(self):
         self.ncomp += 1
@@ -182,13 +202,14 @@ class ControlPanel(QWidget):
         self.ncomp -= 1
 
     def on_data_index_previous_clicked(self):
+        if not self.check_data_loaded():
+            return
         self.data_index -= 1
 
     def on_data_index_next_clicked(self):
+        if not self.check_data_loaded():
+            return
         self.data_index += 1
-
-    def on_retry_clicked(self):
-        self.data_index = self.data_index
 
     def on_show_iteration_changed(self, state):
         if state == Qt.Checked:
@@ -215,10 +236,10 @@ class ControlPanel(QWidget):
             self.sigDataSettingsChanged.emit({"auto_record": False})
 
     def on_data_loaded(self, grain_size_data: GrainSizeData):
-        self.__sample_names = [sample.name for sample in grain_size_data.sample_data_list]
-        self.logger.debug("Data was loaded.")
+        self.sample_names = [sample.name for sample in grain_size_data.sample_data_list]
+        self.logger.info("Data was loaded.")
         self.data_index = 0
-        self.logger.debug("Data index has been set to 0.")
+        self.logger.info("Data index has been set to 0.")
 
     def on_data_selected(self, index):
         self.data_index = index
@@ -247,13 +268,13 @@ class ControlPanel(QWidget):
         self.logger.debug("Record data signal emitted.")
 
     def on_fitting_epoch_suceeded(self, data: FittedData):
-        if data.has_nan():
+        if self.auto_run_flag and data.has_invalid_value():
             self.logger.warning("The fitted data may be not valid, auto run stoped.")
             self.gui_logger.warning(self.tr("The fitted data may be not valid, auto run stoped."))
             self.auto_run_flag = False
             self.on_widgets_enable_changed(True)
         
-        if self.data_index == len(self.__sample_names)-1:
+        if self.data_index == self.data_length-1:
             self.logger.info("The auto run has reached the last sample and stoped.")
             self.gui_logger.info(self.tr("The auto run has reached the last sample and stoped."))
             self.auto_run_flag = False
@@ -266,31 +287,35 @@ class ControlPanel(QWidget):
         self.data_index += 1
 
     def on_auto_run_clicked(self):
+        if not self.check_data_loaded():
+            return
         # from current sample to fit, to avoid that it need to resart from the first sample every time
         self.data_index = self.data_index
         self.auto_run_flag = True
-        self.logger.debug("Auto run started from sample [%s].", self.current_name)
+        self.logger.info("Auto run started from sample [%s].", self.current_name)
 
     def on_cancel_run_clicked(self):
         if self.auto_run_flag:
             self.auto_run_flag = False
-            self.logger.debug("Auto run was canceled.")
+            self.logger.info("Auto run was canceled.")
         
         self.sigGUIResolverTaskCanceled.emit()
 
     def on_multiprocessing_clicked(self):
+        if not self.check_data_loaded():
+            return
         self.sigMultiProcessingTaskStarted.emit()
     
     def on_fitting_failed(self, message):
         if self.auto_run_flag:
             self.auto_run_flag = False
-            self.logger.debug("Auto run was canceled.")
+            self.logger.info("Auto run was canceled.")
         self.gui_logger.error(self.tr("Fitting failed. {0}").format(message))
         self.msg_box.setWindowTitle(self.tr("Error"))
         self.msg_box.setText(self.tr("Fitting failed. {0}").format(message))
         self.msg_box.exec_()
 
-    def init_conditions(self):
+    def setup_all(self):
         self.ncomp = 3
         self.distribution_weibull_radio_button.setChecked(True)
         # TODO: Move when the lognormal is added
