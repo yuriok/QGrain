@@ -5,8 +5,8 @@ from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
 from multiprocessing import freeze_support
 
 from PySide2.QtCore import QSettings, QTranslator
-from PySide2.QtGui import QFont, QIcon
-from PySide2.QtWidgets import QApplication
+from PySide2.QtGui import QFont, QIcon, QPixmap
+from PySide2.QtWidgets import QApplication, QSplashScreen 
 
 from ui import GUILogHandler, MainWindow
 
@@ -57,6 +57,10 @@ def setup_logging(main_window: MainWindow):
 def main():
     create_necessary_folders()
     app = QApplication(sys.argv)
+    logo = QPixmap("./settings/icons/splash_logo.png")
+    splash = QSplashScreen(logo)
+    splash.show()
+    app.processEvents()
     setup_language(app)
     setup_theme(app)
     main_window = MainWindow()
@@ -65,6 +69,7 @@ def main():
     setup_logging(main_window)
     main_window.show()
     main_window.setup_all()
+    splash.finish(main_window)
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
