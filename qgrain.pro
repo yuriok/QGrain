@@ -16,6 +16,6 @@ SOURCES = ./ui/data_setting.py \
         ./resolvers/headless_resolver.py \
         ./resolvers/multiprocessing_resolver.py \
         ./algorithms.py \
-        ./main.py
+        ./qgrain.py
 TRANSLATIONS=en.ts zh_CN.ts
 CODECFORTR=UTF-8

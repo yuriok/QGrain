@@ -5,6 +5,7 @@ from resolvers import Resolver
 
 
 class FittingTask:
+    __slots__ = "sample_id", "sample_name", "x", "y", "component_number", "distribution_type", "algorithm_settings"
     def __init__(self, sample_id: int, sample_name: str,
                  x: np.ndarray, y: np.ndarray,
                  distribution_type=DistributionType.Weibull,
