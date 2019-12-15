@@ -13,7 +13,7 @@ from PySide2.QtGui import QAction, QCursor, QFont, QIcon
 from PySide2.QtWidgets import (QAbstractItemView, QApplication, QDockWidget,
                                QGridLayout, QLabel, QMainWindow, QMenu,
                                QMessageBox, QPushButton, QSizePolicy,
-                               QSplitter, QTableWidget, QTableWidgetItem,
+                               QSplitter, QTableWidget, QTableWidgetItem, QHeaderView,
                                QToolBar, QWidget)
 
 from data import DataManager, FittedData, GrainSizeData
@@ -39,12 +39,14 @@ class GUILogHandler(logging.Handler):
 class MainWindow(QMainWindow):
     sigDataSelected = Signal(int) 
     sigRemoveRecords = Signal(list)
+    sigSetup = Signal()
+    sigCleanup = Signal()
     TABLE_HEADER_ROWS = 2
     COPONENT_ITEMS = 12
     logger = logging.getLogger("root.MainWindow")
     gui_logger = logging.getLogger("GUI")
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.init_ui()
         self.status_bar = self.statusBar()
         self.recorded_data_count = 0
@@ -61,6 +63,8 @@ class MainWindow(QMainWindow):
         self.connect_all()
         self.msg_box = QMessageBox(self)
         self.msg_box.setWindowFlags(Qt.Drawer)
+
+        self.reset_dock_layout()
 
     def show_message(self, message):
         self.status_bar.showMessage(message)
@@ -116,10 +120,9 @@ class MainWindow(QMainWindow):
         self.recorded_table_menu = QMenu(self.recorded_data_table)
         self.recorded_table_remove_action = self.recorded_table_menu.addAction(self.tr("Remove"))
         
-        self.settings_window = SettingWindow()
-        self.about_window = AboutWindow()
-        self.task_window = TaskWindow()
-        self.reset_dock_layout()
+        self.settings_window = SettingWindow(self)
+        self.about_window = AboutWindow(self)
+        self.task_window = TaskWindow(self)
 
     def connect_all(self):
         # TODO: Type Switch
@@ -175,6 +178,8 @@ class MainWindow(QMainWindow):
         self.recorded_data_table.customContextMenuRequested.connect(self.show_recorded_table_menu)
         self.sigDataSelected.connect(self.control_panel.on_data_selected)
         self.sigRemoveRecords.connect(self.data_manager.remove_data)
+        self.sigSetup.connect(self.control_panel.setup_all)
+        self.sigSetup.connect(self.settings_window.setup_all)
 
         self.settings_window.data_setting.sigDataLoaderSettingChanged.connect(self.data_manager.data_loader.on_settings_changed)
         self.settings_window.data_setting.sigDataWriterSettingChanged.connect(self.data_manager.data_writer.on_settings_changed)
@@ -190,6 +195,7 @@ class MainWindow(QMainWindow):
         self.raw_data_dock.show()
         self.recorded_data_dock.show()
         self.control_panel_dock.show()
+        self.resizeDocks((self.canvas_dock, self.control_panel_dock), (self.height()*0.6//1, self.height()*0.4//1), Qt.Orientation.Vertical)
 
     def show_canvas_dock(self):
         self.canvas_dock.setVisible(True)
@@ -208,7 +214,7 @@ class MainWindow(QMainWindow):
         ncols = len(grain_size_data.classes)
         self.raw_data_table.setRowCount(nrows)
         self.raw_data_table.setColumnCount(ncols)
-        self.raw_data_table.setHorizontalHeaderLabels(["{0:.4f}".format(class_value) for class_value in grain_size_data.classes])
+        self.raw_data_table.setHorizontalHeaderLabels(["{0:.2f}".format(class_value) for class_value in grain_size_data.classes])
         self.raw_data_table.setVerticalHeaderLabels([str(sample_data.name) for sample_data in grain_size_data.sample_data_list])
         # self.data_table.setData(grain_size_data.table_view)
         for i, sample_data in enumerate(grain_size_data.sample_data_list):
@@ -216,6 +222,9 @@ class MainWindow(QMainWindow):
                 item = QTableWidgetItem("{0:.4f}".format(value))
                 item.setTextAlignment(Qt.AlignCenter)
                 self.raw_data_table.setItem(i, j, item)
+        
+        # resize to tight layout
+        self.raw_data_table.resizeColumnsToContents()
         self.logger.info("Data was loaded, and has been update to the table.")
 
     def on_data_recorded(self, fitted_data: FittedData):
@@ -235,9 +244,9 @@ class MainWindow(QMainWindow):
                 elif np.isinf(value):
                     str_value = "Inf"
                 elif e:
-                    str_value = "{0:.4e}".format(value)
+                    str_value = "{0:.2e}".format(value)
                 else:
-                    str_value = "{0:.4f}".format(value)
+                    str_value = "{0:.2f}".format(value)
             else:
                 str_value = str(value)
             item = QTableWidgetItem(str_value)
@@ -286,6 +295,10 @@ class MainWindow(QMainWindow):
             self.gui_logger.exception(self.tr("Unknown exception occurred when writing fitted data to the table widget."))
             # remove
             self.sigRemoveRecords(self.recorded_data_count)
+        
+        # TODO: Check if header need to be update and resize it when header changed
+        # too heavy cost if call this func at each update
+        #self.recorded_data_table.resizeColumnsToContents()
 
     def on_settings_changed(self, kwargs: dict):
         for setting, value in kwargs.items():
@@ -323,3 +336,10 @@ class MainWindow(QMainWindow):
 
     def on_task_canceled(self):
         self.gui_resolver.cancel()
+
+    def setup_all(self):
+        # must call this again to make the layout as expected
+        self.reset_dock_layout()
+
+        # emit signal to let other object to setup
+        self.sigSetup.emit()
