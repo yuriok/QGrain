@@ -3,6 +3,7 @@ import os
 import sys
 import time
 from queue import Queue
+from typing import List
 
 import numpy as np
 import pyqtgraph as pg
@@ -11,9 +12,9 @@ from pyqtgraph.dockarea import Dock, DockArea
 from PySide2.QtCore import QMutex, Qt, QThread, QTimer, Signal
 from PySide2.QtGui import QAction, QCursor, QFont, QIcon
 from PySide2.QtWidgets import (QAbstractItemView, QApplication, QDockWidget,
-                               QGridLayout, QLabel, QMainWindow, QMenu,
-                               QMessageBox, QPushButton, QSizePolicy,
-                               QSplitter, QTableWidget, QTableWidgetItem, QHeaderView,
+                               QGridLayout, QHeaderView, QLabel, QMainWindow,
+                               QMenu, QMessageBox, QPushButton, QSizePolicy,
+                               QSplitter, QTableWidget, QTableWidgetItem,
                                QToolBar, QWidget)
 
 from data import DataManager, FittedData, GrainSizeData
@@ -42,7 +43,7 @@ class MainWindow(QMainWindow):
     sigSetup = Signal()
     sigCleanup = Signal()
     TABLE_HEADER_ROWS = 2
-    COPONENT_ITEMS = 12
+    COPONENT_ITEMS = 11
     logger = logging.getLogger("root.MainWindow")
     gui_logger = logging.getLogger("GUI")
     def __init__(self, *args, **kwargs):
@@ -50,6 +51,8 @@ class MainWindow(QMainWindow):
         self.init_ui()
         self.status_bar = self.statusBar()
         self.recorded_data_count = 0
+        self.ncomp_number_dict = {}
+        self.row_ncomp_dict = {}
         self.fitting_thread = QThread()
         self.gui_resolver = GUIResolver()
         # disable multi-thread for debug
@@ -227,15 +230,30 @@ class MainWindow(QMainWindow):
         self.raw_data_table.resizeColumnsToContents()
         self.logger.info("Data was loaded, and has been update to the table.")
 
-    def on_data_recorded(self, fitted_data: FittedData):
-        # the 2 additional rows are headers
-        if self.recorded_data_count + self.TABLE_HEADER_ROWS >= self.recorded_data_table.rowCount():
-            self.recorded_data_table.setRowCount(self.recorded_data_table.rowCount() + 50)
-        ncomp = len(fitted_data.statistic)
+    def on_data_recorded(self, fitted_data_list: List[FittedData]):
+        data_length = len(fitted_data_list)
         column_span = self.COPONENT_ITEMS + 1
-        if ncomp*self.COPONENT_ITEMS+self.TABLE_HEADER_ROWS > self.recorded_data_table.columnCount():
-            self.recorded_data_table.setColumnCount(ncomp*column_span+2)
+        # if it's necessary to expand the table rows
+        if self.recorded_data_count + data_length + self.TABLE_HEADER_ROWS >= self.recorded_data_table.rowCount():
+            self.recorded_data_table.setRowCount(self.recorded_data_table.rowCount() + data_length + 50)
+        if len(self.ncomp_number_dict) == 0:
+            max_ncomp_before = 0
+        else:
+            max_ncomp_before = max(self.ncomp_number_dict.keys())
+        for i, fitted_data in enumerate(fitted_data_list):
+            ncomp = len(fitted_data.statistic)
+            # if has same ncomp, increase the value
+            if ncomp in self.ncomp_number_dict.keys():
+                self.ncomp_number_dict[ncomp] += 1
+            else:
+                self.ncomp_number_dict[ncomp] = 1
+            
+            self.row_ncomp_dict[self.recorded_data_count+self.TABLE_HEADER_ROWS+i] = ncomp
 
+        max_ncomp = max(self.ncomp_number_dict.keys())
+        
+        # the local func to handle write
+        # also put data validation here
         def write(row, col, value, e=False):
             str_value = "UNKNOWN"
             if np.isreal(value):
@@ -252,7 +270,15 @@ class MainWindow(QMainWindow):
             item = QTableWidgetItem(str_value)
             item.setTextAlignment(Qt.AlignCenter)
             self.recorded_data_table.setItem(row, col, item)
-        try:
+        
+        
+        # means there is greater ncomp and the headers are need to be updated
+        if max_ncomp > max_ncomp_before:
+            # if it's necessary to expand the table columns
+            # `2` means the sample name and mse columns
+            if max_ncomp*self.COPONENT_ITEMS+2 > self.recorded_data_table.columnCount():
+                self.recorded_data_table.setColumnCount(max_ncomp*column_span+2)
+
             # write headers
             write(0, 0, self.tr("Sample Name"))
             self.recorded_data_table.setSpan(0, 0, self.TABLE_HEADER_ROWS, 1)
@@ -262,7 +288,7 @@ class MainWindow(QMainWindow):
                 write(0, i*column_span+3, comp["name"])
                 self.recorded_data_table.setSpan(0, i*column_span+3, 1, self.COPONENT_ITEMS)
                 write(1, i*column_span+3, self.tr("Fraction"))
-                write(1, i*column_span+4, self.tr("Mean"))
+                write(1, i*column_span+4, self.tr("Mean")) # TODO: add units
                 write(1, i*column_span+5, self.tr("Median"))
                 write(1, i*column_span+6, self.tr("Mode"))
                 write(1, i*column_span+7, self.tr("Variance"))
@@ -273,6 +299,8 @@ class MainWindow(QMainWindow):
                 write(1, i*column_span+12, self.tr("Eta"))
                 write(1, i*column_span+13, self.tr("X Offset"))
 
+        # update contents
+        for fitted_data in fitted_data_list:
             row = self.recorded_data_count + self.TABLE_HEADER_ROWS
             write(row, 0, fitted_data.name)
             write(row, 1, fitted_data.mse, e=True)
@@ -289,16 +317,12 @@ class MainWindow(QMainWindow):
                 write(row, i*column_span+12, comp.get("eta"))
                 write(row, i*column_span+13, comp.get("x_offset"))
             self.recorded_data_count += 1
-            self.logger.debug("Fitted data of [%s] has been wrote to recorded data table.", fitted_data.name)
-        except Exception:
-            self.logger.exception("Unknown exception occurred when writing fitted data to the table widget.")
-            self.gui_logger.exception(self.tr("Unknown exception occurred when writing fitted data to the table widget."))
-            # remove
-            self.sigRemoveRecords(self.recorded_data_count)
         
-        # TODO: Check if header need to be update and resize it when header changed
-        # too heavy cost if call this func at each update
-        #self.recorded_data_table.resizeColumnsToContents()
+        self.logger.debug("Fitted data has been wrote to recorded data table. Data list: [%s].", ", ".join(fitted_data.name for fitted_data in fitted_data_list))
+        # must call this after the contents have been written to the table
+        if max_ncomp > max_ncomp_before:
+            # tight table layout
+            self.recorded_data_table.resizeColumnsToContents()
 
     def on_settings_changed(self, kwargs: dict):
         for setting, value in kwargs.items():
@@ -322,11 +346,23 @@ class MainWindow(QMainWindow):
         # When clicking at the edge it returns a single range
         for item in self.recorded_data_table.selectedRanges():
             for i in range(item.topRow(), min(self.recorded_data_count+self.TABLE_HEADER_ROWS, item.bottomRow()+1)):
-                rows_to_remove.add(i)
+                # do not remove headers
+                if i >= self.TABLE_HEADER_ROWS:
+                    rows_to_remove.add(i)
         rows_to_remove = list(rows_to_remove)
         rows_to_remove.sort()
         offset = 0
+        
+        if len(rows_to_remove) == 0:
+            self.logger.info("No valid row was selected, nothing happend.")
+            return
         for row in rows_to_remove:
+            ncomp = self.row_ncomp_dict[row]
+            # decrease the ncomp statistic
+            self.ncomp_number_dict[ncomp] -= 1
+            # if reach 0, remove key
+            if self.ncomp_number_dict[ncomp] == 0:
+                self.ncomp_number_dict.pop(ncomp)
             self.recorded_data_table.removeRow(row-offset)
             offset += 1
         self.recorded_data_count -= offset
