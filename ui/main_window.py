@@ -53,15 +53,13 @@ class MainWindow(QMainWindow):
         self.recorded_data_count = 0
         self.ncomp_number_dict = {}
         self.row_ncomp_dict = {}
-        self.fitting_thread = QThread()
+        self.gui_fitting_thread = QThread()
         self.gui_resolver = GUIResolver()
         # disable multi-thread for debug
-        self.gui_resolver.moveToThread(self.fitting_thread)
-        self.fitting_thread.start()
+        self.gui_resolver.moveToThread(self.gui_fitting_thread)
         self.multiprocessing_fitting_thread = QThread()
         self.multiprocessing_resolver = MultiProcessingResolver()
         self.multiprocessing_resolver.moveToThread(self.multiprocessing_fitting_thread)
-        self.multiprocessing_fitting_thread.start()
         self.data_manager = DataManager(self)
         self.connect_all()
         self.msg_box = QMessageBox(self)
@@ -182,7 +180,11 @@ class MainWindow(QMainWindow):
         self.sigDataSelected.connect(self.control_panel.on_data_selected)
         self.sigRemoveRecords.connect(self.data_manager.remove_data)
         self.sigSetup.connect(self.control_panel.setup_all)
+        self.sigSetup.connect(self.data_manager.setup_all)
         self.sigSetup.connect(self.settings_window.setup_all)
+        self.sigSetup.connect(self.multiprocessing_resolver.setup_all)
+        self.sigCleanup.connect(self.data_manager.cleanup_all)
+        self.sigCleanup.connect(self.multiprocessing_resolver.cleanup_all)
 
         self.settings_window.data_setting.sigDataLoaderSettingChanged.connect(self.data_manager.data_loader.on_settings_changed)
         self.settings_window.data_setting.sigDataWriterSettingChanged.connect(self.data_manager.data_writer.on_settings_changed)
@@ -376,6 +378,17 @@ class MainWindow(QMainWindow):
     def setup_all(self):
         # must call this again to make the layout as expected
         self.reset_dock_layout()
-
         # emit signal to let other object to setup
+        self.gui_fitting_thread.start()
+        self.multiprocessing_fitting_thread.start()
+        # emit after the threads are started
         self.sigSetup.emit()
+
+    def closeEvent(self, e):
+        # TODO: add task running check
+        self.sigCleanup.emit()
+        self.hide()
+        time.sleep(2)
+        self.gui_fitting_thread.terminate()
+        self.multiprocessing_fitting_thread.terminate()
+        e.accept()
