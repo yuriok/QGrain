@@ -6,7 +6,7 @@ from typing import List
 
 import numpy as np
 from PySide2.QtCore import QObject, Qt, QThread, Signal
-from PySide2.QtWidgets import QFileDialog, QMessageBox
+from PySide2.QtWidgets import QFileDialog, QMessageBox, QWidget
 
 from algorithms import DistributionType
 from data import DataLoader, DataWriter, FittedData, GrainSizeData, SampleData
@@ -18,11 +18,11 @@ class DataManager(QObject):
     sigDataSavingStarted = Signal(str, np.ndarray, list, str)
     sigDataLoaded = Signal(GrainSizeData)
     sigTargetDataChanged = Signal(str, np.ndarray, np.ndarray)
-    sigDataRecorded = Signal(FittedData)
+    sigDataRecorded = Signal(list) # List[FittedData]
     logger = logging.getLogger("root.data.DataManager")
     gui_logger = logging.getLogger("GUI")
 
-    def __init__(self, host_widget):
+    def __init__(self, host_widget: QWidget):
         super().__init__()
         # to attach msg boxed on this widget
         self.host_widget = host_widget
@@ -129,8 +129,8 @@ class DataManager(QObject):
             if fitted_data.has_invalid_value():
                 self.logger.warning("There is invalid value in the fitted data of sample [%s].", fitted_data.name)
                 self.gui_logger.warning(self.tr("There is invalid value in the fitted data of sample [%s]."), fitted_data.name)
-            self.recorded_data_list.append(fitted_data)
-            self.sigDataRecorded.emit(fitted_data)
+        self.recorded_data_list.extend(succeeded_results)
+        self.sigDataRecorded.emit(succeeded_results)
         for failed_task in failed_tasks:
             self.logger.warning("Fitting task of sample [%s] failed.", failed_task.sample_name)
             self.gui_logger.warning(self.tr("Fitting task of sample [%s] failed."), failed_task.sample_name)
@@ -149,7 +149,7 @@ class DataManager(QObject):
             self.msg_box.exec_()
             return
         self.recorded_data_list.append(self.current_fitted_data)
-        self.sigDataRecorded.emit(self.current_fitted_data)
+        self.sigDataRecorded.emit([self.current_fitted_data])
 
     def remove_data(self, rows: List[int]):
         offset = 0
