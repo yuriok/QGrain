@@ -4,7 +4,7 @@ from typing import Dict, List, Tuple
 from uuid import UUID
 
 import numpy as np
-from PySide2.QtCore import QObject, Qt, Signal
+from PySide2.QtCore import QCoreApplication, QEventLoop, QObject, Qt, Signal
 from PySide2.QtGui import QCursor
 from PySide2.QtWidgets import (QAbstractItemView, QGridLayout, QMenu,
                                QTableWidget, QTableWidgetItem, QWidget)
@@ -140,6 +140,7 @@ class ViewDataManager(QObject):
         # update contents
         first_row_index = self.data_count + self.TABLE_HEADER_ROWS
         for record_index, record in enumerate(records):
+            QCoreApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
             row = first_row_index + record_index
             view_data = SingleViewData(record)
             self.write(row, 0, view_data.name)
