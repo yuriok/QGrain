@@ -56,7 +56,10 @@ class ViewDataManager(QObject):
 
     @property
     def max_component_number(self) -> int:
-        return max([view_data.component_number for view_data in self.view_data_list])
+        if self.data_count == 0:
+            return 0
+        else:
+            return max([view_data.component_number for view_data in self.view_data_list])
 
     @property
     def component_columns(self) -> int:
@@ -101,11 +104,7 @@ class ViewDataManager(QObject):
 
 
     def update_headers(self):
-        if self.data_count == 0:
-            max_ncomp = 0
-        else:
-            max_ncomp = self.max_component_number
-
+        max_ncomp = self.max_component_number
         # update headers
         self.write(0, 0, self.tr("Sample Name"))
         self.table.setSpan(0, 0, self.TABLE_HEADER_ROWS, 1)
@@ -132,10 +131,7 @@ class ViewDataManager(QObject):
         least_row_number = self.data_count + length + self.TABLE_HEADER_ROWS
         if  least_row_number>= self.table.rowCount():
             self.table.setRowCount(least_row_number + self.TABLE_ROW_EXPAND_SETP)
-        if self.data_count == 0:
-            max_ncomp_before = 0
-        else:
-            max_ncomp_before = self.max_component_number
+        max_ncomp_before = self.max_component_number
         max_ncomp_new = max([len(record.statistic) for record in records])
         # reset the column number of table
         column_count = max(max_ncomp_before, max_ncomp_new) * self.actual_component_columns + self.COMPONENT_START_COLUMN
