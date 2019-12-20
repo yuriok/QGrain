@@ -2,10 +2,10 @@
 
 import logging
 import os
-from typing import List
-
+from typing import List, Tuple
+from uuid import UUID
 import numpy as np
-from PySide2.QtCore import QObject, Qt, QThread, Signal
+from PySide2.QtCore import QObject, Qt, QThread, Signal, QStandardPaths
 from PySide2.QtWidgets import QFileDialog, QMessageBox, QWidget
 
 from algorithms import DistributionType
@@ -40,7 +40,6 @@ class DataManager(QObject):
         self.data_writer = DataWriter()
         self.save_data_thread = QThread()
         self.data_writer.moveToThread(self.save_data_thread)
-        
 
         self.sigDataLoadingStarted.connect(self.data_loader.try_load_data)
         self.data_loader.sigWorkFinished.connect(self.on_loading_work_finished)
@@ -65,7 +64,13 @@ class DataManager(QObject):
         self.record_msg_box.setWindowFlags(Qt.Drawer)
 
     def load_data(self):
-        filename, type_str = self.file_dialog.getOpenFileName(None, self.tr("Select Data File"), None, "*.xls; *.xlsx;;*.csv")
+        # NOTE:
+        # if don't assign the initial directory,
+        # there is an about 5s delay while first call `getOpenFileName` func
+        # and meanwhile has a unreachable network disk
+        init_path = QStandardPaths.standardLocations(QStandardPaths.DesktopLocation)[0]
+        filename, type_str = self.file_dialog.getOpenFileName(self.host_widget, self.tr("Select Data File"), init_path, "*.xls; *.xlsx;;*.csv")
+
         if filename is None or filename == "":
             return
         if not os.path.exists(filename):
@@ -150,13 +155,14 @@ class DataManager(QObject):
         self.recorded_data_list.append(self.current_fitted_data)
         self.sigDataRecorded.emit([self.current_fitted_data])
 
-    def remove_data(self, rows: List[int]):
-        offset = 0
-        for row in rows:
-            value_to_remove = self.recorded_data_list[row-offset]
-            self.recorded_data_list.remove(value_to_remove)
-            self.logger.info("Record of sample [%s] has been removed.", value_to_remove.name)
-            offset += 1
+    def remove_data(self, uuids_and_names: List[Tuple[UUID, str]]):
+        for uuid, name in uuids_and_names:
+            for i, data in enumerate(self.recorded_data_list):
+                if uuid == data.uuid:
+                    assert name == data.name
+                    self.recorded_data_list.pop(i)
+                    self.logger.info("Record of sample [%s] has been removed.", name)
+                    break
 
     def save_data(self):
         filename, type_str = self.file_dialog.getSaveFileName(None, self.tr("Save Recorded Data"), None, "Excel (*.xlsx);;97-2003 Excel (*.xls);;CSV (*.csv)")

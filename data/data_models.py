@@ -1,7 +1,7 @@
 from typing import Dict, List, Tuple
 
 import numpy as np
-
+import uuid
 
 class SampleData:
     __slots__ = "name", "distribution"
@@ -19,7 +19,7 @@ class GrainSizeData:
 
 
 class FittedData:
-    __slots__ = "name", "target", "sum", "mse", "components", "statistic"
+    __slots__ = "name", "target", "sum", "mse", "components", "statistic", "uuid"
     def __init__(self, name: str, target: Tuple[np.ndarray, np.ndarray],
                  sum_data: Tuple[np.ndarray, np.ndarray], mse: float,
                  components: List[Tuple[np.ndarray, np.ndarray]],
@@ -30,6 +30,8 @@ class FittedData:
         self.mse = mse  # Mean Squared Error
         self.components = components
         self.statistic = statistic
+        # add uuid to manage data
+        self.uuid = uuid.uuid4()
 
     def has_invalid_value(self) -> bool:
         if self.name is None or self.name == "":
