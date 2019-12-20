@@ -1,10 +1,9 @@
-from scipy.stats import exponweib, lognorm
+import time
 
 import matplotlib.pyplot as plt
 import numpy as np
-
-from scipy.optimize import minimize
-from scipy.optimize import basinhopping
+import xlrd
+from scipy.optimize import basinhopping, minimize
 
 def get_valid_data_range(y):
     start_index = 0
@@ -26,13 +25,23 @@ def get_processed_data(x, y):
     y_to_fit = y[start_index: end_index]
     return x_to_fit, y_to_fit
 
+def lognormal(x, mu, sigma):
+    return 1/(x*sigma*np.sqrt(2*np.pi))*np.exp(-np.square(np.log(x)-mu)/(2*np.square(sigma)))
 
-def normal(x, beta, eta):
-    # return (1 / (x*eta*np.sqrt(2*np.pi))) * np.exp(-np.square((np.log(x)-beta) / eta) / 2)
-    return (1 / np.sqrt(2*np.pi*eta))*np.exp(-(x-beta)**2/(2*eta**2))
+def triple_lognormal(x, mu1, sigma1, mu2, sigma2, mu3, sigma3, f1, f2):
+    return f1 * lognormal(x, mu1, sigma1) + f2 * lognormal(x, mu2, sigma2) + (1-f1-f2) * lognormal(x, mu3, sigma3)
 
-def triple_normal(x, beta1, eta1, beta2, eta2, beta3, eta3, f1, f2):
-    return f1 * normal(x, beta1, eta1) + f2 * normal(x, beta2, eta2) + (1-f1-f2)*normal(x, beta3, eta3)
+# test the implement of lognormal func
+# x = np.linspace(0.001, 2, 2001)
+# plt.plot(x, lognormal(x, 0, 10))
+# plt.plot(x, lognormal(x, 0, 3/2))
+# plt.plot(x, lognormal(x, 0, 1))
+# plt.plot(x, lognormal(x, 0, 1/2))
+# plt.plot(x, lognormal(x, 0, 1/4))
+# plt.plot(x, lognormal(x, 0, 1/8))
+# plt.ylim(0, 4)
+# plt.xlim(0, None)
+# plt.show()
 
 # The pdf function of Weibull distribution
 def weibull(x, beta, eta):
@@ -41,48 +50,66 @@ def weibull(x, beta, eta):
 def triple_weibull(x, a1, c1, a2, c2, a3, c3, f1, f2):
     return f1 * weibull(x, a1, c1) + f2 * weibull(x, a2, c2) + (1-f1-f2)*weibull(x, a3, c3)
 
-import xlrd
 sheet = xlrd.open_workbook("C:\\Users\\Yuri\\Desktop\\WN19 GS.xlsx").sheet_by_index(0)
 
 classes = np.array(sheet.row_values(0)[1:])
-sample_data = np.array(sheet.row_values(9)[1:]) / 100
-
-x, y = get_processed_data(classes, sample_data)
-
-# x = np.linspace(0.01, 10, 1000)
-# # y = lognorm.pdf(x, 1.2, loc=1.2, scale=np.exp(1.4))
-# y = triple_lognormal(x, 1.1, 2.1, 1.3, 1.3, 4.1, 1.5, 1.6, 3.1, 1.2, 0.3, 0.2)
-
-# def closure(p):
-#     return np.sum(np.square(triple_normal(x, *p) - y)) * 100
-
-def closure(p):
-    return np.mean(np.square(triple_weibull(x, *p) - y))*100
-
-# res = minimize(closure, [27, 9.8, 38, 3.5, 3.2, 60.2, 0.3, 0.3], bounds=[(0, None), (0, None), (0, None), (0, None), (0, None), (0, None), (0, 1), (0, 1)], constraints=[{'type': 'ineq', 'fun': lambda args:  1 - np.sum(args[1-3:]) + 1e-100}], method="SLSQP", options={"maxiter": 1000, "disp": True, "ftol": 1e-100})
-
-def callback(x, f, accept):
-    print("Parameters are : [%s];\nFunction value is: [%0.2E];\n" % (x, f))
-    return True
-    # raise Exception("Something happened")
-
-def iteration_callback(x):
-    print(x)
-    # raise Exception("Something happened")
+INFINITESIMAL = 1e-100
+component_number = 3
+is_weibull = True
+if is_weibull:
+    target_mixed_func = triple_weibull
+    target_single_func = weibull
+    initial_guess = [2, 10, 2, 20, 2, 30, 0.33, 0.33]
+    bounds = [(2+INFINITESIMAL, None), (INFINITESIMAL, None), (2+INFINITESIMAL, None), (INFINITESIMAL, None), (2+INFINITESIMAL, None), (INFINITESIMAL, None), (INFINITESIMAL, 1), (INFINITESIMAL, 1)]
+    folder = "C:\\Users\\Yuri\\Desktop\\Weibull\\"
+else:
+    target_mixed_func = triple_lognormal
+    target_single_func = lognormal
+    initial_guess = [2, 1/2, 2, 1/4, 2, 1/8, 0.33, 0.33]
+    bounds = [(None, None), (INFINITESIMAL, 1), (None, None), (INFINITESIMAL, 1), (None, None), (INFINITESIMAL, 1), (INFINITESIMAL, 1), (INFINITESIMAL, 1)]
+    folder = "C:\\Users\\Yuri\\Desktop\\Lognormal\\"
+constraints = [{'type': 'ineq', 'fun': lambda args:  1 - np.sum(args[1-component_number:]) + INFINITESIMAL}]
+minimizer_kwargs = dict(method="SLSQP", bounds=bounds, constraints=constraints, options={"maxiter": 500, "disp": True, "ftol": 1e-10})
 
 
+def plot(x, params, title):
+    fitted_sum = target_mixed_func(x, *params)
+    plt.scatter(x, y, label="Raw Data")
+    plt.plot(x, fitted_sum, label="Fitted Sum")
+    plt.plot(x, target_single_func(x, *params[0:2])*params[-2], label="C1")
+    plt.plot(x, target_single_func(x, *params[2:4])*params[-1], label="C2")
+    plt.plot(x, target_single_func(x, *params[4:6])*(1-params[-2]-params[-1]), label="C2")
+    plt.legend()
+    plt.title(title)
+    plt.xlabel("Bin Number")
+    plt.ylabel("Probability Density")
+    plt.ylim(0, None)
 
-# res = basinhopping(closure, [2, 10, 4, 20, 8, 30, 0.3, 0.3], callback=callback, niter_success=10, niter=100, minimizer_kwargs={"method": "SLSQP", "bounds": [(0, None), (0, None), (0, None), (0, None), (0, None), (0, None), (0, 1), (0, 1)], "constraints": [{'type': 'ineq', 'fun': lambda args:  1 - np.sum(args[1-3:]) + 1e-100}], "options":{"maxiter": 1000, "disp": True, "ftol": 1e-100}})
+for i in range(1, sheet.nrows):
+    row_values = sheet.row_values(i)
+    sample_name = row_values[0]
+    sample_data = np.array(row_values[1:]) / 100
+    x, y = get_processed_data(classes, sample_data)
 
-# res = basinhopping(closure, [2, 10, 2, 10, 2, 10, 0.33, 0.33], callback=callback, niter_success=10, niter=100, minimizer_kwargs={"method": "SLSQP", "callback": iteration_callback, "bounds": [(0, None), (0, None), (0, None), (0, None), (0, None), (0, None), (0, 1), (0, 1)], "constraints": [{'type': 'ineq', 'fun': lambda args:  1 - np.sum(args[1-3:]) + 1e-100}], "options":{"maxiter": 1000, "disp": True, "ftol": 1e-100}})
-res = minimize(closure, [2, 10, 2, 10, 2, 10, 0.33, 0.33], callback=iteration_callback, method="SLSQP", bounds=[(0, None), (0, None), (0, None), (0, None), (0, None), (0, None), (0, 1), (0, 1)], options={"maxiter": 1000, "disp": True, "ftol": 1e-100})
+    iteration = 0
+    def callback(params):
+        global iteration
+        plt.clf()
+        plot(x, params, "iteration: [%d]"%iteration)
+        iteration += 1
+        plt.pause(0.01)
 
-y_fitted = triple_weibull(x, *res.x)
+    def closure(p):
+        return np.mean(np.square(target_mixed_func(x, *p) - y))*100
 
-print(res.x)
-plt.scatter(x, y)
-plt.plot(x, y_fitted)
 
-# plt.xscale("log")
+    global_res = basinhopping(closure, initial_guess, niter=100, stepsize=0.1, niter_success=5, minimizer_kwargs=minimizer_kwargs)
+    res = minimize(closure, global_res.x, method="SLSQP", bounds=bounds, constraints=constraints, options={"maxiter": 1000, "disp": True, "ftol": 1e-1000})
+    y_fitted = target_mixed_func(x, *res.x)
 
-plt.show()
+    print(res.x)
+    # plt.xscale("log")
+    
+    plt.clf()
+    plot(x, res.x, sample_name)
+    plt.savefig(folder+"{0}.png".format(sample_name), dpi=300)
