@@ -1,25 +1,15 @@
 import logging
-import os
-import sys
 import time
-from queue import Queue
 from typing import List
 
-import numpy as np
-import pyqtgraph as pg
-import xlrd
-from pyqtgraph.dockarea import Dock, DockArea
-from PySide2.QtCore import QMutex, Qt, QThread, QTimer, Signal, QCoreApplication, QEventLoop
-from PySide2.QtGui import QAction, QCursor, QFont, QIcon
-from PySide2.QtWidgets import (QAbstractItemView, QApplication, QDockWidget,
-                               QGridLayout, QHeaderView, QLabel, QMainWindow,
-                               QMenu, QMessageBox, QPushButton, QSizePolicy,
-                               QSplitter, QTableWidget, QTableWidgetItem,
-                               QToolBar, QWidget)
+from PySide2.QtCore import (QCoreApplication, QEventLoop, QMutex, Qt, QThread,
+                            Signal)
+from PySide2.QtGui import QAction, QIcon
+from PySide2.QtWidgets import (QAbstractItemView, QDockWidget, QMainWindow,
+                               QMessageBox, QPushButton, QTableWidget,
+                               QTableWidgetItem, QWidget)
 
-
-
-from data import DataManager, FittedData, GrainSizeData
+from data import DataManager, GrainSizeData
 from resolvers import GUIResolver, MultiProcessingResolver
 from ui import (AboutWindow, ControlPanel, FittingCanvas, RecordedDataTable,
                 SettingWindow, TaskWindow)
@@ -214,8 +204,8 @@ class MainWindow(QMainWindow):
         self.raw_data_table.setColumnCount(ncols)
         self.raw_data_table.setHorizontalHeaderLabels(["{0:.2f}".format(class_value) for class_value in grain_size_data.classes])
         self.raw_data_table.setVerticalHeaderLabels([str(sample_data.name) for sample_data in grain_size_data.sample_data_list])
-        # self.data_table.setData(grain_size_data.table_view)
         for i, sample_data in enumerate(grain_size_data.sample_data_list):
+            QCoreApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
             for j, value in enumerate(sample_data.distribution):
                 item = QTableWidgetItem("{0:.4f}".format(value))
                 item.setTextAlignment(Qt.AlignCenter)
