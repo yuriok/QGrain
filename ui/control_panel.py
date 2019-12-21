@@ -16,6 +16,7 @@ class ControlPanel(QWidget):
     sigComponentNumberChanged = Signal(int)
     sigFocusSampleChanged = Signal(int) # index of that sample in list
     sigGUIResolverSettingsChanged = Signal(dict)
+    sigGUIResolverFittingStarted = Signal()
     sigRuningSettingsChanged = Signal(dict)
     sigDataSettingsChanged = Signal(dict)
     sigRecordFittingData = Signal(str)
@@ -30,6 +31,7 @@ class ControlPanel(QWidget):
         self.__ncomp = 2
         self.__data_index = 0
         self.sample_names = None
+        self.auto_fit_flag = True
         self.auto_run_timer = QTimer()
         self.auto_run_timer.setSingleShot(True)
         self.auto_run_timer.timeout.connect(self.on_auto_run_timer_timeout)
@@ -128,6 +130,7 @@ class ControlPanel(QWidget):
 
         self.auto_run.clicked.connect(self.on_auto_run_clicked)
         self.cancel_run.clicked.connect(self.on_cancel_run_clicked)
+        self.try_fit_button.clicked.connect(self.on_try_fit_clicked)
         self.multiprocessing_button.clicked.connect(self.on_multiprocessing_clicked)
 
     @property
@@ -166,6 +169,8 @@ class ControlPanel(QWidget):
         self.__data_index = value
         self.logger.debug("Data index has been set to [%d].", value)
         self.sigFocusSampleChanged.emit(value)
+        if self.auto_fit_flag:
+            self.sigGUIResolverFittingStarted.emit()
 
     @property
     def current_name(self) -> str:
@@ -237,9 +242,9 @@ class ControlPanel(QWidget):
 
     def on_auto_fit_changed(self, state):
         if state == Qt.Checked:
-            self.sigGUIResolverSettingsChanged.emit({"auto_fit": True})
+            self.auto_fit_flag = True
         else:
-            self.sigGUIResolverSettingsChanged.emit({"auto_fit": False})
+            self.auto_fit_flag = False
 
     def on_auto_record_changed(self, state):
         if state == Qt.Checked:
@@ -312,6 +317,9 @@ class ControlPanel(QWidget):
             self.logger.info("Auto run was canceled.")
         
         self.sigGUIResolverTaskCanceled.emit()
+
+    def on_try_fit_clicked(self):
+        self.sigGUIResolverFittingStarted.emit()
 
     def on_multiprocessing_clicked(self):
         if not self.check_data_loaded():
