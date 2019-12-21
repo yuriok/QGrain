@@ -34,7 +34,7 @@ class HeadlessResolver(Resolver):
     def execute_task(self, task: FittingTask):
         self.current_task = task
         self.distribution_type = task.distribution_type
-        self.ncomp = task.component_number
+        self.component_number = task.component_number
         if task.algorithm_settings is not None:
             self.change_settings(**task.algorithm_settings)
         self.feed_data(task.sample_name, task.x, task.y)
