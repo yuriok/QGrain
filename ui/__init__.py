@@ -1,5 +1,6 @@
 from ui.control_panel import ControlPanel
 from ui.fitting_canvas import FittingCanvas
+from ui.recorded_data_table import RecordedDataTable
 from ui.about_window import AboutWindow
 from ui.data_setting import DataSetting
 from ui.algorithm_setting import AlgorithmSetting

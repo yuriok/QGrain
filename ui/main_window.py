@@ -1,26 +1,18 @@
 import logging
-import os
-import sys
 import time
-from queue import Queue
 from typing import List
 
-import numpy as np
-import pyqtgraph as pg
-import xlrd
-from pyqtgraph.dockarea import Dock, DockArea
-from PySide2.QtCore import QMutex, Qt, QThread, QTimer, Signal
-from PySide2.QtGui import QAction, QCursor, QFont, QIcon
-from PySide2.QtWidgets import (QAbstractItemView, QApplication, QDockWidget,
-                               QGridLayout, QHeaderView, QLabel, QMainWindow,
-                               QMenu, QMessageBox, QPushButton, QSizePolicy,
-                               QSplitter, QTableWidget, QTableWidgetItem,
-                               QToolBar, QWidget)
+from PySide2.QtCore import (QCoreApplication, QEventLoop, QMutex, Qt, QThread,
+                            Signal)
+from PySide2.QtGui import QAction, QIcon
+from PySide2.QtWidgets import (QAbstractItemView, QDockWidget, QMainWindow,
+                               QMessageBox, QPushButton, QTableWidget,
+                               QTableWidgetItem, QWidget)
 
-from data import DataManager, FittedData, GrainSizeData
+from data import DataManager, GrainSizeData
 from resolvers import GUIResolver, MultiProcessingResolver
-from ui import (AboutWindow, ControlPanel, FittingCanvas, SettingWindow,
-                TaskWindow)
+from ui import (AboutWindow, ControlPanel, FittingCanvas, RecordedDataTable,
+                SettingWindow, TaskWindow)
 
 
 class GUILogHandler(logging.Handler):
@@ -39,20 +31,14 @@ class GUILogHandler(logging.Handler):
 
 class MainWindow(QMainWindow):
     sigDataSelected = Signal(int) 
-    sigRemoveRecords = Signal(list)
     sigSetup = Signal()
     sigCleanup = Signal()
-    TABLE_HEADER_ROWS = 2
-    COPONENT_ITEMS = 11
     logger = logging.getLogger("root.MainWindow")
     gui_logger = logging.getLogger("GUI")
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.init_ui()
         self.status_bar = self.statusBar()
-        self.recorded_data_count = 0
-        self.ncomp_number_dict = {}
-        self.row_ncomp_dict = {}
         self.gui_fitting_thread = QThread()
         self.gui_resolver = GUIResolver()
         # disable multi-thread for debug
@@ -64,7 +50,6 @@ class MainWindow(QMainWindow):
         self.connect_all()
         self.msg_box = QMessageBox(self)
         self.msg_box.setWindowFlags(Qt.Drawer)
-
         self.reset_dock_layout()
 
     def show_message(self, message):
@@ -112,15 +97,9 @@ class MainWindow(QMainWindow):
 
         # Recorded Data Table
         self.recorded_data_dock = QDockWidget(self.tr("Recorded Data Table"))
-        self.recorded_data_table = QTableWidget()
-        self.recorded_data_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.recorded_data_table.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.recorded_data_table.setAlternatingRowColors(True)
-        self.recorded_data_table.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.recorded_data_table = RecordedDataTable()
         self.recorded_data_dock.setWidget(self.recorded_data_table)
-        self.recorded_table_menu = QMenu(self.recorded_data_table)
-        self.recorded_table_remove_action = self.recorded_table_menu.addAction(self.tr("Remove"))
-        
+ 
         self.settings_window = SettingWindow(self)
         self.about_window = AboutWindow(self)
         self.task_window = TaskWindow(self)
@@ -135,12 +114,12 @@ class MainWindow(QMainWindow):
         self.control_panel.sigFocusSampleChanged.connect(self.data_manager.on_focus_sample_changed)
         self.control_panel.sigFocusSampleChanged.connect(self.on_focus_sample_changed)
         self.control_panel.sigGUIResolverSettingsChanged.connect(self.gui_resolver.on_settings_changed)
+        self.control_panel.sigGUIResolverFittingStarted.connect(self.gui_resolver.try_fit)
         self.control_panel.sigRuningSettingsChanged.connect(self.on_settings_changed)
         self.control_panel.sigDataSettingsChanged.connect(self.data_manager.on_settings_changed)
         self.control_panel.sigGUIResolverTaskCanceled.connect(self.on_task_canceled)
         self.control_panel.sigMultiProcessingTaskStarted.connect(self.multiprocessing_resolver.execute_tasks)
         # Connect directly
-        self.control_panel.try_fit_button.clicked.connect(self.gui_resolver.try_fit)
         self.control_panel.record_button.clicked.connect(self.data_manager.record_current_data)
         
         self.data_manager.sigDataLoaded.connect(self.on_data_loaded)
@@ -148,7 +127,7 @@ class MainWindow(QMainWindow):
         self.data_manager.sigDataLoaded.connect(self.multiprocessing_resolver.on_data_loaded)
         self.data_manager.sigTargetDataChanged.connect(self.gui_resolver.on_target_data_changed)
         self.data_manager.sigTargetDataChanged.connect(self.canvas.on_target_data_changed)
-        self.data_manager.sigDataRecorded.connect(self.on_data_recorded)
+        self.data_manager.sigDataRecorded.connect(self.recorded_data_table.on_data_recorded)
         
         self.gui_resolver.sigFittingEpochSucceeded.connect(self.control_panel.on_fitting_epoch_suceeded)
         self.gui_resolver.sigFittingEpochSucceeded.connect(self.canvas.on_fitting_epoch_suceeded)
@@ -161,10 +140,11 @@ class MainWindow(QMainWindow):
         self.multiprocessing_resolver.sigTaskStateUpdated.connect(self.task_window.on_task_state_updated)
         self.multiprocessing_resolver.sigTaskFinished.connect(self.task_window.on_task_finished)
         self.multiprocessing_resolver.sigTaskFinished.connect(self.data_manager.on_multiprocessing_task_finished)
-        
+
+        self.raw_data_table.cellClicked.connect(self.on_data_item_clicked)
+        self.recorded_data_table.sigRemoveRecords.connect(self.data_manager.remove_data)
+
         # Dock menu actions
-        self.load_action.triggered.connect(self.data_manager.load_data)
-        self.save_action.triggered.connect(self.data_manager.save_data)
         self.canvas_action.triggered.connect(self.show_canvas_dock)
         self.control_panel_action.triggered.connect(self.show_control_panel_dock)
         self.raw_data_table_action.triggered.connect(self.show_raw_data_dock)
@@ -172,13 +152,11 @@ class MainWindow(QMainWindow):
         self.reset_docks_actions.triggered.connect(self.reset_dock_layout)
         self.settings_action.triggered.connect(self.settings_window.show)
         self.about_action.triggered.connect(self.about_window.show)
-        
-        # self.canvas.sigWidgetsEnable.connect(self.control_panel.on_widgets_enable_changed)
-        self.raw_data_table.cellClicked.connect(self.on_data_item_clicked)
-        self.recorded_table_remove_action.triggered.connect(self.remove_recorded_selection)
-        self.recorded_data_table.customContextMenuRequested.connect(self.show_recorded_table_menu)
+
+        self.load_action.triggered.connect(self.data_manager.load_data)
+        self.save_action.triggered.connect(self.data_manager.save_data)
         self.sigDataSelected.connect(self.control_panel.on_data_selected)
-        self.sigRemoveRecords.connect(self.data_manager.remove_data)
+
         self.sigSetup.connect(self.control_panel.setup_all)
         self.sigSetup.connect(self.data_manager.setup_all)
         self.sigSetup.connect(self.settings_window.setup_all)
@@ -192,6 +170,10 @@ class MainWindow(QMainWindow):
         self.settings_window.algorithm_setting.sigAlgorithmSettingChanged.connect(self.multiprocessing_resolver.on_algorithm_settings_changed)
 
     def reset_dock_layout(self):
+        self.canvas_dock.setFloating(False)
+        self.control_panel_dock.setFloating(False)
+        self.raw_data_dock.setFloating(False)
+        self.recorded_data_dock.setFloating(False)
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.canvas_dock)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.raw_data_dock)
         self.splitDockWidget(self.raw_data_dock, self.recorded_data_dock, Qt.Orientation.Horizontal)
@@ -200,19 +182,20 @@ class MainWindow(QMainWindow):
         self.raw_data_dock.show()
         self.recorded_data_dock.show()
         self.control_panel_dock.show()
-        self.resizeDocks((self.canvas_dock, self.control_panel_dock), (self.height()*0.6//1, self.height()*0.4//1), Qt.Orientation.Vertical)
+        self.resizeDocks((self.canvas_dock, self.control_panel_dock), (self.height()*0.6, self.height()*0.4), Qt.Orientation.Vertical)
+        self.resizeDocks((self.canvas_dock, self.control_panel_dock, self.raw_data_dock, self.recorded_data_dock), (self.width()*0.5, self.width()*0.5, self.width()*0.25, self.width()*0.25), Qt.Orientation.Horizontal)
 
     def show_canvas_dock(self):
-        self.canvas_dock.setVisible(True)
+        self.canvas_dock.show()
 
     def show_control_panel_dock(self):
-        self.control_panel_dock.setVisible(True)
+        self.control_panel_dock.show()
 
     def show_raw_data_dock(self):
-        self.raw_data_dock.setVisible(True)
+        self.raw_data_dock.show()
 
     def show_recorded_data_dock(self):
-        self.recorded_data_dock.setVisible(True)
+        self.recorded_data_dock.show()
 
     def on_data_loaded(self, grain_size_data: GrainSizeData):
         nrows = len(grain_size_data.sample_data_list)
@@ -221,8 +204,8 @@ class MainWindow(QMainWindow):
         self.raw_data_table.setColumnCount(ncols)
         self.raw_data_table.setHorizontalHeaderLabels(["{0:.2f}".format(class_value) for class_value in grain_size_data.classes])
         self.raw_data_table.setVerticalHeaderLabels([str(sample_data.name) for sample_data in grain_size_data.sample_data_list])
-        # self.data_table.setData(grain_size_data.table_view)
         for i, sample_data in enumerate(grain_size_data.sample_data_list):
+            QCoreApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
             for j, value in enumerate(sample_data.distribution):
                 item = QTableWidgetItem("{0:.4f}".format(value))
                 item.setTextAlignment(Qt.AlignCenter)
@@ -231,100 +214,6 @@ class MainWindow(QMainWindow):
         # resize to tight layout
         self.raw_data_table.resizeColumnsToContents()
         self.logger.info("Data was loaded, and has been update to the table.")
-
-    def on_data_recorded(self, fitted_data_list: List[FittedData]):
-        data_length = len(fitted_data_list)
-        column_span = self.COPONENT_ITEMS + 1
-        # if it's necessary to expand the table rows
-        if self.recorded_data_count + data_length + self.TABLE_HEADER_ROWS >= self.recorded_data_table.rowCount():
-            self.recorded_data_table.setRowCount(self.recorded_data_table.rowCount() + data_length + 50)
-        if len(self.ncomp_number_dict) == 0:
-            max_ncomp_before = 0
-        else:
-            max_ncomp_before = max(self.ncomp_number_dict.keys())
-        for i, fitted_data in enumerate(fitted_data_list):
-            ncomp = len(fitted_data.statistic)
-            # if has same ncomp, increase the value
-            if ncomp in self.ncomp_number_dict.keys():
-                self.ncomp_number_dict[ncomp] += 1
-            else:
-                self.ncomp_number_dict[ncomp] = 1
-            
-            self.row_ncomp_dict[self.recorded_data_count+self.TABLE_HEADER_ROWS+i] = ncomp
-
-        max_ncomp = max(self.ncomp_number_dict.keys())
-        
-        # the local func to handle write
-        # also put data validation here
-        def write(row, col, value, e=False):
-            str_value = "UNKNOWN"
-            if np.isreal(value):
-                if np.isnan(value):
-                    str_value = "NaN"
-                elif np.isinf(value):
-                    str_value = "Inf"
-                elif e:
-                    str_value = "{0:.2e}".format(value)
-                else:
-                    str_value = "{0:.2f}".format(value)
-            else:
-                str_value = str(value)
-            item = QTableWidgetItem(str_value)
-            item.setTextAlignment(Qt.AlignCenter)
-            self.recorded_data_table.setItem(row, col, item)
-        
-        
-        # means there is greater ncomp and the headers are need to be updated
-        if max_ncomp > max_ncomp_before:
-            # if it's necessary to expand the table columns
-            # `2` means the sample name and mse columns
-            if max_ncomp*self.COPONENT_ITEMS+2 > self.recorded_data_table.columnCount():
-                self.recorded_data_table.setColumnCount(max_ncomp*column_span+2)
-
-            # write headers
-            write(0, 0, self.tr("Sample Name"))
-            self.recorded_data_table.setSpan(0, 0, self.TABLE_HEADER_ROWS, 1)
-            write(0, 1, self.tr("Mean Squared Error"))
-            self.recorded_data_table.setSpan(0, 1, self.TABLE_HEADER_ROWS, 1)
-            for i, comp in enumerate(fitted_data.statistic):
-                write(0, i*column_span+3, comp["name"])
-                self.recorded_data_table.setSpan(0, i*column_span+3, 1, self.COPONENT_ITEMS)
-                write(1, i*column_span+3, self.tr("Fraction"))
-                write(1, i*column_span+4, self.tr("Mean")) # TODO: add units
-                write(1, i*column_span+5, self.tr("Median"))
-                write(1, i*column_span+6, self.tr("Mode"))
-                write(1, i*column_span+7, self.tr("Variance"))
-                write(1, i*column_span+8, self.tr("Standard Deviation"))
-                write(1, i*column_span+9, self.tr("Skewness"))
-                write(1, i*column_span+10, self.tr("Kurtosis"))
-                write(1, i*column_span+11, self.tr("Beta"))
-                write(1, i*column_span+12, self.tr("Eta"))
-                write(1, i*column_span+13, self.tr("X Offset"))
-
-        # update contents
-        for fitted_data in fitted_data_list:
-            row = self.recorded_data_count + self.TABLE_HEADER_ROWS
-            write(row, 0, fitted_data.name)
-            write(row, 1, fitted_data.mse, e=True)
-            for i, comp in enumerate(fitted_data.statistic):
-                write(row, i*column_span+3, comp.get("fraction"))
-                write(row, i*column_span+4, comp.get("mean"))
-                write(row, i*column_span+5, comp.get("median"))
-                write(row, i*column_span+6, comp.get("mode"))
-                write(row, i*column_span+7, comp.get("variance"))
-                write(row, i*column_span+8, comp.get("standard_deviation"))
-                write(row, i*column_span+9, comp.get("skewness"))
-                write(row, i*column_span+10, comp.get("kurtosis"))
-                write(row, i*column_span+11, comp.get("beta"))
-                write(row, i*column_span+12, comp.get("eta"))
-                write(row, i*column_span+13, comp.get("x_offset"))
-            self.recorded_data_count += 1
-        
-        self.logger.debug("Fitted data has been wrote to recorded data table. Data list: [%s].", ", ".join(fitted_data.name for fitted_data in fitted_data_list))
-        # must call this after the contents have been written to the table
-        if max_ncomp > max_ncomp_before:
-            # tight table layout
-            self.recorded_data_table.resizeColumnsToContents()
 
     def on_settings_changed(self, kwargs: dict):
         for setting, value in kwargs.items():
@@ -337,40 +226,6 @@ class MainWindow(QMainWindow):
 
     def on_focus_sample_changed(self, index):
         self.raw_data_table.setCurrentCell(index, 0)
-        
-    def show_recorded_table_menu(self, pos):
-        self.recorded_table_menu.popup(QCursor.pos())
-
-    def remove_recorded_selection(self):
-        rows_to_remove = set()
-        # The behaviour of `selectedRanges` differs when clicking in table or at the edge
-        # When clicking in table it returns multi ranges (each row)
-        # When clicking at the edge it returns a single range
-        for item in self.recorded_data_table.selectedRanges():
-            for i in range(item.topRow(), min(self.recorded_data_count+self.TABLE_HEADER_ROWS, item.bottomRow()+1)):
-                # do not remove headers
-                if i >= self.TABLE_HEADER_ROWS:
-                    rows_to_remove.add(i)
-        rows_to_remove = list(rows_to_remove)
-        rows_to_remove.sort()
-        offset = 0
-        
-        if len(rows_to_remove) == 0:
-            self.logger.info("No valid row was selected, nothing happend.")
-            return
-        for row in rows_to_remove:
-            ncomp = self.row_ncomp_dict[row]
-            # decrease the ncomp statistic
-            self.ncomp_number_dict[ncomp] -= 1
-            # if reach 0, remove key
-            if self.ncomp_number_dict[ncomp] == 0:
-                self.ncomp_number_dict.pop(ncomp)
-            self.recorded_data_table.removeRow(row-offset)
-            offset += 1
-        self.recorded_data_count -= offset
-        records_to_remove = [row-self.TABLE_HEADER_ROWS for row in rows_to_remove]
-        self.sigRemoveRecords.emit(records_to_remove)
-        self.logger.info("The rows of recorded data will be remove are: [%s].", records_to_remove)
 
     def on_task_canceled(self):
         self.gui_resolver.cancel()
