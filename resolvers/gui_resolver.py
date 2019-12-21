@@ -120,7 +120,7 @@ class GUIResolver(QObject, Resolver):
         if type(exception) == CancelError:
             self.logger.info("The fitting progress was canceled by user.")
         else:
-            self.sigFittingFailed(self.tr("Unknown exception raise in fitting progress."))
+            self.sigFittingFailed.emit(self.tr("Unknown exception raise in fitting progress."))
             self.logger.exception("Unknown exception raise in fitting progress.", stack_info=True)
 
     def local_iteration_callback(self, fitted_params):

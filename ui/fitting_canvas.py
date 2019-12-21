@@ -64,7 +64,7 @@ class FittingCanvas(QWidget):
 
 
     # TODO: add lock because if ncomp changed during iteration, the data items will also change
-    def on_ncomp_changed(self, ncomp: int):
+    def on_component_number_changed(self, ncomp: int):
         self.logger.info("Received the component changed signal, start to change clear and add data items.")
         # Check the validity of `ncomp`
         if type(ncomp) != int:
