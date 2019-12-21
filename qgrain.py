@@ -45,13 +45,13 @@ def setup_theme(app: QApplication):
 
 def setup_logging(main_window: MainWindow):
     format_str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    file_handler = TimedRotatingFileHandler("./logs/qgrain.log", when="D", backupCount=256)
+    file_handler = TimedRotatingFileHandler("./logs/qgrain.log", when="D", backupCount=256, encoding="utf-8")
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(logging.Formatter(format_str))
     gui_handler = GUILogHandler(main_window)
     gui_handler.setLevel(logging.INFO)
     logging.basicConfig(level=logging.DEBUG, format=format_str)
-    logging.getLogger("root").addHandler(file_handler)
+    logging.getLogger().addHandler(file_handler)
     logging.getLogger("GUI").addHandler(gui_handler)
 
 def main():
