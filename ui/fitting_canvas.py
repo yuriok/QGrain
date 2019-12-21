@@ -22,12 +22,12 @@ class FittingCanvas(QWidget):
     def init_ui(self):
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.main_layout = QGridLayout(self)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.plot_widget = pg.PlotWidget(enableMenu=True)
         self.main_layout.addWidget(self.plot_widget)
         self.target_style = dict(pen=None, symbol="o", symbolBrush=pg.mkBrush("#161B26"), symbolPen=None, symbolSize=5)
         self.target_item = pg.PlotDataItem(name="Target", **self.target_style)
         self.plot_widget.plotItem.addItem(self.target_item)
-        
         self.sum_style = dict(pen=pg.mkPen("#062170", width=3, style=Qt.DashLine))
         self.sum_item = pg.PlotDataItem(name="Fitted", **self.sum_style)
         self.plot_widget.plotItem.addItem(self.sum_item)

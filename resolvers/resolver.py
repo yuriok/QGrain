@@ -4,7 +4,7 @@ import numpy as np
 from scipy.interpolate import interp1d
 from scipy.optimize import basinhopping, minimize
 
-from algorithms import *
+from algorithms import DistributionType, MixedDistributionData
 from data import FittedData
 
 
@@ -31,10 +31,9 @@ class Resolver:
                  minimizer_tolerance=1e-8,
                  minimizer_maxiter=500):
         self.__distribution_type = DistributionType.Weibull
-        self.__ncomp = 2
+        self.__component_number = 2
         # must call `refresh_by_distribution_type` first
-        self.refresh_by_distribution_type()
-        self.refresh_by_ncomp()
+        self.refresh()
 
         self.global_optimization_maxiter = global_optimization_maxiter
         self.global_optimization_success_iter = global_optimization_success_iter
@@ -65,39 +64,24 @@ class Resolver:
         if type(value) != DistributionType:
             return
         self.__distribution_type = value
-        self.refresh_by_distribution_type()
+        self.refresh()
 
     @property
-    def ncomp(self):
-        return self.__ncomp
+    def component_number(self):
+        return self.__component_number
 
-    @ncomp.setter
-    def ncomp(self, value: int):
+    @component_number.setter
+    def component_number(self, value: int):
         if type(value) != int:
             return
-        if value <= 1:
+        if value < 1:
             return
-        self.__ncomp = value
-        self.refresh_by_ncomp()
+        self.__component_number = value
+        self.refresh()
 
-    def refresh_by_ncomp(self):
-        (self.mixed_func, self.bounds, self.constrains,
-         self.defaults, self.params) = self.get_mixed_func(self.ncomp)
-        self.initial_guess = self.defaults
-
-    def refresh_by_distribution_type(self):
-        if self.distribution_type == DistributionType.Weibull:
-            self.get_mixed_func = get_mixed_weibull
-            self.single_func = weibull
-            self.mean_func = weibull_mean
-            self.median_func = weibull_median
-            self.mode_func = weibull_mode
-            self.variance_func = weibull_variance
-            self.std_deviation_func = weibull_std_deviation
-            self.skewness_func = weibull_skewness
-            self.kurtosis_func = weibull_kurtosis
-        else:
-            raise NotImplementedError(self.distribution_type)
+    def refresh(self):
+        self.mixed_data = MixedDistributionData(self.component_number, self.distribution_type)
+        self.initial_guess = self.mixed_data.defaults
 
     @staticmethod
     def get_squared_sum_of_residual_errors(values, targets):
@@ -182,12 +166,11 @@ class Resolver:
 
     def preprocess_data(self):
         self.start_index, self.end_index = Resolver.get_valid_data_range(self.y_data)
-        # weibull needs to be fitted under bin number space
-        if self.distribution_type == DistributionType.Weibull:
+        # Normal and Weibull needs to be fitted under bin number space
+        if self.distribution_type == DistributionType.Normal or self.distribution_type == DistributionType.Weibull:
             self.x_to_fit = np.array(range(self.end_index-self.start_index)) + 1
             self.y_to_fit = self.y_data[self.start_index: self.end_index]
         else:
-            # TODO: add support for other distributions
             raise NotImplementedError(self.distribution_type)
 
     def feed_data(self, sample_name: str, x: np.ndarray, y: np.ndarray):
@@ -225,12 +208,12 @@ class Resolver:
         # the target data to fit
         target = (partial_real_x, self.y_to_fit)
         # the fitted sum data of all components
-        fitted_sum = (partial_real_x, self.mixed_func(self.x_to_fit, *fitted_params))
+        fitted_sum = (partial_real_x, self.mixed_data.mixed_func(self.x_to_fit, *fitted_params))
         # the fitted data of each single component
-        processed_params = process_params(self.ncomp, self.params, fitted_params, self.distribution_type)
+        processed_params = self.mixed_data.process_params(fitted_params)
         components = []
         for beta, eta, fraction in processed_params:
-            components.append((partial_real_x, self.single_func(
+            components.append((partial_real_x, self.mixed_data.single_func(
                 self.x_to_fit, beta, eta)*fraction))
 
         # get the relationship (func) to convert x_to_fit to real x
@@ -241,9 +224,9 @@ class Resolver:
         for i, (beta, eta, fraction) in enumerate(processed_params):
             try:
                 # use max operation to convert np.ndarray to float64
-                mean_value = x_to_real(self.mean_func(beta, eta)).max()
-                median_value = x_to_real(self.median_func(beta, eta)).max()
-                mode_value = x_to_real(self.mode_func(beta, eta)).max()
+                mean_value = x_to_real(self.mixed_data.mean(beta, eta)).max()
+                median_value = x_to_real(self.mixed_data.median(beta, eta)).max()
+                mode_value = x_to_real(self.mixed_data.mode(beta, eta)).max()
             except ValueError:
                 mean_value = np.nan
                 median_value = np.nan
@@ -258,10 +241,10 @@ class Resolver:
                 "mean": mean_value,
                 "median": median_value,
                 "mode": mode_value,
-                "variance": self.variance_func(beta, eta),
-                "standard_deviation": self.std_deviation_func(beta, eta),
-                "skewness": self.skewness_func(beta, eta),
-                "kurtosis": self.kurtosis_func(beta, eta)
+                "variance": self.mixed_data.variance(beta, eta),
+                "standard_deviation": self.mixed_data.standard_deviation(beta, eta),
+                "skewness": self.mixed_data.skewness(beta, eta),
+                "kurtosis": self.mixed_data.kurtosis(beta, eta)
             })
 
         mse = Resolver.get_mean_squared_errors(target[1], fitted_sum[1])
@@ -276,11 +259,11 @@ class Resolver:
         self.on_fitting_started()
 
         def closure(args):
-            current_values = self.mixed_func(self.x_to_fit, *args)
+            current_values = self.mixed_data.mixed_func(self.x_to_fit, *args)
             return Resolver.get_squared_sum_of_residual_errors(current_values, self.y_to_fit)*100
 
         minimizer_kwargs = dict(method="SLSQP",
-                                bounds=self.bounds, constraints=self.constrains,
+                                bounds=self.mixed_data.bounds, constraints=self.mixed_data.constrains,
                                 callback=self.local_iteration_callback,
                                 options={"maxiter": self.minimizer_maxiter, "ftol": self.minimizer_tolerance})
         try:
@@ -298,7 +281,7 @@ class Resolver:
                 self.on_fitting_finished()
                 return
             fitted_result = minimize(closure, method="SLSQP", x0=global_fitted_result.x,
-                                     bounds=self.bounds, constraints=self.constrains,
+                                     bounds=self.mixed_data.bounds, constraints=self.mixed_data.constrains,
                                      callback=self.local_iteration_callback,
                                      options={"maxiter": self.final_maxiter, "ftol": self.final_tolerance})
             # judge if the final fitting succeed
