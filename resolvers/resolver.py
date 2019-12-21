@@ -168,7 +168,7 @@ class Resolver:
         self.start_index, self.end_index = Resolver.get_valid_data_range(self.y_data)
         # Normal and Weibull needs to be fitted under bin number space
         if self.distribution_type == DistributionType.Normal or self.distribution_type == DistributionType.Weibull:
-            self.x_to_fit = np.array(range(self.end_index-self.start_index)) + 1
+            self.x_to_fit = np.array(range(len(self.y_data))[self.start_index: self.end_index]) - self.start_index + 1
             self.y_to_fit = self.y_data[self.start_index: self.end_index]
         else:
             raise NotImplementedError(self.distribution_type)
@@ -211,6 +211,7 @@ class Resolver:
         fitted_sum = (partial_real_x, self.mixed_data.mixed_func(self.x_to_fit, *fitted_params))
         # the fitted data of each single component
         processed_params = self.mixed_data.process_params(fitted_params)
+        
         components = []
         for beta, eta, fraction in processed_params:
             components.append((partial_real_x, self.mixed_data.single_func(
