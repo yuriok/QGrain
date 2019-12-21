@@ -114,12 +114,12 @@ class MainWindow(QMainWindow):
         self.control_panel.sigFocusSampleChanged.connect(self.data_manager.on_focus_sample_changed)
         self.control_panel.sigFocusSampleChanged.connect(self.on_focus_sample_changed)
         self.control_panel.sigGUIResolverSettingsChanged.connect(self.gui_resolver.on_settings_changed)
+        self.control_panel.sigGUIResolverFittingStarted.connect(self.gui_resolver.try_fit)
         self.control_panel.sigRuningSettingsChanged.connect(self.on_settings_changed)
         self.control_panel.sigDataSettingsChanged.connect(self.data_manager.on_settings_changed)
         self.control_panel.sigGUIResolverTaskCanceled.connect(self.on_task_canceled)
         self.control_panel.sigMultiProcessingTaskStarted.connect(self.multiprocessing_resolver.execute_tasks)
         # Connect directly
-        self.control_panel.try_fit_button.clicked.connect(self.gui_resolver.try_fit)
         self.control_panel.record_button.clicked.connect(self.data_manager.record_current_data)
         
         self.data_manager.sigDataLoaded.connect(self.on_data_loaded)
