@@ -140,7 +140,8 @@ class ViewDataManager(QObject):
         # update contents
         first_row_index = self.data_count + self.TABLE_HEADER_ROWS
         for record_index, record in enumerate(records):
-            QCoreApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
+            # will bring thread unsafe issue
+            # QCoreApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
             row = first_row_index + record_index
             view_data = SingleViewData(record)
             self.write(row, 0, view_data.name)
