@@ -34,11 +34,11 @@ def get_params(component_number: int, distribution_type: DistributionType) -> Li
         # if there is only one component, the fraction is not needful
         # beta and eta also don't need the number to distinguish
         if distribution_type == DistributionType.Normal:
-            params.append({"name": param1_name, "default": 0, "location": 0, "bounds": (None, None)})
-            params.append({"name": param2_name, "default": 1, "location": 1, "bounds": (INFINITESIMAL, None)})
+            params.append({"name": param1_name, "default": 10, "location": 0, "bounds": (None, None)})
+            params.append({"name": param2_name, "default": 3, "location": 1, "bounds": (INFINITESIMAL, None)})
         elif distribution_type == DistributionType.Weibull:
-            params.append({"name": param1_name, "default": 2, "location": 0, "bounds": (INFINITESIMAL+2, None)})
-            params.append({"name": param2_name, "default": 1, "location": 1, "bounds": (INFINITESIMAL, None)})
+            params.append({"name": param1_name, "default": 3, "location": 0, "bounds": (INFINITESIMAL+2, None)})
+            params.append({"name": param2_name, "default": 10, "location": 1, "bounds": (INFINITESIMAL, None)})
         else:
             raise NotImplementedError(distribution_type)
     elif component_number > 1:
@@ -71,7 +71,7 @@ def get_bounds(params: List[Dict]) -> List[Tuple]:
 
 def get_constrains(component_number: int) -> List[Dict]:
     if component_number == 1:
-        return None
+        return []
     elif component_number > 1:
         return [{'type': 'ineq', 'fun': lambda args:  1 - np.sum(args[1-component_number:]) + INFINITESIMAL}]
     else:
@@ -111,7 +111,15 @@ def process_params(component_number: int, func_params: List[Dict], fitted_params
     param1_name, param2_name = get_param_names(distribution_type)
     if component_number == 1:
         assert len(fitted_params) == 2
-        return [tuple(fitted_params)]
+        the_only_component = [None, None, 1]
+        for func_param in func_params:
+            if func_param["name"] == param1_name:
+                the_only_component[0] = fitted_params[func_param["location"]]
+            elif func_param["name"] == param2_name:
+                the_only_component[1] = fitted_params[func_param["location"]]
+            else:
+                raise ValueError(func_param)
+        return [the_only_component]
     elif component_number > 1:
         # initialize the result list
         processed = []

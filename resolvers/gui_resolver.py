@@ -26,6 +26,7 @@ class GUIResolver(QObject, Resolver):
 
         # settings
         self.inherit_params = inherit_params
+        self.last_succeeded_params = None
         self.emit_iteration = emit_iteration
         self.time_interval = time_interval
         
@@ -100,6 +101,11 @@ class GUIResolver(QObject, Resolver):
 
     def on_fitting_started(self):
         self.current_iteration = 0
+        if self.inherit_params and self.last_succeeded_params is not None and len(self.last_succeeded_params) == len(self.mixed_data.defaults):
+            self.initial_guess = self.last_succeeded_params
+        else:
+            self.initial_guess = self.mixed_data.defaults
+
         self.sigWidgetsEnable.emit(False)
         self.logger.debug("Fitting progress started.")
 
@@ -120,7 +126,7 @@ class GUIResolver(QObject, Resolver):
         if type(exception) == CancelError:
             self.logger.info("The fitting progress was canceled by user.")
         else:
-            self.sigFittingFailed(self.tr("Unknown exception raise in fitting progress."))
+            self.sigFittingFailed.emit(self.tr("Unknown exception raise in fitting progress."))
             self.logger.exception("Unknown exception raise in fitting progress.", stack_info=True)
 
     def local_iteration_callback(self, fitted_params):
@@ -144,7 +150,7 @@ class GUIResolver(QObject, Resolver):
 
     def on_fitting_succeeded(self, fitted_result):
         if self.inherit_params:
-            self.initial_guess = fitted_result.x
+            self.last_succeeded_params = fitted_result.x
         self.logger.info("The epoch of fitting has finished, the fitted parameters are: [%s]", fitted_result.x)
         self.sigFittingEpochSucceeded.emit(self.get_fitted_data(fitted_result.x))
 

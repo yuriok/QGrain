@@ -28,7 +28,7 @@ class ControlPanel(QWidget):
 
     def __init__(self, parent=None, **kargs):
         super().__init__(parent, **kargs)
-        self.__ncomp = 2
+        self.__component_number = 2
         self.__data_index = 0
         self.sample_names = None
         self.auto_fit_flag = True
@@ -57,17 +57,17 @@ class ControlPanel(QWidget):
         self.main_layout.addWidget(self.distribution_weibull_radio_button, 0, 3)
 
         # Component number
-        self.ncomp_label = QLabel(self.tr("Components:"))
-        self.ncomp_label.setToolTip(self.tr("Select the mixed component number of the distribution."))
-        self.ncomp_display = QLabel(self.tr("Unknown"))
-        self.ncomp_add_button = QPushButton(self.tr("+"))
-        self.ncomp_add_button.setToolTip(self.tr("Click to add one component. It should be less than 11."))
-        self.ncomp_reduce_button = QPushButton(self.tr("-"))
-        self.ncomp_reduce_button.setToolTip(self.tr("Click to reduce one component. It should be greater than 1."))
-        self.main_layout.addWidget(self.ncomp_label, 1, 0)
-        self.main_layout.addWidget(self.ncomp_display, 1, 1)
-        self.main_layout.addWidget(self.ncomp_add_button, 1, 2)
-        self.main_layout.addWidget(self.ncomp_reduce_button, 1, 3)
+        self.component_number_label = QLabel(self.tr("Components:"))
+        self.component_number_label.setToolTip(self.tr("Select the mixed component number of the distribution."))
+        self.component_number_display = QLabel(self.tr("Unknown"))
+        self.component_number_add_button = QPushButton(self.tr("+"))
+        self.component_number_add_button.setToolTip(self.tr("Click to add one component. It should be less than 11."))
+        self.component_reduce_button = QPushButton(self.tr("-"))
+        self.component_reduce_button.setToolTip(self.tr("Click to reduce one component. It should be greater than 1."))
+        self.main_layout.addWidget(self.component_number_label, 1, 0)
+        self.main_layout.addWidget(self.component_number_display, 1, 1)
+        self.main_layout.addWidget(self.component_number_add_button, 1, 2)
+        self.main_layout.addWidget(self.component_reduce_button, 1, 3)
 
         # Some usual settings
         self.iteration_scope_checkbox = QCheckBox(self.tr("Iteration Scope"))
@@ -117,8 +117,8 @@ class ControlPanel(QWidget):
 
     def connect_all(self):
         self.distribution_normal_radio_button.toggled.connect(self.on_distribution_type_changed)
-        self.ncomp_add_button.clicked.connect(self.on_ncomp_add_clicked)
-        self.ncomp_reduce_button.clicked.connect(self.on_ncomp_reduce_clicked)
+        self.component_number_add_button.clicked.connect(self.on_component_number_add_clicked)
+        self.component_reduce_button.clicked.connect(self.on_component_number_reduce_clicked)
         
         self.data_index_previous_button.clicked.connect(self.on_data_index_previous_clicked)
         self.data_index_next_button.clicked.connect(self.on_data_index_next_clicked)
@@ -134,22 +134,22 @@ class ControlPanel(QWidget):
         self.multiprocessing_button.clicked.connect(self.on_multiprocessing_clicked)
 
     @property
-    def ncomp(self):
-        return self.__ncomp
+    def component_number(self):
+        return self.__component_number
 
-    @ncomp.setter
-    def ncomp(self, value: int):
+    @component_number.setter
+    def component_number(self, value: int):
         # check the validity
-        # ncomp should be non-negative
+        # component number should be non-negative
         # TODO: change the way to generate plot styles in `FittingCanvas`, and remove the limit of <=10
-        if value <= 1 or value > 10:
-            self.gui_logger.info(self.tr("The component number should be > 1 and <= 10."))
+        if value < 1 or value > 10:
+            self.gui_logger.info(self.tr("The component number should be >= 1 and <= 10."))
             return
         # update the label to display the value
-        self.ncomp_display.setText(str(value))
-        self.__ncomp = value
+        self.component_number_display.setText(str(value))
+        self.__component_number = value
         self.sigComponentNumberChanged.emit(value)
-        # auto emit target data change signal again when ncomp changed
+        # auto emit target data change signal again when component number changed
         if self.sample_names is not None:
             self.data_index = self.data_index
 
@@ -200,11 +200,11 @@ class ControlPanel(QWidget):
         else:
             return True
 
-    def on_ncomp_add_clicked(self):
-        self.ncomp += 1
+    def on_component_number_add_clicked(self):
+        self.component_number += 1
 
-    def on_ncomp_reduce_clicked(self):
-        self.ncomp -= 1
+    def on_component_number_reduce_clicked(self):
+        self.component_number -= 1
 
     def on_distribution_type_changed(self):
         if self.distribution_normal_radio_button.isChecked():
@@ -248,9 +248,9 @@ class ControlPanel(QWidget):
 
     def on_auto_record_changed(self, state):
         if state == Qt.Checked:
-            self.sigDataSettingsChanged.emit({"auto_record": True})
+            self.sigDataSettingsChanged.emit({"auto_record_flag": True})
         else:
-            self.sigDataSettingsChanged.emit({"auto_record": False})
+            self.sigDataSettingsChanged.emit({"auto_record_flag": False})
 
     def on_data_loaded(self, grain_size_data: GrainSizeData):
         self.sample_names = [sample.name for sample in grain_size_data.sample_data_list]
@@ -267,8 +267,8 @@ class ControlPanel(QWidget):
             return
         self.distribution_weibull_radio_button.setEnabled(enable)
         self.distribution_normal_radio_button.setEnabled(enable)
-        self.ncomp_add_button.setEnabled(enable)
-        self.ncomp_reduce_button.setEnabled(enable)
+        self.component_number_add_button.setEnabled(enable)
+        self.component_reduce_button.setEnabled(enable)
         self.data_index_previous_button.setEnabled(enable)
         self.data_index_next_button.setEnabled(enable)
         self.iteration_scope_checkbox.setEnabled(enable)
@@ -336,7 +336,7 @@ class ControlPanel(QWidget):
         self.msg_box.exec_()
 
     def setup_all(self):
-        self.ncomp = 3
+        self.component_number = 3
         self.distribution_weibull_radio_button.setChecked(True)
         self.iteration_scope_checkbox.setCheckState(Qt.Unchecked)
         self.inherit_params_checkbox.setCheckState(Qt.Checked)
