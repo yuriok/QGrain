@@ -248,9 +248,9 @@ class ControlPanel(QWidget):
 
     def on_auto_record_changed(self, state):
         if state == Qt.Checked:
-            self.sigDataSettingsChanged.emit({"auto_record": True})
+            self.sigDataSettingsChanged.emit({"auto_record_flag": True})
         else:
-            self.sigDataSettingsChanged.emit({"auto_record": False})
+            self.sigDataSettingsChanged.emit({"auto_record_flag": False})
 
     def on_data_loaded(self, grain_size_data: GrainSizeData):
         self.sample_names = [sample.name for sample in grain_size_data.sample_data_list]
