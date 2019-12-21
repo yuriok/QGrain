@@ -105,7 +105,6 @@ class MainWindow(QMainWindow):
         self.task_window = TaskWindow(self)
 
     def connect_all(self):
-        # TODO: Type Switch
         self.control_panel.sigDistributionTypeChanged.connect(self.gui_resolver.on_distribution_type_changed)
         self.control_panel.sigDistributionTypeChanged.connect(self.multiprocessing_resolver.on_distribution_type_changed)
         self.control_panel.sigComponentNumberChanged.connect(self.gui_resolver.on_component_number_changed)
