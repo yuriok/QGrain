@@ -1,6 +1,5 @@
 import logging
 import os
-from enum import Enum
 
 import numpy as np
 from PySide2.QtCore import Qt, QThread, QTimer, Signal
@@ -13,7 +12,7 @@ from data import FittedData, GrainSizeData
 
 
 class ControlPanel(QWidget):
-    sigDistributionTypeChanged = Signal(Enum)
+    sigDistributionTypeChanged = Signal(str)
     sigComponentNumberChanged = Signal(int)
     sigFocusSampleChanged = Signal(int) # index of that sample in list
     sigGUIResolverSettingsChanged = Signal(dict)
@@ -47,13 +46,13 @@ class ControlPanel(QWidget):
 
         self.distribution_type_label = QLabel(self.tr("Distribution Type:"), self)
         self.distribution_type_label.setToolTip(self.tr("Select the base distribution function of each modal."))
+        self.distribution_normal_radio_button = QRadioButton(self.tr("Normal"), self)
+        self.distribution_normal_radio_button.setToolTip(self.tr("See [%s] for more details.") % "https://en.wikipedia.org/wiki/Normal_distribution")
         self.distribution_weibull_radio_button = QRadioButton(self.tr("Weibull"), self)
         self.distribution_weibull_radio_button.setToolTip(self.tr("See [%s] for more details.") % "https://en.wikipedia.org/wiki/Weibull_distribution")
-        self.distribution_lognormal_radio_button = QRadioButton(self.tr("Lognormal"), self)
-        self.distribution_lognormal_radio_button.setToolTip(self.tr("See [%s] for more details.") % "https://en.wikipedia.org/wiki/Log-normal_distribution")
         self.main_layout.addWidget(self.distribution_type_label, 0, 0, 1, 2)
-        self.main_layout.addWidget(self.distribution_weibull_radio_button, 0, 2)
-        self.main_layout.addWidget(self.distribution_lognormal_radio_button, 0, 3)
+        self.main_layout.addWidget(self.distribution_normal_radio_button, 0, 2)
+        self.main_layout.addWidget(self.distribution_weibull_radio_button, 0, 3)
 
         # Component number
         self.ncomp_label = QLabel(self.tr("Components:"))
@@ -115,6 +114,7 @@ class ControlPanel(QWidget):
 
 
     def connect_all(self):
+        self.distribution_normal_radio_button.toggled.connect(self.on_distribution_type_changed)
         self.ncomp_add_button.clicked.connect(self.on_ncomp_add_clicked)
         self.ncomp_reduce_button.clicked.connect(self.on_ncomp_reduce_clicked)
         
@@ -201,6 +201,18 @@ class ControlPanel(QWidget):
     def on_ncomp_reduce_clicked(self):
         self.ncomp -= 1
 
+    def on_distribution_type_changed(self):
+        if self.distribution_normal_radio_button.isChecked():
+            self.sigDistributionTypeChanged.emit("normal")
+            self.logger.info("Distribution type has been changed to [%s].", "Normal")
+        else:
+            assert self.distribution_weibull_radio_button.isChecked()
+            self.sigDistributionTypeChanged.emit("weibull")
+            self.logger.info("Distribution type has been changed to [%s].", "Weibull")
+
+        if self.sample_names is not None:
+            self.data_index = self.data_index
+
     def on_data_index_previous_clicked(self):
         if not self.check_data_loaded():
             return
@@ -248,8 +260,8 @@ class ControlPanel(QWidget):
     def on_widgets_enable_changed(self, enable: bool):
         if self.auto_run_flag and enable:
             return
-        # self.distribution_weibull_radio_button.setEnabled(enable)
-        # self.distribution_lognormal_radio_button.setEnabled(enable)
+        self.distribution_weibull_radio_button.setEnabled(enable)
+        self.distribution_normal_radio_button.setEnabled(enable)
         self.ncomp_add_button.setEnabled(enable)
         self.ncomp_reduce_button.setEnabled(enable)
         self.data_index_previous_button.setEnabled(enable)
@@ -318,9 +330,6 @@ class ControlPanel(QWidget):
     def setup_all(self):
         self.ncomp = 3
         self.distribution_weibull_radio_button.setChecked(True)
-        # TODO: Move when the lognormal is added
-        self.distribution_weibull_radio_button.setEnabled(False)
-        self.distribution_lognormal_radio_button.setEnabled(False)
         self.iteration_scope_checkbox.setCheckState(Qt.Unchecked)
         self.inherit_params_checkbox.setCheckState(Qt.Checked)
         self.auto_fit_checkbox.setCheckState(Qt.Checked)
