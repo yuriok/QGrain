@@ -35,13 +35,18 @@ class GUIResolver(QObject, Resolver):
         self.cancel_flag = False
         self.cancel_mutex = QMutex()
 
-    def on_component_number_changed(self, ncomp: int):
-        self.ncomp = ncomp
-        self.logger.info("Component Number has been changed to [%d].", ncomp)
+    def on_component_number_changed(self, component_number: int):
+        self.component_number = component_number
+        self.logger.info("Component Number has been changed to [%d].", component_number)
 
-    def on_distribution_type_changed(self, distribution_type: DistributionType):
-        self.distribution_type = distribution_type
-        self.logger.info("Distribution type has been changed to [%s].", distribution_type)
+    def on_distribution_type_changed(self, distribution_type: str):
+        if distribution_type == "normal":
+            self.distribution_type = DistributionType.Normal
+        elif distribution_type == "weibull":
+            self.distribution_type = DistributionType.Weibull
+        else:
+            raise NotImplementedError(distribution_type)
+        self.logger.info("Distribution type has been changed to [%s].", self.distribution_type)
 
     def on_settings_changed(self, kwargs: dict):
         for setting, value in kwargs.items():
