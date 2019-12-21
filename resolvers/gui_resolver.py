@@ -20,12 +20,11 @@ class GUIResolver(QObject, Resolver):
     sigFittingFailed = Signal(str) # emit hint text
     logger = logging.getLogger(name="root.resolvers.GUIResolver")
 
-    def __init__(self, auto_fit=True, inherit_params=True, emit_iteration=False, time_interval=0.05):
+    def __init__(self, inherit_params=True, emit_iteration=False, time_interval=0.05):
         super().__init__()
         Resolver.__init__(self)
 
         # settings
-        self.auto_fit = auto_fit
         self.inherit_params = inherit_params
         self.emit_iteration = emit_iteration
         self.time_interval = time_interval
@@ -35,13 +34,18 @@ class GUIResolver(QObject, Resolver):
         self.cancel_flag = False
         self.cancel_mutex = QMutex()
 
-    def on_component_number_changed(self, ncomp: int):
-        self.ncomp = ncomp
-        self.logger.info("Component Number has been changed to [%d].", ncomp)
+    def on_component_number_changed(self, component_number: int):
+        self.component_number = component_number
+        self.logger.info("Component Number has been changed to [%d].", component_number)
 
-    def on_distribution_type_changed(self, distribution_type: DistributionType):
-        self.distribution_type = distribution_type
-        self.logger.info("Distribution type has been changed to [%s].", distribution_type)
+    def on_distribution_type_changed(self, distribution_type: str):
+        if distribution_type == "normal":
+            self.distribution_type = DistributionType.Normal
+        elif distribution_type == "weibull":
+            self.distribution_type = DistributionType.Weibull
+        else:
+            raise NotImplementedError(distribution_type)
+        self.logger.info("Distribution type has been changed to [%s].", self.distribution_type)
 
     def on_settings_changed(self, kwargs: dict):
         for setting, value in kwargs.items():
@@ -54,11 +58,7 @@ class GUIResolver(QObject, Resolver):
 
     def on_target_data_changed(self, sample_name: str, x, y):
         self.logger.debug("Target data has been changed to [%s].", sample_name)
-
         self.feed_data(sample_name, x, y)
-
-        if self.auto_fit:
-            self.try_fit()
 
     def on_data_invalid(self, sample_name: str, x: np.ndarray, y:np.ndarray, result: DataValidationResult):
         if result == DataValidationResult.NameNone:

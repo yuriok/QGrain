@@ -125,6 +125,10 @@ class DataWriter(QObject):
             accepted_types = (bool, datetime, date, time, Formula)
             if value is None:
                 return "None"
+            # must judge this first,
+            # because `Formula` can pass `numpy.isreal` but raise error in `numpy.isnan` 
+            elif type(value) in accepted_types:
+                return value
             # if value is real number (i.e. int, float, numpy.int32, numpy.float32, etc.)
             elif np.isreal(value):
                 # this func will both recognize float("nan") and numpy.nan
@@ -135,8 +139,6 @@ class DataWriter(QObject):
                     return "Inf"
                 else:
                     return value
-            elif type(value) in accepted_types:
-                return value
             # if the type of value is unaccepted, use its readable str to write
             else:
                 return str(value)

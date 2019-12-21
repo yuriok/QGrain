@@ -12,17 +12,17 @@ class TestCheckNcomp(unittest.TestCase):
     def test_check_ncomp(self):
         # There is at least one component, ncomp` should be int and greater than 0.
         with self.assertRaises(TypeError):
-            check_ncomp("1")
+            check_component_number("1")
         with self.assertRaises(TypeError):
-            check_ncomp(1.4)
+            check_component_number(1.4)
         with self.assertRaises(TypeError):
-            check_ncomp([1])
+            check_component_number([1])
         with self.assertRaises(ValueError):
-            check_ncomp(0)
+            check_component_number(0)
         with self.assertRaises(ValueError):
-            check_ncomp(1)
+            check_component_number(1)
         with self.assertRaises(ValueError):
-            check_ncomp(-1)
+            check_component_number(-1)
 
 class TestGetParams(unittest.TestCase):
     def test_count_weibull(self):
