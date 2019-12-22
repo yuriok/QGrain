@@ -35,8 +35,6 @@ class Resolver:
         # must call `refresh_by_distribution_type` first
         self.refresh()
 
-        self.slice_data_flag = True
-
         self.global_optimization_maxiter = global_optimization_maxiter
         self.global_optimization_success_iter = global_optimization_success_iter
         self.global_optimization_stepsize = global_optimization_stepsize
@@ -169,7 +167,7 @@ class Resolver:
         pass
 
     def preprocess_data(self):
-        self.start_index, self.end_index = Resolver.get_valid_data_range(self.y_data, self.slice_data_flag)
+        self.start_index, self.end_index = Resolver.get_valid_data_range(self.y_data)
         # Normal and Weibull needs to be fitted under bin number space
         if self.distribution_type == DistributionType.Normal or self.distribution_type == DistributionType.Weibull:
             self.x_to_fit = np.array(range(len(self.y_data))[self.start_index: self.end_index]) - self.start_index + 1
