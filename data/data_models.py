@@ -1,7 +1,10 @@
+import uuid
 from typing import Dict, List, Tuple
 
 import numpy as np
-import uuid
+
+from algorithms import DistributionType
+
 
 class SampleData:
     __slots__ = "name", "distribution"
@@ -19,12 +22,13 @@ class GrainSizeData:
 
 
 class FittedData:
-    __slots__ = "name", "target", "sum", "mse", "components", "statistic", "uuid"
-    def __init__(self, name: str, target: Tuple[np.ndarray, np.ndarray],
+    __slots__ = "name", "distribution_type", "target", "sum", "mse", "components", "statistic", "uuid"
+    def __init__(self, name: str, distribution_type: DistributionType, target: Tuple[np.ndarray, np.ndarray],
                  sum_data: Tuple[np.ndarray, np.ndarray], mse: float,
                  components: List[Tuple[np.ndarray, np.ndarray]],
                  statistic: List[Dict]):
         self.name = name
+        self.distribution_type= distribution_type
         self.target = target
         self.sum = sum_data
         self.mse = mse  # Mean Squared Error

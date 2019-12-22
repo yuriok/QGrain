@@ -252,7 +252,7 @@ class Resolver:
 
         mse = Resolver.get_mean_squared_errors(target[1], fitted_sum[1])
         # TODO: add more test for difference between observation and fitting
-        fitted_data = FittedData(self.sample_name, target, fitted_sum, mse, components, statistic)
+        fitted_data = FittedData(self.sample_name, self.distribution_type, target, fitted_sum, mse, components, statistic)
         return fitted_data
 
     def try_fit(self):

@@ -11,6 +11,7 @@ import xlwt
 from PySide2.QtCore import QObject, Signal
 from xlwt import Formula
 
+from algorithms import DistributionType
 from data import FittedData
 
 
@@ -288,7 +289,12 @@ class DataWriter(QObject):
             write(detail_sheet, row, 1, "Fitted Sum", current_global_style)
             row += 1
             # coponent rows
-            
+            if fitted_data.distribution_type == DistributionType.Normal:
+                func_name = "NORMDIST"
+            elif fitted_data.distribution_type == DistributionType.Weibull:
+                func_name = "WEIBULL"
+            else:
+                raise NotImplementedError(fitted_data.distribution_type)
             for component_index, component in enumerate(fitted_data.components):
                 write(detail_sheet, row, 1, "C{0}".format(component_index+1), current_global_style)
                 for col, value in enumerate(component[1], 3+left):
@@ -296,19 +302,21 @@ class DataWriter(QObject):
                     # write(detail_sheet, row, col, value, current_global_style)
                     # 2. use formula
                     if is_xlsx:
-                        write(detail_sheet, row, col, "=WEIBULL({1}, {0}!{2}, {0}!{3}, FALSE)*{0}!{4}".format(
+                        write(detail_sheet, row, col, "={5}({1}, {0}!{2}, {0}!{3}, FALSE)*{0}!{4}".format(
                             summary_sheet_name,
                             col-3-left+1,
                             to_cell_name(data_index+2, component_index*COLUMN_SPAN+11),
                             to_cell_name(data_index+2, component_index*COLUMN_SPAN+12),
-                            to_cell_name(data_index+2, component_index*COLUMN_SPAN+3)), current_global_style)
+                            to_cell_name(data_index+2, component_index*COLUMN_SPAN+3),
+                            func_name), current_global_style)
                     else:
-                        write(detail_sheet, row, col, xlwt.Formula("WEIBULL({1}, {0}!{2}, {0}!{3}, FALSE)*{0}!{4}".format(
+                        write(detail_sheet, row, col, xlwt.Formula("{5}({1}, {0}!{2}, {0}!{3}, FALSE)*{0}!{4}".format(
                             summary_sheet_name,
                             col-3-left+1,
                             to_cell_name(data_index+2, component_index*COLUMN_SPAN+11),
                             to_cell_name(data_index+2, component_index*COLUMN_SPAN+12),
-                            to_cell_name(data_index+2, component_index*COLUMN_SPAN+3))), current_global_style)
+                            to_cell_name(data_index+2, component_index*COLUMN_SPAN+3),
+                            func_name)), current_global_style)
                 row += 1
 
         # Save file if it is xls or no need to draw charts
