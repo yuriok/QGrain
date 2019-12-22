@@ -277,7 +277,9 @@ class Resolver:
 
             # the basinhopping method do not implement the `OptimizeResult` correctly
             # it don't contains `success`
-            if "success condition satisfied" not in global_fitted_result.message:
+            if global_fitted_result.lowest_optimization_result.success or global_fitted_result.lowest_optimization_result.status == 9:
+                pass
+            else:
                 self.on_global_fitting_failed(global_fitted_result)
                 self.on_fitting_finished()
                 return
@@ -286,12 +288,13 @@ class Resolver:
                                      callback=self.local_iteration_callback,
                                      options={"maxiter": self.final_maxiter, "ftol": self.final_tolerance})
             # judge if the final fitting succeed
-            if not fitted_result.success:
-                self.on_final_fitting_failed(fitted_result)
+            # see https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.fmin_slsqp.html
+            if fitted_result.success or fitted_result.status == 9:
+                self.on_fitting_succeeded(fitted_result)
                 self.on_fitting_finished()
                 return
             else:
-                self.on_fitting_succeeded(fitted_result)
+                self.on_final_fitting_failed(fitted_result)
                 self.on_fitting_finished()
                 return
         except Exception as e:
