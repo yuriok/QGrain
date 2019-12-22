@@ -3,6 +3,7 @@ import time
 
 import numpy as np
 from PySide2.QtCore import QMutex, QObject, Signal, Slot
+from scipy.interpolate import interp1d
 
 from algorithms import DistributionType
 from data import FittedData
@@ -25,6 +26,7 @@ class GUIResolver(QObject, Resolver):
         Resolver.__init__(self)
 
         # settings
+        self.expected_params = None
         self.inherit_params = inherit_params
         self.last_succeeded_params = None
         self.emit_iteration = emit_iteration
@@ -63,31 +65,31 @@ class GUIResolver(QObject, Resolver):
 
     def on_data_invalid(self, sample_name: str, x: np.ndarray, y:np.ndarray, result: DataValidationResult):
         if result == DataValidationResult.NameNone:
-            self.sigFittingFailed(self.tr("Name of sample [%s] is None."), sample_name)
+            self.sigFittingFailed.emit(self.tr("Name of sample [%s] is None."), sample_name)
             self.logger.error("Name of sample [%s] is None.", sample_name)
         elif result == DataValidationResult.NameEmpty:
-            self.sigFittingFailed(self.tr("Name of sample [%s] is empty."), sample_name)
+            self.sigFittingFailed.emit(self.tr("Name of sample [%s] is empty."), sample_name)
             self.logger.error("Name of sample [%s] is empty.", sample_name)
         elif result == DataValidationResult.XNone:
-            self.sigFittingFailed(self.tr("x data of sample [%s] is None."), sample_name)
+            self.sigFittingFailed.emit(self.tr("x data of sample [%s] is None."), sample_name)
             self.logger.error("x data of sample [%s] is None.", sample_name)
         elif result == DataValidationResult.YNone:
-            self.sigFittingFailed(self.tr("y data of sample [%s] is None."), sample_name)
+            self.sigFittingFailed.emit(self.tr("y data of sample [%s] is None."), sample_name)
             self.logger.error("y data of sample [%s] is None.", sample_name)
         elif result == DataValidationResult.XTypeInvalid:
-            self.sigFittingFailed(self.tr("The x data type of sample [%s] is invalid."), sample_name)
+            self.sigFittingFailed.emit(self.tr("The x data type of sample [%s] is invalid."), sample_name)
             self.logger.error("The x data type of sample [%s] is invalid.", sample_name)
         elif result == DataValidationResult.YTypeInvalid:
-            self.sigFittingFailed(self.tr("The y data type of sample [%s] is invalid."), sample_name)
+            self.sigFittingFailed.emit(self.tr("The y data type of sample [%s] is invalid."), sample_name)
             self.logger.error("The y data type of sample [%s] is invalid.", sample_name)
         elif result == DataValidationResult.LengthNotEqual:
-            self.sigFittingFailed(self.tr("The lengths of x and y data in sample [%s] are not equal."), sample_name)
+            self.sigFittingFailed.emit(self.tr("The lengths of x and y data in sample [%s] are not equal."), sample_name)
             self.logger.error("The lengths of x and y data in sample [%s] are not equal.", sample_name)
         elif result == DataValidationResult.XHasNan:
-            self.sigFittingFailed(self.tr("There is NaN value in x data of sample [%s]."), sample_name)
+            self.sigFittingFailed.emit(self.tr("There is NaN value in x data of sample [%s]."), sample_name)
             self.logger.error("There is NaN value in x data of sample [%s].", sample_name)
         elif result == DataValidationResult.YHasNan:
-            self.sigFittingFailed(self.tr("There is NaN value in y data of sample [%s]."), sample_name)
+            self.sigFittingFailed.emit(self.tr("There is NaN value in y data of sample [%s]."), sample_name)
             self.logger.error("There is NaN value in y data of sample [%s].", sample_name)
         else:
             raise NotImplementedError(result)
@@ -106,11 +108,15 @@ class GUIResolver(QObject, Resolver):
         else:
             self.initial_guess = self.mixed_data.defaults
 
+        if self.expected_params is not None:
+            self.initial_guess = self.expected_params
+
         self.sigWidgetsEnable.emit(False)
         self.logger.debug("Fitting progress started.")
 
     def on_fitting_finished(self):
         self.current_iteration = 0
+        self.expected_params = None
         self.sigWidgetsEnable.emit(True)
         self.logger.debug("Fitting progress finished.")
 
@@ -160,3 +166,14 @@ class GUIResolver(QObject, Resolver):
         self.cancel_mutex.lock()
         self.cancel_flag = True
         self.cancel_mutex.unlock()
+
+    def on_excepted_mean_value_changed(self, mean_values):
+        partial_real_x = self.real_x[self.start_index:self.end_index]
+        real_to_x = interp1d(partial_real_x, self.x_to_fit)
+        try:
+            converted_x = [real_to_x(mean).max() for mean in mean_values]
+        except ValueError:
+            self.logger.error("There is one expected mean value which is out of range.")
+            return
+        converted_x.sort()
+        self.expected_params = self.mixed_data.get_param_by_mean(converted_x)

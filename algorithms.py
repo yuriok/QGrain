@@ -274,3 +274,24 @@ class MixedDistributionData:
     
     def process_params(self, fitted_params: List) -> List[List]:
         return process_params(self.component_number, self.func_params, fitted_params, self.distribution_type)
+
+    def get_param_by_mean(self, mean_values):
+        assert len(mean_values) == self.component_number
+        param1_name, param2_name = get_param_names(self.distribution_type)
+        params = self.defaults.copy()
+        if self.distribution_type == DistributionType.Normal:
+            for param in self.func_params:
+                name = param["name"]
+                if name.startswith(param1_name):
+                    component_index = int(name[len(param1_name):])-1
+                    params[param["location"]] = mean_values[component_index]
+        elif self.distribution_type == DistributionType.Weibull:
+            for param in self.func_params:
+                name = param["name"]
+                if name.startswith(param2_name):
+                    component_index = int(name[len(param2_name):])-1
+                    beta = [params[param["location"]] for param in self.func_params if param["name"] == (param1_name+str(component_index+1))][0]
+                    params[param["location"]] = mean_values[component_index] / gamma(1/beta+1)
+        else:
+            raise NotImplementedError(self.distribution_type)
+        return params
