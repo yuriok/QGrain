@@ -35,6 +35,8 @@ class Resolver:
         # must call `refresh_by_distribution_type` first
         self.refresh()
 
+        self.slice_data_flag = True
+
         self.global_optimization_maxiter = global_optimization_maxiter
         self.global_optimization_success_iter = global_optimization_success_iter
         self.global_optimization_stepsize = global_optimization_stepsize
@@ -94,17 +96,19 @@ class Resolver:
         return mse
 
     @staticmethod
-    def get_valid_data_range(y_data):
+    def get_valid_data_range(y_data, slice_data=True):
         start_index = 0
-        end_index = -1
-        for i, value in enumerate(y_data):
-            if value > 0.0:
-                start_index = i
-                break
-        for i, value in enumerate(y_data[start_index+1:], start_index+1):
-            if value == 0.0:
-                end_index = i
-                break
+        end_index = len(y_data)
+        max_index = len(y_data)-1
+        if slice_data:
+            for i, value in enumerate(y_data):
+                if i != 0 and value > 0.0 :
+                    start_index = i-1
+                    break
+            for i, value in enumerate(y_data[start_index+1:], start_index+1):
+                if i != max_index and value <= 1e-100:
+                    end_index = i+1
+                    break
         return start_index, end_index
 
     @staticmethod
@@ -165,7 +169,7 @@ class Resolver:
         pass
 
     def preprocess_data(self):
-        self.start_index, self.end_index = Resolver.get_valid_data_range(self.y_data)
+        self.start_index, self.end_index = Resolver.get_valid_data_range(self.y_data, self.slice_data_flag)
         # Normal and Weibull needs to be fitted under bin number space
         if self.distribution_type == DistributionType.Normal or self.distribution_type == DistributionType.Weibull:
             self.x_to_fit = np.array(range(len(self.y_data))[self.start_index: self.end_index]) - self.start_index + 1
