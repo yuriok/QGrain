@@ -8,6 +8,7 @@ from PySide2.QtGui import QFont
 from PySide2.QtWidgets import QGridLayout, QSizePolicy, QWidget
 
 from data import FittedData
+from resolvers import Resolver
 
 pg.setConfigOptions(foreground=pg.mkColor("k"), background=pg.mkColor("#FFFFFF00"), antialias=True)
 
@@ -146,35 +147,6 @@ class FittingCanvas(QWidget):
         self.logger.debug("Items added.")
 
     def on_target_data_changed(self, sample_name, x, y):
-        self.position_limit = (x[0], x[-1])
-        x_axis = self.plot_widget.plotItem.getAxis("bottom")
-        x_axis.enableAutoSIPrefix(enable=False)
-        major_ticks= [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(x) if i%10==0]
-        minor_ticks= [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(x) if i%2==0]
-        all_ticks = [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(x)]
-        x_axis.setTicks([major_ticks, minor_ticks, all_ticks])
-        self.logger.debug("Target data has been changed to [%s].", sample_name)
-
-    def update_canvas_by_data(self, data: FittedData, current_iteration=None):
-        # update the title of canvas
-        sample_name = data.name
-        if sample_name is None or sample_name =="":
-            sample_name = "UNKNOWN"
-        if current_iteration is None:
-            self.plot_widget.plotItem.setTitle(self.title_format % sample_name)
-        else:
-            self.plot_widget.plotItem.setTitle(self.title_format % "{0} iter({1})".format(sample_name, current_iteration))
-        # update target
-        # target data (i.e. grain size classes and distribution) should have no nan value indeed
-        # it should be checked during load data progress
-        self.target_item.setData(*data.target, **self.target_style)
-        # update sum
-        sum_x, sum_y = data.sum
-        self.sum_item.setData(sum_x, np.nan_to_num(sum_y), **self.sum_style)
-        # update components
-        for (x, y), (name, curve_item), style in zip(data.components, self.component_curves, self.component_styles):
-            curve_item.setData(x, np.nan_to_num(y), **style)
-        
         # change the value space of x axis
         if self.x_axis_space == XAxisSpace.Raw:
             self.plot_widget.plotItem.setLogMode(x=False)
@@ -183,6 +155,47 @@ class FittingCanvas(QWidget):
         else:
             raise NotImplementedError(self.x_axis_space)
 
+        # the range to limit the positions of lines
+        self.position_limit = (x[0], x[-1])
+        x_axis = self.plot_widget.plotItem.getAxis("bottom")
+        x_axis.enableAutoSIPrefix(enable=False)
+        major_ticks= [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(x) if i%10==0]
+        minor_ticks= [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(x) if i%2==0]
+        all_ticks = [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(x)]
+        x_axis.setTicks([major_ticks, minor_ticks, all_ticks])
+        self.logger.debug("Target data has been changed to [%s].", sample_name)
+        
+        # update the title of canvas
+        if sample_name is None or sample_name == "":
+            sample_name = "UNKNOWN"
+        self.plot_widget.plotItem.setTitle(self.title_format % sample_name)
+        # update target
+        # target data (i.e. grain size classes and distribution) should have no nan value indeed
+        # it should be checked during load data progress
+        start_index, end_index = Resolver.get_valid_data_range(y)
+        self.target_item.setData(x[start_index:end_index], y[start_index:end_index], **self.target_style)
+        self.sum_item.clear()
+        for name, curve in self.component_curves:
+            curve.clear()
+        for line in self.component_lines:
+            line.setValue(1)
+
+    def update_canvas_by_data(self, data: FittedData, current_iteration=None):
+        # update the title of canvas
+        sample_name = data.name
+        if sample_name is None or sample_name == "":
+            sample_name = "UNKNOWN"
+        if current_iteration is None:
+            self.plot_widget.plotItem.setTitle(self.title_format % sample_name)
+        else:
+            self.plot_widget.plotItem.setTitle(self.title_format % "{0} iter({1})".format(sample_name, current_iteration))
+        # update sum
+        sum_x, sum_y = data.sum
+        self.sum_item.setData(sum_x, np.nan_to_num(sum_y), **self.sum_style)
+        # update component curves
+        for (x, y), (name, curve_item), style in zip(data.components, self.component_curves, self.component_styles):
+            curve_item.setData(x, np.nan_to_num(y), **style)
+        # update component mean value lines
         for i, line_item in enumerate(self.component_lines):
             mean_value = data.statistic[i]["mean"]
             # jump this iteration if value is nan or inf
