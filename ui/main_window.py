@@ -120,6 +120,8 @@ class MainWindow(QMainWindow):
         self.control_panel.sigMultiProcessingTaskStarted.connect(self.multiprocessing_resolver.execute_tasks)
         # Connect directly
         self.control_panel.record_button.clicked.connect(self.data_manager.record_current_data)
+
+        self.canvas.sigExpectedMeanValueChanged.connect(self.gui_resolver.on_excepted_mean_value_changed)
         
         self.data_manager.sigDataLoaded.connect(self.on_data_loaded)
         self.data_manager.sigDataLoaded.connect(self.control_panel.on_data_loaded)
