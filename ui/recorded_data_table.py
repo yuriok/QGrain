@@ -35,9 +35,9 @@ class ViewDataManager(QObject):
         self.is_detailed = is_detailed
         self.existing_key2display_name = {
             "fraction": self.tr("Fraction"),
-            "mean": self.tr("Mean"),
-            "median": self.tr("Median"),
-            "mode": self.tr("Mode"),
+            "mean": self.tr("Mean")+" [μm]",
+            "median": self.tr("Median")+" [μm]",
+            "mode": self.tr("Mode")+" [μm]",
             "variance": self.tr("Variance"),
             "standard_deviation": self.tr("Standard Deviation"),
             "skewness": self.tr("Skewness"),
