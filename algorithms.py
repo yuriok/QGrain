@@ -71,6 +71,7 @@ def get_param_bounds(distribution_type: DistributionType) -> Tuple[Tuple[float, 
 # in order to obtain better performance,
 # the params of components should be different
 def get_param_defaults(distribution_type: DistributionType, component_number: int) -> Tuple[Tuple]:
+    check_component_number(component_number)
     defaults = []
     if distribution_type == DistributionType.Normal:
         return tuple(((i*10, 2+i) for i in range(1, component_number+1)))
