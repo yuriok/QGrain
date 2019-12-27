@@ -172,6 +172,8 @@ class GUIResolver(QObject, Resolver):
         self.cancel_mutex.unlock()
 
     def on_excepted_mean_value_changed(self, mean_values):
+        if self.real_x is None or self.target_y is None or self.fitting_space_x is None:
+            return
         # if self.last_succeeded_params is None:
         #     referenced_params = self.algorithm_data.defaults
         # else:
