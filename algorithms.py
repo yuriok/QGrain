@@ -107,11 +107,11 @@ def get_params(distribution_type: DistributionType, component_number: int) -> Li
 def sort_params_by_location_in_place(params: List[Dict]):
     params.sort(key=lambda element: element[LOCATION_KEY])
 
-def get_bounds(params: List[Dict]) -> List[Tuple]:
+def get_bounds(params: List[Dict]) -> Tuple[Tuple]:
     bounds = []
     for param in params:
         bounds.append(param[BOUNDS_KEY])
-    return bounds
+    return tuple(bounds)
 
 def get_constrains(component_number: int) -> Tuple[Dict]:
     if component_number == 1:
@@ -121,11 +121,11 @@ def get_constrains(component_number: int) -> Tuple[Dict]:
     else:
         raise ValueError(component_number)
 
-def get_defaults(params: List[Dict]) -> List:
+def get_defaults(params: List[Dict]) -> Tuple:
     defaults = []
     for param in params:
         defaults.append(param[DEFAULT_VALUE_KEY])
-    return defaults
+    return tuple(defaults)
 
 def get_lambda_str(distribution_type: DistributionType, component_number:int) -> str:
     base_func_name = get_base_func_name(distribution_type)
