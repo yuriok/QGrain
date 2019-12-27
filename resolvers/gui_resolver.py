@@ -6,7 +6,7 @@ from PySide2.QtCore import QMutex, QObject, Signal, Slot
 from scipy.interpolate import interp1d
 
 from algorithms import DistributionType
-from data import FittedData
+from data import FittingResult
 from resolvers import DataValidationResult, Resolver
 
 
@@ -15,8 +15,8 @@ class CancelError(Exception):
 
 
 class GUIResolver(QObject, Resolver):
-    sigSingleIterationFinished = Signal(int, FittedData)
-    sigFittingEpochSucceeded = Signal(FittedData)
+    sigSingleIterationFinished = Signal(int, FittingResult)
+    sigFittingEpochSucceeded = Signal(FittingResult)
     sigWidgetsEnable = Signal(bool)
     sigFittingFailed = Signal(str) # emit hint text
     logger = logging.getLogger(name="root.resolvers.GUIResolver")
@@ -46,9 +46,13 @@ class GUIResolver(QObject, Resolver):
             self.distribution_type = DistributionType.Normal
         elif distribution_type == "weibull":
             self.distribution_type = DistributionType.Weibull
+        elif distribution_type == "gen_weibull":
+            self.distribution_type = DistributionType.GeneralWeibull
         else:
             raise NotImplementedError(distribution_type)
         self.logger.info("Distribution type has been changed to [%s].", self.distribution_type)
+        # clear if type changed
+        self.last_succeeded_params = None
 
     def on_settings_changed(self, kwargs: dict):
         for setting, value in kwargs.items():
@@ -98,15 +102,15 @@ class GUIResolver(QObject, Resolver):
         self.logger.debug("Sample [%s] has been fed.", sample_name)
 
     def on_data_not_prepared(self):
-        self.sigFittingFailed(self.tr("There is no valid data to fit."))
+        self.sigFittingFailed.emit(self.tr("There is no valid data to fit."))
         self.logger.error("There is no valid data to fit.")
 
     def on_fitting_started(self):
         self.current_iteration = 0
-        if self.inherit_params and self.last_succeeded_params is not None and len(self.last_succeeded_params) == len(self.mixed_data.defaults):
+        if self.inherit_params and self.last_succeeded_params is not None and len(self.last_succeeded_params) == len(self.algorithm_data.defaults):
             self.initial_guess = self.last_succeeded_params
         else:
-            self.initial_guess = self.mixed_data.defaults
+            self.initial_guess = self.algorithm_data.defaults
 
         if self.expected_params is not None:
             self.initial_guess = self.expected_params
@@ -120,13 +124,13 @@ class GUIResolver(QObject, Resolver):
         self.sigWidgetsEnable.emit(True)
         self.logger.debug("Fitting progress finished.")
 
-    def on_global_fitting_failed(self, fitted_result):
-        self.sigFittingFailed(self.tr("Fitting failed during global fitting progress."))
-        self.logger.error("Fitting failed during global fitting progress. Details: [%s].", fitted_result)
+    def on_global_fitting_failed(self, algorithm_result):
+        self.sigFittingFailed.emit(self.tr("Fitting failed during global fitting progress."))
+        self.logger.error("Fitting failed during global fitting progress. Details: [%s].", algorithm_result)
 
-    def on_final_fitting_failed(self, fitted_result):
-        self.sigFittingFailed(self.tr("Fitting failed during final fitting progress."))
-        self.logger.error("Fitting failed during final fitting progress. Details: [%s].", fitted_result)
+    def on_final_fitting_failed(self, algorithm_result):
+        self.sigFittingFailed.emit(self.tr("Fitting failed during final fitting progress."))
+        self.logger.error("Fitting failed during final fitting progress. Details: [%s].", algorithm_result)
 
     def on_exception_raised_while_fitting(self, exception):
         if type(exception) == CancelError:
@@ -148,17 +152,17 @@ class GUIResolver(QObject, Resolver):
 
         if self.emit_iteration:
             time.sleep(self.time_interval)
-            self.sigSingleIterationFinished.emit(self.current_iteration, self.get_fitted_data(fitted_params))
+            self.sigSingleIterationFinished.emit(self.current_iteration, self.get_fitting_result(fitted_params))
         self.current_iteration += 1
 
     def global_iteration_callback(self, fitted_params, function_value, accept):
         pass
 
-    def on_fitting_succeeded(self, fitted_result):
+    def on_fitting_succeeded(self, fitting_result):
         if self.inherit_params:
-            self.last_succeeded_params = fitted_result.x
-        self.logger.info("The epoch of fitting has finished, the fitted parameters are: [%s]", fitted_result.x)
-        self.sigFittingEpochSucceeded.emit(self.get_fitted_data(fitted_result.x))
+            self.last_succeeded_params = fitting_result.x
+        self.logger.info("The epoch of fitting has finished, the fitted parameters are: [%s]", fitting_result.x)
+        self.sigFittingEpochSucceeded.emit(self.get_fitting_result(fitting_result.x))
 
     # call this func by another thread
     # so, lock is necessary
@@ -168,12 +172,15 @@ class GUIResolver(QObject, Resolver):
         self.cancel_mutex.unlock()
 
     def on_excepted_mean_value_changed(self, mean_values):
-        partial_real_x = self.real_x[self.start_index:self.end_index]
-        real_to_x = interp1d(partial_real_x, self.x_to_fit)
-        try:
-            converted_x = [real_to_x(mean).max() for mean in mean_values]
-        except ValueError:
-            self.logger.error("There is one expected mean value which is out of range.")
-            return
+        # if self.last_succeeded_params is None:
+        #     referenced_params = self.algorithm_data.defaults
+        # else:
+        #     referenced_params = self.last_succeeded_params
+        x_real_to_space = interp1d(self.real_x, self.fitting_space_x)
+        # try:
+        converted_x = [x_real_to_space(mean).max() - self.x_offset for mean in mean_values]
+        # except ValueError:
+        #     self.logger.error("There is one expected mean value which is out of range.", stack_info=True)
+        #     return
         converted_x.sort()
-        self.expected_params = self.mixed_data.get_param_by_mean(converted_x)
+        self.expected_params = self.algorithm_data.get_param_by_mean(converted_x)
