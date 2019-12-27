@@ -2,14 +2,16 @@
 
 import logging
 import os
-from typing import List, Tuple
+from typing import Iterable, List, Tuple
 from uuid import UUID
+
 import numpy as np
-from PySide2.QtCore import QObject, Qt, QThread, Signal, QStandardPaths
+from PySide2.QtCore import QObject, QStandardPaths, Qt, QThread, Signal
 from PySide2.QtWidgets import QFileDialog, QMessageBox, QWidget
 
 from algorithms import DistributionType
-from data import DataLoader, DataWriter, FittedData, GrainSizeData, SampleData
+from data import (DataLoader, DataWriter, FittingResult, GrainSizeData,
+                  SampleData)
 from resolvers import FittingTask
 
 
@@ -18,7 +20,7 @@ class DataManager(QObject):
     sigDataSavingStarted = Signal(str, np.ndarray, list, str)
     sigDataLoaded = Signal(GrainSizeData)
     sigTargetDataChanged = Signal(str, np.ndarray, np.ndarray)
-    sigDataRecorded = Signal(list) # List[FittedData]
+    sigDataRecorded = Signal(list) # List[FittingResult]
     logger = logging.getLogger("root.data.DataManager")
     gui_logger = logging.getLogger("GUI")
 
@@ -28,8 +30,8 @@ class DataManager(QObject):
         self.host_widget = host_widget
         # Data
         self.grain_size_data = None  # type: GrainSizeData
-        self.current_fitted_data = None  # type: FittedData
-        self.recorded_data_list = []  # type: List[FittedData]
+        self.current_fitting_result = None  # type: FittingResult
+        self.records = []  # type: List[FittingResult]
         
         # Loader
         self.data_loader = DataLoader()
@@ -66,8 +68,8 @@ class DataManager(QObject):
     def load_data(self):
         # NOTE:
         # if don't assign the initial directory,
-        # there is an about 5s delay while first call `getOpenFileName` func
-        # and meanwhile has a unreachable network disk
+        # there is an about 5s delay while first calling `getOpenFileName` func
+        # if there is a unreachable network disk
         init_path = QStandardPaths.standardLocations(QStandardPaths.DesktopLocation)[0]
         filename, type_str = self.file_dialog.getOpenFileName(self.host_widget, self.tr("Select Data File"), init_path, "*.xls; *.xlsx;;*.csv")
 
@@ -112,28 +114,28 @@ class DataManager(QObject):
         self.sigTargetDataChanged.emit(sample_name, classes, sample_data)
         self.logger.debug("Focus sample data changed, the data has been emitted.")
 
-    def on_fitting_epoch_suceeded(self, data: FittedData):
-        self.logger.info("Epoch for sample [%s] has finished, mean squared error is [%E], statistic is: [%s].", data.name, data.mse, data.statistic)
-        self.current_fitted_data = data
+    def on_fitting_epoch_suceeded(self, result: FittingResult):
+        self.logger.info("Epoch for sample [%s] has finished, mean squared error is [%E].", result.name, result.mean_squared_error)
+        self.current_fitting_result = result
         if self.auto_record_flag:
-            if data.has_invalid_value():
+            if result.has_invalid_value():
                 self.record_msg_box.setWindowTitle(self.tr("Warning"))
                 self.record_msg_box.setText(self.tr("The fitted data may be invalid, at least one NaN value occurs."))
-                result = self.record_msg_box.exec_()
-                if result == QMessageBox.Discard:
-                    self.logger.info("Fitted data of sample [%s] was discarded by user.", data.name)
+                exec_result = self.record_msg_box.exec_()
+                if exec_result == QMessageBox.Discard:
+                    self.logger.info("Fitted data of sample [%s] was discarded by user.", result.name)
                     return
                 else:
                     self.record_current_data()
             else:
                 self.record_current_data()
 
-    def on_multiprocessing_task_finished(self, succeeded_results: List[FittedData], failed_tasks: List[FittingTask]):
-        for fitted_data in succeeded_results:
-            if fitted_data.has_invalid_value():
-                self.logger.warning("There is invalid value in the fitted data of sample [%s].", fitted_data.name)
-                self.gui_logger.warning(self.tr("There is invalid value in the fitted data of sample [%s]."), fitted_data.name)
-        self.recorded_data_list.extend(succeeded_results)
+    def on_multiprocessing_task_finished(self, succeeded_results: Iterable[FittingResult], failed_tasks: Iterable[FittingTask]):
+        for fitting_result in succeeded_results:
+            if fitting_result.has_invalid_value():
+                self.logger.warning("There is invalid value in the fitted data of sample [%s].", fitting_result.name)
+                self.gui_logger.warning(self.tr("There is invalid value in the fitted data of sample [%s]."), fitting_result.name)
+        self.records.extend(succeeded_results)
         self.sigDataRecorded.emit(succeeded_results)
         for failed_task in failed_tasks:
             self.logger.warning("Fitting task of sample [%s] failed.", failed_task.sample_name)
@@ -145,22 +147,22 @@ class DataManager(QObject):
             self.logger.info("Setting [%s] have been changed to [%s].", setting, value)
 
     def record_current_data(self):
-        if self.current_fitted_data is None:
+        if self.current_fitting_result is None:
             self.logger.info("There is no fitted data to record, ignored.")
             self.gui_logger.warning(self.tr("There is no fitted data to record."))
             self.msg_box.setWindowTitle(self.tr("Warning"))
             self.msg_box.setText(self.tr("There is no fitted data to record."))
             self.msg_box.exec_()
             return
-        self.recorded_data_list.append(self.current_fitted_data)
-        self.sigDataRecorded.emit([self.current_fitted_data])
+        self.records.append(self.current_fitting_result)
+        self.sigDataRecorded.emit([self.current_fitting_result])
 
-    def remove_data(self, uuids_and_names: List[Tuple[UUID, str]]):
+    def remove_data(self, uuids_and_names: Iterable[Tuple[UUID, str]]):
         for uuid, name in uuids_and_names:
-            for i, data in enumerate(self.recorded_data_list):
+            for i, data in enumerate(self.records):
                 if uuid == data.uuid:
                     assert name == data.name
-                    self.recorded_data_list.pop(i)
+                    self.records.pop(i)
                     self.logger.info("Record of sample [%s] has been removed.", name)
                     break
 
@@ -179,7 +181,7 @@ class DataManager(QObject):
         else:
             raise ValueError(type_str)
         self.logger.info("Selected file type is [%s].", file_type)
-        self.sigDataSavingStarted.emit(filename, self.grain_size_data.classes, self.recorded_data_list, file_type)
+        self.sigDataSavingStarted.emit(filename, self.grain_size_data.classes, self.records, file_type)
 
     def on_saving_work_finished(self, state):
         if state:
