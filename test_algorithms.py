@@ -1,10 +1,3 @@
-# This unittest file contains the tests for some basic funcs, e.g. `check_component_number`,
-# `get_base_func_name`, `get_param_count`, `get_param_names`, `get_param_bounds`,
-# `get_param_defaults`, `get_params`, `get_bounds`, `get_constrains`, `get_defaults`,
-# `get_lambda_str`, `process_params`.
-
-import os
-import sys
 import unittest
 
 import numpy as np
