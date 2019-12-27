@@ -28,16 +28,6 @@ def check_component_number(component_number: int):
     elif component_number < 1:
         raise ValueError(component_number)
 
-def get_base_func_name(distribution_type: DistributionType) -> str:
-    if distribution_type == DistributionType.Normal:
-        return "normal"
-    elif distribution_type == DistributionType.Weibull:
-        return "weibull"
-    elif distribution_type == DistributionType.GeneralWeibull:
-        return "gen_weibull"
-    else:
-        raise NotImplementedError(distribution_type)
-
 def get_param_count(distribution_type: DistributionType) -> int:
     if distribution_type == DistributionType.Normal:
         return 2
@@ -55,6 +45,16 @@ def get_param_names(distribution_type: DistributionType) -> Tuple[str]:
         return ("beta", "eta")
     elif distribution_type == DistributionType.GeneralWeibull:
         return ("mu", "beta", "eta")
+    else:
+        raise NotImplementedError(distribution_type)
+
+def get_base_func_name(distribution_type: DistributionType) -> str:
+    if distribution_type == DistributionType.Normal:
+        return "normal"
+    elif distribution_type == DistributionType.Weibull:
+        return "weibull"
+    elif distribution_type == DistributionType.GeneralWeibull:
+        return "gen_weibull"
     else:
         raise NotImplementedError(distribution_type)
 
