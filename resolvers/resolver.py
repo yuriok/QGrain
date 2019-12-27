@@ -30,9 +30,7 @@ class Resolver:
                  final_maxiter=1000,
                  minimizer_tolerance=1e-8,
                  minimizer_maxiter=500):
-        self.__distribution_type = DistributionType.Weibull
-        self.__component_number = 2
-        # must call `refresh_by_distribution_type` first
+        self.__algorithm_data_cache = {}
         self.refresh()
 
         self.global_optimization_maxiter = global_optimization_maxiter
@@ -80,8 +78,14 @@ class Resolver:
         self.refresh()
 
     def refresh(self):
-        self.mixed_data = MixedDistributionData(self.component_number, self.distribution_type)
-        self.initial_guess = self.mixed_data.defaults
+        key = (self.distribution_type, self.component_number)
+        if key in self.__algorithm_data_cache.keys():
+            self.algorithm_data = self.__algorithm_data_cache[key]
+        else:
+            algorithm_data = AlgorithmData(*key)
+            self.__algorithm_data_cache.update({key: algorithm_data})
+            self.algorithm_data = algorithm_data
+        self.initial_guess = self.algorithm_data.defaults
 
     @staticmethod
     def get_squared_sum_of_residual_errors(values, targets):
