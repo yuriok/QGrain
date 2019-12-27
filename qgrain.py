@@ -5,7 +5,7 @@ from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
 from multiprocessing import freeze_support
 
 from PySide2.QtCore import QSettings, QTranslator
-from PySide2.QtGui import QFont, QIcon, QPixmap
+from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtWidgets import QApplication, QSplashScreen
 
 from ui import GUILogHandler, MainWindow
