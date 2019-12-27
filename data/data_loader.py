@@ -1,7 +1,6 @@
 import csv
 import logging
 import os
-import time
 from typing import Iterable, List
 
 import numpy as np
@@ -18,7 +17,8 @@ class DataInvalidError(Exception):
 
 
 class DataLayoutSetting:
-    def __init__(self, classes_row=0, sample_name_column=0, data_start_row=1, data_start_column=1):
+    def __init__(self, classes_row=0, sample_name_column=0,
+                 data_start_row=1, data_start_column=1):
         self.classes_row = classes_row
         self.sample_name_column = sample_name_column
         self.data_start_row = data_start_row
@@ -49,7 +49,8 @@ class DataLayoutSetting:
         return True
 
     def __str__(self):
-        return "Class Row Index: {0}, Sample Name Column: {1}, Data Start Row: {2}, Data Start Column: {3}.".format(self.classes_row, self.sample_name_column, self.data_start_row, self.data_start_column)
+        return "Class Row Index: {0}, Sample Name Column: {1}, Data Start Row: {2}, Data Start Column: {3}.".format(
+            self.classes_row, self.sample_name_column, self.data_start_row, self.data_start_column)
 
 
 class DataLoader(QObject):
