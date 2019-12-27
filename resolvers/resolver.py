@@ -47,7 +47,9 @@ class Resolver:
 
         self.sample_name = None
         self.real_x = None
-        self.y_data = None
+        self.x_offset = 0
+        self.fitting_space_x = None
+        self.target_y = None
 
         self.start_index = None
         self.end_index = None
@@ -179,11 +181,21 @@ class Resolver:
         pass
 
     def preprocess_data(self):
-        self.start_index, self.end_index = Resolver.get_valid_data_range(self.y_data)
-        # Normal and Weibull needs to be fitted under bin number space
-        if self.distribution_type == DistributionType.Normal or self.distribution_type == DistributionType.Weibull:
-            self.x_to_fit = np.array(range(len(self.y_data))[self.start_index: self.end_index]) - self.start_index + 1
-            self.y_to_fit = self.y_data[self.start_index: self.end_index]
+        # Normal and General Weibull distribution need to use x offset to get better performance
+        self.start_index, self.end_index = Resolver.get_valid_data_range(self.target_y)
+        if self.distribution_type == DistributionType.Normal or \
+                self.distribution_type == DistributionType.GeneralWeibull:
+            self.x_offset = self.start_index
+        else:
+            self.x_offset = 0.0
+
+        self.bin_numbers = np.array(range(len(self.target_y)), dtype=np.float64) + 1
+
+        # fitting under the bin numbers' space
+        if self.distribution_type == DistributionType.Normal or \
+                self.distribution_type == DistributionType.Weibull or \
+                self.distribution_type == DistributionType.GeneralWeibull:
+            self.fitting_space_x = self.bin_numbers
         else:
             raise NotImplementedError(self.distribution_type)
 
@@ -194,7 +206,7 @@ class Resolver:
             return
         self.sample_name = sample_name
         self.real_x = x
-        self.y_data = y
+        self.target_y = y
         self.preprocess_data()
         self.on_data_fed(sample_name)
 
