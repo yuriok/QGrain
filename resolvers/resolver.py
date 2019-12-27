@@ -229,50 +229,12 @@ class Resolver:
             else:
                 raise NotImplementedError(key)
 
-    def get_fitted_data(self, fitted_params):
-        partial_real_x = self.real_x[self.start_index:self.end_index]
-        # the target data to fit
-        target = (partial_real_x, self.y_to_fit)
-        # the fitted sum data of all components
-        fitted_sum = (partial_real_x, self.mixed_data.mixed_func(self.x_to_fit, *fitted_params))
-        # the fitted data of each single component
-        processed_params = self.mixed_data.process_params(fitted_params)
-        
-        components = []
-        for beta, eta, fraction in processed_params:
-            components.append((partial_real_x, self.mixed_data.single_func(
-                self.x_to_fit, beta, eta)*fraction))
-
-        # get the relationship (func) to convert x_to_fit to real x
-        x_to_real = interp1d(self.x_to_fit, partial_real_x)
-        statistic = []
-
-        # TODO: the params number of each component may vary between different distribution type
-        for i, (beta, eta, fraction) in enumerate(processed_params):
-            try:
-                # use max operation to convert np.ndarray to float64
-                mean_value = x_to_real(self.mixed_data.mean(beta, eta)).max()
-                median_value = x_to_real(self.mixed_data.median(beta, eta)).max()
-                mode_value = x_to_real(self.mixed_data.mode(beta, eta)).max()
-            except ValueError:
-                mean_value = np.nan
-                median_value = np.nan
-                mode_value = np.nan
-            # TODO: maybe some distribution types has not all statistic values
-            statistic.append({
-                "name": "C{0}".format(i+1),
-                "beta": beta,
-                "eta": eta,
-                "x_offset": self.start_index+1,
-                "fraction": fraction,
-                "mean": mean_value,
-                "median": median_value,
-                "mode": mode_value,
-                "variance": self.mixed_data.variance(beta, eta),
-                "standard_deviation": self.mixed_data.standard_deviation(beta, eta),
-                "skewness": self.mixed_data.skewness(beta, eta),
-                "kurtosis": self.mixed_data.kurtosis(beta, eta)
-            })
+    def get_fitting_result(self, fitted_params):
+        result = FittingResult(self.sample_name, self.real_x,
+                                 self.fitting_space_x, self.bin_numbers,
+                                 self.target_y, self.algorithm_data,
+                                 fitted_params, self.x_offset)
+        return result
 
         mse = Resolver.get_mean_squared_errors(target[1], fitted_sum[1])
         # TODO: add more test for difference between observation and fitting
