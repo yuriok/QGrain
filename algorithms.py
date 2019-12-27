@@ -1,5 +1,5 @@
 from enum import Enum, unique
-from typing import Dict, List, Tuple
+from typing import Callable, Dict, Iterable, List, Tuple
 
 import numpy as np
 from scipy.special import gamma
@@ -27,12 +27,7 @@ def get_param_names(distribution_type: DistributionType) -> Tuple[str]:
     else:
         raise NotImplementedError(distribution_type)
 
-def get_params(component_number: int, distribution_type: DistributionType) -> List[Dict]:
-    params = []
-    param1_name, param2_name = get_param_names(distribution_type)
-    if component_number == 1:
-        # if there is only one component, the fraction is not needful
-        # beta and eta also don't need the number to distinguish
+def get_param_bounds(distribution_type: DistributionType) -> Tuple[Tuple[float, float]]:
         if distribution_type == DistributionType.Normal:
             params.append({"name": param1_name, "default": 10, "location": 0, "bounds": (None, None)})
             params.append({"name": param2_name, "default": 3, "location": 1, "bounds": (INFINITESIMAL, None)})
@@ -107,8 +102,7 @@ def get_lambda_string(component_number:int, params: List[Dict], distribution_typ
         raise ValueError(component_number)
 
 # prcess the raw params list to make it easy to use
-def process_params(component_number: int, func_params: List[Dict], fitted_params: List, distribution_type: DistributionType) -> List[List]:
-    param1_name, param2_name = get_param_names(distribution_type)
+def process_params(distribution_type: DistributionType, component_number: int, fitted_params: Iterable) -> Tuple[Tuple[Tuple, float]]:
     if component_number == 1:
         assert len(fitted_params) == 2
         the_only_component = [None, None, 1]
