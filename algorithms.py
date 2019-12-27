@@ -88,12 +88,6 @@ def get_params(distribution_type: DistributionType, component_number: int) -> Li
     param_names = get_param_names(distribution_type)
     param_bounds = get_param_bounds(distribution_type)
     param_defaults = get_param_defaults(distribution_type, component_number)
-    # check
-    assert len(param_names) == param_count
-    assert len(param_bounds) == param_count
-    assert len(param_defaults) == component_number
-    for component_defaults in param_defaults:
-        assert len(component_defaults) == param_count
     # generate params for all components
     for component_index, component_defaults in enumerate(param_defaults):
         for param_index, name, bounds, defalut in zip(range(param_count), param_names, param_bounds, component_defaults):
