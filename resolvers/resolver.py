@@ -1,11 +1,10 @@
 from enum import Enum, unique
 
 import numpy as np
-from scipy.interpolate import interp1d
 from scipy.optimize import basinhopping, minimize
 
-from algorithms import DistributionType, MixedDistributionData
-from data import FittedData
+from algorithms import AlgorithmData, DistributionType
+from data import FittingResult
 
 
 @unique
@@ -111,13 +110,13 @@ class Resolver:
                     if i == 0:
                         break
                     else:
-                    start_index = i-1
-                    break
+                        start_index = i-1
+                        break
             # search for tail to head
             for i, value in enumerate(target_y[start_index+1:][::-1]):
                 if value > 0.0:
                     if i <= 1:
-                    break
+                        break
                     else:
                         end_index = (i-1)*(-1)
                         break
@@ -162,10 +161,10 @@ class Resolver:
     def on_fitting_finished(self):
         pass
 
-    def on_global_fitting_failed(self, fitted_result):
+    def on_global_fitting_failed(self, algorithm_result):
         pass
 
-    def on_final_fitting_failed(self, fitted_result):
+    def on_final_fitting_failed(self, algorithm_result):
         pass
 
     def on_exception_raised_while_fitting(self, exception):
@@ -177,7 +176,7 @@ class Resolver:
     def global_iteration_callback(self, fitted_params, function_value, accept):
         pass
 
-    def on_fitting_succeeded(self, fitted_result):
+    def on_fitting_succeeded(self, algorithm_result):
         pass
 
     def preprocess_data(self):
@@ -236,53 +235,50 @@ class Resolver:
                                  fitted_params, self.x_offset)
         return result
 
-        mse = Resolver.get_mean_squared_errors(target[1], fitted_sum[1])
-        # TODO: add more test for difference between observation and fitting
-        fitted_data = FittedData(self.sample_name, self.distribution_type, target, fitted_sum, mse, components, statistic)
-        return fitted_data
-
     def try_fit(self):
-        if self.x_to_fit is None or self.y_to_fit is None:
+        if self.real_x is None or self.target_y is None or self.fitting_space_x is None:
             self.on_data_not_prepared()
             return
         self.on_fitting_started()
 
         def closure(args):
-            current_values = self.mixed_data.mixed_func(self.x_to_fit, *args)
-            return Resolver.get_squared_sum_of_residual_errors(current_values, self.y_to_fit)*100
+            # using partial values (i.e. don't use unnecessary zero values) will highly improve the performance of algorithms
+            x_to_fit = self.fitting_space_x[self.start_index: self.end_index]-self.x_offset
+            y_to_fit = self.target_y[self.start_index: self.end_index]
+            current_values = self.algorithm_data.mixed_func(x_to_fit, *args)
+            return Resolver.get_squared_sum_of_residual_errors(current_values, y_to_fit)*100
 
         minimizer_kwargs = dict(method="SLSQP",
-                                bounds=self.mixed_data.bounds, constraints=self.mixed_data.constrains,
+                                bounds=self.algorithm_data.bounds, constraints=self.algorithm_data.constrains,
                                 callback=self.local_iteration_callback,
                                 options={"maxiter": self.minimizer_maxiter, "ftol": self.minimizer_tolerance})
         try:
-            global_fitted_result = basinhopping(closure, x0=self.initial_guess,
+            global_algorithm_result = basinhopping(closure, x0=self.initial_guess,
                                                 minimizer_kwargs=minimizer_kwargs,
                                                 callback=self.global_iteration_callback,
                                                 niter_success=self.global_optimization_success_iter,
                                                 niter=self.global_optimization_maxiter,
                                                 stepsize=self.global_optimization_stepsize)
 
-            # the basinhopping method do not implement the `OptimizeResult` correctly
-            # it don't contains `success`
-            if global_fitted_result.lowest_optimization_result.success or global_fitted_result.lowest_optimization_result.status == 9:
+            if global_algorithm_result.lowest_optimization_result.success or \
+                    global_algorithm_result.lowest_optimization_result.status == 9:
                 pass
             else:
-                self.on_global_fitting_failed(global_fitted_result)
+                self.on_global_fitting_failed(global_algorithm_result)
                 self.on_fitting_finished()
                 return
-            fitted_result = minimize(closure, method="SLSQP", x0=global_fitted_result.x,
-                                     bounds=self.mixed_data.bounds, constraints=self.mixed_data.constrains,
+            final_algorithm_result = minimize(closure, method="SLSQP", x0=global_algorithm_result.x,
+                                     bounds=self.algorithm_data.bounds, constraints=self.algorithm_data.constrains,
                                      callback=self.local_iteration_callback,
                                      options={"maxiter": self.final_maxiter, "ftol": self.final_tolerance})
             # judge if the final fitting succeed
             # see https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.fmin_slsqp.html
-            if fitted_result.success or fitted_result.status == 9:
-                self.on_fitting_succeeded(fitted_result)
+            if final_algorithm_result.success or final_algorithm_result.status == 9:
+                self.on_fitting_succeeded(final_algorithm_result)
                 self.on_fitting_finished()
                 return
             else:
-                self.on_final_fitting_failed(fitted_result)
+                self.on_final_fitting_failed(final_algorithm_result)
                 self.on_fitting_finished()
                 return
         except Exception as e:
