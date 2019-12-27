@@ -4,11 +4,11 @@ import os
 import numpy as np
 from PySide2.QtCore import Qt, QThread, QTimer, Signal
 from PySide2.QtGui import QFont
-from PySide2.QtWidgets import (QCheckBox, QFileDialog, QGridLayout, QLabel,
-                               QMessageBox, QPushButton, QRadioButton,
-                               QSizePolicy, QWidget)
+from PySide2.QtWidgets import (QButtonGroup, QCheckBox, QFileDialog,
+                               QGridLayout, QLabel, QMessageBox, QPushButton,
+                               QRadioButton, QSizePolicy, QWidget)
 
-from data import FittedData, GrainSizeData
+from data import FittingResult, GrainSizeData
 
 
 class ControlPanel(QWidget):
@@ -52,9 +52,12 @@ class ControlPanel(QWidget):
         self.distribution_normal_radio_button.setToolTip(self.tr("See [%s] for more details.") % "https://en.wikipedia.org/wiki/Normal_distribution")
         self.distribution_weibull_radio_button = QRadioButton(self.tr("Weibull"), self)
         self.distribution_weibull_radio_button.setToolTip(self.tr("See [%s] for more details.") % "https://en.wikipedia.org/wiki/Weibull_distribution")
+        self.distribution_gen_weibull_radio_button = QRadioButton(self.tr("Gen.Weibull"), self)
+        self.distribution_gen_weibull_radio_button.setToolTip(self.tr("General Weibull distribution which has an additional location parameter."))
         self.main_layout.addWidget(self.distribution_type_label, 0, 0, 1, 2)
-        self.main_layout.addWidget(self.distribution_normal_radio_button, 0, 2)
-        self.main_layout.addWidget(self.distribution_weibull_radio_button, 0, 3)
+        self.main_layout.addWidget(self.distribution_normal_radio_button, 0, 1)
+        self.main_layout.addWidget(self.distribution_weibull_radio_button, 0, 2)
+        self.main_layout.addWidget(self.distribution_gen_weibull_radio_button, 0, 3)
 
         # Component number
         self.component_number_label = QLabel(self.tr("Components:"))
@@ -116,7 +119,9 @@ class ControlPanel(QWidget):
 
 
     def connect_all(self):
-        self.distribution_normal_radio_button.toggled.connect(self.on_distribution_type_changed)
+        self.distribution_normal_radio_button.clicked.connect(self.on_distribution_type_changed)
+        self.distribution_weibull_radio_button.clicked.connect(self.on_distribution_type_changed)
+        self.distribution_gen_weibull_radio_button.clicked.connect(self.on_distribution_type_changed)
         self.component_number_add_button.clicked.connect(self.on_component_number_add_clicked)
         self.component_reduce_button.clicked.connect(self.on_component_number_reduce_clicked)
         
@@ -210,10 +215,14 @@ class ControlPanel(QWidget):
         if self.distribution_normal_radio_button.isChecked():
             self.sigDistributionTypeChanged.emit("normal")
             self.logger.info("Distribution type has been changed to [%s].", "Normal")
-        else:
+        elif self.distribution_weibull_radio_button.isChecked():
             assert self.distribution_weibull_radio_button.isChecked()
             self.sigDistributionTypeChanged.emit("weibull")
             self.logger.info("Distribution type has been changed to [%s].", "Weibull")
+        else:
+            assert self.distribution_gen_weibull_radio_button.isChecked()
+            self.sigDistributionTypeChanged.emit("gen_weibull")
+            self.logger.info("Distribution type has been changed to [%s].", "General Weibull")
 
         if self.sample_names is not None:
             self.data_index = self.data_index
@@ -284,8 +293,8 @@ class ControlPanel(QWidget):
         self.sigRecordFittingData.emit(self.current_name)
         self.logger.debug("Record data signal emitted.")
 
-    def on_fitting_epoch_suceeded(self, data: FittedData):
-        if self.auto_run_flag and data.has_invalid_value():
+    def on_fitting_epoch_suceeded(self, result: FittingResult):
+        if self.auto_run_flag and result.has_invalid_value():
             self.logger.warning("The fitted data may be not valid, auto run stoped.")
             self.gui_logger.warning(self.tr("The fitted data may be not valid, auto run stoped."))
             self.auto_run_flag = False
@@ -337,7 +346,7 @@ class ControlPanel(QWidget):
 
     def setup_all(self):
         self.component_number = 3
-        self.distribution_weibull_radio_button.setChecked(True)
+        self.distribution_gen_weibull_radio_button.setChecked(True)
         self.iteration_scope_checkbox.setCheckState(Qt.Unchecked)
         self.inherit_params_checkbox.setCheckState(Qt.Checked)
         self.auto_fit_checkbox.setCheckState(Qt.Checked)
