@@ -153,7 +153,7 @@ def process_params(distribution_type: DistributionType, component_number: int, f
     param_count = get_param_count(distribution_type)
     if component_number == 1:
         assert len(fitted_params) == param_count
-        return ((tuple(fitted_params), 1.0))
+        return ((tuple(fitted_params), 1.0),)
     elif component_number > 1:
         assert len(fitted_params) == (param_count+1) * component_number - 1
         expanded = list(fitted_params) + [1.0-sum(fitted_params[component_number*param_count:])]
@@ -178,25 +178,46 @@ def quadruple_normal(x, mu1, sigma1, mu2, sigma2, mu3, sigma3, mu4, sigma4, f1, 
     return f1 * normal(x, mu1, sigma1) + f2 * normal(x, mu2, sigma2) + f3 * normal(x, mu3, sigma3) + (1-f1-f2-f3) * normal(x, mu4, sigma4)
 
 def normal_mean(mu, sigma):
-    return mu
+    if sigma <= 0.0:
+        return np.nan
+    else:
+        return mu
 
 def normal_median(mu, sigma):
-    return mu
+    if sigma <= 0.0:
+        return np.nan
+    else:
+        return mu
 
 def normal_mode(mu, sigma):
-    return mu
+    if sigma <= 0.0:
+        return np.nan
+    else:
+        return mu
 
 def normal_standard_deviation(mu, sigma):
-    return sigma
+    if sigma <= 0.0:
+        return np.nan
+    else:
+        return sigma
 
 def normal_variance(mu, sigma):
-    return sigma**2
+    if sigma <= 0.0:
+        return np.nan
+    else:
+        return sigma**2
 
 def normal_skewness(mu, sigma):
-    return 0
+    if sigma <= 0.0:
+        return np.nan
+    else:
+        return 0.0
 
 def normal_kurtosis(mu, sigma):
-    return 0
+    if sigma <= 0.0:
+        return np.nan
+    else:
+        return 0.0
 
 
 # The pdf function of Weibull distribution
@@ -220,28 +241,48 @@ def quadruple_weibull(x, beta1, eta1, beta2, eta2, beta3, eta3, beta4, eta4, f1,
     return f1 * weibull(x, beta1, eta1) + f2 * weibull(x, beta2, eta2) + f3 * weibull(x, beta3, eta3) + (1-f1-f2-f3) * weibull(x, beta4, eta4)
 
 def weibull_mean(beta, eta):
-    return eta*gamma(1/beta+1)
+    if beta <= 0.0 or eta <= 0.0:
+        return np.nan
+    else:
+        return eta*gamma(1/beta+1)
 
 def weibull_median(beta, eta):
-    return eta*(np.log(2)**(1/beta))
+    if beta <= 0.0 or eta <= 0.0:
+        return np.nan
+    else:
+        return eta*(np.log(2)**(1/beta))
 
 def weibull_mode(beta, eta):
-    if beta <= 1:
+    if beta <= 0.0 or eta <= 0.0:
+        return np.nan
+    elif beta <= 1:
         return 0.0
     else:
         return eta*(1-1/beta)**(1/beta)
 
 def weibull_standard_deviation(beta, eta):
-    return eta*np.sqrt(gamma(2/beta+1) - gamma(1/beta+1)**2)
+    if beta <= 0.0 or eta <= 0.0:
+        return np.nan
+    else:
+        return eta*np.sqrt(gamma(2/beta+1) - gamma(1/beta+1)**2)
 
 def weibull_variance(beta, eta):
-    return (eta**2)*(gamma(2/beta+1)-gamma(1/beta+1)**2)
+    if beta <= 0.0 or eta <= 0.0:
+        return np.nan
+    else:
+        return (eta**2)*(gamma(2/beta+1)-gamma(1/beta+1)**2)
 
 def weibull_skewness(beta, eta):
-    return (2*gamma(1/beta+1)**3 - 3*gamma(2/beta+1)*gamma(1/beta+1) + gamma(3/beta+1)) / (gamma(2/beta+1)-gamma(1/beta+1)**2)**(3/2)
+    if beta <= 0.0 or eta <= 0.0:
+        return np.nan
+    else:
+        return (2*gamma(1/beta+1)**3 - 3*gamma(2/beta+1)*gamma(1/beta+1) + gamma(3/beta+1)) / (gamma(2/beta+1)-gamma(1/beta+1)**2)**(3/2)
 
 def weibull_kurtosis(beta, eta):
-    return (-3*gamma(1/beta+1)**4 + 6*gamma(2/beta+1)*gamma(1/beta+1)**2 - 4*gamma(3/beta+1)*gamma(1/beta+1) + gamma(4/beta+1)) / (gamma(2/beta+1)-gamma(1/beta+1)**2)**2
+    if beta <= 0.0 or eta <= 0.0:
+        return np.nan
+    else:
+        return (-3*gamma(1/beta+1)**4 + 6*gamma(2/beta+1)*gamma(1/beta+1)**2 - 4*gamma(3/beta+1)*gamma(1/beta+1) + gamma(4/beta+1)) / (gamma(2/beta+1)-gamma(1/beta+1)**2)**2
 
 
 def gen_weibull(x, mu, beta, eta):
@@ -292,7 +333,7 @@ def get_param_by_mean(distribution_type: DistributionType, component_number: int
     assert len(mean_values) == component_number
     param_count = get_param_count(distribution_type)
     func_params = get_params(distribution_type, component_number)
-    param_values = get_defaults(func_params)
+    param_values = list(get_defaults(func_params))
     if distribution_type == DistributionType.Normal:
         for i in range(component_number):
             # for normal distribution
@@ -310,7 +351,7 @@ def get_param_by_mean(distribution_type: DistributionType, component_number: int
             param_values[i*param_count+2] = (mean_values[i]-mu) / gamma(1/beta+1)
     else:
         raise NotImplementedError(distribution_type)
-    return param_values
+    return tuple(param_values)
 
 
 class AlgorithmData:
