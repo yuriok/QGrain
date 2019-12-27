@@ -7,8 +7,7 @@ from PySide2.QtCore import Qt, Signal
 from PySide2.QtGui import QFont
 from PySide2.QtWidgets import QGridLayout, QSizePolicy, QWidget
 
-from data import FittedData
-from resolvers import Resolver
+from data import FittingResult
 
 pg.setConfigOptions(foreground=pg.mkColor("k"), background=pg.mkColor("#FFFFFF00"), antialias=True)
 
@@ -37,8 +36,8 @@ class FittingCanvas(QWidget):
         self.target_item = pg.PlotDataItem(name="Target", **self.target_style)
         self.plot_widget.plotItem.addItem(self.target_item)
         self.sum_style = dict(pen=pg.mkPen("#062170", width=3, style=Qt.DashLine))
-        self.sum_item = pg.PlotDataItem(name="Fitted", **self.sum_style)
-        self.plot_widget.plotItem.addItem(self.sum_item)
+        self.fitted_item = pg.PlotDataItem(name="Fitted", **self.sum_style)
+        self.plot_widget.plotItem.addItem(self.fitted_item)
         self.label_styles = {"font-family": "Times New Roman"}
         self.plot_widget.plotItem.setLabel("left", self.tr("Probability Density"), **self.label_styles)
         self.plot_widget.plotItem.setLabel("bottom", self.tr("Grain size")+" [μm]", **self.label_styles)
@@ -54,7 +53,7 @@ class FittingCanvas(QWidget):
         self.legend = pg.LegendItem(offset=(80, 50))
         self.legend.setParentItem(self.plot_widget.plotItem)
         self.legend.addItem(self.target_item, self.legend_format % self.tr("Target"))
-        self.legend.addItem(self.sum_item, self.legend_format % self.tr("Fitted Sum"))
+        self.legend.addItem(self.fitted_item, self.legend_format % self.tr("Fitted Sum"))
         self.x_axis_space = XAxisSpace.Log10
         self.component_curves = []
         self.component_lines = []
@@ -159,8 +158,8 @@ class FittingCanvas(QWidget):
         self.position_limit = (x[0], x[-1])
         x_axis = self.plot_widget.plotItem.getAxis("bottom")
         x_axis.enableAutoSIPrefix(enable=False)
-        major_ticks= [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(x) if i%10==0]
-        minor_ticks= [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(x) if i%2==0]
+        major_ticks= [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(x) if i%20==0]
+        minor_ticks= [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(x) if i%5==0]
         all_ticks = [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(x)]
         x_axis.setTicks([major_ticks, minor_ticks, all_ticks])
         self.logger.debug("Target data has been changed to [%s].", sample_name)
@@ -172,42 +171,38 @@ class FittingCanvas(QWidget):
         # update target
         # target data (i.e. grain size classes and distribution) should have no nan value indeed
         # it should be checked during load data progress
-        start_index, end_index = Resolver.get_valid_data_range(y)
-        self.target_item.setData(x[start_index:end_index], y[start_index:end_index], **self.target_style)
-        self.sum_item.clear()
+        self.target_item.setData(x, y, **self.target_style)
+        self.fitted_item.clear()
         for name, curve in self.component_curves:
             curve.clear()
         for line in self.component_lines:
             line.setValue(1)
 
-    def update_canvas_by_data(self, data: FittedData, current_iteration=None):
+    def update_canvas_by_data(self, result: FittingResult, current_iteration=None):
+        # TODO: check component number
         # update the title of canvas
-        sample_name = data.name
+        sample_name = result.name
         if sample_name is None or sample_name == "":
             sample_name = "UNKNOWN"
         if current_iteration is None:
             self.plot_widget.plotItem.setTitle(self.title_format % sample_name)
         else:
             self.plot_widget.plotItem.setTitle(self.title_format % "{0} iter({1})".format(sample_name, current_iteration))
-        # update sum
-        sum_x, sum_y = data.sum
-        self.sum_item.setData(sum_x, np.nan_to_num(sum_y), **self.sum_style)
+        # update fitted
+        self.fitted_item.setData(result.real_x, result.fitted_y, **self.sum_style)
         # update component curves
-        for (x, y), (name, curve_item), style in zip(data.components, self.component_curves, self.component_styles):
-            curve_item.setData(x, np.nan_to_num(y), **style)
-        # update component mean value lines
-        for i, line_item in enumerate(self.component_lines):
-            mean_value = data.statistic[i]["mean"]
-            # jump this iteration if value is nan or inf
-            if np.isnan(mean_value) or np.isinf(mean_value):
+        for i, component, (name, curve), style, line in zip(range(result.component_number),
+                                                           result.components, self.component_curves,
+                                                           self.component_styles, self.component_lines):
+            curve.setData(result.real_x, component.component_y, **style)
+            if np.isnan(component.mean) or np.isinf(component.mean):
                 continue
-            # because x axis is in log mode, it's necessary to calculate the log10 to make it correct
-            space_value = self.raw2space(mean_value)
+            space_value = self.raw2space(component.mean)
             self.position_cache[i] = self.space2raw(space_value)
-            line_item.setValue(space_value)
+            line.setValue(space_value)
 
-    def on_fitting_epoch_suceeded(self, data: FittedData):
-        self.update_canvas_by_data(data)
+    def on_fitting_epoch_suceeded(self, result: FittingResult):
+        self.update_canvas_by_data(result)
 
-    def on_single_iteration_finished(self, current_iteration, data: FittedData):
-        self.update_canvas_by_data(data, current_iteration=current_iteration)
+    def on_single_iteration_finished(self, current_iteration, result: FittingResult):
+        self.update_canvas_by_data(result, current_iteration=current_iteration)
