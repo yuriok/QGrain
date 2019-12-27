@@ -94,19 +94,25 @@ class Resolver:
         return mse
 
     @staticmethod
-    def get_valid_data_range(y_data, slice_data=True):
+    def get_valid_data_range(target_y, slice_data=True):
         start_index = 0
-        end_index = len(y_data)
-        max_index = len(y_data)-1
+        end_index = len(target_y)
         if slice_data:
-            for i, value in enumerate(y_data):
-                if i != 0 and value > 0.0 :
+            for i, value in enumerate(target_y):
+                if value > 0.0:
+                    if i == 0:
+                        break
+                    else:
                     start_index = i-1
                     break
-            for i, value in enumerate(y_data[start_index+1:], start_index+1):
-                if i != max_index and value <= 1e-100:
-                    end_index = i+1
+            # search for tail to head
+            for i, value in enumerate(target_y[start_index+1:][::-1]):
+                if value > 0.0:
+                    if i <= 1:
                     break
+                    else:
+                        end_index = (i-1)*(-1)
+                        break
         return start_index, end_index
 
     @staticmethod
