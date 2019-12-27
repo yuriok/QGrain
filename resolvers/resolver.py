@@ -30,6 +30,8 @@ class Resolver:
                  final_maxiter=1000,
                  minimizer_tolerance=1e-8,
                  minimizer_maxiter=500):
+        self.__distribution_type = DistributionType.GeneralWeibull
+        self.__component_number = 3
         self.__algorithm_data_cache = {}
         self.refresh()
 
