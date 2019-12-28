@@ -4,7 +4,8 @@ from typing import List
 
 from PySide2.QtCore import (QCoreApplication, QEventLoop, QMutex, Qt, QThread,
                             Signal)
-from PySide2.QtGui import QAction, QIcon
+from PySide2.QtGui import QIcon
+from PySide2.QtWidgets import QAction
 from PySide2.QtWidgets import (QAbstractItemView, QDockWidget, QMainWindow,
                                QMessageBox, QPushButton, QTableWidget,
                                QTableWidgetItem, QWidget)
