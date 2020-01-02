@@ -1,8 +1,12 @@
+import os
+import sys
 import unittest
 
 import numpy as np
 
+sys.path.append(os.getcwd())
 from algorithms import *
+
 
 NORMAL_PARAM_COUNT = 2
 WEIBULL_PARAM_COUNT = 2
@@ -584,15 +588,58 @@ class TestAlgorithmData(unittest.TestCase):
 
     # these attrs will be used in other files
     def test_has_attrs(self):
-        must_have_attrs = ["mixed_func", "single_func", "bounds",
-                           "defaults", "constrains", "component_number",
-                           "distribution_type", "mean", "median",
-                           "mode", "standard_deviation", "variance",
-                           "skewness", "kurtosis"]
         for data in [self.normal_data, self.weibull_data, self.gen_weibull_data]:
-            actual_attrs = dir(data)
-            for attr in must_have_attrs:
-                self.assertTrue(attr in actual_attrs)
+            data.distribution_type
+            data.component_number
+            data.param_count
+            data.param_names
+            data.single_func
+            data.mixed_func
+            data.bounds
+            data.defaults
+            data.constrains
+            data.mean
+            data.median
+            data.mode
+            data.variance
+            data.standard_deviation
+            data.skewness
+            data.kurtosis
+
+    def test_read_only(self):
+        for data in [self.normal_data, self.weibull_data, self.gen_weibull_data]:
+            with self.assertRaises(AttributeError):
+                data.distribution_type = None
+            with self.assertRaises(AttributeError):
+                data.component_number = None
+            with self.assertRaises(AttributeError):
+                data.param_count = None
+            with self.assertRaises(AttributeError):
+                data.param_names = None
+            with self.assertRaises(AttributeError):
+                data.single_func = None
+            with self.assertRaises(AttributeError):
+                data.mixed_func = None
+            with self.assertRaises(AttributeError):
+                data.bounds = None
+            with self.assertRaises(AttributeError):
+                data.defaults = None
+            with self.assertRaises(AttributeError):
+                data.constrains = None
+            with self.assertRaises(AttributeError):
+                data.mean = None
+            with self.assertRaises(AttributeError):
+                data.median = None
+            with self.assertRaises(AttributeError):
+                data.mode = None
+            with self.assertRaises(AttributeError):
+                data.variance = None
+            with self.assertRaises(AttributeError):
+                data.standard_deviation = None
+            with self.assertRaises(AttributeError):
+                data.skewness = None
+            with self.assertRaises(AttributeError):
+                data.kurtosis = None
 
     def test_process_params(self):
         for data in [self.normal_data, self.weibull_data, self.gen_weibull_data]:
@@ -605,14 +652,6 @@ class TestAlgorithmData(unittest.TestCase):
             if data.distribution_type == DistributionType.Normal or \
                 data.distribution_type == DistributionType.GeneralWeibull:
                 self.assertNotEqual(actual_2, expected)
-
-    def test_get_param_names(self):
-        for data in [self.normal_data, self.weibull_data, self.gen_weibull_data]:
-            data.get_param_names()
-    
-    def test_get_param_count(self):
-        for data in [self.normal_data, self.weibull_data, self.gen_weibull_data]:
-            data.get_param_count()
 
     def test_get_param_by_mean(self):
         for data in [self.normal_data, self.weibull_data, self.gen_weibull_data]:

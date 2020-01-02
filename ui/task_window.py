@@ -6,7 +6,7 @@ from PySide2.QtCore import Qt
 from PySide2.QtWidgets import (QApplication, QGridLayout, QLabel, QMainWindow,
                                QSizePolicy, QWidget)
 
-from data import FittingResult
+from models.FittingResult import FittingResult
 from resolvers import FittingTask
 
 

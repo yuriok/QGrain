@@ -121,7 +121,7 @@ def get_constrains(component_number: int) -> Tuple[Dict]:
     else:
         raise ValueError(component_number)
 
-def get_defaults(params: List[Dict]) -> Tuple:
+def get_defaults(params: List[Dict]) -> Tuple[float]:
     defaults = []
     for param in params:
         defaults.append(param[DEFAULT_VALUE_KEY])
@@ -357,56 +357,116 @@ def get_param_by_mean(distribution_type: DistributionType, component_number: int
 class AlgorithmData:
     def __init__(self, distribution_type: DistributionType, component_number: int):
         check_component_number(component_number)
-        self.lambda_str = get_lambda_str(distribution_type, component_number)
-        self.mixed_func = self.get_func_by_lambda_str(self.lambda_str)
-        self.func_params = get_params(distribution_type, component_number)
-        self.bounds = get_bounds(self.func_params)
-        self.defaults = get_defaults(self.func_params)
-        self.constrains = get_constrains(component_number)
-        self.single_func = get_single_func(distribution_type)
-        self.component_number = component_number
-        self.distribution_type = distribution_type
-        self.get_statistic_func()
+        self.__distribution_type = distribution_type
+        self.__component_number = component_number
+        self.__param_count = get_param_count(self.distribution_type)
+        self.__param_names = get_param_names(self.distribution_type)
+        self.__single_func = get_single_func(distribution_type)
+        self.__lambda_str = get_lambda_str(distribution_type, component_number)
+        self.__mixed_func = self.__get_func_by_lambda_str(self.__lambda_str)
+        self.__func_params = get_params(distribution_type, component_number)
+        self.__bounds = get_bounds(self.__func_params)
+        self.__defaults = get_defaults(self.__func_params)
+        self.__constrains = get_constrains(component_number)
+        self.__get_statistic_func()
 
-    def get_func_by_lambda_str(self, lambda_str: str) -> Callable:
-        local_params = {"__tempmMixedFunc": None}
-        exec("__tempmMixedFunc=" + lambda_str, None, local_params)
-        mixed_func = local_params["__tempmMixedFunc"]
+    def __get_func_by_lambda_str(self, lambda_str: str) -> Callable:
+        local_params = {"__tempMixedFunc": None}
+        exec("__tempMixedFunc=" + lambda_str, None, local_params)
+        mixed_func = local_params["__tempMixedFunc"]
         return mixed_func
 
-    def get_statistic_func(self):
+    def __get_statistic_func(self):
         if self.distribution_type == DistributionType.Normal:
-            self.mean = normal_mean
-            self.median = normal_median
-            self.mode = normal_mode
-            self.standard_deviation = normal_standard_deviation
-            self.variance = normal_variance
-            self.skewness = normal_skewness
-            self.kurtosis = normal_kurtosis
+            self.__mean = normal_mean
+            self.__median = normal_median
+            self.__mode = normal_mode
+            self.__standard_deviation = normal_standard_deviation
+            self.__variance = normal_variance
+            self.__skewness = normal_skewness
+            self.__kurtosis = normal_kurtosis
         elif self.distribution_type == DistributionType.Weibull:
-            self.mean = weibull_mean
-            self.median = weibull_median
-            self.mode = weibull_mode
-            self.standard_deviation = weibull_standard_deviation
-            self.variance = weibull_variance
-            self.skewness = weibull_skewness
-            self.kurtosis = weibull_kurtosis
+            self.__mean = weibull_mean
+            self.__median = weibull_median
+            self.__mode = weibull_mode
+            self.__standard_deviation = weibull_standard_deviation
+            self.__variance = weibull_variance
+            self.__skewness = weibull_skewness
+            self.__kurtosis = weibull_kurtosis
         elif self.distribution_type == DistributionType.GeneralWeibull:
-            self.mean = gen_weibull_mean
-            self.median = gen_weibull_median
-            self.mode = gen_weibull_mode
-            self.standard_deviation = gen_weibull_standard_deviation
-            self.variance = gen_weibull_variance
-            self.skewness = gen_weibull_skewness
-            self.kurtosis = gen_weibull_kurtosis
+            self.__mean = gen_weibull_mean
+            self.__median = gen_weibull_median
+            self.__mode = gen_weibull_mode
+            self.__standard_deviation = gen_weibull_standard_deviation
+            self.__variance = gen_weibull_variance
+            self.__skewness = gen_weibull_skewness
+            self.__kurtosis = gen_weibull_kurtosis
         else:
             raise NotImplementedError(distribution_type)
 
-    def get_param_names(self) -> Tuple[str]:
-        return get_param_names(self.distribution_type)
+    @property
+    def distribution_type(self) -> DistributionType:
+        return self.__distribution_type
 
-    def get_param_count(self) -> int:
-        return get_param_count(self.distribution_type)
+    @property
+    def component_number(self) -> int:
+        return self.__component_number
+
+    @property
+    def param_count(self) -> int:
+        return self.__param_count
+
+    @property
+    def param_names(self) -> Tuple[str]:
+        return self.__param_names
+
+    @property
+    def single_func(self) -> Callable:
+        return self.__single_func
+
+    @property
+    def mixed_func(self) -> Callable:
+        return self.__mixed_func
+
+    @property
+    def bounds(self) -> Tuple[Tuple]:
+        return self.__bounds
+
+    @property
+    def defaults(self) -> Tuple[float]:
+        return self.__defaults
+
+    @property
+    def constrains(self) -> Tuple[Dict]:
+        return self.__constrains
+
+    @property
+    def mean(self) -> Callable:
+        return self.__mean
+
+    @property
+    def median(self) -> Callable:
+        return self.__median
+
+    @property
+    def mode(self) -> Callable:
+        return self.__mode
+
+    @property
+    def variance(self) -> Callable:
+        return self.__variance
+
+    @property
+    def standard_deviation(self) -> Callable:
+        return self.__standard_deviation
+
+    @property
+    def skewness(self) -> Callable:
+        return self.__skewness
+
+    @property
+    def kurtosis(self) -> Callable:
+        return self.__kurtosis
 
     def process_params(self, fitted_params: Iterable, x_offset: float) -> Tuple[Tuple[Tuple, float]]:
         params_copy = np.array(fitted_params)
