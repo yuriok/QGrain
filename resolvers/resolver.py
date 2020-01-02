@@ -4,21 +4,7 @@ import numpy as np
 from scipy.optimize import basinhopping, minimize
 
 from algorithms import AlgorithmData, DistributionType
-from data import FittingResult
-
-
-@unique
-class DataValidationResult(Enum):
-    Valid = -1
-    NameNone = 0
-    NameEmpty = 1
-    XNone = 2
-    YNone = 3
-    XTypeInvalid = 4
-    YTypeInvalid = 5
-    XHasNan = 6
-    YHasNan = 7
-    LengthNotEqual = 8
+from models.FittingResult import FittingResult
 
 
 class Resolver:
@@ -122,33 +108,7 @@ class Resolver:
                         break
         return start_index, end_index
 
-    @staticmethod
-    def validate_data(sample_name: str, x: np.ndarray, y: np.ndarray) -> DataValidationResult:
-        if sample_name is None:
-            return DataValidationResult.NameNone
-        if sample_name == "":
-            return DataValidationResult.NameEmpty
-        if x is None:
-            return DataValidationResult.XNone
-        if y is None:
-            return DataValidationResult.YNone
-        if type(x) != np.ndarray:
-            return DataValidationResult.XTypeInvalid
-        if type(y) != np.ndarray:
-            return DataValidationResult.YTypeInvalid
-        if len(x) != len(y):
-            return DataValidationResult.LengthNotEqual
-        if np.any(np.isnan(x)):
-            return DataValidationResult.XHasNan
-        if np.any(np.isnan(y)):
-            return DataValidationResult.YHasNan
-
-        return DataValidationResult.Valid
-
     # hooks
-    def on_data_invalid(self, sample_name: str, x: np.ndarray, y: np.ndarray, validation_result: DataValidationResult):
-        pass
-
     def on_data_fed(self, sample_name):
         pass
 
@@ -199,10 +159,6 @@ class Resolver:
             raise NotImplementedError(self.distribution_type)
 
     def feed_data(self, sample_name: str, x: np.ndarray, y: np.ndarray):
-        validation_result = Resolver.validate_data(sample_name, x, y)
-        if validation_result is not DataValidationResult.Valid:
-            self.on_data_invalid(sample_name, x, y, validation_result)
-            return
         self.sample_name = sample_name
         self.real_x = x
         self.target_y = y
