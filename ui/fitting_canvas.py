@@ -7,7 +7,8 @@ from PySide2.QtCore import Qt, Signal
 from PySide2.QtGui import QFont
 from PySide2.QtWidgets import QGridLayout, QSizePolicy, QWidget
 
-from data import FittingResult
+from models.FittingResult import FittingResult
+from models.SampleData import SampleData
 
 pg.setConfigOptions(foreground=pg.mkColor("k"), background=pg.mkColor("#FFFFFF00"), antialias=True)
 
@@ -145,7 +146,7 @@ class FittingCanvas(QWidget):
             self.component_lines.append(line)
         self.logger.debug("Items added.")
 
-    def on_target_data_changed(self, sample_name, x, y):
+    def on_target_data_changed(self, sample: SampleData):
         # change the value space of x axis
         if self.x_axis_space == XAxisSpace.Raw:
             self.plot_widget.plotItem.setLogMode(x=False)
@@ -155,23 +156,23 @@ class FittingCanvas(QWidget):
             raise NotImplementedError(self.x_axis_space)
 
         # the range to limit the positions of lines
-        self.position_limit = (x[0], x[-1])
+        self.position_limit = (sample.classes[0], sample.classes[-1])
         x_axis = self.plot_widget.plotItem.getAxis("bottom")
         x_axis.enableAutoSIPrefix(enable=False)
-        major_ticks= [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(x) if i%20==0]
-        minor_ticks= [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(x) if i%5==0]
-        all_ticks = [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(x)]
+        major_ticks= [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(sample.classes) if i%20==0]
+        minor_ticks= [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(sample.classes) if i%5==0]
+        all_ticks = [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(sample.classes)]
         x_axis.setTicks([major_ticks, minor_ticks, all_ticks])
-        self.logger.debug("Target data has been changed to [%s].", sample_name)
+        self.logger.debug("Target data has been changed to [%s].", sample.name)
         
         # update the title of canvas
-        if sample_name is None or sample_name == "":
-            sample_name = "UNKNOWN"
-        self.plot_widget.plotItem.setTitle(self.title_format % sample_name)
+        if sample.name is None or sample.name == "":
+            sample.name = "UNKNOWN"
+        self.plot_widget.plotItem.setTitle(self.title_format % sample.name)
         # update target
         # target data (i.e. grain size classes and distribution) should have no nan value indeed
         # it should be checked during load data progress
-        self.target_item.setData(x, y, **self.target_style)
+        self.target_item.setData(sample.classes, sample.distribution, **self.target_style)
         self.fitted_item.clear()
         for name, curve in self.component_curves:
             curve.clear()

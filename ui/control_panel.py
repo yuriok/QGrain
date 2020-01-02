@@ -8,7 +8,8 @@ from PySide2.QtWidgets import (QButtonGroup, QCheckBox, QFileDialog,
                                QGridLayout, QLabel, QMessageBox, QPushButton,
                                QRadioButton, QSizePolicy, QWidget)
 
-from data import FittingResult, GrainSizeData
+from models.FittingResult import FittingResult
+from models.SampleDataset import SampleDataset
 
 
 class ControlPanel(QWidget):
@@ -261,8 +262,8 @@ class ControlPanel(QWidget):
         else:
             self.sigDataSettingsChanged.emit({"auto_record_flag": False})
 
-    def on_data_loaded(self, grain_size_data: GrainSizeData):
-        self.sample_names = [sample.name for sample in grain_size_data.sample_data_list]
+    def on_data_loaded(self, dataset: SampleDataset):
+        self.sample_names = [sample.name for sample in dataset.samples]
         self.logger.info("Data was loaded.")
         self.data_index = 0
         self.logger.info("Data index has been set to 0.")
@@ -294,7 +295,7 @@ class ControlPanel(QWidget):
         self.logger.debug("Record data signal emitted.")
 
     def on_fitting_epoch_suceeded(self, result: FittingResult):
-        if self.auto_run_flag and result.has_invalid_value():
+        if self.auto_run_flag and result.has_invalid_value:
             self.logger.warning("The fitted data may be not valid, auto run stoped.")
             self.gui_logger.warning(self.tr("The fitted data may be not valid, auto run stoped."))
             self.auto_run_flag = False

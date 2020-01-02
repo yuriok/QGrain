@@ -10,7 +10,7 @@ from PySide2.QtWidgets import (QAbstractItemView, QGridLayout, QMenu,
                                QTableWidget, QTableWidgetItem, QWidget)
 
 from algorithms import DistributionType
-from data import FittingResult
+from models.FittingResult import FittingResult
 
 
 class ViewDataManager(QObject):

@@ -6,8 +6,9 @@ from PySide2.QtCore import QMutex, QObject, Signal, Slot
 from scipy.interpolate import interp1d
 
 from algorithms import DistributionType
-from data import FittingResult
-from resolvers import DataValidationResult, Resolver
+from models.FittingResult import FittingResult
+from models.SampleData import *
+from resolvers import Resolver
 
 
 class CancelError(Exception):
@@ -31,7 +32,7 @@ class GUIResolver(QObject, Resolver):
         self.last_succeeded_params = None
         self.emit_iteration = emit_iteration
         self.time_interval = time_interval
-        
+
         self.current_iteration = 0
         
         self.cancel_flag = False
@@ -63,40 +64,9 @@ class GUIResolver(QObject, Resolver):
         self.change_settings(**settings)
         self.logger.info("Algorithm settings have been changed to [%s].", settings)
 
-    def on_target_data_changed(self, sample_name: str, x, y):
-        self.logger.debug("Target data has been changed to [%s].", sample_name)
-        self.feed_data(sample_name, x, y)
-
-    def on_data_invalid(self, sample_name: str, x: np.ndarray, y:np.ndarray, result: DataValidationResult):
-        if result == DataValidationResult.NameNone:
-            self.sigFittingFailed.emit(self.tr("Name of sample [%s] is None."), sample_name)
-            self.logger.error("Name of sample [%s] is None.", sample_name)
-        elif result == DataValidationResult.NameEmpty:
-            self.sigFittingFailed.emit(self.tr("Name of sample [%s] is empty."), sample_name)
-            self.logger.error("Name of sample [%s] is empty.", sample_name)
-        elif result == DataValidationResult.XNone:
-            self.sigFittingFailed.emit(self.tr("x data of sample [%s] is None."), sample_name)
-            self.logger.error("x data of sample [%s] is None.", sample_name)
-        elif result == DataValidationResult.YNone:
-            self.sigFittingFailed.emit(self.tr("y data of sample [%s] is None."), sample_name)
-            self.logger.error("y data of sample [%s] is None.", sample_name)
-        elif result == DataValidationResult.XTypeInvalid:
-            self.sigFittingFailed.emit(self.tr("The x data type of sample [%s] is invalid."), sample_name)
-            self.logger.error("The x data type of sample [%s] is invalid.", sample_name)
-        elif result == DataValidationResult.YTypeInvalid:
-            self.sigFittingFailed.emit(self.tr("The y data type of sample [%s] is invalid."), sample_name)
-            self.logger.error("The y data type of sample [%s] is invalid.", sample_name)
-        elif result == DataValidationResult.LengthNotEqual:
-            self.sigFittingFailed.emit(self.tr("The lengths of x and y data in sample [%s] are not equal."), sample_name)
-            self.logger.error("The lengths of x and y data in sample [%s] are not equal.", sample_name)
-        elif result == DataValidationResult.XHasNan:
-            self.sigFittingFailed.emit(self.tr("There is NaN value in x data of sample [%s]."), sample_name)
-            self.logger.error("There is NaN value in x data of sample [%s].", sample_name)
-        elif result == DataValidationResult.YHasNan:
-            self.sigFittingFailed.emit(self.tr("There is NaN value in y data of sample [%s]."), sample_name)
-            self.logger.error("There is NaN value in y data of sample [%s].", sample_name)
-        else:
-            raise NotImplementedError(result)
+    def on_target_data_changed(self, sample: SampleData):
+        self.logger.debug("Target data has been changed to [%s].", sample.name)
+        self.feed_data(sample.name, sample.classes, sample.distribution)
 
     def on_data_feed(self, sample_name):
         self.logger.debug("Sample [%s] has been fed.", sample_name)

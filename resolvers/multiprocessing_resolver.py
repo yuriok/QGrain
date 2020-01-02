@@ -7,7 +7,7 @@ from typing import List
 from PySide2.QtCore import QObject, Signal
 
 from algorithms import DistributionType
-from data import GrainSizeData
+from models.SampleDataset import SampleDataset
 from resolvers import FittingTask, HeadlessResolver
 
 
@@ -38,7 +38,7 @@ class MultiProcessingResolver(QObject):
         self.distribution_type = DistributionType.Weibull
         self.algorithm_settings = None
 
-        self.grain_size_data = None # type: GrainSizeData
+        self.grain_size_data = None # type: SampleDataset
         self.tasks = None # type: List[FittingTask]
         
 
@@ -61,7 +61,7 @@ class MultiProcessingResolver(QObject):
         self.algorithm_settings = settings
         self.logger.info("Algorithm settings have been changed to [%s].", settings)
 
-    def on_data_loaded(self, data: GrainSizeData):
+    def on_data_loaded(self, data: SampleDataset):
         if data is None:
             return
         elif not data.is_valid:
