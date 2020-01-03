@@ -1,12 +1,12 @@
 from enum import Enum, unique
 from math import sqrt
-from typing import List, Tuple
+from typing import Iterable, Tuple
 
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import (QApplication, QGridLayout, QLabel, QMainWindow,
                                QSizePolicy, QWidget)
 
-from data import FittedData
+from models.FittingResult import FittingResult
 from resolvers import FittingTask
 
 
@@ -50,7 +50,7 @@ class TaskWindow(QMainWindow):
         else:
             raise NotImplementedError(state)
 
-    def on_task_initialized(self, tasks: List[FittingTask]):
+    def on_task_initialized(self, tasks: Iterable[FittingTask]):
         for i, label in self.task_state_labels.items():
             self.state_labels_layout.removeWidget(label)
         self.task_state_labels.clear()
@@ -71,14 +71,14 @@ class TaskWindow(QMainWindow):
             self.state_labels_layout.addWidget(label, row, col)
             self.task_state_labels.update({task.sample_id: label})
 
-    def on_task_state_updated(self, states: List[Tuple]):
+    def on_task_state_updated(self, states: Iterable[Tuple]):
         self.show()
         for sample_id, succeeded in states:
             if succeeded:
                 label = self.task_state_labels[sample_id]
                 self.change_label_state(label, ProcessState.Succeeded)
 
-    def on_task_finished(self, succeeded_results: List[FittedData], failed_tasks: List[FittingTask]):
+    def on_task_finished(self, succeeded_results: Iterable[FittingResult], failed_tasks: Iterable[FittingTask]):
         for task in failed_tasks:
             label = self.task_state_labels[task.sample_id]
             self.change_label_state(label, ProcessState.Failed)

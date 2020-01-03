@@ -7,13 +7,22 @@ from typing import List
 from PySide2.QtCore import QObject, Signal
 
 from algorithms import DistributionType
-from data import GrainSizeData
+from models.SampleDataset import SampleDataset
 from resolvers import FittingTask, HeadlessResolver
 
 
 def run_task(task):
+    # resolver = HeadlessResolver()
+    global resolver
+    results = resolver.execute_task(task)
+    return results
+
+def setup_process(*args):
+    global resolver
     resolver = HeadlessResolver()
-    return resolver.execute_task(task)
+    for distribution_type, component_number in args:
+        resolver.distribution_type = distribution_type
+        resolver.component_number = component_number
 
 
 class MultiProcessingResolver(QObject):
@@ -29,7 +38,7 @@ class MultiProcessingResolver(QObject):
         self.distribution_type = DistributionType.Weibull
         self.algorithm_settings = None
 
-        self.grain_size_data = None # type: GrainSizeData
+        self.grain_size_data = None # type: SampleDataset
         self.tasks = None # type: List[FittingTask]
         
 
@@ -42,6 +51,8 @@ class MultiProcessingResolver(QObject):
             self.distribution_type = DistributionType.Normal
         elif distribution_type == "weibull":
             self.distribution_type = DistributionType.Weibull
+        elif distribution_type == "gen_weibull":
+            self.distribution_type = DistributionType.GeneralWeibull
         else:
             raise NotImplementedError(distribution_type)
         self.logger.info("Distribution type has been changed to [%s].", self.distribution_type)
@@ -50,7 +61,7 @@ class MultiProcessingResolver(QObject):
         self.algorithm_settings = settings
         self.logger.info("Algorithm settings have been changed to [%s].", settings)
 
-    def on_data_loaded(self, data: GrainSizeData):
+    def on_data_loaded(self, data: SampleDataset):
         if data is None:
             return
         elif not data.is_valid:
@@ -93,9 +104,9 @@ class MultiProcessingResolver(QObject):
         succeeded_results = []
         failed_tasks = []
         for sample_id, r in async_results:
-            flag, task, fitted_data = r.get()
+            flag, task, fitting_result = r.get()
             if flag:
-                succeeded_results.append(fitted_data)
+                succeeded_results.append(fitting_result)
             else:
                 failed_tasks.append(task)
 
@@ -103,8 +114,9 @@ class MultiProcessingResolver(QObject):
 
 
     def setup_all(self):
-        self.pool = Pool(cpu_count())
-
+        suggested_params = [(DistributionType.GeneralWeibull, 1), (DistributionType.GeneralWeibull, 2),
+                            (DistributionType.GeneralWeibull, 3), (DistributionType.GeneralWeibull, 4)]
+        self.pool = Pool(cpu_count(), setup_process, suggested_params)
 
     def cleanup_all(self):
         self.pool.terminate()
