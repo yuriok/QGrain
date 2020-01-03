@@ -258,9 +258,9 @@ class ControlPanel(QWidget):
 
     def on_auto_record_changed(self, state):
         if state == Qt.Checked:
-            self.sigDataSettingsChanged.emit({"auto_record_flag": True})
+            self.sigDataSettingsChanged.emit({"auto_record": True})
         else:
-            self.sigDataSettingsChanged.emit({"auto_record_flag": False})
+            self.sigDataSettingsChanged.emit({"auto_record": False})
 
     def on_data_loaded(self, dataset: SampleDataset):
         self.sample_names = [sample.name for sample in dataset.samples]
