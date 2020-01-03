@@ -205,16 +205,19 @@ class Resolver:
             return Resolver.get_squared_sum_of_residual_errors(current_values, y_to_fit)*100
 
         minimizer_kwargs = dict(method="SLSQP",
-                                bounds=self.algorithm_data.bounds, constraints=self.algorithm_data.constrains,
+                                bounds=self.algorithm_data.bounds,
+                                constraints=self.algorithm_data.constrains,
                                 callback=self.local_iteration_callback,
-                                options={"maxiter": self.minimizer_maxiter, "ftol": self.minimizer_tolerance})
+                                options={"maxiter": self.minimizer_maxiter,
+                                         "ftol": self.minimizer_tolerance})
         try:
-            global_algorithm_result = basinhopping(closure, x0=self.initial_guess,
-                                                minimizer_kwargs=minimizer_kwargs,
-                                                callback=self.global_iteration_callback,
-                                                niter_success=self.global_optimization_success_iter,
-                                                niter=self.global_optimization_maxiter,
-                                                stepsize=self.global_optimization_stepsize)
+            global_algorithm_result = \
+                basinhopping(closure, x0=self.initial_guess,
+                             minimizer_kwargs=minimizer_kwargs,
+                             callback=self.global_iteration_callback,
+                             niter_success=self.global_optimization_success_iter,
+                             niter=self.global_optimization_maxiter,
+                             stepsize=self.global_optimization_stepsize)
 
             if global_algorithm_result.lowest_optimization_result.success or \
                     global_algorithm_result.lowest_optimization_result.status == 9:
@@ -223,10 +226,14 @@ class Resolver:
                 self.on_global_fitting_failed(global_algorithm_result)
                 self.on_fitting_finished()
                 return
-            final_algorithm_result = minimize(closure, method="SLSQP", x0=global_algorithm_result.x,
-                                     bounds=self.algorithm_data.bounds, constraints=self.algorithm_data.constrains,
-                                     callback=self.local_iteration_callback,
-                                     options={"maxiter": self.final_maxiter, "ftol": self.final_tolerance})
+            final_algorithm_result = \
+                minimize(closure, method="SLSQP",
+                         x0=global_algorithm_result.x,
+                         bounds=self.algorithm_data.bounds,
+                         constraints=self.algorithm_data.constrains,
+                         callback=self.local_iteration_callback,
+                         options={"maxiter": self.final_maxiter,
+                                  "ftol": self.final_tolerance})
             # judge if the final fitting succeed
             # see https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.fmin_slsqp.html
             if final_algorithm_result.success or final_algorithm_result.status == 9:
