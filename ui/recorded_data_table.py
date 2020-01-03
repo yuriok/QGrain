@@ -9,68 +9,65 @@ from PySide2.QtGui import QCursor
 from PySide2.QtWidgets import (QAbstractItemView, QGridLayout, QMenu,
                                QTableWidget, QTableWidgetItem, QWidget)
 
-from data import FittedData
-
-
-class SingleViewData:
-    def __init__(self, fitted_data: FittedData):
-        self.uuid = fitted_data.uuid
-        self.name = fitted_data.name
-        self.mse = fitted_data.mse
-        self.statistic = fitted_data.statistic
-
-    @property
-    def component_number(self):
-        return len(self.statistic)
+from algorithms import DistributionType
+from models.FittingResult import FittingResult
 
 
 class ViewDataManager(QObject):
+    MAX_PARAM_COUNT = 3
     COMPONENT_SPAN = 1
     TABLE_HEADER_ROWS = 2
     TABLE_ROW_EXPAND_SETP = 50
-    COMPONENT_START_COLUMN = 2
+    COMPONENT_START_COLUMN = 3
     def __init__(self, table:QTableWidget, is_detailed: bool):
         super().__init__()
         self.table = table
         self.is_detailed = is_detailed
         self.existing_key2display_name = {
             "fraction": self.tr("Fraction"),
-            "mean": self.tr("Mean"),
-            "median": self.tr("Median"),
-            "mode": self.tr("Mode"),
-            "variance": self.tr("Variance"),
+            "mean": self.tr("Mean")+" [μm]",
+            "median": self.tr("Median")+" [μm]",
+            "mode": self.tr("Mode")+" [μm]",
+            # "variance": self.tr("Variance"),
             "standard_deviation": self.tr("Standard Deviation"),
             "skewness": self.tr("Skewness"),
-            "kurtosis": self.tr("Kurtosis"),
-            "beta": self.tr("Beta"),
-            "eta": self.tr("Eta"),
-            "x_offset": self.tr("X Offset")}
+            "kurtosis": self.tr("Kurtosis")}
         self.summary_keys = ("fraction", "mean", "median")
         self.detailed_keys = tuple([key for key, display_name in self.existing_key2display_name.items()])
-        self.view_data_list = [] #List[SingleViewData]
+        self.records = [] #List[SingleViewData]
 
 
     @property
     def data_count(self) -> int:
-        return len(self.view_data_list)
+        return len(self.records)
 
     @property
     def max_component_number(self) -> int:
         if self.data_count == 0:
             return 0
         else:
-            return max([view_data.component_number for view_data in self.view_data_list])
+            return max([record.component_number for record in self.records])
 
     @property
     def component_columns(self) -> int:
         if self.is_detailed:
-            return len(self.detailed_keys)
+            return len(self.detailed_keys) + self.MAX_PARAM_COUNT
         else:
             return len(self.summary_keys)
 
     @property
     def actual_component_columns(self):
         return self.component_columns + self.COMPONENT_SPAN
+
+    def get_distribution_name(self, distribution_type: DistributionType):
+        if distribution_type == DistributionType.Normal:
+            return self.tr("Normal")
+        elif distribution_type == DistributionType.Weibull:
+            return self.tr("Weibull")
+        elif distribution_type == DistributionType.GeneralWeibull:
+            return self.tr("General Weibull")
+        else:
+            raise NotImplementedError(distribution_type)
 
     # the local func to handle write
     # also put data validation here
@@ -108,54 +105,63 @@ class ViewDataManager(QObject):
         # update headers
         self.write(0, 0, self.tr("Sample Name"))
         self.table.setSpan(0, 0, self.TABLE_HEADER_ROWS, 1)
-        self.write(0, 1, self.tr("Mean Squared Error"))
+        self.write(0, 1, self.tr("Distribution Type"))
         self.table.setSpan(0, 1, self.TABLE_HEADER_ROWS, 1)
+        self.write(0, 2, self.tr("Mean Squared Error"))
+        self.table.setSpan(0, 2, self.TABLE_HEADER_ROWS, 1)
         for comp_index in range(max_ncomp):
             first_column_index = comp_index*self.actual_component_columns+self.COMPONENT_START_COLUMN
-            self.write(0, first_column_index, "Component {0}".format(comp_index+1))
+            self.write(0, first_column_index, self.tr("Component {0}").format(comp_index+1))
             self.table.setSpan(0, first_column_index, 1, self.component_columns)
             if self.is_detailed:
-                headers = (self.existing_key2display_name[key] for key in self.detailed_keys)
+                headers = list((self.existing_key2display_name[key] for key in self.detailed_keys))
+                for i in range(self.MAX_PARAM_COUNT):
+                    headers.append(self.tr("Parameter {0}").format(i+1))
             else:
-                headers = (self.existing_key2display_name[key] for key in self.summary_keys)
+                headers = list((self.existing_key2display_name[key] for key in self.summary_keys))
             for i, header in enumerate(headers):
                 self.write(1, first_column_index+i, header)
 
 
 
-    def add_records(self, records: List[FittedData]):
-        if records is None or len(records) == 0:
+    def add_records(self, records_to_add: List[FittingResult]):
+        if records_to_add is None or len(records_to_add) == 0:
             return
-        length = len(records)
+        length = len(records_to_add)
         # if it's necessary to expand the rows and columns of table
         least_row_number = self.data_count + length + self.TABLE_HEADER_ROWS
         if  least_row_number>= self.table.rowCount():
             self.table.setRowCount(least_row_number + self.TABLE_ROW_EXPAND_SETP)
         max_ncomp_before = self.max_component_number
-        max_ncomp_new = max([len(record.statistic) for record in records])
+        max_ncomp_new = max([record.component_number for record in records_to_add])
         # reset the column number of table
         column_count = max(max_ncomp_before, max_ncomp_new) * self.actual_component_columns + self.COMPONENT_START_COLUMN
         self.table.setColumnCount(column_count)
         
         # update contents
         first_row_index = self.data_count + self.TABLE_HEADER_ROWS
-        for record_index, record in enumerate(records):
+        for record_index, record in enumerate(records_to_add):
             # will bring thread unsafe issue
             # QCoreApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
             row = first_row_index + record_index
-            view_data = SingleViewData(record)
-            self.write(row, 0, view_data.name)
-            self.write(row, 1, view_data.mse, format_str="{0:0.2E}")
+            self.write(row, 0, record.name)
+            self.write(row, 1, self.get_distribution_name(record.distribution_type))
+            self.write(row, 2, record.mean_squared_error, format_str="{0:0.2E}")
             if self.is_detailed:
                 keys = self.detailed_keys
             else:
                 keys = self.summary_keys
-            for comp_index, data_dict in enumerate(view_data.statistic):
+            for i, component in enumerate(record.components):
+                last_column = 0
                 for key_index, key in enumerate(keys):
-                    column_index = comp_index*self.actual_component_columns + self.COMPONENT_START_COLUMN + key_index
-                    self.write(row, column_index, data_dict[key])
+                    column_index = i*self.actual_component_columns + self.COMPONENT_START_COLUMN + key_index
+                    last_column = column_index
+                    self.write(row, column_index, component.__getattribute__(key))
+                if self.is_detailed:
+                    for param_index, param_value in enumerate(component.params):
+                        self.write(row, last_column + param_index + 1, param_value)
             # store the records
-            self.view_data_list.append(view_data)
+            self.records.append(record)
             
         # means there is greater ncomp and the headers are need to be updated
         if max_ncomp_new > max_ncomp_before:
@@ -181,7 +187,7 @@ class ViewDataManager(QObject):
         offset = 0
         for row in rows_to_remove:
             self.table.removeRow(row-offset)
-            removed_view_data = self.view_data_list.pop(row-offset-self.TABLE_HEADER_ROWS)
+            removed_view_data = self.records.pop(row-offset-self.TABLE_HEADER_ROWS)
             uuids_and_names_to_remove.append((removed_view_data.uuid, removed_view_data.name))
             offset += 1
         
@@ -218,8 +224,8 @@ class RecordedDataTable(QWidget):
     def show_menu(self, pos):
         self.menu.popup(QCursor.pos())
 
-    def on_data_recorded(self, fitted_data_list: List[FittedData]):
-        self.manager.add_records(fitted_data_list)
+    def on_data_recorded(self, results: List[FittingResult]):
+        self.manager.add_records(results)
         self.logger.debug("Recorded data has been updated in table widget.")
 
     def remove_selection(self):

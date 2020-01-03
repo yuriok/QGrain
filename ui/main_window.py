@@ -4,12 +4,13 @@ from typing import List
 
 from PySide2.QtCore import (QCoreApplication, QEventLoop, QMutex, Qt, QThread,
                             Signal)
-from PySide2.QtGui import QAction, QIcon
+from PySide2.QtGui import QIcon
+from PySide2.QtWidgets import QAction
 from PySide2.QtWidgets import (QAbstractItemView, QDockWidget, QMainWindow,
                                QMessageBox, QPushButton, QTableWidget,
                                QTableWidgetItem, QWidget)
 
-from data import DataManager, GrainSizeData
+from ui.data_manager import DataManager, SampleDataset
 from resolvers import GUIResolver, MultiProcessingResolver
 from ui import (AboutWindow, ControlPanel, FittingCanvas, RecordedDataTable,
                 SettingWindow, TaskWindow)
@@ -120,6 +121,8 @@ class MainWindow(QMainWindow):
         self.control_panel.sigMultiProcessingTaskStarted.connect(self.multiprocessing_resolver.execute_tasks)
         # Connect directly
         self.control_panel.record_button.clicked.connect(self.data_manager.record_current_data)
+
+        self.canvas.sigExpectedMeanValueChanged.connect(self.gui_resolver.on_excepted_mean_value_changed)
         
         self.data_manager.sigDataLoaded.connect(self.on_data_loaded)
         self.data_manager.sigDataLoaded.connect(self.control_panel.on_data_loaded)
@@ -163,8 +166,7 @@ class MainWindow(QMainWindow):
         self.sigCleanup.connect(self.data_manager.cleanup_all)
         self.sigCleanup.connect(self.multiprocessing_resolver.cleanup_all)
 
-        self.settings_window.data_setting.sigDataLoaderSettingChanged.connect(self.data_manager.data_loader.on_settings_changed)
-        self.settings_window.data_setting.sigDataWriterSettingChanged.connect(self.data_manager.data_writer.on_settings_changed)
+        self.settings_window.data_setting.sigDataSettingChanged.connect(self.data_manager.on_settings_changed)
         self.settings_window.algorithm_setting.sigAlgorithmSettingChanged.connect(self.gui_resolver.on_algorithm_settings_changed)
         self.settings_window.algorithm_setting.sigAlgorithmSettingChanged.connect(self.multiprocessing_resolver.on_algorithm_settings_changed)
 
@@ -196,20 +198,20 @@ class MainWindow(QMainWindow):
     def show_recorded_data_dock(self):
         self.recorded_data_dock.show()
 
-    def on_data_loaded(self, grain_size_data: GrainSizeData):
-        nrows = len(grain_size_data.sample_data_list)
-        ncols = len(grain_size_data.classes)
+    def on_data_loaded(self, dataset: SampleDataset):
+        nrows = dataset.data_count
+        ncols = len(dataset.classes)
         self.raw_data_table.setRowCount(nrows)
         self.raw_data_table.setColumnCount(ncols)
-        self.raw_data_table.setHorizontalHeaderLabels(["{0:.2f}".format(class_value) for class_value in grain_size_data.classes])
-        self.raw_data_table.setVerticalHeaderLabels([str(sample_data.name) for sample_data in grain_size_data.sample_data_list])
-        for i, sample_data in enumerate(grain_size_data.sample_data_list):
+        self.raw_data_table.setHorizontalHeaderLabels(["{0:.2f}".format(class_value) for class_value in dataset.classes])
+        self.raw_data_table.setVerticalHeaderLabels([str(sample.name) for sample in dataset.samples])
+        for i, sample in enumerate(dataset.samples):
             QCoreApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
-            for j, value in enumerate(sample_data.distribution):
+            for j, value in enumerate(sample.distribution):
                 item = QTableWidgetItem("{0:.4f}".format(value))
                 item.setTextAlignment(Qt.AlignCenter)
                 self.raw_data_table.setItem(i, j, item)
-        
+
         # resize to tight layout
         self.raw_data_table.resizeColumnsToContents()
         self.logger.info("Data was loaded, and has been update to the table.")

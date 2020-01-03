@@ -5,12 +5,12 @@ from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
 from multiprocessing import freeze_support
 
 from PySide2.QtCore import QSettings, QTranslator
-from PySide2.QtGui import QFont, QIcon, QPixmap
+from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtWidgets import QApplication, QSplashScreen
 
 from ui import GUILogHandler, MainWindow
 
-QGRAIN_VERSION = "0.2.1"
+QGRAIN_VERSION = "0.2.3"
 
 def create_necessary_folders():
     necessary_folders = ("./logs/",)
