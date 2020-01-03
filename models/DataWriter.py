@@ -53,7 +53,7 @@ class DataWriter:
         if file_type == FileType.XLSX:
             self.try_save_as_excel(filename, results, True, draw_charts)
         elif file_type == FileType.XLS:
-            self.try_save_as_excel(filename, results, False)
+            self.try_save_as_excel(filename, results, False, draw_charts)
         elif file_type == FileType.CSV:
             self.try_save_as_csv(filename, results)
         else:
@@ -130,7 +130,7 @@ class DataWriter:
             # if the type of value is unaccepted, use its readable str to write
             else:
                 return str(value)
-        
+
         def write(sheet, row, col, value, style):
             sheet.write(row, col, check_value(value), style)
 
@@ -145,7 +145,7 @@ class DataWriter:
                 sheet.write_merge(lrow, rrow, lcol, rcol, check_value(value), style)
             def set_col(sheet, col, width):
                 sheet.col(col).width = width*256
-        
+
         if is_xlsx:
             book = xlsxwriter.Workbook(filename=filename)
             # see https://xlsxwriter.readthedocs.io/format.html#format
@@ -317,7 +317,7 @@ class DataWriter:
             y_margin = chart_styles["y_margin"]
             width = chart_styles["size"]["x_scale"]*480
             height = chart_styles["size"]["y_scale"]*288
-        except OSError as e:
+        except OSError:
             pass
 
         chart_sheet = book.add_worksheet("Charts")
