@@ -45,12 +45,13 @@ class DataWriter:
         else:
             raise NotImplementedError(distribution_type)
 
-    def try_save_data(self, filename: str, file_type: FileType, results: List[FittingResult]):
+    def try_save_data(self, filename: str, file_type: FileType,
+                      results: List[FittingResult], draw_charts: bool):
         if filename is None or filename == "":
             raise ValueError(filename)
 
         if file_type == FileType.XLSX:
-            self.try_save_as_excel(filename, results, True)
+            self.try_save_as_excel(filename, results, True, draw_charts)
         elif file_type == FileType.XLS:
             self.try_save_as_excel(filename, results, False)
         elif file_type == FileType.CSV:
@@ -104,7 +105,8 @@ class DataWriter:
                             row.append("")
                 w.writerow(row)
 
-    def try_save_as_excel(self, filename: str, results: List[FittingResult], is_xlsx: bool, draw_charts: bool=True):
+    def try_save_as_excel(self, filename: str, results: List[FittingResult],
+                          is_xlsx: bool, draw_charts: bool):
         # the local func to check the value validation
         # must block unaccepted values before calling the `write` func of worksheet
         def check_value(value):

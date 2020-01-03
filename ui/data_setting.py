@@ -1,12 +1,16 @@
-from PySide2.QtWidgets import QMainWindow, QCheckBox, QLabel, QRadioButton, QPushButton, QGridLayout, QApplication, QSizePolicy, QWidget, QTabWidget, QComboBox, QLineEdit, QMessageBox
-from PySide2.QtCore import Qt, QSettings, Signal
-from PySide2.QtGui import QIcon, QValidator, QIntValidator
-
 import logging
 
+from PySide2.QtCore import QSettings, Qt, Signal
+from PySide2.QtGui import QIcon, QIntValidator, QValidator
+from PySide2.QtWidgets import (QCheckBox, QComboBox, QGridLayout, QLabel,
+                               QLineEdit, QMessageBox, QPushButton,
+                               QRadioButton, QSizePolicy, QWidget)
+
+from models.DataLayoutSetting import *
+
+
 class DataSetting(QWidget):
-    sigDataLoaderSettingChanged = Signal(dict)
-    sigDataWriterSettingChanged = Signal(dict)
+    sigDataSettingChanged = Signal(dict)
     logger = logging.getLogger("root.ui.DataSetting")
     gui_logger = logging.getLogger("GUI")
     def __init__(self):
@@ -39,19 +43,19 @@ class DataSetting(QWidget):
         self.sample_name_col_edit.setValidator(self.int_validator)
         self.main_layout.addWidget(self.sample_name_col_edit, 2, 1)
 
-        self.data_start_row_label = QLabel(self.tr("Data Start Row"))
-        self.data_start_row_label.setToolTip(self.tr("The start row index (starts with 0) of sample data that stored in data file.\nIt should be greater than the index of Class Row."))
-        self.main_layout.addWidget(self.data_start_row_label, 3, 0)
-        self.data_start_row_edit = QLineEdit()
-        self.data_start_row_edit.setValidator(self.int_validator)
-        self.main_layout.addWidget(self.data_start_row_edit, 3, 1)
+        self.distribution_start_row_label = QLabel(self.tr("Distribution Start Row"))
+        self.distribution_start_row_label.setToolTip(self.tr("The start row index (starts with 0) of distribution data that stored in data file.\nIt should be greater than the index of Class Row."))
+        self.main_layout.addWidget(self.distribution_start_row_label, 3, 0)
+        self.distribution_start_row_edit = QLineEdit()
+        self.distribution_start_row_edit.setValidator(self.int_validator)
+        self.main_layout.addWidget(self.distribution_start_row_edit, 3, 1)
 
-        self.data_start_col_label = QLabel(self.tr("Data Start Column"))
-        self.data_start_col_label.setToolTip(self.tr("The start column index (starts with 0) of sample data that stored in data file.\nIt should be greater than the index of Sample Name Column."))
-        self.main_layout.addWidget(self.data_start_col_label, 4, 0)
-        self.data_start_col_edit = QLineEdit()
-        self.data_start_col_edit.setValidator(self.int_validator)
-        self.main_layout.addWidget(self.data_start_col_edit, 4, 1)
+        self.distribution_start_col_label = QLabel(self.tr("Distribution Start Column"))
+        self.distribution_start_col_label.setToolTip(self.tr("The start column index (starts with 0) of distribution data that stored in data file.\nIt should be greater than the index of Sample Name Column."))
+        self.main_layout.addWidget(self.distribution_start_col_label, 4, 0)
+        self.distribution_start_col_edit = QLineEdit()
+        self.distribution_start_col_edit.setValidator(self.int_validator)
+        self.main_layout.addWidget(self.distribution_start_col_edit, 4, 1)
 
         self.draw_charts_checkbox = QCheckBox(self.tr("Draw Charts"))
         self.draw_charts_checkbox.setChecked(True)
@@ -63,28 +67,24 @@ class DataSetting(QWidget):
         # read settings from ui
         classes_row = self.class_row_edit.text()
         sample_name_column = self.sample_name_col_edit.text()
-        data_start_row = self.data_start_row_edit.text()
-        data_start_column = self.data_start_col_edit.text()
+        distribution_start_row = self.distribution_start_row_edit.text()
+        distribution_start_column = self.distribution_start_col_edit.text()
         # set values to `QSetting`
         # note, the values set to `QSettings` must be str to avoid exceptions
         # because if use int or other type of values, the types of values from current `QSettings` and the `ini` file are not equal
         # `ini` files only yield `str`, and current `QSettings` will store the original type of values
         settings.setValue("classes_row", classes_row)
         settings.setValue("sample_name_column", sample_name_column)
-        settings.setValue("data_start_row", data_start_row)
-        settings.setValue("data_start_column", data_start_column)
+        settings.setValue("distribution_start_row", distribution_start_row)
+        settings.setValue("distribution_start_column", distribution_start_column)
         # emit signal
         try:
-            signal_data = dict(data_layout=dict(classes_row=int(classes_row), sample_name_column=int(sample_name_column), data_start_row=int(data_start_row), data_start_column=int(data_start_column)))
-            self.sigDataLoaderSettingChanged.emit(signal_data)
-        # raise while converting invalid `str` to `int`
-        except ValueError:
-            self.logger.exception("Unknown exception raised, maybe the `QLineEdit` widget has not a valid `QValidator`.", stack_info=True)
-            self.gui_logger.error(self.tr("Unknown exception raised. Settings of data loading did not be saved."))
-            # this exception raise when the `str` values can not be converted to int
-            # that means the `ini` file maybe modified incorrectly
+            layout = DataLayoutSetting(int(classes_row), int(sample_name_column), int(distribution_start_row), int(distribution_start_column))
+            self.sigDataSettingChanged.emit({"layout": layout})
+        except DataLayoutError:
+            self.logger.exception("The data layout setting is invalid.", stack_info=True)
             self.msg_box.setWindowTitle(self.tr("Error"))
-            self.msg_box.setText(self.tr("Unknown exception raised. Settings of data loading did not be saved."))
+            self.msg_box.setText(self.tr("Invalid data layout setting."))
             self.msg_box.exec_()
         finally:
             settings.endGroup()
@@ -92,10 +92,10 @@ class DataSetting(QWidget):
         settings.beginGroup("data_saving")
         if self.draw_charts_checkbox.checkState() == Qt.Checked:
             settings.setValue("draw_charts", "True")
-            self.sigDataWriterSettingChanged.emit(dict(draw_charts=True))
+            self.sigDataSettingChanged.emit(dict(draw_charts=True))
         else:
             settings.setValue("draw_charts", "False")
-            self.sigDataWriterSettingChanged.emit(dict(draw_charts=False))
+            self.sigDataSettingChanged.emit(dict(draw_charts=False))
         
         settings.endGroup()
 
@@ -104,8 +104,8 @@ class DataSetting(QWidget):
         try:
             self.class_row_edit.setText(settings.value("classes_row"))
             self.sample_name_col_edit.setText(settings.value("sample_name_column"))
-            self.data_start_row_edit.setText(settings.value("data_start_row"))
-            self.data_start_col_edit.setText(settings.value("data_start_column"))
+            self.distribution_start_row_edit.setText(settings.value("distribution_start_row"))
+            self.distribution_start_col_edit.setText(settings.value("distribution_start_column"))
         except Exception:
             self.logger.exception("Unknown exception occurred. Maybe the type of values which were set to `QSettings` is not `str`.", stack_info=True)
             self.gui_logger.error(self.tr("Unknown exception raised. Settings of data loading did not be restored."))
@@ -118,10 +118,8 @@ class DataSetting(QWidget):
             settings.endGroup()
 
         settings.beginGroup("data_saving")
-        if settings.value("draw_charts")=="True":
+        if settings.value("draw_charts") == "True":
             self.draw_charts_checkbox.setCheckState(Qt.Checked)
         else:
             self.draw_charts_checkbox.setCheckState(Qt.Unchecked)
         settings.endGroup()
-
-    
