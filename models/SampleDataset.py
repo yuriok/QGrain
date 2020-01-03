@@ -5,7 +5,7 @@ from uuid import UUID
 
 import numpy as np
 
-from models.SampleData import *
+from models.SampleData import SampleData
 
 
 class ClassesNotIncrementalError(Exception):
