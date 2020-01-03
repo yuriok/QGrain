@@ -47,9 +47,9 @@ class BackgroundWriter(QObject):
         self.actual_writer = DataWriter()
 
     def on_work_started(self, filename: str, file_type: FileType,
-                        results: List[FittingResult]):
+                        results: List[FittingResult], draw_charts: bool):
         try:
-            dataset = self.actual_writer.try_save_data(filename, file_type, results)
+            dataset = self.actual_writer.try_save_data(filename, file_type, results, draw_charts)
             self.sigWorkSucceeded.emit()
         except Exception as e:
             self.sigWorkFailed.emit(e)
@@ -57,7 +57,7 @@ class BackgroundWriter(QObject):
 
 class DataManager(QObject):
     sigLoadingStarted = Signal(str, FileType, DataLayoutSetting)
-    sigSavingStarted = Signal(str, FileType, list)
+    sigSavingStarted = Signal(str, FileType, list, bool)
     sigDataLoaded = Signal(SampleDataset)
     sigTargetDataChanged = Signal(SampleData)
     sigDataRecorded = Signal(list) # List[FittingResult]
@@ -91,6 +91,7 @@ class DataManager(QObject):
 
         # settings
         self.data_layout_setting = DataLayoutSetting()
+        self.draw_charts_flag = True
         self.auto_record_flag = True
 
         self.file_dialog = QFileDialog(self.host_widget)
@@ -243,9 +244,16 @@ class DataManager(QObject):
             self.gui_logger.warning(self.tr("Fitting task of sample [%s] failed."), failed_task.sample_name)
 
     def on_settings_changed(self, kwargs: dict):
-        for setting, value in kwargs.items():
-            setattr(self, setting, value)
-            self.logger.info("Setting [%s] have been changed to [%s].", setting, value)
+        for key, value in kwargs.items():
+            if key == "layout":
+                self.data_layout_setting = value
+            elif key == "draw_charts":
+                self.draw_charts_flag = value
+            elif key == "auto_record":
+                self.auto_record_flag = value
+            else:
+                raise NotImplementedError(key)
+            self.logger.info("Setting [%s] have been changed to [%s].", key, value)
 
     def record_current_data(self):
         if self.current_fitting_result is None:
@@ -285,7 +293,7 @@ class DataManager(QObject):
         else:
             raise NotImplementedError(type_str)
         self.logger.info("Selected file type is [%s].", file_type)
-        self.sigSavingStarted.emit(filename, file_type, self.records)
+        self.sigSavingStarted.emit(filename, file_type, self.records, self.draw_charts_flag)
 
     def on_saving_succeeded(self):
             self.logger.info("File saved.")

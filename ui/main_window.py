@@ -166,8 +166,7 @@ class MainWindow(QMainWindow):
         self.sigCleanup.connect(self.data_manager.cleanup_all)
         self.sigCleanup.connect(self.multiprocessing_resolver.cleanup_all)
 
-        # self.settings_window.data_setting.sigDataLoaderSettingChanged.connect(self.data_manager.data_loader.on_settings_changed)
-        # self.settings_window.data_setting.sigDataWriterSettingChanged.connect(self.data_manager.data_writer.on_settings_changed)
+        self.settings_window.data_setting.sigDataSettingChanged.connect(self.data_manager.on_settings_changed)
         self.settings_window.algorithm_setting.sigAlgorithmSettingChanged.connect(self.gui_resolver.on_algorithm_settings_changed)
         self.settings_window.algorithm_setting.sigAlgorithmSettingChanged.connect(self.multiprocessing_resolver.on_algorithm_settings_changed)
 
