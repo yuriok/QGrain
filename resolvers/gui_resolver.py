@@ -7,7 +7,7 @@ from scipy.interpolate import interp1d
 
 from algorithms import DistributionType
 from models.FittingResult import FittingResult
-from models.SampleData import *
+from models.SampleData import SampleData
 from resolvers import Resolver
 
 
