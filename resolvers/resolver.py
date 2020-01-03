@@ -98,7 +98,7 @@ class Resolver:
                     else:
                         start_index = i-1
                         break
-            # search for tail to head
+            # search from tail to head
             for i, value in enumerate(target_y[start_index+1:][::-1]):
                 if value > 0.0:
                     if i <= 1:
