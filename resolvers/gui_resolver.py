@@ -34,7 +34,7 @@ class GUIResolver(QObject, Resolver):
         self.time_interval = time_interval
 
         self.current_iteration = 0
-        
+
         self.cancel_flag = False
         self.cancel_mutex = QMutex()
 
