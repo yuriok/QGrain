@@ -72,7 +72,7 @@ class DataManager(QObject):
         self.dataset = None  # type: SampleDataset
         self.current_fitting_result = None  # type: FittingResult
         self.records = []  # type: List[FittingResult]
-        
+
         # loader
         self.loader = BackgroundLoader()
         self.loading_thread = QThread()
@@ -240,8 +240,8 @@ class DataManager(QObject):
         self.records.extend(succeeded_results)
         self.sigDataRecorded.emit(succeeded_results)
         for failed_task in failed_tasks:
-            self.logger.warning("Fitting task of sample [%s] failed.", failed_task.sample_name)
-            self.gui_logger.warning(self.tr("Fitting task of sample [%s] failed."), failed_task.sample_name)
+            self.logger.warning("Fitting task of sample [%s] failed.", failed_task.sample.name)
+            self.gui_logger.warning(self.tr("Fitting task of sample [%s] failed."), failed_task.sample.name)
 
     def on_settings_changed(self, kwargs: dict):
         for key, value in kwargs.items():
