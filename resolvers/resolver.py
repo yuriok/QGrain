@@ -1,7 +1,8 @@
 from enum import Enum, unique
+from typing import Dict, Iterable, List, Tuple
 
 import numpy as np
-from scipy.optimize import basinhopping, minimize
+from scipy.optimize import basinhopping, minimize, OptimizeResult
 
 from algorithms import AlgorithmData, DistributionType
 from models.FittingResult import FittingResult
@@ -30,20 +31,17 @@ class Resolver:
         self.final_tolerance = final_tolerance
         self.final_maxiter = final_maxiter
 
-        self.sample_name = None
-        self.real_x = None
+        self.sample_name = None # type: str
+        self.real_x = None # type: np.ndarray
         self.x_offset = 0
-        self.fitting_space_x = None
-        self.target_y = None
+        self.fitting_space_x = None # type: np.ndarray
+        self.target_y = None # type: np.ndarray
 
-        self.start_index = None
-        self.end_index = None
-
-        self.x_to_fit = None
-        self.y_to_fit = None
+        self.start_index = None # type: int
+        self.end_index = None # type: int
 
     @property
-    def distribution_type(self):
+    def distribution_type(self) -> DistributionType:
         return self.__distribution_type
 
     @distribution_type.setter
@@ -54,7 +52,7 @@ class Resolver:
         self.refresh()
 
     @property
-    def component_number(self):
+    def component_number(self) -> int:
         return self.__component_number
 
     @component_number.setter
@@ -77,17 +75,13 @@ class Resolver:
         self.initial_guess = self.algorithm_data.defaults
 
     @staticmethod
-    def get_squared_sum_of_residual_errors(values, targets):
+    def get_squared_sum_of_residual_errors(
+            values: np.ndarray, targets: np.ndarray) -> float:
         errors = np.sum(np.square(values - targets))
         return errors
 
     @staticmethod
-    def get_mean_squared_errors(values, targets):
-        mse = np.mean(np.square(values - targets))
-        return mse
-
-    @staticmethod
-    def get_valid_data_range(target_y, slice_data=True):
+    def get_valid_data_range(target_y: np.ndarray, slice_data: bool=True):
         start_index = 0
         end_index = len(target_y)
         if slice_data:
@@ -109,7 +103,7 @@ class Resolver:
         return start_index, end_index
 
     # hooks
-    def on_data_fed(self, sample_name):
+    def on_data_fed(self, sample_name: str):
         pass
 
     def on_data_not_prepared(self):
@@ -121,22 +115,22 @@ class Resolver:
     def on_fitting_finished(self):
         pass
 
-    def on_global_fitting_failed(self, algorithm_result):
+    def on_global_fitting_failed(self, algorithm_result: OptimizeResult):
         pass
 
-    def on_final_fitting_failed(self, algorithm_result):
+    def on_final_fitting_failed(self, algorithm_result: OptimizeResult):
         pass
 
-    def on_exception_raised_while_fitting(self, exception):
+    def on_exception_raised_while_fitting(self, exception: Exception):
         pass
 
-    def local_iteration_callback(self, fitted_params):
+    def local_iteration_callback(self, fitted_params: Iterable[float]):
         pass
 
-    def global_iteration_callback(self, fitted_params, function_value, accept):
+    def global_iteration_callback(self, fitted_params: Iterable[float], function_value: float, accept: bool):
         pass
 
-    def on_fitting_succeeded(self, algorithm_result):
+    def on_fitting_succeeded(self, algorithm_result: OptimizeResult):
         pass
 
     def preprocess_data(self):
@@ -184,7 +178,7 @@ class Resolver:
             else:
                 raise NotImplementedError(key)
 
-    def get_fitting_result(self, fitted_params):
+    def get_fitting_result(self, fitted_params: Iterable[float]):
         result = FittingResult(self.sample_name, self.real_x,
                                  self.fitting_space_x, self.bin_numbers,
                                  self.target_y, self.algorithm_data,
