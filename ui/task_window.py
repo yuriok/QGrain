@@ -34,7 +34,7 @@ class TaskWindow(QMainWindow):
         self.state_labels_widget = QWidget()
         self.main_layout.addWidget(self.state_labels_widget, 0, 0)
         self.state_labels_layout = QGridLayout(self.state_labels_widget)
-        
+
 
         self.setWindowTitle(self.tr("The States of Fitting Tasks"))
         # self.setWindowFlags(Qt.Drawer | Qt.WindowStaysOnTopHint)
@@ -65,11 +65,11 @@ class TaskWindow(QMainWindow):
             label = QLabel()
             label.setFixedSize(16, 16)
             self.change_label_state(label, ProcessState.Unknown)
-            label.setToolTip(task.sample_name)
+            label.setToolTip(task.sample.name)
             row = i // column_number
             col = i % column_number
             self.state_labels_layout.addWidget(label, row, col)
-            self.task_state_labels.update({task.sample_id: label})
+            self.task_state_labels.update({task.sample.uuid: label})
 
     def on_task_state_updated(self, states: Iterable[Tuple]):
         self.show()

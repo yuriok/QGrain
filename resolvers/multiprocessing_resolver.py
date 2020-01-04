@@ -12,17 +12,18 @@ from resolvers import FittingTask, HeadlessResolver
 
 
 def run_task(task):
-    # resolver = HeadlessResolver()
-    global resolver
+    resolver = HeadlessResolver()
+    # global resolver
     results = resolver.execute_task(task)
     return results
 
 def setup_process(*args):
-    global resolver
-    resolver = HeadlessResolver()
-    for distribution_type, component_number in args:
-        resolver.distribution_type = distribution_type
-        resolver.component_number = component_number
+    pass
+    # global resolver
+    # resolver = HeadlessResolver()
+    # for distribution_type, component_number in args:
+    #     resolver.distribution_type = distribution_type
+    #     resolver.component_number = component_number
 
 
 class MultiProcessingResolver(QObject):
@@ -40,7 +41,7 @@ class MultiProcessingResolver(QObject):
 
         self.grain_size_data = None # type: SampleDataset
         self.tasks = None # type: List[FittingTask]
-        
+
 
     def on_component_number_changed(self, component_number: int):
         self.component_number = component_number
@@ -64,18 +65,19 @@ class MultiProcessingResolver(QObject):
     def on_data_loaded(self, data: SampleDataset):
         if data is None:
             return
-        elif not data.is_valid:
+        elif not data.has_data:
             return
-        
+
         self.grain_size_data = data
 
     def init_tasks(self):
         tasks = []
-        for i, sample_data in enumerate(self.grain_size_data.sample_data_list):
-            task = FittingTask(i, sample_data.name,
-            self.grain_size_data.classes, sample_data.distribution,
-            component_number=self.component_number, distribution_type=self.distribution_type,
-            algorithm_settings=self.algorithm_settings)
+        for sample in self.grain_size_data.samples:
+            task = FittingTask(
+                sample,
+                component_number=self.component_number,
+                distribution_type=self.distribution_type,
+                algorithm_settings=self.algorithm_settings)
             tasks.append(task)
         self.tasks = tasks
         self.sigTaskInitialized.emit(tasks)
@@ -84,9 +86,9 @@ class MultiProcessingResolver(QObject):
         if self.grain_size_data is None:
             return
         self.init_tasks()
-        
-        async_results = [(task.sample_id, self.pool.apply_async(run_task, args=(task,))) for task in self.tasks]
-        
+
+        async_results = [(task.sample.uuid, self.pool.apply_async(run_task, args=(task,))) for task in self.tasks]
+
         while True:
             time.sleep(self.STATE_CHECK_TIME_INTERVAL)
             task_states = []
