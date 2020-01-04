@@ -220,9 +220,16 @@ class TestFittingResult(unittest.TestCase):
         fitting_result = self.gen_by_defaluts()
         y1 = fitting_result.fitted_y
         self.fitted_params[0] = 4.2145
-        fitting_result.update(self.fitted_params, self.x_offset)
+        fitting_result.update(self.algorithm_data, self.fitted_params, self.x_offset)
         y2 = fitting_result.fitted_y
         self.assertIsNot(y1, y2)
+
+    def test_pickleable(self):
+        import pickle
+        fitting_result = self.gen_by_defaluts()
+        dumped = pickle.dumps(fitting_result)
+        recovered = pickle.loads(dumped)
+        self.assertTrue(isinstance(recovered, FittingResult))
 
 
 if __name__ == "__main__":

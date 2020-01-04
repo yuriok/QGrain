@@ -34,7 +34,6 @@ class ComponentFittingResult:
 
         self.__real_x = real_x
         self.__fitting_space_x = fitting_space_x
-        self.__algorithm_data = algorithm_data
         if np.any(np.isnan(params)):
             self.__fraction = np.nan
             self.__component_y = np.full_like(fitting_space_x, fill_value=np.nan)
@@ -46,29 +45,29 @@ class ComponentFittingResult:
             self.__skewness = np.nan
             self.__kurtosis = np.nan
         else:
-            self.update(params, fraction)
+            self.update(algorithm_data, params, fraction)
 
-    def update(self, params: Iterable[float], fraction: float):
+    def update(self, algorithm_data: AlgorithmData, params: Iterable[float], fraction: float):
         self.__params = params
         self.__fraction = fraction
-        self.__component_y = self.__algorithm_data.single_func(self.__fitting_space_x, *params) * fraction
+        self.__component_y = algorithm_data.single_func(self.__fitting_space_x, *params) * fraction
         x_to_real = interp1d(self.__fitting_space_x, self.__real_x)
         try:
-            self.__mean = x_to_real(self.__algorithm_data.mean(*params)).max()
+            self.__mean = x_to_real(algorithm_data.mean(*params)).max()
         except ValueError:
             self.__mean = np.nan
         try:
-            self.__median = x_to_real(self.__algorithm_data.median(*params)).max()
+            self.__median = x_to_real(algorithm_data.median(*params)).max()
         except ValueError:
             self.__median = np.nan
         try:
-            self.__mode = x_to_real(self.__algorithm_data.mode(*params)).max()
+            self.__mode = x_to_real(algorithm_data.mode(*params)).max()
         except ValueError:
             self.__mode = np.nan
-        self.__variance = self.__algorithm_data.variance(*params)
-        self.__standard_deviation = self.__algorithm_data.standard_deviation(*params)
-        self.__skewness = self.__algorithm_data.skewness(*params)
-        self.__kurtosis = self.__algorithm_data.kurtosis(*params)
+        self.__variance = algorithm_data.variance(*params)
+        self.__standard_deviation = algorithm_data.standard_deviation(*params)
+        self.__skewness = algorithm_data.skewness(*params)
+        self.__kurtosis = algorithm_data.kurtosis(*params)
 
     @property
     def params(self) -> Tuple[float]:
@@ -109,7 +108,7 @@ class ComponentFittingResult:
     @property
     def kurtosis(self) -> float:
         return self.__kurtosis
-    
+
     @property
     def has_nan(self) -> bool:
         values_to_check = [self.fraction, self.mean,
@@ -142,16 +141,15 @@ class FittingResult:
         self.__fitting_space_x = fitting_space_x
         self.__bin_numbers = bin_numbers
         self.__target_y = target_y
-        self.__algorithm_data = algorithm_data
         self.__distribution_type = algorithm_data.distribution_type
         self.__component_number = algorithm_data.component_number
         self.__param_count = algorithm_data.param_count
         self.__param_names = algorithm_data.param_names
         self.__components = [] # type: List[ComponentFittingResult]
-        self.update(fitted_params, x_offset)
+        self.update(algorithm_data, fitted_params, x_offset)
 
 
-    def update(self, fitted_params: Iterable[float], x_offset: float):
+    def update(self, algorithm_data: AlgorithmData, fitted_params: Iterable[float], x_offset: float):
         if np.any(np.isnan(fitted_params)):
             self.__fitted_y = np.full_like(self.__fitting_space_x, fill_value=np.nan)
             self.__error_array = np.full_like(self.__fitting_space_x, fill_value=np.nan)
@@ -160,7 +158,7 @@ class FittingResult:
             self.__kendall_tau = (np.nan, np.nan)
             self.__spearman_r = (np.nan, np.nan)
         else:
-            self.__fitted_y = self.__algorithm_data.mixed_func(self.__fitting_space_x - x_offset, *fitted_params)
+            self.__fitted_y = algorithm_data.mixed_func(self.__fitting_space_x - x_offset, *fitted_params)
             # some test for fitting result
             self.__error_array = self.__target_y - self.__fitted_y
             self.__mean_squared_error = np.mean(np.square(self.__error_array))
@@ -171,14 +169,14 @@ class FittingResult:
             # https://scipy.github.io/devdocs/generated/scipy.stats.spearmanr.html
             self.__spearman_r = spearmanr(self.__target_y, self.__fitted_y)
 
-        processed_params = self.__algorithm_data.process_params(fitted_params, x_offset)
+        processed_params = algorithm_data.process_params(fitted_params, x_offset)
         if  len(self.__components) == 0:
             for params, fraction in processed_params:
-                component_result = ComponentFittingResult(self.real_x, self.fitting_space_x, self.__algorithm_data, params, fraction)
+                component_result = ComponentFittingResult(self.real_x, self.fitting_space_x, algorithm_data, params, fraction)
                 self.__components.append(component_result)
         else:
             for component, (params, fraction) in zip(self.__components, processed_params):
-                component.update(params, fraction)
+                component.update(algorithm_data, params, fraction)
         # sort by mean values
         self.__components.sort(key=lambda component: component.mean)
 
