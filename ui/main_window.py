@@ -31,7 +31,7 @@ class GUILogHandler(logging.Handler):
 
 
 class MainWindow(QMainWindow):
-    sigDataSelected = Signal(int) 
+    sigDataSelected = Signal(int)
     sigSetup = Signal()
     sigCleanup = Signal()
     logger = logging.getLogger("root.MainWindow")
@@ -46,7 +46,7 @@ class MainWindow(QMainWindow):
         self.gui_resolver.moveToThread(self.gui_fitting_thread)
         self.multiprocessing_fitting_thread = QThread()
         self.multiprocessing_resolver = MultiProcessingResolver()
-        self.multiprocessing_resolver.moveToThread(self.multiprocessing_fitting_thread)
+        # self.multiprocessing_resolver.moveToThread(self.multiprocessing_fitting_thread)
         self.data_manager = DataManager(self)
         self.connect_all()
         self.msg_box = QMessageBox(self)
@@ -76,7 +76,7 @@ class MainWindow(QMainWindow):
         self.docks_menu.addAction(self.reset_docks_actions)
         self.settings_action = self.menuBar().addAction(self.tr("Settings"))
         self.about_action = self.menuBar().addAction(self.tr("About"))
-        
+
         self.setDockNestingEnabled(True)
         # Canvas
         self.canvas_dock = QDockWidget(self.tr("Canvas"))
@@ -100,7 +100,7 @@ class MainWindow(QMainWindow):
         self.recorded_data_dock = QDockWidget(self.tr("Recorded Data Table"))
         self.recorded_data_table = RecordedDataTable()
         self.recorded_data_dock.setWidget(self.recorded_data_table)
- 
+
         self.settings_window = SettingWindow(self)
         self.about_window = AboutWindow(self)
         self.task_window = TaskWindow(self)
@@ -123,14 +123,14 @@ class MainWindow(QMainWindow):
         self.control_panel.record_button.clicked.connect(self.data_manager.record_current_data)
 
         self.canvas.sigExpectedMeanValueChanged.connect(self.gui_resolver.on_excepted_mean_value_changed)
-        
+
         self.data_manager.sigDataLoaded.connect(self.on_data_loaded)
         self.data_manager.sigDataLoaded.connect(self.control_panel.on_data_loaded)
         self.data_manager.sigDataLoaded.connect(self.multiprocessing_resolver.on_data_loaded)
         self.data_manager.sigTargetDataChanged.connect(self.gui_resolver.on_target_data_changed)
         self.data_manager.sigTargetDataChanged.connect(self.canvas.on_target_data_changed)
         self.data_manager.sigDataRecorded.connect(self.recorded_data_table.on_data_recorded)
-        
+
         self.gui_resolver.sigFittingEpochSucceeded.connect(self.control_panel.on_fitting_epoch_suceeded)
         self.gui_resolver.sigFittingEpochSucceeded.connect(self.canvas.on_fitting_epoch_suceeded)
         self.gui_resolver.sigFittingEpochSucceeded.connect(self.data_manager.on_fitting_epoch_suceeded)
