@@ -1,7 +1,7 @@
 import numpy as np
 
 from algorithms import DistributionType
-from resolvers import Resolver
+from resolvers.Resolver import Resolver
 from models.SampleData import SampleData
 
 class FittingTask:
