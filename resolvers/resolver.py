@@ -9,9 +9,12 @@ from models.FittingResult import FittingResult
 
 
 class Resolver:
+    """
+    The base class of resolvers.
+    """
     def __init__(self, global_optimization_maxiter=100,
                  global_optimization_success_iter=3,
-                 global_optimization_stepsize = 1,
+                 global_optimization_stepsize=1.0,
                  final_tolerance=1e-100,
                  final_maxiter=1000,
                  minimizer_tolerance=1e-8,
@@ -118,6 +121,9 @@ class Resolver:
     def on_global_fitting_failed(self, algorithm_result: OptimizeResult):
         pass
 
+    def on_global_fitting_succeeded(self, algorithm_result: OptimizeResult):
+        pass
+
     def on_final_fitting_failed(self, algorithm_result: OptimizeResult):
         pass
 
@@ -215,7 +221,7 @@ class Resolver:
 
             if global_algorithm_result.lowest_optimization_result.success or \
                     global_algorithm_result.lowest_optimization_result.status == 9:
-                pass
+                self.on_global_fitting_succeeded(global_algorithm_result)
             else:
                 self.on_global_fitting_failed(global_algorithm_result)
                 self.on_fitting_finished()
