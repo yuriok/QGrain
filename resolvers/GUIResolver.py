@@ -42,16 +42,9 @@ class GUIResolver(QObject, Resolver):
         self.component_number = component_number
         self.logger.info("Component Number has been changed to [%d].", component_number)
 
-    def on_distribution_type_changed(self, distribution_type: str):
-        if distribution_type == "normal":
-            self.distribution_type = DistributionType.Normal
-        elif distribution_type == "weibull":
-            self.distribution_type = DistributionType.Weibull
-        elif distribution_type == "gen_weibull":
-            self.distribution_type = DistributionType.GeneralWeibull
-        else:
-            raise NotImplementedError(distribution_type)
-        self.logger.info("Distribution type has been changed to [%s].", self.distribution_type)
+    def on_distribution_type_changed(self, distribution_type: DistributionType):
+        self.distribution_type = distribution_type
+        self.logger.info("Distribution type has been changed to [%s].", distribution_type)
         # clear if type changed
         self.last_succeeded_params = None
 
@@ -68,7 +61,7 @@ class GUIResolver(QObject, Resolver):
         self.logger.debug("Target data has been changed to [%s].", sample.name)
         self.feed_data(sample.name, sample.classes, sample.distribution)
 
-    def on_data_feed(self, sample_name):
+    def on_data_fed(self, sample_name):
         self.logger.debug("Sample [%s] has been fed.", sample_name)
 
     def on_data_not_prepared(self):
