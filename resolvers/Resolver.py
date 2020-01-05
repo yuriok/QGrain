@@ -37,6 +37,7 @@ class Resolver:
         self.sample_name = None # type: str
         self.real_x = None # type: np.ndarray
         self.x_offset = 0
+        self.bin_numbers = None # type: np.ndarray
         self.fitting_space_x = None # type: np.ndarray
         self.target_y = None # type: np.ndarray
 
@@ -192,7 +193,15 @@ class Resolver:
         return result
 
     def try_fit(self):
-        if self.real_x is None or self.target_y is None or self.fitting_space_x is None:
+        if self.real_x is None:
+            # all these attributes should be `None`
+            # otherwise the codes are incorrect
+            assert self.sample_name is None
+            assert self.target_y is None
+            assert self.fitting_space_x is None
+            assert self.bin_numbers is None
+            assert self.start_index is None
+            assert self.end_index is None
             self.on_data_not_prepared()
             return
         self.on_fitting_started()
