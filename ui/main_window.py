@@ -47,7 +47,7 @@ class MainWindow(QMainWindow):
         self.gui_resolver.moveToThread(self.gui_fitting_thread)
         self.multiprocessing_fitting_thread = QThread()
         self.multiprocessing_resolver = MultiProcessingResolver()
-        # self.multiprocessing_resolver.moveToThread(self.multiprocessing_fitting_thread)
+        self.multiprocessing_resolver.moveToThread(self.multiprocessing_fitting_thread)
         self.data_manager = DataManager(self)
         self.connect_all()
         self.msg_box = QMessageBox(self)
