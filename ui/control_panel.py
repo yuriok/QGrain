@@ -8,12 +8,13 @@ from PySide2.QtWidgets import (QButtonGroup, QCheckBox, QFileDialog,
                                QGridLayout, QLabel, QMessageBox, QPushButton,
                                QRadioButton, QSizePolicy, QWidget)
 
+from algorithms import DistributionType
 from models.FittingResult import FittingResult
 from models.SampleDataset import SampleDataset
 
 
 class ControlPanel(QWidget):
-    sigDistributionTypeChanged = Signal(str)
+    sigDistributionTypeChanged = Signal(int)
     sigComponentNumberChanged = Signal(int)
     sigFocusSampleChanged = Signal(int) # index of that sample in list
     sigGUIResolverSettingsChanged = Signal(dict)
@@ -214,16 +215,16 @@ class ControlPanel(QWidget):
 
     def on_distribution_type_changed(self):
         if self.distribution_normal_radio_button.isChecked():
-            self.sigDistributionTypeChanged.emit("normal")
-            self.logger.info("Distribution type has been changed to [%s].", "Normal")
+            self.sigDistributionTypeChanged.emit(DistributionType.Normal)
+            self.logger.info("Distribution type has been changed to [%s].", DistributionType.Normal)
         elif self.distribution_weibull_radio_button.isChecked():
             assert self.distribution_weibull_radio_button.isChecked()
-            self.sigDistributionTypeChanged.emit("weibull")
-            self.logger.info("Distribution type has been changed to [%s].", "Weibull")
+            self.sigDistributionTypeChanged.emit(DistributionType.Weibull)
+            self.logger.info("Distribution type has been changed to [%s].", DistributionType.Weibull)
         else:
             assert self.distribution_gen_weibull_radio_button.isChecked()
-            self.sigDistributionTypeChanged.emit("gen_weibull")
-            self.logger.info("Distribution type has been changed to [%s].", "General Weibull")
+            self.sigDistributionTypeChanged.emit(DistributionType.GeneralWeibull)
+            self.logger.info("Distribution type has been changed to [%s].", DistributionType.GeneralWeibull)
 
         if self.sample_names is not None:
             self.data_index = self.data_index
