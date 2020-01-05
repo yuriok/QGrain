@@ -299,8 +299,10 @@ class DataWriter:
         if not is_xlsx or not draw_charts:
             if is_xlsx:
                 book.close()
+                return
             else:
                 book.save(filename)
+                return
 
         # add charts to workbook
         chart_styles = None
@@ -310,13 +312,13 @@ class DataWriter:
         width = 480
         height = 288
         try:
-            style_file = open(self.style_file_path, "r")
-            chart_styles = json.load(style_file)
-            column_chart_number = chart_styles["column_chart_number"]
-            x_margin = chart_styles["x_margin"]
-            y_margin = chart_styles["y_margin"]
-            width = chart_styles["size"]["x_scale"]*480
-            height = chart_styles["size"]["y_scale"]*288
+            with open(self.style_file_path, "r", encoding="utf-8") as style_file:
+                chart_styles = json.load(style_file)
+                column_chart_number = chart_styles["column_chart_number"]
+                x_margin = chart_styles["x_margin"]
+                y_margin = chart_styles["y_margin"]
+                width = chart_styles["size"]["x_scale"]*480
+                height = chart_styles["size"]["y_scale"]*288
         except OSError:
             pass
 
