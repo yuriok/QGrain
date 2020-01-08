@@ -12,19 +12,16 @@ from resolvers import FittingTask, HeadlessResolver
 
 
 def run_task(task):
-    resolver = HeadlessResolver()
-    # global resolver
+    global resolver
     results = resolver.execute_task(task)
     return results
 
 def setup_process(*args):
-    pass
-    # global resolver
-    # resolver = HeadlessResolver()
-    # for distribution_type, component_number in args:
-    #     resolver.distribution_type = distribution_type
-    #     resolver.component_number = component_number
-
+    global resolver
+    resolver = HeadlessResolver()
+    for distribution_type, component_number in args:
+        resolver.distribution_type = distribution_type
+        resolver.component_number = component_number
 
 class MultiProcessingResolver(QObject):
     sigTaskStateUpdated = Signal(tuple)
@@ -35,8 +32,8 @@ class MultiProcessingResolver(QObject):
 
     def __init__(self):
         super().__init__()
-        self.component_number = 2
-        self.distribution_type = DistributionType.Weibull
+        self.component_number = 3
+        self.distribution_type = DistributionType.GeneralWeibull
         self.algorithm_settings = None
 
         self.grain_size_data = None # type: SampleDataset
