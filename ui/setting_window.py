@@ -40,7 +40,7 @@ class SettingWindow(QMainWindow):
         self.app_setting = AppSetting()
         self.app_setting.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.main_layout.addWidget(self.app_setting, 2, 0, 1, 2)
-        
+
         self.restore_button = QPushButton(self.tr("Restore"))
         self.save_button = QPushButton(self.tr("Save"))
         self.main_layout.addWidget(self.restore_button, 3, 0)
