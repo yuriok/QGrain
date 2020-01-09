@@ -19,6 +19,8 @@ class TestResolver(unittest.TestCase):
 
     def setUp(self):
         self.resolver = Resolver()
+        self.resolver.component_number = 1
+        self.resolver.distribution_type = DistributionType.Normal
         self.x = np.linspace(0.1, 10, 100)
         self.y = norm.pdf(self.x, 2.53, 3.71)
 
@@ -65,7 +67,7 @@ class TestResolver(unittest.TestCase):
             self.assertListEqual(actual, expected)
 
     def test_feed_data(self):
-        self.resolver.feed_data("Sample_021", self.x, self.y)
+        self.resolver.feed_data(SampleData("Sample_021", self.x, self.y))
         self.assertEqual(self.resolver.sample_name, "Sample_021")
         self.assertIs(self.resolver.real_x, self.x)
         self.assertIs(self.resolver.target_y, self.y)
@@ -73,7 +75,7 @@ class TestResolver(unittest.TestCase):
     # test hooks
     def test_on_data_fed(self):
         self.resolver.on_data_fed = types.MethodType(self.override, self.resolver)
-        self.resolver.feed_data("test_on_data_fed", self.x, self.y)
+        self.resolver.feed_data(SampleData("test_on_data_fed", self.x, self.y))
         self.assertTrue(exec_flag)
 
     def test_on_data_not_prepare(self):
@@ -83,19 +85,19 @@ class TestResolver(unittest.TestCase):
 
     def test_on_fitting_started(self):
         self.resolver.on_fitting_started = types.MethodType(self.override, self.resolver)
-        self.resolver.feed_data("test_on_fitting_started", self.x, self.y)
+        self.resolver.feed_data(SampleData("test_on_fitting_started", self.x, self.y))
         self.resolver.try_fit()
         self.assertTrue(exec_flag)
 
     def test_on_fitting_finished(self):
         self.resolver.on_fitting_finished = types.MethodType(self.override, self.resolver)
-        self.resolver.feed_data("test_on_fitting_finished", self.x, self.y)
+        self.resolver.feed_data(SampleData("test_on_fitting_finished", self.x, self.y))
         self.resolver.try_fit()
         self.assertTrue(exec_flag)
 
     def test_on_fitting_succeeded(self):
         self.resolver.on_fitting_succeeded = types.MethodType(self.override, self.resolver)
-        self.resolver.feed_data("test_on_fitting_succeeded", self.x, self.y)
+        self.resolver.feed_data(SampleData("test_on_fitting_succeeded", self.x, self.y))
         self.resolver.try_fit()
         self.assertTrue(exec_flag)
 
