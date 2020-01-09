@@ -70,7 +70,9 @@ class GUIResolver(QObject, Resolver):
 
     def on_fitting_started(self):
         self.current_iteration = 0
-        if self.inherit_params and self.last_succeeded_params is not None and len(self.last_succeeded_params) == len(self.algorithm_data.defaults):
+        if self.inherit_params and \
+            self.last_succeeded_params is not None and \
+            len(self.last_succeeded_params) == len(self.algorithm_data.defaults):
             self.initial_guess = self.last_succeeded_params
         else:
             self.initial_guess = self.algorithm_data.defaults
@@ -137,15 +139,7 @@ class GUIResolver(QObject, Resolver):
     def on_excepted_mean_value_changed(self, mean_values):
         if self.real_x is None or self.target_y is None or self.fitting_space_x is None:
             return
-        # if self.last_succeeded_params is None:
-        #     referenced_params = self.algorithm_data.defaults
-        # else:
-        #     referenced_params = self.last_succeeded_params
         x_real_to_space = interp1d(self.real_x, self.fitting_space_x)
-        # try:
         converted_x = [x_real_to_space(mean).max() - self.x_offset for mean in mean_values]
-        # except ValueError:
-        #     self.logger.error("There is one expected mean value which is out of range.", stack_info=True)
-        #     return
         converted_x.sort()
         self.expected_params = self.algorithm_data.get_param_by_mean(converted_x)
