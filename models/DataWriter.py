@@ -220,8 +220,12 @@ class DataWriter:
 
         # set widths of columns
         set_col(summary_sheet, 0, 16)
-        for i in range(1, 8):
-            set_col(summary_sheet, i, 12)
+        set_col(summary_sheet, 1, 16)
+        for i in range(2, 9):
+            if i % 2 == 0:
+                set_col(summary_sheet, i, 12)
+            else:
+                set_col(summary_sheet, i, 8)
         for i in range(SUMMARY_COMPONENT_START_COLUMN, max_component_number*SUMMARY_COLUMN_SPAN+SUMMARY_COMPONENT_START_COLUMN):
             set_col(summary_sheet, i, 8)
         # contents of summary sheet
