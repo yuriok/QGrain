@@ -29,6 +29,9 @@ def to_cell_name(row: int, column: int):
 
 
 class DataWriter:
+    """
+    The class to save the fitting results to local files.
+    """
     MAX_PARAM_COUNT = 3
     def __init__(self):
         super().__init__()
