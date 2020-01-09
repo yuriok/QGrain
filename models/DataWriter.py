@@ -29,6 +29,9 @@ def to_cell_name(row: int, column: int):
 
 
 class DataWriter:
+    """
+    The class to save the fitting results to local files.
+    """
     MAX_PARAM_COUNT = 3
     def __init__(self):
         super().__init__()
@@ -65,6 +68,7 @@ class DataWriter:
         with open(filename, "w", newline="", encoding="utf-8") as f:
             w = csv.writer(f)
             max_component_number = max([result.component_number for result in results])
+            # write the hearders
             headers = ["Sample Name", "Distribution Type", "Mean Squared Error",
             "Pearson Correlation Coefficient", "P Value", "Kendall's TAU", "P Value",
             "Spearman Correlation Coefficient", "P Value"]
@@ -81,7 +85,7 @@ class DataWriter:
                 for j in range(self.MAX_PARAM_COUNT):
                     headers.append("Parameter" + " {0}".format(j+1))
             w.writerow(headers)
-
+            # write the contents
             for result in results:
                 row = [result.name,
                        self.get_distribution_name(result.distribution_type),
@@ -97,7 +101,7 @@ class DataWriter:
                     row.append(component.standard_deviation)
                     row.append(component.skewness)
                     row.append(component.kurtosis)
-
+                    # write the parameters of each base distribution
                     for i in range(self.MAX_PARAM_COUNT):
                         if i < result.param_count:
                             row.append(component.params[i])
@@ -134,6 +138,7 @@ class DataWriter:
         def write(sheet, row, col, value, style):
             sheet.write(row, col, check_value(value), style)
 
+        # the wrappers to handle the differences between xlwt and xlsxwriter
         if is_xlsx:
             # see https://xlsxwriter.readthedocs.io/worksheet.html#merge_range
             def mwrite(sheet, lrow, lcol, rrow, rcol, value, style):
@@ -145,7 +150,7 @@ class DataWriter:
                 sheet.write_merge(lrow, rrow, lcol, rcol, check_value(value), style)
             def set_col(sheet, col, width):
                 sheet.col(col).width = width*256
-
+        # generate different styles
         if is_xlsx:
             book = xlsxwriter.Workbook(filename=filename)
             # see https://xlsxwriter.readthedocs.io/format.html#format
@@ -217,8 +222,12 @@ class DataWriter:
 
         # set widths of columns
         set_col(summary_sheet, 0, 16)
-        for i in range(1, 8):
-            set_col(summary_sheet, i, 12)
+        set_col(summary_sheet, 1, 16)
+        for i in range(2, 9):
+            if i % 2 == 0:
+                set_col(summary_sheet, i, 12)
+            else:
+                set_col(summary_sheet, i, 8)
         for i in range(SUMMARY_COMPONENT_START_COLUMN, max_component_number*SUMMARY_COLUMN_SPAN+SUMMARY_COMPONENT_START_COLUMN):
             set_col(summary_sheet, i, 8)
         # contents of summary sheet
@@ -299,8 +308,10 @@ class DataWriter:
         if not is_xlsx or not draw_charts:
             if is_xlsx:
                 book.close()
+                return
             else:
                 book.save(filename)
+                return
 
         # add charts to workbook
         chart_styles = None
@@ -310,13 +321,13 @@ class DataWriter:
         width = 480
         height = 288
         try:
-            style_file = open(self.style_file_path, "r")
-            chart_styles = json.load(style_file)
-            column_chart_number = chart_styles["column_chart_number"]
-            x_margin = chart_styles["x_margin"]
-            y_margin = chart_styles["y_margin"]
-            width = chart_styles["size"]["x_scale"]*480
-            height = chart_styles["size"]["y_scale"]*288
+            with open(self.style_file_path, "r", encoding="utf-8") as style_file:
+                chart_styles = json.load(style_file)
+                column_chart_number = chart_styles["column_chart_number"]
+                x_margin = chart_styles["x_margin"]
+                y_margin = chart_styles["y_margin"]
+                width = chart_styles["size"]["x_scale"]*480
+                height = chart_styles["size"]["y_scale"]*288
         except OSError:
             pass
 
