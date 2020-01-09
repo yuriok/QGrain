@@ -68,6 +68,7 @@ class DataWriter:
         with open(filename, "w", newline="", encoding="utf-8") as f:
             w = csv.writer(f)
             max_component_number = max([result.component_number for result in results])
+            # write the hearders
             headers = ["Sample Name", "Distribution Type", "Mean Squared Error",
             "Pearson Correlation Coefficient", "P Value", "Kendall's TAU", "P Value",
             "Spearman Correlation Coefficient", "P Value"]
@@ -84,7 +85,7 @@ class DataWriter:
                 for j in range(self.MAX_PARAM_COUNT):
                     headers.append("Parameter" + " {0}".format(j+1))
             w.writerow(headers)
-
+            # write the contents
             for result in results:
                 row = [result.name,
                        self.get_distribution_name(result.distribution_type),
@@ -100,7 +101,7 @@ class DataWriter:
                     row.append(component.standard_deviation)
                     row.append(component.skewness)
                     row.append(component.kurtosis)
-
+                    # write the parameters of each base distribution
                     for i in range(self.MAX_PARAM_COUNT):
                         if i < result.param_count:
                             row.append(component.params[i])
@@ -137,6 +138,7 @@ class DataWriter:
         def write(sheet, row, col, value, style):
             sheet.write(row, col, check_value(value), style)
 
+        # the wrappers to handle the differences between xlwt and xlsxwriter
         if is_xlsx:
             # see https://xlsxwriter.readthedocs.io/worksheet.html#merge_range
             def mwrite(sheet, lrow, lcol, rrow, rcol, value, style):
@@ -148,7 +150,7 @@ class DataWriter:
                 sheet.write_merge(lrow, rrow, lcol, rcol, check_value(value), style)
             def set_col(sheet, col, width):
                 sheet.col(col).width = width*256
-
+        # generate different styles
         if is_xlsx:
             book = xlsxwriter.Workbook(filename=filename)
             # see https://xlsxwriter.readthedocs.io/format.html#format
