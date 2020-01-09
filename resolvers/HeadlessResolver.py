@@ -38,7 +38,7 @@ class HeadlessResolver(Resolver):
         self.component_number = task.component_number
         if task.algorithm_settings is not None:
             self.change_settings(**task.algorithm_settings)
-        self.feed_data(task.sample.name, task.sample.classes, task.sample.distribution)
+        self.feed_data(task.sample)
         self.try_fit()
         if self.current_result is None:
             return False, self.current_task, self.current_exception
