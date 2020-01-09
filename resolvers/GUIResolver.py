@@ -59,7 +59,7 @@ class GUIResolver(QObject, Resolver):
 
     def on_target_data_changed(self, sample: SampleData):
         self.logger.debug("Target data has been changed to [%s].", sample.name)
-        self.feed_data(sample.name, sample.classes, sample.distribution)
+        self.feed_data(sample)
 
     def on_data_fed(self, sample_name):
         self.logger.debug("Sample [%s] has been fed.", sample_name)

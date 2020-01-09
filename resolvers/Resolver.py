@@ -2,10 +2,11 @@ from enum import Enum, unique
 from typing import Dict, Iterable, List, Tuple
 
 import numpy as np
-from scipy.optimize import basinhopping, minimize, OptimizeResult
+from scipy.optimize import OptimizeResult, basinhopping, minimize
 
 from algorithms import AlgorithmData, DistributionType
 from models.FittingResult import FittingResult
+from models.SampleData import SampleData
 
 
 class Resolver:
@@ -161,12 +162,12 @@ class Resolver:
         else:
             raise NotImplementedError(self.distribution_type)
 
-    def feed_data(self, sample_name: str, x: np.ndarray, y: np.ndarray):
-        self.sample_name = sample_name
-        self.real_x = x
-        self.target_y = y
+    def feed_data(self, sample: SampleData):
+        self.sample_name = sample.name
+        self.real_x = sample.classes
+        self.target_y = sample.distribution
         self.preprocess_data()
-        self.on_data_fed(sample_name)
+        self.on_data_fed(sample.name)
 
     def change_settings(self, **kwargs):
         for key, value in kwargs.items():
