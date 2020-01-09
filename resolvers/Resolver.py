@@ -141,16 +141,18 @@ class Resolver:
         pass
 
     def preprocess_data(self):
-        # Normal and General Weibull distribution need to use x offset to get better performance
         self.start_index, self.end_index = Resolver.get_valid_data_range(self.target_y)
+        # Normal and General Weibull distribution need to use x offset to get better performance.
+        # Because if do not do that, the search space will be larger,
+        # and hence increse the difficulty of searching.
         if self.distribution_type == DistributionType.Normal or \
                 self.distribution_type == DistributionType.GeneralWeibull:
             self.x_offset = self.start_index
         else:
             self.x_offset = 0.0
-
+        # Bin numbers are similar to log(x), but will not raise negative value.
+        # This will make the fitting of some distributions (e.g. Weibull) easier.
         self.bin_numbers = np.array(range(len(self.target_y)), dtype=np.float64) + 1
-
         # fitting under the bin numbers' space
         if self.distribution_type == DistributionType.Normal or \
                 self.distribution_type == DistributionType.Weibull or \
@@ -207,7 +209,8 @@ class Resolver:
         self.on_fitting_started()
 
         def closure(args):
-            # using partial values (i.e. don't use unnecessary zero values) will highly improve the performance of algorithms
+            # using partial values (i.e. don't use unnecessary zero values)
+            # will highly improve the performance of algorithms
             x_to_fit = self.fitting_space_x[self.start_index: self.end_index]-self.x_offset
             y_to_fit = self.target_y[self.start_index: self.end_index]
             current_values = self.algorithm_data.mixed_func(x_to_fit, *args)
