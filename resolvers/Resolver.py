@@ -169,6 +169,21 @@ class Resolver:
         self.preprocess_data()
         self.on_data_fed(sample.name)
 
+    @property
+    def data_prepared(self) -> bool:
+        if self.real_x is None:
+            # all these attributes should be `None`
+            # otherwise the codes are incorrect
+            assert self.sample_name is None
+            assert self.target_y is None
+            assert self.fitting_space_x is None
+            assert self.bin_numbers is None
+            assert self.start_index is None
+            assert self.end_index is None
+            return False
+        else:
+            return True
+
     def change_settings(self, **kwargs):
         for key, value in kwargs.items():
             if key == "global_optimization_maxiter":
@@ -196,15 +211,7 @@ class Resolver:
         return result
 
     def try_fit(self):
-        if self.real_x is None:
-            # all these attributes should be `None`
-            # otherwise the codes are incorrect
-            assert self.sample_name is None
-            assert self.target_y is None
-            assert self.fitting_space_x is None
-            assert self.bin_numbers is None
-            assert self.start_index is None
-            assert self.end_index is None
+        if not self.data_prepared:
             self.on_data_not_prepared()
             return
         self.on_fitting_started()
