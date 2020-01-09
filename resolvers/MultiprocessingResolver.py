@@ -8,7 +8,7 @@ from PySide2.QtCore import QObject, Signal
 
 from algorithms import DistributionType
 from models.SampleDataset import SampleDataset
-from resolvers import FittingTask, HeadlessResolver
+from resolvers.HeadlessResolver import FittingTask, HeadlessResolver
 
 
 def run_task(task):
