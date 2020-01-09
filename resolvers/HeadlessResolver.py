@@ -18,6 +18,20 @@ class FittingTask:
         self.algorithm_settings = algorithm_settings
 
 
+class FinalLocalOptimizationError(Exception):
+    """
+    Raises when the final local optimization failed.
+    """
+    pass
+
+
+class GlobalOptimizationError(Exception):
+    """
+    Raises when the global optimization failed.
+    """
+    pass
+
+
 class HeadlessResolver(Resolver):
     def __init__(self):
         super().__init__()
@@ -28,6 +42,12 @@ class HeadlessResolver(Resolver):
     def on_fitting_succeeded(self, algorithm_result: OptimizeResult):
         result = self.get_fitting_result(algorithm_result.x)
         self.current_result = result
+
+    def on_global_fitting_failed(self, algorithm_result: OptimizeResult):
+        self.current_exception = GlobalOptimizationError(algorithm_result.message)
+
+    def on_final_fitting_failed(self, algorithm_result: OptimizeResult):
+        self.current_exception = FinalLocalOptimizationError(algorithm_result.message)
 
     def on_exception_raised_while_fitting(self, exception: Exception):
         self.current_exception
@@ -41,6 +61,7 @@ class HeadlessResolver(Resolver):
         self.feed_data(task.sample)
         self.try_fit()
         if self.current_result is None:
+            assert self.current_exception is not None
             return False, self.current_task, self.current_exception
         else:
             return True, self.current_task, self.current_result
