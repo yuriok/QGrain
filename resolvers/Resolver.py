@@ -26,13 +26,13 @@ class Resolver:
         self.refresh()
 
         # algorithms settings
-        self.global_optimization_maxiter = global_optimization_maxiter
-        self.global_optimization_success_iter = global_optimization_success_iter
-        self.global_optimization_stepsize = global_optimization_stepsize
-        self.minimizer_tolerance = minimizer_tolerance
-        self.minimizer_maxiter = minimizer_maxiter
-        self.final_tolerance = final_tolerance
-        self.final_maxiter = final_maxiter
+        self.__global_optimization_maxiter = global_optimization_maxiter
+        self.__global_optimization_success_iter = global_optimization_success_iter
+        self.__global_optimization_stepsize = global_optimization_stepsize
+        self.__minimizer_tolerance = minimizer_tolerance
+        self.__minimizer_maxiter = minimizer_maxiter
+        self.__final_tolerance = final_tolerance
+        self.__final_maxiter = final_maxiter
 
         # the related data of current sample
         self.sample_name = None # type: str
@@ -172,19 +172,19 @@ class Resolver:
     def change_settings(self, **kwargs):
         for key, value in kwargs.items():
             if key == "global_optimization_maxiter":
-                self.global_optimization_maxiter = value
+                self.__global_optimization_maxiter = value
             elif key == "global_optimization_success_iter":
-                self.global_optimization_success_iter = value
+                self.__global_optimization_success_iter = value
             elif key == "global_optimization_stepsize":
-                self.global_optimization_stepsize = value
+                self.__global_optimization_stepsize = value
             elif key == "minimizer_tolerance":
-                self.minimizer_tolerance = value
+                self.__minimizer_tolerance = value
             elif key == "minimizer_maxiter":
-                self.minimizer_maxiter = value
+                self.__minimizer_maxiter = value
             elif key == "final_tolerance":
-                self.final_tolerance = value
+                self.__final_tolerance = value
             elif key == "final_maxiter":
-                self.final_maxiter = value
+                self.__final_maxiter = value
             else:
                 raise NotImplementedError(key)
 
@@ -221,16 +221,16 @@ class Resolver:
                                 bounds=self.algorithm_data.bounds,
                                 constraints=self.algorithm_data.constrains,
                                 callback=self.local_iteration_callback,
-                                options={"maxiter": self.minimizer_maxiter,
-                                         "ftol": self.minimizer_tolerance})
+                                options={"maxiter": self.__minimizer_maxiter,
+                                         "ftol": self.__minimizer_tolerance})
         try:
             global_algorithm_result = \
                 basinhopping(closure, x0=self.initial_guess,
                              minimizer_kwargs=minimizer_kwargs,
                              callback=self.global_iteration_callback,
-                             niter_success=self.global_optimization_success_iter,
-                             niter=self.global_optimization_maxiter,
-                             stepsize=self.global_optimization_stepsize)
+                             niter_success=self.__global_optimization_success_iter,
+                             niter=self.__global_optimization_maxiter,
+                             stepsize=self.__global_optimization_stepsize)
 
             if global_algorithm_result.lowest_optimization_result.success or \
                     global_algorithm_result.lowest_optimization_result.status == 9:
@@ -245,8 +245,8 @@ class Resolver:
                          bounds=self.algorithm_data.bounds,
                          constraints=self.algorithm_data.constrains,
                          callback=self.local_iteration_callback,
-                         options={"maxiter": self.final_maxiter,
-                                  "ftol": self.final_tolerance})
+                         options={"maxiter": self.__final_maxiter,
+                                  "ftol": self.__final_tolerance})
             # judge if the final fitting succeed
             # see https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.fmin_slsqp.html
             if final_algorithm_result.success or final_algorithm_result.status == 9:
