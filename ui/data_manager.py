@@ -18,7 +18,7 @@ from models.SampleData import *
 from models.SampleDataset import *
 
 
-from resolvers import FittingTask
+from resolvers.HeadlessResolver import FittingTask
 
 
 class BackgroundLoader(QObject):

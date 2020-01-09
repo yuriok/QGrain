@@ -11,7 +11,7 @@ from PySide2.QtWidgets import (QAbstractItemView, QDockWidget, QMainWindow,
                                QTableWidgetItem, QWidget)
 
 from ui.data_manager import DataManager, SampleDataset
-from resolvers import MultiProcessingResolver
+from resolvers.MultiprocessingResolver import MultiProcessingResolver
 from resolvers.GUIResolver import GUIResolver
 from ui import (AboutWindow, ControlPanel, FittingCanvas, RecordedDataTable,
                 SettingWindow, TaskWindow)
