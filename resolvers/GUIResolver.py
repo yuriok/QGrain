@@ -141,7 +141,7 @@ class GUIResolver(QObject, Resolver):
         self.cancel_mutex.unlock()
 
     def on_excepted_mean_value_changed(self, mean_values):
-        if self.real_x is None or self.target_y is None or self.fitting_space_x is None:
+        if not self.data_prepared:
             return
         x_real_to_space = interp1d(self.real_x, self.fitting_space_x)
         converted_x = [x_real_to_space(mean).max() - self.x_offset for mean in mean_values]
