@@ -24,6 +24,9 @@ class CSVEncodingError(Exception):
 
 
 class DataLoader:
+    """
+    The class to load the grain size distributions from the loacl files.
+    """
     def __init__(self):
         pass
 

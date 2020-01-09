@@ -126,7 +126,7 @@ class AlgorithmSetting(QWidget):
             self.minimizer_maxiter_edit.setText(settings.value("minimizer_maxiter"))
             self.final_tolerance_level_edit.setText(settings.value("final_tolerance_level"))
             self.final_maxiter_edit.setText(settings.value("final_maxiter"))
-            
+
         except Exception:
             self.logger.exception("Unknown exception occurred. Maybe the type of values which were set to `QSettings` is not `str`.", stack_info=True)
             self.gui_logger.error(self.tr("Unknown exception raised. Settings of data loading did not be restored."))
