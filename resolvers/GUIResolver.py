@@ -61,7 +61,7 @@ class GUIResolver(QObject, Resolver):
         self.logger.debug("Target data has been changed to [%s].", sample.name)
         self.feed_data(sample)
 
-    def on_data_fed(self, sample_name):
+    def on_data_fed(self, sample_name: str):
         self.logger.debug("Sample [%s] has been fed.", sample_name)
 
     def on_data_not_prepared(self):
@@ -92,6 +92,9 @@ class GUIResolver(QObject, Resolver):
     def on_global_fitting_failed(self, algorithm_result: OptimizeResult):
         self.sigFittingFailed.emit(self.tr("Fitting failed during global fitting progress."))
         self.logger.error("Fitting failed during global fitting progress. Details: [%s].", algorithm_result.msg)
+
+    def on_global_fitting_succeeded(self, algorithm_result: OptimizeResult):
+        self.logger.debug("Global fitting progress succeeded.")
 
     def on_final_fitting_failed(self, algorithm_result: OptimizeResult):
         self.sigFittingFailed.emit(self.tr("Fitting failed during final fitting progress."))
