@@ -1,16 +1,20 @@
 from enum import Enum, unique
+from typing import Dict, Iterable, List, Tuple
 
 import numpy as np
-from scipy.optimize import basinhopping, minimize
+from scipy.optimize import basinhopping, minimize, OptimizeResult
 
 from algorithms import AlgorithmData, DistributionType
 from models.FittingResult import FittingResult
 
 
 class Resolver:
+    """
+    The base class of resolvers.
+    """
     def __init__(self, global_optimization_maxiter=100,
                  global_optimization_success_iter=3,
-                 global_optimization_stepsize = 1,
+                 global_optimization_stepsize=1.0,
                  final_tolerance=1e-100,
                  final_maxiter=1000,
                  minimizer_tolerance=1e-8,
@@ -30,20 +34,18 @@ class Resolver:
         self.final_tolerance = final_tolerance
         self.final_maxiter = final_maxiter
 
-        self.sample_name = None
-        self.real_x = None
+        self.sample_name = None # type: str
+        self.real_x = None # type: np.ndarray
         self.x_offset = 0
-        self.fitting_space_x = None
-        self.target_y = None
+        self.bin_numbers = None # type: np.ndarray
+        self.fitting_space_x = None # type: np.ndarray
+        self.target_y = None # type: np.ndarray
 
-        self.start_index = None
-        self.end_index = None
-
-        self.x_to_fit = None
-        self.y_to_fit = None
+        self.start_index = None # type: int
+        self.end_index = None # type: int
 
     @property
-    def distribution_type(self):
+    def distribution_type(self) -> DistributionType:
         return self.__distribution_type
 
     @distribution_type.setter
@@ -54,7 +56,7 @@ class Resolver:
         self.refresh()
 
     @property
-    def component_number(self):
+    def component_number(self) -> int:
         return self.__component_number
 
     @component_number.setter
@@ -77,17 +79,13 @@ class Resolver:
         self.initial_guess = self.algorithm_data.defaults
 
     @staticmethod
-    def get_squared_sum_of_residual_errors(values, targets):
+    def get_squared_sum_of_residual_errors(
+            values: np.ndarray, targets: np.ndarray) -> float:
         errors = np.sum(np.square(values - targets))
         return errors
 
     @staticmethod
-    def get_mean_squared_errors(values, targets):
-        mse = np.mean(np.square(values - targets))
-        return mse
-
-    @staticmethod
-    def get_valid_data_range(target_y, slice_data=True):
+    def get_valid_data_range(target_y: np.ndarray, slice_data: bool=True):
         start_index = 0
         end_index = len(target_y)
         if slice_data:
@@ -109,7 +107,7 @@ class Resolver:
         return start_index, end_index
 
     # hooks
-    def on_data_fed(self, sample_name):
+    def on_data_fed(self, sample_name: str):
         pass
 
     def on_data_not_prepared(self):
@@ -121,35 +119,40 @@ class Resolver:
     def on_fitting_finished(self):
         pass
 
-    def on_global_fitting_failed(self, algorithm_result):
+    def on_global_fitting_failed(self, algorithm_result: OptimizeResult):
         pass
 
-    def on_final_fitting_failed(self, algorithm_result):
+    def on_global_fitting_succeeded(self, algorithm_result: OptimizeResult):
         pass
 
-    def on_exception_raised_while_fitting(self, exception):
+    def on_final_fitting_failed(self, algorithm_result: OptimizeResult):
         pass
 
-    def local_iteration_callback(self, fitted_params):
+    def on_exception_raised_while_fitting(self, exception: Exception):
         pass
 
-    def global_iteration_callback(self, fitted_params, function_value, accept):
+    def local_iteration_callback(self, fitted_params: Iterable[float]):
         pass
 
-    def on_fitting_succeeded(self, algorithm_result):
+    def global_iteration_callback(self, fitted_params: Iterable[float], function_value: float, accept: bool):
+        pass
+
+    def on_fitting_succeeded(self, algorithm_result: OptimizeResult):
         pass
 
     def preprocess_data(self):
-        # Normal and General Weibull distribution need to use x offset to get better performance
         self.start_index, self.end_index = Resolver.get_valid_data_range(self.target_y)
+        # Normal and General Weibull distribution need to use x offset to get better performance.
+        # Because if do not do that, the search space will be larger,
+        # and hence increse the difficulty of searching.
         if self.distribution_type == DistributionType.Normal or \
                 self.distribution_type == DistributionType.GeneralWeibull:
             self.x_offset = self.start_index
         else:
             self.x_offset = 0.0
-
+        # Bin numbers are similar to log(x), but will not raise negative value.
+        # This will make the fitting of some distributions (e.g. Weibull) easier.
         self.bin_numbers = np.array(range(len(self.target_y)), dtype=np.float64) + 1
-
         # fitting under the bin numbers' space
         if self.distribution_type == DistributionType.Normal or \
                 self.distribution_type == DistributionType.Weibull or \
@@ -184,7 +187,7 @@ class Resolver:
             else:
                 raise NotImplementedError(key)
 
-    def get_fitting_result(self, fitted_params):
+    def get_fitting_result(self, fitted_params: Iterable[float]):
         result = FittingResult(self.sample_name, self.real_x,
                                  self.fitting_space_x, self.bin_numbers,
                                  self.target_y, self.algorithm_data,
@@ -192,13 +195,22 @@ class Resolver:
         return result
 
     def try_fit(self):
-        if self.real_x is None or self.target_y is None or self.fitting_space_x is None:
+        if self.real_x is None:
+            # all these attributes should be `None`
+            # otherwise the codes are incorrect
+            assert self.sample_name is None
+            assert self.target_y is None
+            assert self.fitting_space_x is None
+            assert self.bin_numbers is None
+            assert self.start_index is None
+            assert self.end_index is None
             self.on_data_not_prepared()
             return
         self.on_fitting_started()
 
         def closure(args):
-            # using partial values (i.e. don't use unnecessary zero values) will highly improve the performance of algorithms
+            # using partial values (i.e. don't use unnecessary zero values)
+            # will highly improve the performance of algorithms
             x_to_fit = self.fitting_space_x[self.start_index: self.end_index]-self.x_offset
             y_to_fit = self.target_y[self.start_index: self.end_index]
             current_values = self.algorithm_data.mixed_func(x_to_fit, *args)
@@ -221,7 +233,7 @@ class Resolver:
 
             if global_algorithm_result.lowest_optimization_result.success or \
                     global_algorithm_result.lowest_optimization_result.status == 9:
-                pass
+                self.on_global_fitting_succeeded(global_algorithm_result)
             else:
                 self.on_global_fitting_failed(global_algorithm_result)
                 self.on_fitting_finished()

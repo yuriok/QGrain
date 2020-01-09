@@ -8,12 +8,13 @@ from PySide2.QtWidgets import (QButtonGroup, QCheckBox, QFileDialog,
                                QGridLayout, QLabel, QMessageBox, QPushButton,
                                QRadioButton, QSizePolicy, QWidget)
 
+from algorithms import DistributionType
 from models.FittingResult import FittingResult
 from models.SampleDataset import SampleDataset
 
 
 class ControlPanel(QWidget):
-    sigDistributionTypeChanged = Signal(str)
+    sigDistributionTypeChanged = Signal(int)
     sigComponentNumberChanged = Signal(int)
     sigFocusSampleChanged = Signal(int) # index of that sample in list
     sigGUIResolverSettingsChanged = Signal(dict)
@@ -37,10 +38,10 @@ class ControlPanel(QWidget):
         self.auto_run_timer.setSingleShot(True)
         self.auto_run_timer.timeout.connect(self.on_auto_run_timer_timeout)
         self.auto_run_flag = False
-        
+
         self.init_ui()
         self.connect_all()
-        
+
         self.msg_box = QMessageBox(self)
         self.msg_box.setWindowFlags(Qt.Drawer)
 
@@ -125,10 +126,10 @@ class ControlPanel(QWidget):
         self.distribution_gen_weibull_radio_button.clicked.connect(self.on_distribution_type_changed)
         self.component_number_add_button.clicked.connect(self.on_component_number_add_clicked)
         self.component_reduce_button.clicked.connect(self.on_component_number_reduce_clicked)
-        
+
         self.data_index_previous_button.clicked.connect(self.on_data_index_previous_clicked)
         self.data_index_next_button.clicked.connect(self.on_data_index_next_clicked)
-        
+
         self.iteration_scope_checkbox.stateChanged.connect(self.on_show_iteration_changed)
         self.inherit_params_checkbox.stateChanged.connect(self.on_inherit_params_changed)
         self.auto_fit_checkbox.stateChanged.connect(self.on_auto_fit_changed)
@@ -214,16 +215,16 @@ class ControlPanel(QWidget):
 
     def on_distribution_type_changed(self):
         if self.distribution_normal_radio_button.isChecked():
-            self.sigDistributionTypeChanged.emit("normal")
-            self.logger.info("Distribution type has been changed to [%s].", "Normal")
+            self.sigDistributionTypeChanged.emit(DistributionType.Normal)
+            self.logger.info("Distribution type has been changed to [%s].", DistributionType.Normal)
         elif self.distribution_weibull_radio_button.isChecked():
             assert self.distribution_weibull_radio_button.isChecked()
-            self.sigDistributionTypeChanged.emit("weibull")
-            self.logger.info("Distribution type has been changed to [%s].", "Weibull")
+            self.sigDistributionTypeChanged.emit(DistributionType.Weibull)
+            self.logger.info("Distribution type has been changed to [%s].", DistributionType.Weibull)
         else:
             assert self.distribution_gen_weibull_radio_button.isChecked()
-            self.sigDistributionTypeChanged.emit("gen_weibull")
-            self.logger.info("Distribution type has been changed to [%s].", "General Weibull")
+            self.sigDistributionTypeChanged.emit(DistributionType.GeneralWeibull)
+            self.logger.info("Distribution type has been changed to [%s].", DistributionType.GeneralWeibull)
 
         if self.sample_names is not None:
             self.data_index = self.data_index
@@ -300,7 +301,7 @@ class ControlPanel(QWidget):
             self.gui_logger.warning(self.tr("The fitted data may be not valid, auto run stoped."))
             self.auto_run_flag = False
             self.on_widgets_enable_changed(True)
-        
+
         if self.data_index == self.data_length-1:
             self.logger.info("The auto run has reached the last sample and stoped.")
             self.gui_logger.info(self.tr("The auto run has reached the last sample and stoped."))
@@ -325,7 +326,7 @@ class ControlPanel(QWidget):
         if self.auto_run_flag:
             self.auto_run_flag = False
             self.logger.info("Auto run was canceled.")
-        
+
         self.sigGUIResolverTaskCanceled.emit()
 
     def on_try_fit_clicked(self):
@@ -335,7 +336,7 @@ class ControlPanel(QWidget):
         if not self.check_data_loaded():
             return
         self.sigMultiProcessingTaskStarted.emit()
-    
+
     def on_fitting_failed(self, message):
         if self.auto_run_flag:
             self.auto_run_flag = False
