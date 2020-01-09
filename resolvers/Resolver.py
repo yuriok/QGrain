@@ -25,23 +25,23 @@ class Resolver:
         self.__algorithm_data_cache = {}
         self.refresh()
 
+        # algorithms settings
         self.global_optimization_maxiter = global_optimization_maxiter
         self.global_optimization_success_iter = global_optimization_success_iter
         self.global_optimization_stepsize = global_optimization_stepsize
-
         self.minimizer_tolerance = minimizer_tolerance
         self.minimizer_maxiter = minimizer_maxiter
-
         self.final_tolerance = final_tolerance
         self.final_maxiter = final_maxiter
 
+        # the related data of current sample
         self.sample_name = None # type: str
         self.real_x = None # type: np.ndarray
-        self.x_offset = 0
+        self.x_offset = 0.0 # type: float
         self.bin_numbers = None # type: np.ndarray
         self.fitting_space_x = None # type: np.ndarray
         self.target_y = None # type: np.ndarray
-
+        # parameters to preprocess the data
         self.start_index = None # type: int
         self.end_index = None # type: int
 
