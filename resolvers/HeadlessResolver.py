@@ -9,8 +9,8 @@ from resolvers.Resolver import Resolver
 
 class FittingTask:
     def __init__(self, sample: SampleData,
-                 distribution_type=DistributionType.Weibull,
-                 component_number=2,
+                 distribution_type=DistributionType.GeneralWeibull,
+                 component_number=3,
                  algorithm_settings=None):
         self.sample = sample
         self.component_number = component_number
