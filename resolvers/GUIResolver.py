@@ -91,14 +91,14 @@ class GUIResolver(QObject, Resolver):
 
     def on_global_fitting_failed(self, algorithm_result: OptimizeResult):
         self.sigFittingFailed.emit(self.tr("Fitting failed during global fitting progress."))
-        self.logger.error("Fitting failed during global fitting progress. Details: [%s].", algorithm_result.msg)
+        self.logger.error("Fitting failed during global fitting progress. Details: [%s].", algorithm_result.message)
 
     def on_global_fitting_succeeded(self, algorithm_result: OptimizeResult):
         self.logger.debug("Global fitting progress succeeded.")
 
     def on_final_fitting_failed(self, algorithm_result: OptimizeResult):
         self.sigFittingFailed.emit(self.tr("Fitting failed during final fitting progress."))
-        self.logger.error("Fitting failed during final fitting progress. Details: [%s].", algorithm_result.msg)
+        self.logger.error("Fitting failed during final fitting progress. Details: [%s].", algorithm_result.message)
 
     def on_exception_raised_while_fitting(self, exception: Exception):
         if type(exception) == CancelError:
