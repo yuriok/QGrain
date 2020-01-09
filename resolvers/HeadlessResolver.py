@@ -1,6 +1,8 @@
 import numpy as np
+from scipy.optimize import OptimizeResult
 
 from algorithms import DistributionType
+from models.FittingResult import FittingResult
 from models.SampleData import SampleData
 from resolvers.Resolver import Resolver
 
@@ -19,16 +21,16 @@ class FittingTask:
 class HeadlessResolver(Resolver):
     def __init__(self):
         super().__init__()
-        self.current_task = None
-        self.current_result = None
+        self.current_task = None # type: FittingTask
+        self.current_result = None # type: FittingResult
+        self.current_exception = None # type: Exception
 
-    def on_fitting_succeeded(self, algorithm_result):
+    def on_fitting_succeeded(self, algorithm_result: OptimizeResult):
         result = self.get_fitting_result(algorithm_result.x)
-        sample_id = self.current_task.sample.uuid
-        self.current_result = (sample_id, result)
+        self.current_result = result
 
     def on_exception_raised_while_fitting(self, exception: Exception):
-        print(exception)
+        self.current_exception
 
     def execute_task(self, task: FittingTask):
         self.current_task = task
@@ -38,9 +40,7 @@ class HeadlessResolver(Resolver):
             self.change_settings(**task.algorithm_settings)
         self.feed_data(task.sample.name, task.sample.classes, task.sample.distribution)
         self.try_fit()
-
-        if self.current_result is None or \
-                self.current_result[0] != self.current_task.sample.uuid:
-            return False, self.current_task, None
+        if self.current_result is None:
+            return False, self.current_task, self.current_exception
         else:
-            return True, self.current_task, self.current_result[1]
+            return True, self.current_task, self.current_result
