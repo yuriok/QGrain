@@ -46,6 +46,10 @@ This method is for the user who has experience on Python and Shell. If you are u
 
     Note: Using `python` or `python3` depends on the alias or the filename of your Python interpreter.
 
+    If it goes well, you can see the app interface like this.
+
+    ![App Appearance](../figures/app_appearance.png)
+
 ## 2. Use executable file
 
 We have packed the executable setup file for Windows users.
