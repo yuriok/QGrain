@@ -1,5 +1,4 @@
-SOURCES =
-        ./ui/about_window.py \
+SOURCES = ./ui/about_window.py \
         ./ui/algorithm_setting.py \
         ./ui/app_setting.py \
         ./ui/control_panel.py \
