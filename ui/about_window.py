@@ -15,15 +15,15 @@ class AboutWindow(QMainWindow):
         self.setWindowTitle(self.tr("About"))
         self.setMinimumSize(600, 600)
         self.text = QTextBrowser()
-        
+
         self.layout.addWidget(self.text, 0, 0)
         self.setWindowFlags(Qt.Drawer)
         self.text.setHtml(
 """
 <font face="Arial">
     <h2>QGrain</h2>
-    <p>QGrain is a easy to use software that can unmix the multi-modal grain size distribution to some single modals.</p>
-    <p>It's writted by Python which make it can benifit from the great open source and scientific computation communities.</p>
+    <p>QGrain is an easy to use software that can unmix the multi-modal grain size distribution to some single modals.</p>
+    <p>It's writted by Python. This makes it can benefit from the great open source and scientific computation communities.</p>
     <p>QGrain is still during the rapid development stage, its functionalities and usages may changes many and many times. And of course, there probably are some bugs. We are very sorry for its immaturity.</p>
     <p>We are really hope to receive your feedbacks. Whatever it's bug report, request of new feature, disscusion on algorithms.</p>
     <p>Moreover, we are looking forward that there are some partners to join the development of QGrain.</>
