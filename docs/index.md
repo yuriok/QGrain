@@ -12,6 +12,12 @@ Moreover, we are looking forward that there are some partners to join the develo
 
 If you have any idea, you can contact the authors below.
 
+## Tutorials
+
+* [How to install QGrain](https://qgrain.net/tutorials/install)
+
 ## Authors
 
-* Yuming Liu <a href="mailto:\\liuyuming@ieecas.cn">liuyuming@ieecas.cn</a>
+* Yuming Liu
+
+  <a href="mailto:\\liuyuming@ieecas.cn">liuyuming@ieecas.cn</a>
