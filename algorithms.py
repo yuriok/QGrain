@@ -60,11 +60,11 @@ def get_base_func_name(distribution_type: DistributionType) -> str:
 
 def get_param_bounds(distribution_type: DistributionType) -> Tuple[Tuple[float, float]]:
     if distribution_type == DistributionType.Normal:
-        return ((None, None), (INFINITESIMAL, None))
+        return ((INFINITESIMAL, None), (INFINITESIMAL, None))
     elif distribution_type == DistributionType.Weibull:
         return ((INFINITESIMAL, None), (INFINITESIMAL, None))
     elif distribution_type == DistributionType.GeneralWeibull:
-        return ((None, None), (INFINITESIMAL, None), (INFINITESIMAL, None))
+        return ((INFINITESIMAL, None), (INFINITESIMAL, None), (INFINITESIMAL, None))
     else:
         raise NotImplementedError(distribution_type)
 

@@ -8,7 +8,7 @@ from PySide2.QtCore import QObject, Signal
 
 from algorithms import DistributionType
 from models.SampleDataset import SampleDataset
-from resolvers import FittingTask, HeadlessResolver
+from resolvers.HeadlessResolver import FittingTask, HeadlessResolver
 
 
 def run_task(task):
@@ -42,11 +42,11 @@ class MultiProcessingResolver(QObject):
 
     def on_component_number_changed(self, component_number: int):
         self.component_number = component_number
-        self.logger.info("Component number has been changed to [%d].", component_number)
+        self.logger.info("Component number has been changed to [%d].", self.component_number)
 
     def on_distribution_type_changed(self, distribution_type: DistributionType):
-        self.distribution_type = distribution_type
-        self.logger.info("Distribution type has been changed to [%s].", distribution_type)
+        self.distribution_type = DistributionType(distribution_type)
+        self.logger.info("Distribution type has been changed to [%s].", self.distribution_type)
 
     def on_algorithm_settings_changed(self, settings: dict):
         self.algorithm_settings = settings
