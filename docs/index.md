@@ -14,7 +14,9 @@ If you have any idea, you can contact the authors below.
 
 ## Tutorials
 
-* [How to install QGrain](https://qgrain.net/tutorials/install)
+* [How to install QGrain](./tutorials/install)
+
+* [How to load grain size distribution data](./tutorials/load_data)
 
 ## Authors
 
