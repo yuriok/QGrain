@@ -40,11 +40,11 @@ class GUIResolver(QObject, Resolver):
 
     def on_component_number_changed(self, component_number: int):
         self.component_number = component_number
-        self.logger.info("Component Number has been changed to [%d].", component_number)
+        self.logger.info("Component Number has been changed to [%d].", self.component_number)
 
     def on_distribution_type_changed(self, distribution_type: DistributionType):
-        self.distribution_type = distribution_type
-        self.logger.info("Distribution type has been changed to [%s].", distribution_type)
+        self.distribution_type = DistributionType(distribution_type)
+        self.logger.info("Distribution type has been changed to [%s].", self.distribution_type)
         # clear if type changed
         self.last_succeeded_params = None
 
