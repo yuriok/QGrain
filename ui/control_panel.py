@@ -215,16 +215,14 @@ class ControlPanel(QWidget):
 
     def on_distribution_type_changed(self):
         if self.distribution_normal_radio_button.isChecked():
-            self.sigDistributionTypeChanged.emit(DistributionType.Normal)
-            self.logger.info("Distribution type has been changed to [%s].", DistributionType.Normal)
+            distribution_type = DistributionType.Normal
         elif self.distribution_weibull_radio_button.isChecked():
-            assert self.distribution_weibull_radio_button.isChecked()
-            self.sigDistributionTypeChanged.emit(DistributionType.Weibull)
-            self.logger.info("Distribution type has been changed to [%s].", DistributionType.Weibull)
+            distribution_type = DistributionType.Weibull
         else:
             assert self.distribution_gen_weibull_radio_button.isChecked()
-            self.sigDistributionTypeChanged.emit(DistributionType.GeneralWeibull)
-            self.logger.info("Distribution type has been changed to [%s].", DistributionType.GeneralWeibull)
+            distribution_type = DistributionType.GeneralWeibull
+        self.logger.info("Distribution type has been changed to [%s].", distribution_type)
+        self.sigDistributionTypeChanged.emit(distribution_type.value)
 
         if self.sample_names is not None:
             self.data_index = self.data_index
