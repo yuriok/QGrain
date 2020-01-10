@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from uuid import uuid4, UUID
 from typing import Callable, Dict, Iterable, List, Tuple
 

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import Callable, Dict, Iterable, List, Tuple
 from uuid import UUID
 
@@ -64,7 +62,7 @@ class SampleDataset:
     @property
     def samples(self) -> Iterable[SampleData]:
         return [sample for sample in self.__samples]
-    
+
     def is_incremental(self, nums: np.ndarray) -> bool:
         """Returns `True` while the array is incremental.
         This method is used to validate the array of grain size classes."""
@@ -128,7 +126,7 @@ class SampleDataset:
         self.__samples.extend(temp)
         self.__classes = classes
 
-    def combine(self, another_dataset: SampleDataset):
+    def combine(self, another_dataset):
         equal_res = np.equal(another_dataset.classes, self.classes)
         if np.all(equal_res):
             self.__samples.extend(another_dataset.samples)
@@ -141,7 +139,7 @@ class SampleDataset:
                 return sample
         # TODO: raise custom exception
         raise ValueError("There is no sample with this id.", uuid)
-    
+
     def remove_sample_by_id(self, uuid: UUID):
         index_to_remove = None
         for index, sample in enumerate(self.samples):
