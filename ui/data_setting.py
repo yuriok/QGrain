@@ -30,28 +30,28 @@ class DataSetting(QWidget):
         self.main_layout.addWidget(self.title_label, 0, 0)
 
         self.class_row_label = QLabel(self.tr("Class Row"))
-        self.class_row_label.setToolTip(self.tr("The row index (starts with 0) of grain size classes that stored in data file."))
+        self.class_row_label.setToolTip(self.tr("The row index (starts with 0) of grain size classes."))
         self.main_layout.addWidget(self.class_row_label, 1, 0)
         self.class_row_edit = QLineEdit()
         self.class_row_edit.setValidator(self.int_validator)
         self.main_layout.addWidget(self.class_row_edit, 1, 1)
 
         self.sample_name_col_label = QLabel(self.tr("Sample Name Column"))
-        self.sample_name_col_label.setToolTip(self.tr("The column index (starts with 0) of sample names that stored in data file."))
+        self.sample_name_col_label.setToolTip(self.tr("The column index (starts with 0) of sample names."))
         self.main_layout.addWidget(self.sample_name_col_label, 2, 0)
         self.sample_name_col_edit = QLineEdit()
         self.sample_name_col_edit.setValidator(self.int_validator)
         self.main_layout.addWidget(self.sample_name_col_edit, 2, 1)
 
         self.distribution_start_row_label = QLabel(self.tr("Distribution Start Row"))
-        self.distribution_start_row_label.setToolTip(self.tr("The start row index (starts with 0) of distribution data that stored in data file.\nIt should be greater than the index of Class Row."))
+        self.distribution_start_row_label.setToolTip(self.tr("The start row index (starts with 0) of distribution data.\nIt should be greater than the row index of classes."))
         self.main_layout.addWidget(self.distribution_start_row_label, 3, 0)
         self.distribution_start_row_edit = QLineEdit()
         self.distribution_start_row_edit.setValidator(self.int_validator)
         self.main_layout.addWidget(self.distribution_start_row_edit, 3, 1)
 
         self.distribution_start_col_label = QLabel(self.tr("Distribution Start Column"))
-        self.distribution_start_col_label.setToolTip(self.tr("The start column index (starts with 0) of distribution data that stored in data file.\nIt should be greater than the index of Sample Name Column."))
+        self.distribution_start_col_label.setToolTip(self.tr("The start column index (starts with 0) of distribution data.\nIt should be greater than the column index of sample name."))
         self.main_layout.addWidget(self.distribution_start_col_label, 4, 0)
         self.distribution_start_col_edit = QLineEdit()
         self.distribution_start_col_edit.setValidator(self.int_validator)
@@ -96,7 +96,7 @@ class DataSetting(QWidget):
         else:
             settings.setValue("draw_charts", "False")
             self.sigDataSettingChanged.emit(dict(draw_charts=False))
-        
+
         settings.endGroup()
 
     def restore_settings(self, settings:QSettings):
