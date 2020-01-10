@@ -10,7 +10,7 @@ from PySide2.QtWidgets import QApplication, QSplashScreen
 
 from ui import GUILogHandler, MainWindow
 
-QGRAIN_VERSION = "0.2.3"
+QGRAIN_VERSION = "0.2.4"
 
 def create_necessary_folders():
     necessary_folders = ("./logs/",)
