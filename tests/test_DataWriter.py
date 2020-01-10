@@ -8,6 +8,7 @@ import xlrd
 
 sys.path.append(os.getcwd())
 from models.DataWriter import *
+from models.SampleData import SampleData
 from resolvers.Resolver import Resolver
 
 
@@ -52,7 +53,7 @@ class TestDataWriter(unittest.TestCase):
         resolver.on_fitting_succeeded = types.MethodType(success_hook, resolver)
         prepared = []
         for i in range(5):
-            resolver.feed_data("Sample" + str(i+1), x, y)
+            resolver.feed_data(SampleData("Sample" + str(i+1), x, y))
             resolver.try_fit()
             assert fitting_result is not None
             prepared.append(fitting_result)

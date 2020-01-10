@@ -4,6 +4,7 @@ import time
 import numpy as np
 from PySide2.QtCore import QMutex, QObject, Signal, Slot
 from scipy.interpolate import interp1d
+from scipy.optimize import OptimizeResult
 
 from algorithms import DistributionType
 from models.FittingResult import FittingResult
@@ -25,7 +26,6 @@ class GUIResolver(QObject, Resolver):
     def __init__(self, inherit_params=True, emit_iteration=False, time_interval=0.05):
         super().__init__()
         Resolver.__init__(self)
-
         # settings
         self.expected_params = None
         self.inherit_params = inherit_params
@@ -40,11 +40,11 @@ class GUIResolver(QObject, Resolver):
 
     def on_component_number_changed(self, component_number: int):
         self.component_number = component_number
-        self.logger.info("Component Number has been changed to [%d].", component_number)
+        self.logger.info("Component Number has been changed to [%d].", self.component_number)
 
     def on_distribution_type_changed(self, distribution_type: DistributionType):
-        self.distribution_type = distribution_type
-        self.logger.info("Distribution type has been changed to [%s].", distribution_type)
+        self.distribution_type = DistributionType(distribution_type)
+        self.logger.info("Distribution type has been changed to [%s].", self.distribution_type)
         # clear if type changed
         self.last_succeeded_params = None
 
@@ -59,9 +59,9 @@ class GUIResolver(QObject, Resolver):
 
     def on_target_data_changed(self, sample: SampleData):
         self.logger.debug("Target data has been changed to [%s].", sample.name)
-        self.feed_data(sample.name, sample.classes, sample.distribution)
+        self.feed_data(sample)
 
-    def on_data_fed(self, sample_name):
+    def on_data_fed(self, sample_name: str):
         self.logger.debug("Sample [%s] has been fed.", sample_name)
 
     def on_data_not_prepared(self):
@@ -89,15 +89,18 @@ class GUIResolver(QObject, Resolver):
         self.sigWidgetsEnable.emit(True)
         self.logger.debug("Fitting progress finished.")
 
-    def on_global_fitting_failed(self, algorithm_result):
+    def on_global_fitting_failed(self, algorithm_result: OptimizeResult):
         self.sigFittingFailed.emit(self.tr("Fitting failed during global fitting progress."))
-        self.logger.error("Fitting failed during global fitting progress. Details: [%s].", algorithm_result)
+        self.logger.error("Fitting failed during global fitting progress. Details: [%s].", algorithm_result.message)
 
-    def on_final_fitting_failed(self, algorithm_result):
+    def on_global_fitting_succeeded(self, algorithm_result: OptimizeResult):
+        self.logger.debug("Global fitting progress succeeded.")
+
+    def on_final_fitting_failed(self, algorithm_result: OptimizeResult):
         self.sigFittingFailed.emit(self.tr("Fitting failed during final fitting progress."))
-        self.logger.error("Fitting failed during final fitting progress. Details: [%s].", algorithm_result)
+        self.logger.error("Fitting failed during final fitting progress. Details: [%s].", algorithm_result.message)
 
-    def on_exception_raised_while_fitting(self, exception):
+    def on_exception_raised_while_fitting(self, exception: Exception):
         if type(exception) == CancelError:
             self.logger.info("The fitting progress was canceled by user.")
         else:
@@ -117,7 +120,8 @@ class GUIResolver(QObject, Resolver):
 
         if self.emit_iteration:
             time.sleep(self.time_interval)
-            self.sigSingleIterationFinished.emit(self.current_iteration, self.get_fitting_result(fitted_params))
+            fitting_result = self.get_fitting_result(fitted_params)
+            self.sigSingleIterationFinished.emit(self.current_iteration, fitting_result)
         self.current_iteration += 1
 
     def global_iteration_callback(self, fitted_params, function_value, accept):
@@ -137,7 +141,7 @@ class GUIResolver(QObject, Resolver):
         self.cancel_mutex.unlock()
 
     def on_excepted_mean_value_changed(self, mean_values):
-        if self.real_x is None or self.target_y is None or self.fitting_space_x is None:
+        if not self.data_prepared:
             return
         x_real_to_space = interp1d(self.real_x, self.fitting_space_x)
         converted_x = [x_real_to_space(mean).max() - self.x_offset for mean in mean_values]
