@@ -1,4 +1,5 @@
-## QGrain
+# QGrain
+
 QGrain is an easy to use software that can unmix the multi-modal grain size distribution to some single modals.
 
 It's writted by Python. This makes it can benefit from the great open source and scientific computation communities.
@@ -11,6 +12,6 @@ Moreover, we are looking forward that there are some partners to join the develo
 
 If you have any idea, you can contact the authors below.
 
+## Authors
 
-#### Authors:
 * Yuming Liu <a href="mailto:\\liuyuming@ieecas.cn">liuyuming@ieecas.cn</a>
