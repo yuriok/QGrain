@@ -314,6 +314,8 @@ class ControlPanel(QWidget):
     def on_auto_run_clicked(self):
         if not self.check_data_loaded():
             return
+        self.auto_fit_checkbox.setCheckState(Qt.Checked)
+        self.auto_record_checkbox.setCheckState(Qt.Checked)
         # from current sample to fit, to avoid that it need to resart from the first sample every time
         self.data_index = self.data_index
         self.auto_run_flag = True
