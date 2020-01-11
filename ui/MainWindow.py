@@ -5,16 +5,20 @@ from typing import List
 from PySide2.QtCore import (QCoreApplication, QEventLoop, QMutex, Qt, QThread,
                             Signal)
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QAction
-from PySide2.QtWidgets import (QAbstractItemView, QDockWidget, QMainWindow,
-                               QMessageBox, QPushButton, QTableWidget,
-                               QTableWidgetItem, QWidget)
+from PySide2.QtWidgets import (QAbstractItemView, QAction, QDockWidget,
+                               QMainWindow, QMessageBox, QTableWidget,
+                               QTableWidgetItem)
 
-from ui.data_manager import DataManager, SampleDataset
-from resolvers.MultiprocessingResolver import MultiProcessingResolver
+from models.SampleDataset import SampleDataset
 from resolvers.GUIResolver import GUIResolver
-from ui import (AboutWindow, ControlPanel, FittingCanvas, RecordedDataTable,
-                SettingWindow, TaskWindow)
+from resolvers.MultiprocessingResolver import MultiProcessingResolver
+from ui.AboutWindow import AboutWindow
+from ui.ControlPanel import ControlPanel
+from ui.DataManager import DataManager
+from ui.FittingCanvas import FittingCanvas
+from ui.RecordedDataTable import RecordedDataTable
+from ui.SettingWindow import SettingWindow
+from ui.TaskWindow import TaskWindow
 
 
 class GUILogHandler(logging.Handler):
@@ -119,7 +123,7 @@ class MainWindow(QMainWindow):
 
         self.control_panel.sigDataSettingsChanged.connect(self.data_manager.on_settings_changed)
         self.control_panel.sigGUIResolverFittingCanceled.connect(self.on_task_canceled)
-        self.control_panel.sigMultiProcessingFittingStarted .connect(self.multiprocessing_resolver.execute_tasks)
+        self.control_panel.sigMultiProcessingFittingStarted.connect(self.multiprocessing_resolver.execute_tasks)
         # Connect directly
         self.control_panel.record_button.clicked.connect(self.data_manager.record_current_data)
 

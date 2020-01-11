@@ -1,8 +1,10 @@
-from PySide2.QtWidgets import QMainWindow, QCheckBox, QLabel, QRadioButton, QPushButton, QGridLayout, QApplication, QSizePolicy, QWidget, QTabWidget, QComboBox, QLineEdit, QMessageBox
-from PySide2.QtCore import Qt, QSettings, Signal
-from PySide2.QtGui import QIcon, QValidator, QIntValidator, QDoubleValidator
-
 import logging
+
+from PySide2.QtCore import QSettings, Qt, Signal
+from PySide2.QtGui import QDoubleValidator, QIntValidator, QValidator
+from PySide2.QtWidgets import (QGridLayout, QLabel, QLineEdit, QMessageBox,
+                               QWidget)
+
 
 class AlgorithmSetting(QWidget):
     sigAlgorithmSettingChanged = Signal(dict)
@@ -75,7 +77,7 @@ class AlgorithmSetting(QWidget):
         self.final_maxiter_edit.setValidator(self.int_validator)
         self.main_layout.addWidget(self.final_maxiter_edit, 7, 1)
 
-    def save_settings(self, settings:QSettings):
+    def save_settings(self, settings: QSettings):
         settings.beginGroup("algorithm")
         global_optimization_maxiter = self.global_maxiter_edit.text()
         global_optimization_success_iter = self.global_success_iter_edit.text()
@@ -115,7 +117,7 @@ class AlgorithmSetting(QWidget):
         finally:
             settings.endGroup()
 
-    def restore_settings(self, settings:QSettings):
+    def restore_settings(self, settings: QSettings):
         settings.beginGroup("algorithm")
         try:
             self.global_maxiter_edit.setText(settings.value("global_optimization_maxiter"))
