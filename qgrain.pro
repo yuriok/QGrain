@@ -2,6 +2,7 @@ SOURCES = ./ui/AboutWindow.py \
         ./ui/AlgorithmSetting.py \
         ./ui/AppSetting.py \
         ./ui/ControlPanel.py \
+        ./ui/DataManager.py \
         ./ui/DataSetting.py \
         ./ui/FittingCanvas.py \
         ./ui/MainWindow.py \
