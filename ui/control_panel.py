@@ -47,47 +47,44 @@ class ControlPanel(QWidget):
 
     def init_ui(self):
         self.main_layout = QGridLayout(self)
-
+        # Distribution type
         self.distribution_type_label = QLabel(self.tr("Distribution Type:"), self)
-        self.distribution_type_label.setToolTip(self.tr("Select the base distribution function of each modal."))
+        self.distribution_type_label.setToolTip(self.tr("Select the base distribution function of each component."))
         self.distribution_normal_radio_button = QRadioButton(self.tr("Normal"), self)
         self.distribution_normal_radio_button.setToolTip(self.tr("See [%s] for more details.") % "https://en.wikipedia.org/wiki/Normal_distribution")
         self.distribution_weibull_radio_button = QRadioButton(self.tr("Weibull"), self)
         self.distribution_weibull_radio_button.setToolTip(self.tr("See [%s] for more details.") % "https://en.wikipedia.org/wiki/Weibull_distribution")
-        self.distribution_gen_weibull_radio_button = QRadioButton(self.tr("Gen.Weibull"), self)
+        self.distribution_gen_weibull_radio_button = QRadioButton(self.tr("Gen. Weibull"), self)
         self.distribution_gen_weibull_radio_button.setToolTip(self.tr("General Weibull distribution which has an additional location parameter."))
         self.main_layout.addWidget(self.distribution_type_label, 0, 0, 1, 2)
         self.main_layout.addWidget(self.distribution_normal_radio_button, 0, 1)
         self.main_layout.addWidget(self.distribution_weibull_radio_button, 0, 2)
         self.main_layout.addWidget(self.distribution_gen_weibull_radio_button, 0, 3)
-
         # Component number
         self.component_number_label = QLabel(self.tr("Components:"))
-        self.component_number_label.setToolTip(self.tr("Select the mixed component number of the distribution."))
+        self.component_number_label.setToolTip(self.tr("Select the component number of the mixed distribution."))
         self.component_number_display = QLabel(self.tr("Unknown"))
         self.component_number_add_button = QPushButton(self.tr("+"))
-        self.component_number_add_button.setToolTip(self.tr("Click to add one component. It should be less than 11."))
+        self.component_number_add_button.setToolTip(self.tr("Click to add one component.\nIt should be less than 11."))
         self.component_reduce_button = QPushButton(self.tr("-"))
-        self.component_reduce_button.setToolTip(self.tr("Click to reduce one component. It should be greater than 1."))
+        self.component_reduce_button.setToolTip(self.tr("Click to reduce one component.\nIt should be positive."))
         self.main_layout.addWidget(self.component_number_label, 1, 0)
         self.main_layout.addWidget(self.component_number_display, 1, 1)
         self.main_layout.addWidget(self.component_number_add_button, 1, 2)
         self.main_layout.addWidget(self.component_reduce_button, 1, 3)
-
         # Some usual settings
-        self.iteration_scope_checkbox = QCheckBox(self.tr("Iteration Scope"))
-        self.iteration_scope_checkbox.setToolTip(self.tr("When this option is checked, it will display the iteration procedure."))
+        self.observe_iteration_checkbox = QCheckBox(self.tr("Observe Iteration"))
+        self.observe_iteration_checkbox.setToolTip(self.tr("Whether to display the iteration procedure."))
         self.inherit_params_checkbox = QCheckBox(self.tr("Inherit Parameters"))
-        self.inherit_params_checkbox.setToolTip(self.tr("When this option is checked, it will inherit the last fitted parameters to the next time of fitting.\nIt will highly improve the accuracy and efficiency when the samples are continuous."))
-        self.main_layout.addWidget(self.iteration_scope_checkbox, 2, 0, 1, 2)
+        self.inherit_params_checkbox.setToolTip(self.tr("Whether to inherit the last fitted parameters.\nIt will improve the accuracy and efficiency when the samples are continuous."))
+        self.main_layout.addWidget(self.observe_iteration_checkbox, 2, 0, 1, 2)
         self.main_layout.addWidget(self.inherit_params_checkbox, 2, 2, 1, 2)
         self.auto_fit_checkbox = QCheckBox(self.tr("Auto Fit"))
-        self.auto_fit_checkbox.setToolTip(self.tr("When this option is checked, it will automaticlly fit after the sample data changed."))
+        self.auto_fit_checkbox.setToolTip(self.tr("Whether to automaticlly fit after the sample data changed."))
         self.auto_record_checkbox = QCheckBox(self.tr("Auto Record"))
-        self.auto_record_checkbox.setToolTip(self.tr("When this option is checked, it will automaticlly record the fitted data after fitting finished."))
+        self.auto_record_checkbox.setToolTip(self.tr("Whether to automaticlly record the fitting result after fitting finished."))
         self.main_layout.addWidget(self.auto_fit_checkbox, 3, 0, 1, 2)
         self.main_layout.addWidget(self.auto_record_checkbox, 3, 2, 1, 2)
-
         # Target data to fit
         self.data_index_label = QLabel(self.tr("Current Sample:"))
         self.data_index_label.setToolTip(self.tr("Current sample to fit."))
@@ -100,7 +97,6 @@ class ControlPanel(QWidget):
         self.main_layout.addWidget(self.data_index_display, 4, 1)
         self.main_layout.addWidget(self.data_index_previous_button, 4, 2)
         self.main_layout.addWidget(self.data_index_next_button, 4, 3)
-
         # Control bottons
         self.auto_run = QPushButton(self.tr("Auto Run Orderly"))
         self.auto_run.setToolTip(self.tr("Click to auto run the program.\nThe samples from current to the end will be processed one by one."))
@@ -114,11 +110,10 @@ class ControlPanel(QWidget):
         self.main_layout.addWidget(self.cancel_run, 5, 1)
         self.main_layout.addWidget(self.try_fit_button, 5, 2)
         self.main_layout.addWidget(self.record_button, 5, 3)
-
+        # Multi cores
         self.multiprocessing_button = QPushButton(self.tr("Multi Cores Fitting"))
-        self.multiprocessing_button.setToolTip(self.tr("Click to fit all samples. It will utilize more cores of cpu to accelerate calculation."))
+        self.multiprocessing_button.setToolTip(self.tr("Click to fit all samples. It will utilize all cores of cpu to accelerate calculation."))
         self.main_layout.addWidget(self.multiprocessing_button, 6, 0, 1, 4)
-
 
     def connect_all(self):
         self.distribution_normal_radio_button.clicked.connect(self.on_distribution_type_changed)
@@ -130,7 +125,7 @@ class ControlPanel(QWidget):
         self.data_index_previous_button.clicked.connect(self.on_data_index_previous_clicked)
         self.data_index_next_button.clicked.connect(self.on_data_index_next_clicked)
 
-        self.iteration_scope_checkbox.stateChanged.connect(self.on_show_iteration_changed)
+        self.observe_iteration_checkbox.stateChanged.connect(self.on_show_iteration_changed)
         self.inherit_params_checkbox.stateChanged.connect(self.on_inherit_params_changed)
         self.auto_fit_checkbox.stateChanged.connect(self.on_auto_fit_changed)
         self.auto_record_checkbox.stateChanged.connect(self.on_auto_record_changed)
@@ -201,7 +196,7 @@ class ControlPanel(QWidget):
         if not self.has_data:
             if show_msg:
                 self.msg_box.setWindowTitle(self.tr("Warning"))
-                self.msg_box.setText(self.tr("The data has not been loaded, the operation is invalid."))
+                self.msg_box.setText(self.tr("The grain size data has not been loaded, the operation is invalid."))
                 self.msg_box.exec_()
             return False
         else:
@@ -280,7 +275,7 @@ class ControlPanel(QWidget):
         self.component_reduce_button.setEnabled(enable)
         self.data_index_previous_button.setEnabled(enable)
         self.data_index_next_button.setEnabled(enable)
-        self.iteration_scope_checkbox.setEnabled(enable)
+        self.observe_iteration_checkbox.setEnabled(enable)
         self.inherit_params_checkbox.setEnabled(enable)
         self.auto_fit_checkbox.setEnabled(enable)
         self.auto_record_checkbox.setEnabled(enable)
@@ -289,14 +284,14 @@ class ControlPanel(QWidget):
         self.record_button.setEnabled(enable)
         self.multiprocessing_button.setEnabled(enable)
 
-    def on_record_clickedd(self):
+    def on_record_clicked(self):
         self.sigRecordFittingData.emit(self.current_name)
         self.logger.debug("Record data signal emitted.")
 
     def on_fitting_epoch_suceeded(self, result: FittingResult):
         if self.auto_run_flag and result.has_invalid_value:
-            self.logger.warning("The fitted data may be not valid, auto run stoped.")
-            self.gui_logger.warning(self.tr("The fitted data may be not valid, auto run stoped."))
+            self.logger.warning("The fitting result may be not valid, auto run stoped.")
+            self.gui_logger.warning(self.tr("The fitting result may be not valid, auto run stoped."))
             self.auto_run_flag = False
             self.on_widgets_enable_changed(True)
 
@@ -323,7 +318,7 @@ class ControlPanel(QWidget):
     def on_cancel_run_clicked(self):
         if self.auto_run_flag:
             self.auto_run_flag = False
-            self.logger.info("Auto run was canceled.")
+            self.logger.info("Auto run flag has been changed to False.")
 
         self.sigGUIResolverTaskCanceled.emit()
 
@@ -347,7 +342,7 @@ class ControlPanel(QWidget):
     def setup_all(self):
         self.component_number = 3
         self.distribution_gen_weibull_radio_button.setChecked(True)
-        self.iteration_scope_checkbox.setCheckState(Qt.Unchecked)
+        self.observe_iteration_checkbox.setCheckState(Qt.Unchecked)
         self.inherit_params_checkbox.setCheckState(Qt.Checked)
         self.auto_fit_checkbox.setCheckState(Qt.Checked)
         self.auto_record_checkbox.setCheckState(Qt.Checked)
