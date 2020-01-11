@@ -18,13 +18,13 @@ This method is for the user who has experience on Python and Shell. If you are u
 
 2. Download the codes of QGrain
 
-    The repository of QGrain is hosted on GitHub. The link is over [here](https://github.com/yuriok/QGrain).
+    The repository of QGrain is hosted on GitHub. The link is over [here](https://github.com/QGrain-Organization/QGrain).
 
     * You can clone the repository by running the following command if you have git installed.
 
-      `git clone https://github.com/yuriok/QGrain.git`
+      `git clone https://github.com/QGrain-Organization/QGrain.git`
 
-    * Or, you can download the pure codes directly by clicking [here](https://github.com/yuriok/QGrain/archive/master.zip).
+    * Or, you can download the pure codes directly by clicking [here](https://github.com/QGrain-Organization/QGrain/archive/master.zip).
 
       If you choose to download the zip file, please extract it.
 
@@ -54,4 +54,4 @@ This method is for the user who has experience on Python and Shell. If you are u
 
 We have packed the executable setup file for Windows users.
 
-You can download it from [here](https://github.com/yuriok/QGrain/releases).
+You can download it from [here](https://github.com/QGrain-Organization/QGrain/releases).
