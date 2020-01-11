@@ -18,6 +18,10 @@ If you have any idea, you can contact the authors below.
 
 * [How to load grain size distribution data](./tutorials/load_data)
 
+* [The algorithms of QGrain](./tutorials/algorithm)
+
+* [How to fit the samples](./tutorials/fit)
+
 ## Authors
 
 * Yuming Liu

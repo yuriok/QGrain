@@ -25,9 +25,9 @@ class ViewDataManager(QObject):
         self.is_detailed = is_detailed
         self.existing_key2display_name = {
             "fraction": self.tr("Fraction"),
-            "mean": self.tr("Mean")+" [μm]",
-            "median": self.tr("Median")+" [μm]",
-            "mode": self.tr("Mode")+" [μm]",
+            "mean": self.tr("Mean")+" (μm)",
+            "median": self.tr("Median")+" (μm)",
+            "mode": self.tr("Mode")+" (μm)",
             # "variance": self.tr("Variance"),
             "standard_deviation": self.tr("Standard Deviation"),
             "skewness": self.tr("Skewness"),
@@ -35,7 +35,6 @@ class ViewDataManager(QObject):
         self.summary_keys = ("fraction", "mean", "median")
         self.detailed_keys = tuple([key for key, display_name in self.existing_key2display_name.items()])
         self.records = [] #List[SingleViewData]
-
 
     @property
     def data_count(self) -> int:
@@ -65,7 +64,7 @@ class ViewDataManager(QObject):
         elif distribution_type == DistributionType.Weibull:
             return self.tr("Weibull")
         elif distribution_type == DistributionType.GeneralWeibull:
-            return self.tr("General Weibull")
+            return self.tr("Gen. Weibull")
         else:
             raise NotImplementedError(distribution_type)
 
@@ -78,7 +77,7 @@ class ViewDataManager(QObject):
             if value is None:
                 return "None"
             # must judge this first,
-            # because `Formula` can pass `numpy.isreal` but raise error in `numpy.isnan` 
+            # because `Formula` can pass `numpy.isreal` but raise error in `numpy.isnan`
             elif type(value) in accepted_types:
                 return value
             # if value is real number (i.e. int, float, numpy.int32, numpy.float32, etc.)
@@ -94,7 +93,7 @@ class ViewDataManager(QObject):
             # if the type of value is unaccepted, use its readable str to write
             else:
                 return str(value)
-        
+
         item = QTableWidgetItem(check_value(value))
         item.setTextAlignment(Qt.AlignCenter)
         self.table.setItem(row, col, item)
@@ -137,7 +136,7 @@ class ViewDataManager(QObject):
         # reset the column number of table
         column_count = max(max_ncomp_before, max_ncomp_new) * self.actual_component_columns + self.COMPONENT_START_COLUMN
         self.table.setColumnCount(column_count)
-        
+
         # update contents
         first_row_index = self.data_count + self.TABLE_HEADER_ROWS
         for record_index, record in enumerate(records_to_add):
@@ -162,7 +161,7 @@ class ViewDataManager(QObject):
                         self.write(row, last_column + param_index + 1, param_value)
             # store the records
             self.records.append(record)
-            
+
         # means there is greater ncomp and the headers are need to be updated
         if max_ncomp_new > max_ncomp_before:
             self.update_headers()
@@ -182,7 +181,7 @@ class ViewDataManager(QObject):
                     rows_to_remove.add(i)
         rows_to_remove = list(rows_to_remove)
         rows_to_remove.sort()
-        
+
         uuids_and_names_to_remove = []
         offset = 0
         for row in rows_to_remove:
@@ -190,7 +189,7 @@ class ViewDataManager(QObject):
             removed_view_data = self.records.pop(row-offset-self.TABLE_HEADER_ROWS)
             uuids_and_names_to_remove.append((removed_view_data.uuid, removed_view_data.name))
             offset += 1
-        
+
         # reset the column number of table
         column_count = self.max_component_number * self.actual_component_columns + self.COMPONENT_START_COLUMN
         self.table.setColumnCount(column_count)
