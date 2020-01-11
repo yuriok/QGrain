@@ -2,11 +2,10 @@ import logging
 
 from PySide2.QtCore import QSettings, Qt, Signal
 from PySide2.QtGui import QIcon, QIntValidator, QValidator
-from PySide2.QtWidgets import (QCheckBox, QComboBox, QGridLayout, QLabel,
-                               QLineEdit, QMessageBox, QPushButton,
-                               QRadioButton, QSizePolicy, QWidget)
+from PySide2.QtWidgets import (QCheckBox, QGridLayout, QLabel, QLineEdit,
+                               QMessageBox, QWidget)
 
-from models.DataLayoutSetting import *
+from models.DataLayoutSetting import DataLayoutError, DataLayoutSetting
 
 
 class DataSetting(QWidget):

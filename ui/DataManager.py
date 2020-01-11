@@ -1,29 +1,25 @@
-
-
 import logging
 import os
-from typing import Iterable, List, Tuple, Callable
+from typing import Callable, Iterable, List, Tuple
 from uuid import UUID
 
 import numpy as np
-from PySide2.QtCore import QObject, QStandardPaths, Qt, Signal, QThread
-from PySide2.QtWidgets import QFileDialog, QMessageBox, QWidget, QProgressDialog
+from PySide2.QtCore import QObject, QStandardPaths, Qt, QThread, Signal
+from PySide2.QtWidgets import QFileDialog, QMessageBox, QWidget
 
 from algorithms import DistributionType
-from models.FittingResult import *
+from models.DataLayoutSetting import *
 from models.DataLoader import *
 from models.DataWriter import *
-from models.DataLayoutSetting import *
+from models.FittingResult import *
 from models.SampleData import *
 from models.SampleDataset import *
-
-
 from resolvers.HeadlessResolver import FittingTask
 
 
 class BackgroundLoader(QObject):
     sigWorkSucceeded = Signal(SampleDataset)
-    sigWorkFailed = Signal(Exception)
+    sigWorkFailed = Signal(str, Exception)
 
     def __init__(self):
         super().__init__()
@@ -35,12 +31,12 @@ class BackgroundLoader(QObject):
             dataset = self.actual_loader.try_load_data(filename, file_type, layout)
             self.sigWorkSucceeded.emit(dataset)
         except Exception as e:
-            self.sigWorkFailed.emit(e)
+            self.sigWorkFailed.emit(filename, e)
 
 
 class BackgroundWriter(QObject):
     sigWorkSucceeded = Signal()
-    sigWorkFailed = Signal(Exception)
+    sigWorkFailed = Signal(str, Exception)
 
     def __init__(self):
         super().__init__()
@@ -49,10 +45,10 @@ class BackgroundWriter(QObject):
     def on_work_started(self, filename: str, file_type: FileType,
                         results: List[FittingResult], draw_charts: bool):
         try:
-            dataset = self.actual_writer.try_save_data(filename, file_type, results, draw_charts)
+            self.actual_writer.try_save_data(filename, file_type, results, draw_charts)
             self.sigWorkSucceeded.emit()
         except Exception as e:
-            self.sigWorkFailed.emit(e)
+            self.sigWorkFailed.emit(filename, e)
 
 
 class DataManager(QObject):
@@ -72,7 +68,6 @@ class DataManager(QObject):
         self.dataset = None  # type: SampleDataset
         self.current_fitting_result = None  # type: FittingResult
         self.records = []  # type: List[FittingResult]
-
         # loader
         self.loader = BackgroundLoader()
         self.loading_thread = QThread()
@@ -80,7 +75,6 @@ class DataManager(QObject):
         self.sigLoadingStarted.connect(self.loader.on_work_started)
         self.loader.sigWorkSucceeded.connect(self.on_loading_succeeded)
         self.loader.sigWorkFailed.connect(self.on_loading_failed)
-
         # writer
         self.writer = BackgroundWriter()
         self.saving_thread = QThread()
@@ -88,7 +82,6 @@ class DataManager(QObject):
         self.sigSavingStarted.connect(self.writer.on_work_started)
         self.writer.sigWorkSucceeded.connect(self.on_saving_succeeded)
         self.writer.sigWorkFailed.connect(self.on_saving_failed)
-
         # settings
         self.data_layout_setting = DataLayoutSetting()
         self.draw_charts_flag = True
@@ -102,13 +95,11 @@ class DataManager(QObject):
         self.retry_msg_box.addButton(QMessageBox.StandardButton.Ok)
         self.retry_msg_box.setDefaultButton(QMessageBox.StandardButton.Retry)
         self.retry_msg_box.setWindowFlags(Qt.Drawer)
-
         self.record_msg_box = QMessageBox(self.host_widget)
         self.record_msg_box.addButton(QMessageBox.StandardButton.Discard)
         self.record_msg_box.addButton(QMessageBox.StandardButton.Ok)
         self.record_msg_box.setDefaultButton(QMessageBox.StandardButton.Discard)
         self.record_msg_box.setWindowFlags(Qt.Drawer)
-
 
     def show_message(self, title: str, message: str):
         self.msg_box.setWindowTitle(title)
@@ -168,7 +159,7 @@ class DataManager(QObject):
         self.logger.info("Data has been loaded.")
         self.show_info(self.tr("Data has been loaded."))
 
-    def on_loading_failed(self, exception: Exception):
+    def on_loading_failed(self, filename: str, exception: Exception):
         try:
             raise exception
         # handle the exceptions
@@ -222,10 +213,10 @@ class DataManager(QObject):
         if self.auto_record_flag:
             if result.has_invalid_value:
                 self.record_msg_box.setWindowTitle(self.tr("Warning"))
-                self.record_msg_box.setText(self.tr("The fitted data may be invalid, at least one NaN value occurs."))
+                self.record_msg_box.setText(self.tr("The fitting result may be invalid."))
                 exec_result = self.record_msg_box.exec_()
                 if exec_result == QMessageBox.Discard:
-                    self.logger.info("Fitted data of sample [%s] was discarded by user.", result.name)
+                    self.logger.info("Fitting result of sample [%s] was discarded by user.", result.name)
                     return
                 else:
                     self.record_current_data()
@@ -235,8 +226,8 @@ class DataManager(QObject):
     def on_multiprocessing_task_finished(self, succeeded_results: Iterable[FittingResult], failed_tasks: Iterable[FittingTask]):
         for fitting_result in succeeded_results:
             if fitting_result.has_invalid_value:
-                self.logger.warning("There is invalid value in the fitted data of sample [%s].", fitting_result.name)
-                self.gui_logger.warning(self.tr("There is invalid value in the fitted data of sample [%s]."), fitting_result.name)
+                self.logger.warning("There is invalid value in the fitting result of sample [%s].", fitting_result.name)
+                self.gui_logger.warning(self.tr("There is invalid value in the fitting result of sample [%s]."), fitting_result.name)
         self.records.extend(succeeded_results)
         self.sigDataRecorded.emit(succeeded_results)
         for failed_task in failed_tasks:
@@ -257,11 +248,8 @@ class DataManager(QObject):
 
     def record_current_data(self):
         if self.current_fitting_result is None:
-            self.logger.info("There is no fitted data to record, ignored.")
-            self.gui_logger.warning(self.tr("There is no fitted data to record."))
-            self.msg_box.setWindowTitle(self.tr("Warning"))
-            self.msg_box.setText(self.tr("There is no fitted data to record."))
-            self.msg_box.exec_()
+            self.logger.info("There is no fitting result to record, ignored.")
+            self.show_warning(self.tr("There is no fitting result to record."))
             return
         self.records.append(self.current_fitting_result)
         self.sigDataRecorded.emit([self.current_fitting_result])
@@ -299,7 +287,7 @@ class DataManager(QObject):
             self.logger.info("File saved.")
             self.show_info(self.tr("The data has been saved to the file."))
 
-    def on_saving_failed(self, exception: Exception):
+    def on_saving_failed(self, filename: str, exception: Exception):
         try:
             raise exception
         except PermissionError:

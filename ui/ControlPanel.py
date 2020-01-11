@@ -2,11 +2,10 @@ import logging
 import os
 
 import numpy as np
-from PySide2.QtCore import Qt, QThread, QTimer, Signal
+from PySide2.QtCore import Qt, QTimer, Signal
 from PySide2.QtGui import QFont
-from PySide2.QtWidgets import (QButtonGroup, QCheckBox, QFileDialog,
-                               QGridLayout, QLabel, QMessageBox, QPushButton,
-                               QRadioButton, QSizePolicy, QWidget)
+from PySide2.QtWidgets import (QCheckBox, QGridLayout, QLabel, QMessageBox,
+                               QPushButton, QRadioButton, QWidget)
 
 from algorithms import DistributionType
 from models.FittingResult import FittingResult
@@ -16,12 +15,12 @@ from models.SampleDataset import SampleDataset
 class ControlPanel(QWidget):
     sigDistributionTypeChanged = Signal(int)
     sigComponentNumberChanged = Signal(int)
-    sigFocusSampleChanged = Signal(int) # index of that sample in list
+    sigFocusSampleChanged = Signal(int) # index of the sample
     sigDataSettingsChanged = Signal(dict)
     sigGUIResolverSettingsChanged = Signal(dict)
     sigGUIResolverFittingStarted = Signal()
     sigGUIResolverFittingCanceled = Signal()
-    sigMultiProcessingFittingStarted  = Signal()
+    sigMultiProcessingFittingStarted = Signal()
     logger = logging.getLogger("root.ui.ControlPanel")
     gui_logger = logging.getLogger("GUI")
 
@@ -189,12 +188,24 @@ class ControlPanel(QWidget):
         else:
             return len(self.sample_names)
 
+    def show_message(self, title: str, message: str):
+        self.msg_box.setWindowTitle(title)
+        self.msg_box.setText(message)
+        self.msg_box.exec_()
+
+    def show_info(self, message: str):
+        self.show_message(self.tr("Info"), message)
+
+    def show_warning(self, message: str):
+        self.show_message(self.tr("Warning"), message)
+
+    def show_error(self, message: str):
+        self.show_message(self.tr("Error"), message)
+
     def check_data_loaded(self, show_msg=True):
         if not self.has_data:
             if show_msg:
-                self.msg_box.setWindowTitle(self.tr("Warning"))
-                self.msg_box.setText(self.tr("The grain size data has not been loaded, the operation is invalid."))
-                self.msg_box.exec_()
+                self.show_warning(self.tr("The grain size data has not been loaded, the operation is invalid."))
             return False
         else:
             return True
@@ -229,25 +240,25 @@ class ControlPanel(QWidget):
             return
         self.data_index += 1
 
-    def on_show_iteration_changed(self, state):
+    def on_show_iteration_changed(self, state: Qt.CheckState):
         if state == Qt.Checked:
             self.sigGUIResolverSettingsChanged.emit({"emit_iteration": True})
         else:
             self.sigGUIResolverSettingsChanged.emit({"emit_iteration": False})
 
-    def on_inherit_params_changed(self, state):
+    def on_inherit_params_changed(self, state: Qt.CheckState):
         if state == Qt.Checked:
             self.sigGUIResolverSettingsChanged.emit({"inherit_params": True})
         else:
             self.sigGUIResolverSettingsChanged.emit({"inherit_params": False})
 
-    def on_auto_fit_changed(self, state):
+    def on_auto_fit_changed(self, state: Qt.CheckState):
         if state == Qt.Checked:
             self.auto_fit_flag = True
         else:
             self.auto_fit_flag = False
 
-    def on_auto_record_changed(self, state):
+    def on_auto_record_changed(self, state: Qt.CheckState):
         if state == Qt.Checked:
             self.sigDataSettingsChanged.emit({"auto_record": True})
         else:
@@ -259,7 +270,7 @@ class ControlPanel(QWidget):
         self.data_index = 0
         self.logger.info("Data index has been set to 0.")
 
-    def on_data_selected(self, index):
+    def on_data_selected(self, index: int):
         self.data_index = index
         self.logger.debug("Sample data at [%d] is selected.", index)
 
@@ -321,16 +332,13 @@ class ControlPanel(QWidget):
     def on_multiprocessing_clicked(self):
         if not self.check_data_loaded():
             return
-        self.sigMultiProcessingFittingStarted .emit()
+        self.sigMultiProcessingFittingStarted.emit()
 
-    def on_fitting_failed(self, message):
+    def on_fitting_failed(self, message: str):
         if self.auto_run_flag:
             self.auto_run_flag = False
             self.logger.info("Auto run was canceled.")
-        self.gui_logger.error(self.tr("Fitting failed. {0}").format(message))
-        self.msg_box.setWindowTitle(self.tr("Error"))
-        self.msg_box.setText(self.tr("Fitting failed. {0}").format(message))
-        self.msg_box.exec_()
+        self.show_error(self.tr("Fitting failed. {0}").format(message))
 
     def setup_all(self):
         self.component_number = 3

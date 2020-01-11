@@ -5,7 +5,7 @@ import numpy as np
 import pyqtgraph as pg
 from PySide2.QtCore import Qt, Signal
 from PySide2.QtGui import QFont
-from PySide2.QtWidgets import QGridLayout, QSizePolicy, QWidget
+from PySide2.QtWidgets import QGridLayout, QWidget
 
 from models.FittingResult import FittingResult
 from models.SampleData import SampleData
@@ -22,13 +22,12 @@ class FittingCanvas(QWidget):
     sigExpectedMeanValueChanged = Signal(tuple)
     logger = logging.getLogger("root.ui.FittingCanvas")
     gui_logger = logging.getLogger("GUI")
-    
+
     def __init__(self, parent=None, **kargs):
         super().__init__(parent, **kargs)
         self.init_ui()
 
     def init_ui(self):
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.main_layout = QGridLayout(self)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.plot_widget = pg.PlotWidget(enableMenu=True)
@@ -54,7 +53,7 @@ class FittingCanvas(QWidget):
         self.legend = pg.LegendItem(offset=(80, 50))
         self.legend.setParentItem(self.plot_widget.plotItem)
         self.legend.addItem(self.target_item, self.legend_format % self.tr("Target"))
-        self.legend.addItem(self.fitted_item, self.legend_format % self.tr("Fitted Sum"))
+        self.legend.addItem(self.fitted_item, self.legend_format % self.tr("Fitted"))
         self.x_axis_space = XAxisSpace.Log10
         self.component_curves = []
         self.component_lines = []
@@ -164,7 +163,7 @@ class FittingCanvas(QWidget):
         all_ticks = [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(sample.classes)]
         x_axis.setTicks([major_ticks, minor_ticks, all_ticks])
         self.logger.debug("Target data has been changed to [%s].", sample.name)
-        
+
         # update the title of canvas
         if sample.name is None or sample.name == "":
             sample.name = "UNKNOWN"

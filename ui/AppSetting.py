@@ -1,8 +1,7 @@
 import logging
 
 from PySide2.QtCore import QSettings, Qt, Signal
-from PySide2.QtWidgets import (QComboBox, QGridLayout, QLabel, QMessageBox,
-                               QWidget)
+from PySide2.QtWidgets import QComboBox, QGridLayout, QLabel, QWidget
 
 
 class AppSetting(QWidget):
@@ -27,14 +26,14 @@ class AppSetting(QWidget):
         self.main_layout.addWidget(self.language_label, 1, 0)
         self.main_layout.addWidget(self.language_combox, 1, 1)
 
-    def save_settings(self, settings:QSettings):
+    def save_settings(self, settings: QSettings):
         settings.beginGroup("app")
         name, lang = self.language_options[self.language_combox.currentIndex()]
         settings.setValue("language", lang)
         self.logger.info("Language has been changed to [%s].", lang)
         settings.endGroup()
 
-    def restore_settings(self, settings:QSettings):
+    def restore_settings(self, settings: QSettings):
         settings.beginGroup("app")
         language = settings.value("language")
         for i, (name, lang) in enumerate(self.language_options):
