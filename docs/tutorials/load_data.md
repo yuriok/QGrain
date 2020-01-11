@@ -2,6 +2,8 @@
 
 In order to analyze the grain size distribution (GSD), the first necessary step is data loading. Click the **File** menu and select **Load** option to load GSD data from local files.
 
+QGrain provides some built-in files of samples. Lookup the **samples** folder of QGrain to get them.
+
 At present, QGrain supports three file formats, `.csv`, `.xls` (Excel 97-2003) and `.xlsx`.
 
 Note: For `.xls` and `.xlsx`, please put the data table at the **FIRST** sheet. Otherwise, the data can not be loaded.
