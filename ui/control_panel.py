@@ -17,16 +17,13 @@ class ControlPanel(QWidget):
     sigDistributionTypeChanged = Signal(int)
     sigComponentNumberChanged = Signal(int)
     sigFocusSampleChanged = Signal(int) # index of that sample in list
+    sigDataSettingsChanged = Signal(dict)
     sigGUIResolverSettingsChanged = Signal(dict)
     sigGUIResolverFittingStarted = Signal()
-    sigRuningSettingsChanged = Signal(dict)
-    sigDataSettingsChanged = Signal(dict)
-    sigRecordFittingData = Signal(str)
     sigGUIResolverTaskCanceled = Signal()
     sigMultiProcessingTaskStarted = Signal()
     logger = logging.getLogger("root.ui.ControlPanel")
     gui_logger = logging.getLogger("GUI")
-
 
     def __init__(self, parent=None, **kargs):
         super().__init__(parent, **kargs)
@@ -283,10 +280,6 @@ class ControlPanel(QWidget):
         self.try_fit_button.setEnabled(enable)
         self.record_button.setEnabled(enable)
         self.multiprocessing_button.setEnabled(enable)
-
-    def on_record_clicked(self):
-        self.sigRecordFittingData.emit(self.current_name)
-        self.logger.debug("Record data signal emitted.")
 
     def on_fitting_epoch_suceeded(self, result: FittingResult):
         if self.auto_run_flag and result.has_invalid_value:
