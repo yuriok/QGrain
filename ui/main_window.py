@@ -116,7 +116,7 @@ class MainWindow(QMainWindow):
         self.control_panel.sigFocusSampleChanged.connect(self.on_focus_sample_changed)
         self.control_panel.sigGUIResolverSettingsChanged.connect(self.gui_resolver.on_settings_changed)
         self.control_panel.sigGUIResolverFittingStarted.connect(self.gui_resolver.try_fit)
-        self.control_panel.sigRuningSettingsChanged.connect(self.on_settings_changed)
+
         self.control_panel.sigDataSettingsChanged.connect(self.data_manager.on_settings_changed)
         self.control_panel.sigGUIResolverTaskCanceled.connect(self.on_task_canceled)
         self.control_panel.sigMultiProcessingTaskStarted.connect(self.multiprocessing_resolver.execute_tasks)
@@ -216,11 +216,6 @@ class MainWindow(QMainWindow):
         # resize to tight layout
         self.raw_data_table.resizeColumnsToContents()
         self.logger.info("Data was loaded, and has been update to the table.")
-
-    def on_settings_changed(self, kwargs: dict):
-        for setting, value in kwargs.items():
-            setattr(self, setting, value)
-            self.logger.info("Setting [%s] have been changed to [%s].", setting, value)
 
     def on_data_item_clicked(self, row, column):
         self.sigDataSelected.emit(row)
