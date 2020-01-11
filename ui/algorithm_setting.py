@@ -15,7 +15,6 @@ class AlgorithmSetting(QWidget):
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.init_ui()
 
-
     def init_ui(self):
         self.main_layout = QGridLayout(self)
         self.int_validator = QIntValidator()
@@ -28,14 +27,14 @@ class AlgorithmSetting(QWidget):
         self.main_layout.addWidget(self.title_label, 0, 0)
 
         self.global_maxiter_label = QLabel(self.tr("Global Optimization Max Iteration"))
-        self.global_maxiter_label.setToolTip(self.tr("Max iteration number of global optimization."))
+        self.global_maxiter_label.setToolTip(self.tr("Max iteration number of global optimization.\nIf the global optimization iteration has reached the max number, fitting process will stop."))
         self.main_layout.addWidget(self.global_maxiter_label, 1, 0)
         self.global_maxiter_edit = QLineEdit()
         self.global_maxiter_edit.setValidator(self.int_validator)
         self.main_layout.addWidget(self.global_maxiter_edit, 1, 1)
 
         self.global_success_iter_label = QLabel(self.tr("Global Optimization Success Iteration"))
-        self.global_success_iter_label.setToolTip(self.tr("It's the terminal condition of global optimization.\nIt means the iteration number of reaching the same minimum."))
+        self.global_success_iter_label.setToolTip(self.tr("It's one of the terminal conditions of global optimization.\nIt means the iteration number of reaching the same minimum."))
         self.main_layout.addWidget(self.global_success_iter_label, 2, 0)
         self.global_success_iter_edit = QLineEdit()
         self.global_success_iter_edit.setValidator(self.int_validator)
