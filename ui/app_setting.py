@@ -10,10 +10,8 @@ class AppSetting(QWidget):
     gui_logger = logging.getLogger("GUI")
     def __init__(self):
         super().__init__()
-        self.language_options = [(self.tr("Simplified Chinese"), "zh_CN"),
-                                 (self.tr("English"), "en")]
-        self.msg_box = QMessageBox(self)
-        self.msg_box.setWindowFlags(Qt.Drawer)
+        self.language_options = [("简体中文", "zh_CN"),
+                                 ("English", "en")]
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.init_ui()
 
@@ -34,7 +32,6 @@ class AppSetting(QWidget):
         name, lang = self.language_options[self.language_combox.currentIndex()]
         settings.setValue("language", lang)
         self.logger.info("Language has been changed to [%s].", lang)
-        self.gui_logger.info(self.tr("Language has been changed to [%s]. Please restart the app to apply this setting."), name)
         settings.endGroup()
 
     def restore_settings(self, settings:QSettings):
