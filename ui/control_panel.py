@@ -20,8 +20,8 @@ class ControlPanel(QWidget):
     sigDataSettingsChanged = Signal(dict)
     sigGUIResolverSettingsChanged = Signal(dict)
     sigGUIResolverFittingStarted = Signal()
-    sigGUIResolverTaskCanceled = Signal()
-    sigMultiProcessingTaskStarted = Signal()
+    sigGUIResolverFittingCanceled = Signal()
+    sigMultiProcessingFittingStarted  = Signal()
     logger = logging.getLogger("root.ui.ControlPanel")
     gui_logger = logging.getLogger("GUI")
 
@@ -313,7 +313,7 @@ class ControlPanel(QWidget):
             self.auto_run_flag = False
             self.logger.info("Auto run flag has been changed to False.")
 
-        self.sigGUIResolverTaskCanceled.emit()
+        self.sigGUIResolverFittingCanceled.emit()
 
     def on_try_fit_clicked(self):
         self.sigGUIResolverFittingStarted.emit()
@@ -321,7 +321,7 @@ class ControlPanel(QWidget):
     def on_multiprocessing_clicked(self):
         if not self.check_data_loaded():
             return
-        self.sigMultiProcessingTaskStarted.emit()
+        self.sigMultiProcessingFittingStarted .emit()
 
     def on_fitting_failed(self, message):
         if self.auto_run_flag:
