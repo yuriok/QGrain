@@ -8,7 +8,7 @@ from PySide2.QtCore import QSettings, QTranslator
 from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtWidgets import QApplication, QSplashScreen
 
-from ui import GUILogHandler, MainWindow
+from ui.MainWindow import GUILogHandler, MainWindow
 
 QGRAIN_VERSION = "0.2.4"
 

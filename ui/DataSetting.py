@@ -2,11 +2,10 @@ import logging
 
 from PySide2.QtCore import QSettings, Qt, Signal
 from PySide2.QtGui import QIcon, QIntValidator, QValidator
-from PySide2.QtWidgets import (QCheckBox, QComboBox, QGridLayout, QLabel,
-                               QLineEdit, QMessageBox, QPushButton,
-                               QRadioButton, QSizePolicy, QWidget)
+from PySide2.QtWidgets import (QCheckBox, QGridLayout, QLabel, QLineEdit,
+                               QMessageBox, QWidget)
 
-from models.DataLayoutSetting import *
+from models.DataLayoutSetting import DataLayoutError, DataLayoutSetting
 
 
 class DataSetting(QWidget):
@@ -59,7 +58,7 @@ class DataSetting(QWidget):
 
         self.draw_charts_checkbox = QCheckBox(self.tr("Draw Charts"))
         self.draw_charts_checkbox.setChecked(True)
-        self.draw_charts_checkbox.setToolTip(self.tr("This option controls whether it will draw charts when saving data as xlsx file.\nIf your samples are too many, the massive charts will slow the excel runing heavily.\nThen you can disable this option or save your data separately."))
+        self.draw_charts_checkbox.setToolTip(self.tr("Whether to draw charts while saving .xlsx file.\nIf the samples are too many, the massive charts will slow the running of Excel heavily."))
         self.main_layout.addWidget(self.draw_charts_checkbox, 5, 0, 1, 2)
 
     def save_settings(self, settings:QSettings):
@@ -79,7 +78,10 @@ class DataSetting(QWidget):
         settings.setValue("distribution_start_column", distribution_start_column)
         # emit signal
         try:
-            layout = DataLayoutSetting(int(classes_row), int(sample_name_column), int(distribution_start_row), int(distribution_start_column))
+            layout = DataLayoutSetting(int(classes_row),
+                                       int(sample_name_column),
+                                       int(distribution_start_row),
+                                       int(distribution_start_column))
             self.sigDataSettingChanged.emit({"layout": layout})
         except DataLayoutError:
             self.logger.exception("The data layout setting is invalid.", stack_info=True)

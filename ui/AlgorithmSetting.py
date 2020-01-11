@@ -1,8 +1,10 @@
-from PySide2.QtWidgets import QMainWindow, QCheckBox, QLabel, QRadioButton, QPushButton, QGridLayout, QApplication, QSizePolicy, QWidget, QTabWidget, QComboBox, QLineEdit, QMessageBox
-from PySide2.QtCore import Qt, QSettings, Signal
-from PySide2.QtGui import QIcon, QValidator, QIntValidator, QDoubleValidator
-
 import logging
+
+from PySide2.QtCore import QSettings, Qt, Signal
+from PySide2.QtGui import QDoubleValidator, QIntValidator, QValidator
+from PySide2.QtWidgets import (QGridLayout, QLabel, QLineEdit, QMessageBox,
+                               QWidget)
+
 
 class AlgorithmSetting(QWidget):
     sigAlgorithmSettingChanged = Signal(dict)
@@ -14,7 +16,6 @@ class AlgorithmSetting(QWidget):
         self.msg_box.setWindowFlags(Qt.Drawer)
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.init_ui()
-
 
     def init_ui(self):
         self.main_layout = QGridLayout(self)
@@ -28,28 +29,28 @@ class AlgorithmSetting(QWidget):
         self.main_layout.addWidget(self.title_label, 0, 0)
 
         self.global_maxiter_label = QLabel(self.tr("Global Optimization Max Iteration"))
-        self.global_maxiter_label.setToolTip(self.tr("Max iteration number of global optimization."))
+        self.global_maxiter_label.setToolTip(self.tr("Max iteration number of global optimization.\nIf the global optimization iteration has reached the max number, fitting process will stop."))
         self.main_layout.addWidget(self.global_maxiter_label, 1, 0)
         self.global_maxiter_edit = QLineEdit()
         self.global_maxiter_edit.setValidator(self.int_validator)
         self.main_layout.addWidget(self.global_maxiter_edit, 1, 1)
 
         self.global_success_iter_label = QLabel(self.tr("Global Optimization Success Iteration"))
-        self.global_success_iter_label.setToolTip(self.tr("It's the terminal condition of global optimization.\nIt means the iteration number of reaching the same minimum."))
+        self.global_success_iter_label.setToolTip(self.tr("It's one of the terminal conditions of global optimization.\nIt means the iteration number of reaching the same minimum."))
         self.main_layout.addWidget(self.global_success_iter_label, 2, 0)
         self.global_success_iter_edit = QLineEdit()
         self.global_success_iter_edit.setValidator(self.int_validator)
         self.main_layout.addWidget(self.global_success_iter_edit, 2, 1)
 
         self.global_stepsize_label = QLabel(self.tr("Global Optimization Stepsize"))
-        self.global_stepsize_label.setToolTip(self.tr("The stepsize of searching global minimum.\nGreater stepsize will jump out the local minimum easier but may miss the global minium."))
+        self.global_stepsize_label.setToolTip(self.tr("The stepsize of searching global minimum.\nGreater stepsize will jump out the local minimum easier but may miss the global minimum."))
         self.main_layout.addWidget(self.global_stepsize_label, 3, 0)
         self.global_stepsize_edit = QLineEdit()
         self.global_stepsize_edit.setValidator(self.double_validator)
         self.main_layout.addWidget(self.global_stepsize_edit, 3, 1)
 
         self.minimizer_tolerance_level_label = QLabel(self.tr("Global Minimizer Tolerance Level"))
-        self.minimizer_tolerance_level_label.setToolTip(self.tr("The tolerance level of the minimizer of global optimization.\nTolerance level means the accepted minimum varation (10 ^ -level) of the target function to minimize.\nIt controls the precision of fitted results and the speed of fitting.\nIt's recommended to use ralatively lower level in global optimization step but higher leverl in final fitting."))
+        self.minimizer_tolerance_level_label.setToolTip(self.tr("The tolerance level of the minimizer of global optimization.\nTolerance level means the accepted minimum variation (10 ^ -level) of the target function.\nIt controls the precision and speed of fitting.\nIt's recommended to use ralatively lower level in global optimization process but higher leverl in final fitting."))
         self.main_layout.addWidget(self.minimizer_tolerance_level_label, 4, 0)
         self.minimizer_tolerance_level_edit = QLineEdit()
         self.minimizer_tolerance_level_edit.setValidator(self.int_validator)
@@ -63,7 +64,7 @@ class AlgorithmSetting(QWidget):
         self.main_layout.addWidget(self.minimizer_maxiter_edit, 5, 1)
 
         self.final_tolerance_level_label = QLabel(self.tr("Final Fitting Tolerance Level"))
-        self.final_tolerance_level_label.setToolTip(self.tr("The tolerance level of the minimizer of final fitting.\nTolerance level means the accepted minimum varation (10 ^ -level) of the target function to minimize.\nIt controls the precision of fitted results and the speed of fitting.\nIt's recommended to use ralatively lower level in global optimization step but higher leverl in final fitting."))
+        self.final_tolerance_level_label.setToolTip(self.tr("The tolerance level of the minimizer of final fitting."))
         self.main_layout.addWidget(self.final_tolerance_level_label, 6, 0)
         self.final_tolerance_level_edit = QLineEdit()
         self.final_tolerance_level_edit.setValidator(self.int_validator)
@@ -76,7 +77,7 @@ class AlgorithmSetting(QWidget):
         self.final_maxiter_edit.setValidator(self.int_validator)
         self.main_layout.addWidget(self.final_maxiter_edit, 7, 1)
 
-    def save_settings(self, settings:QSettings):
+    def save_settings(self, settings: QSettings):
         settings.beginGroup("algorithm")
         global_optimization_maxiter = self.global_maxiter_edit.text()
         global_optimization_success_iter = self.global_success_iter_edit.text()
@@ -116,7 +117,7 @@ class AlgorithmSetting(QWidget):
         finally:
             settings.endGroup()
 
-    def restore_settings(self, settings:QSettings):
+    def restore_settings(self, settings: QSettings):
         settings.beginGroup("algorithm")
         try:
             self.global_maxiter_edit.setText(settings.value("global_optimization_maxiter"))

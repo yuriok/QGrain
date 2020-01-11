@@ -3,8 +3,7 @@ from math import sqrt
 from typing import Iterable, Tuple
 
 from PySide2.QtCore import Qt
-from PySide2.QtWidgets import (QApplication, QGridLayout, QLabel, QMainWindow,
-                               QSizePolicy, QWidget)
+from PySide2.QtWidgets import QGridLayout, QLabel, QMainWindow, QWidget
 
 from models.FittingResult import FittingResult
 from resolvers.HeadlessResolver import FittingTask
