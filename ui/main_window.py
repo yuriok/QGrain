@@ -118,8 +118,8 @@ class MainWindow(QMainWindow):
         self.control_panel.sigGUIResolverFittingStarted.connect(self.gui_resolver.try_fit)
 
         self.control_panel.sigDataSettingsChanged.connect(self.data_manager.on_settings_changed)
-        self.control_panel.sigGUIResolverTaskCanceled.connect(self.on_task_canceled)
-        self.control_panel.sigMultiProcessingTaskStarted.connect(self.multiprocessing_resolver.execute_tasks)
+        self.control_panel.sigGUIResolverFittingCanceled.connect(self.on_task_canceled)
+        self.control_panel.sigMultiProcessingFittingStarted .connect(self.multiprocessing_resolver.execute_tasks)
         # Connect directly
         self.control_panel.record_button.clicked.connect(self.data_manager.record_current_data)
 
