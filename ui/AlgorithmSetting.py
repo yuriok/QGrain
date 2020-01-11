@@ -43,7 +43,7 @@ class AlgorithmSetting(QWidget):
         self.main_layout.addWidget(self.global_success_iter_edit, 2, 1)
 
         self.global_stepsize_label = QLabel(self.tr("Global Optimization Stepsize"))
-        self.global_stepsize_label.setToolTip(self.tr("The stepsize of searching global minimum.\nGreater stepsize will jump out the local minimum easier but may miss the global minium."))
+        self.global_stepsize_label.setToolTip(self.tr("The stepsize of searching global minimum.\nGreater stepsize will jump out the local minimum easier but may miss the global minimum."))
         self.main_layout.addWidget(self.global_stepsize_label, 3, 0)
         self.global_stepsize_edit = QLineEdit()
         self.global_stepsize_edit.setValidator(self.double_validator)
