@@ -50,7 +50,7 @@ class AlgorithmSetting(QWidget):
         self.main_layout.addWidget(self.global_stepsize_edit, 3, 1)
 
         self.minimizer_tolerance_level_label = QLabel(self.tr("Global Minimizer Tolerance Level"))
-        self.minimizer_tolerance_level_label.setToolTip(self.tr("The tolerance level of the minimizer of global optimization.\nTolerance level means the accepted minimum varation (10 ^ -level) of the target function to minimize.\nIt controls the precision of fitted results and the speed of fitting.\nIt's recommended to use ralatively lower level in global optimization step but higher leverl in final fitting."))
+        self.minimizer_tolerance_level_label.setToolTip(self.tr("The tolerance level of the minimizer of global optimization.\nTolerance level means the accepted minimum variation (10 ^ -level) of the target function.\nIt controls the precision and speed of fitting.\nIt's recommended to use ralatively lower level in global optimization process but higher leverl in final fitting."))
         self.main_layout.addWidget(self.minimizer_tolerance_level_label, 4, 0)
         self.minimizer_tolerance_level_edit = QLineEdit()
         self.minimizer_tolerance_level_edit.setValidator(self.int_validator)
@@ -64,7 +64,7 @@ class AlgorithmSetting(QWidget):
         self.main_layout.addWidget(self.minimizer_maxiter_edit, 5, 1)
 
         self.final_tolerance_level_label = QLabel(self.tr("Final Fitting Tolerance Level"))
-        self.final_tolerance_level_label.setToolTip(self.tr("The tolerance level of the minimizer of final fitting.\nTolerance level means the accepted minimum varation (10 ^ -level) of the target function to minimize.\nIt controls the precision of fitted results and the speed of fitting.\nIt's recommended to use ralatively lower level in global optimization step but higher leverl in final fitting."))
+        self.final_tolerance_level_label.setToolTip(self.tr("The tolerance level of the minimizer of final fitting."))
         self.main_layout.addWidget(self.final_tolerance_level_label, 6, 0)
         self.final_tolerance_level_edit = QLineEdit()
         self.final_tolerance_level_edit.setValidator(self.int_validator)

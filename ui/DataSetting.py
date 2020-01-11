@@ -58,7 +58,7 @@ class DataSetting(QWidget):
 
         self.draw_charts_checkbox = QCheckBox(self.tr("Draw Charts"))
         self.draw_charts_checkbox.setChecked(True)
-        self.draw_charts_checkbox.setToolTip(self.tr("This option controls whether it will draw charts when saving data as xlsx file.\nIf your samples are too many, the massive charts will slow the excel runing heavily.\nThen you can disable this option or save your data separately."))
+        self.draw_charts_checkbox.setToolTip(self.tr("Whether to draw charts while saving .xlsx file.\nIf the samples are too many, the massive charts will slow the running of Excel heavily."))
         self.main_layout.addWidget(self.draw_charts_checkbox, 5, 0, 1, 2)
 
     def save_settings(self, settings:QSettings):

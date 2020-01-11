@@ -197,7 +197,7 @@ class DataManager(QObject):
             self.ask_retry(self.tr("At leaset one sample name is empty. Please give each sample a unique name to identify."), self.load_data)
         except DistributionSumError:
             self.logger.exception("The sum of distribution array is not equal to 1 or 100.", stack_info=True)
-            self.ask_retry(self.tr("The sum of distribution array is not equal to 1 or 100. Please make sure the data file you selected is grain size distribution data"), self.load_data)
+            self.ask_retry(self.tr("The sum of distribution array is not equal to 1 or 100. Please make sure the data file you selected is grain size distribution data."), self.load_data)
         except Exception:
             self.logger.exception("Unknown exception raised.", stack_info=True)
             self.ask_retry(self.tr("Unknown exception raised. See the log for more details."), self.load_data)
