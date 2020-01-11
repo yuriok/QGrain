@@ -26,6 +26,10 @@ Therefore, the unmixing problem can be coverted to an optimization problem:
 
 minimize the error (e.g. sum of squared error) between y<sub>test</sub> and y<sub>guess</sub>.
 
+## Data preprocess
+
+In fact the input data of each sample are two array. One is the classes of grain size, another is the distribution. Usually, there are many 0 values in the head and tail of distribution array. These 0 values were caused by the limit of test precision. In fact, they should be close to 0 but not equal to 0. This difference will bring a constant error which is large enough to effect the fitting result. QGrain will exclude these 0 values to obtain better performance.
+
 ## Local optimization
 
 Due to the complexity of base distribution function, the error function is non-convex. At present, there is no high-efficiency method to find the global minimum of a non-convex function. So, an alternative solution is local optimization. Local optimization can converge to a minimum rapidly, but without guarantee that the minimum is global. Optimization problem also is a core topic of machine learning. Therefore, there are many mature local optimization algorithms that meet our requirement. Here we use Sequential Least SQuares Programming (SLSQP) (Kraft, 1988) algorithm to perform local optimization.
@@ -50,6 +54,16 @@ At present, QGrain supports the following distribution types:
 
 1. Normal distribution againsts bin numbers is equal to Lognormal distribution againsts grain size (μm).
 2. **Gen. Weibull** is General Weibull which has an additional location parameter.
+
+## Steps of fitting
+
+1. Data Loading
+2. Get information (e.g. distribution type and component number)
+3. Generate error function
+4. Data preprocess
+5. Global optimization (basinhopping)
+6. Final optimization (another local optimization, SLSQP)
+7. Generate fitting result by the parameters of error function
 
 ## Referances
 
