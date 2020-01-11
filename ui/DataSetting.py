@@ -78,7 +78,10 @@ class DataSetting(QWidget):
         settings.setValue("distribution_start_column", distribution_start_column)
         # emit signal
         try:
-            layout = DataLayoutSetting(int(classes_row), int(sample_name_column), int(distribution_start_row), int(distribution_start_column))
+            layout = DataLayoutSetting(int(classes_row),
+                                       int(sample_name_column),
+                                       int(distribution_start_row),
+                                       int(distribution_start_column))
             self.sigDataSettingChanged.emit({"layout": layout})
         except DataLayoutError:
             self.logger.exception("The data layout setting is invalid.", stack_info=True)
