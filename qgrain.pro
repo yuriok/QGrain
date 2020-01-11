@@ -1,13 +1,13 @@
-SOURCES = ./ui/about_window.py \
-        ./ui/algorithm_setting.py \
-        ./ui/app_setting.py \
-        ./ui/control_panel.py \
-        ./ui/data_setting.py \
-        ./ui/fitting_canvas.py \
-        ./ui/main_window.py \
-        ./ui/recorded_data_table.py \
-        ./ui/setting_window.py \
-        ./ui/task_window.py \
+SOURCES = ./ui/AboutWindow.py \
+        ./ui/AlgorithmSetting.py \
+        ./ui/AppSetting.py \
+        ./ui/ControlPanel.py \
+        ./ui/DataSetting.py \
+        ./ui/FittingCanvas.py \
+        ./ui/MainWindow.py \
+        ./ui/RecordedDataTable.py \
+        ./ui/SettingWindow.py \
+        ./ui/TaskWindow.py \
         ./resolvers/GUIResolver.py \
         ./resolvers/HeadlessResolver.py \
         ./resolvers/MultiprocessingResolver.py \
