@@ -128,7 +128,9 @@ class DataManager(QObject):
         # there is an about 5s delay while first calling `getOpenFileName` func
         # if there is a unreachable network disk
         init_path = QStandardPaths.standardLocations(QStandardPaths.DesktopLocation)[0]
-        filename, type_str = self.file_dialog.getOpenFileName(self.host_widget, self.tr("Select Data File"), init_path, "Excel (*.xlsx);;97-2003 Excel (*.xls);;CSV (*.csv)")
+        filename, type_str = self.file_dialog.getOpenFileName(
+            self.host_widget, self.tr("Select Data File"),
+            init_path, "Excel (*.xlsx);;97-2003 Excel (*.xls);;CSV (*.csv)")
         if filename is None or filename == "":
             self.logger.info("The user did not select a file, ignored.")
             return
