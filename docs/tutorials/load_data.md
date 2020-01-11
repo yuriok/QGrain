@@ -9,9 +9,7 @@ Note: For `.xls` and `.xlsx`, please put the data table at the **FIRST** sheet. 
 By default, QGrain assume that the data layout follows:
 
 * The first row should be the headers (i.e. the classes of grain size).
-
 * The following rows should be the distributions of samples under the grain size classes.
-
 * The first column shoud be the name (i.e. id) of samples.
 
 If your layout of data file are not same as this, it will raise exceptions.
@@ -23,13 +21,6 @@ If you do not want to modify your data file, you can click the **Settings** menu
 There are 4 parameters that control the data loader. They all are row/column index which start with 0 (i.e. 0 means the first row/column).
 
 * Class Row: The row index of grain size classes.
-
 * Sample Name Column: The column index of sample names.
-
-* Distribution Start Row: The start row index (starts with 0) of distribution data.
-
-  It should be greater than the row index of classes.
-
-* Distribution Start Column: The start column index (starts with 0) of distribution data.
-
-  It should be greater than the column index of sample name.
+* Distribution Start Row: The start row index (starts with 0) of distribution data. It should be greater than the row index of classes.
+* Distribution Start Column: The start column index (starts with 0) of distribution data. It should be greater than the column index of sample name.
