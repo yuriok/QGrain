@@ -1,7 +1,6 @@
 [run]
 omit =
     */test_*.py
-    */ui/*.py
     */__init__.py
 source=
     .
