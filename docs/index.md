@@ -22,6 +22,8 @@ If you have any idea, you can contact the authors below.
 
 * [How to fit the samples](./tutorials/fit)
 
+* [How to adjust algorithm](./tutorials/adjust_algorithm)
+
 ## Authors
 
 * Yuming Liu
