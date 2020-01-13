@@ -114,13 +114,13 @@ class DistributionCanvas(QWidget):
                 self.position_cache[i] = raw_value
         self.sigExpectedMeanValueChanged.emit(tuple(self.position_cache))
 
-    def on_component_number_changed(self, ncomp: int):
+    def on_component_number_changed(self, component_number: int):
         self.logger.info("Received the component changed signal, start to change clear and add data items.")
-        # Check the validity of `ncomp`
-        if type(ncomp) != int:
-            raise TypeError(ncomp)
-        if ncomp <= 0:
-            raise ValueError(ncomp)
+        # Check the validity of `component_number`
+        if type(component_number) != int:
+            raise TypeError(component_number)
+        if component_number <= 0:
+            raise ValueError(component_number)
         # clear
         for name, curve in self.component_curves:
             self.plot_widget.plotItem.removeItem(curve)
@@ -129,10 +129,10 @@ class DistributionCanvas(QWidget):
             self.plot_widget.plotItem.removeItem(line)
         self.component_curves.clear()
         self.component_lines.clear()
-        self.position_cache = np.ones(ncomp)
+        self.position_cache = np.ones(component_number)
         self.logger.debug("Items cleared.")
         # add
-        for i in range(ncomp):
+        for i in range(component_number):
             component_name = "C{0}".format(i+1)
             curve = pg.PlotDataItem(name=component_name,**self.component_styles[i])
             line = pg.InfiniteLine(angle=90, movable=False, pen=self.component_styles[i]["pen"])

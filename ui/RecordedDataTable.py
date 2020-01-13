@@ -100,7 +100,7 @@ class ViewDataManager(QObject):
 
 
     def update_headers(self):
-        max_ncomp = self.max_component_number
+        max_component_number = self.max_component_number
         # update headers
         self.write(0, 0, self.tr("Sample Name"))
         self.table.setSpan(0, 0, self.TABLE_HEADER_ROWS, 1)
@@ -108,7 +108,7 @@ class ViewDataManager(QObject):
         self.table.setSpan(0, 1, self.TABLE_HEADER_ROWS, 1)
         self.write(0, 2, self.tr("Mean Squared Error"))
         self.table.setSpan(0, 2, self.TABLE_HEADER_ROWS, 1)
-        for comp_index in range(max_ncomp):
+        for comp_index in range(max_component_number):
             first_column_index = comp_index*self.actual_component_columns+self.COMPONENT_START_COLUMN
             self.write(0, first_column_index, self.tr("Component {0}").format(comp_index+1))
             self.table.setSpan(0, first_column_index, 1, self.component_columns)
@@ -131,10 +131,10 @@ class ViewDataManager(QObject):
         least_row_number = self.data_count + length + self.TABLE_HEADER_ROWS
         if  least_row_number>= self.table.rowCount():
             self.table.setRowCount(least_row_number + self.TABLE_ROW_EXPAND_SETP)
-        max_ncomp_before = self.max_component_number
-        max_ncomp_new = max([record.component_number for record in records_to_add])
+        max_component_number_before = self.max_component_number
+        max_component_number_new = max([record.component_number for record in records_to_add])
         # reset the column number of table
-        column_count = max(max_ncomp_before, max_ncomp_new) * self.actual_component_columns + self.COMPONENT_START_COLUMN
+        column_count = max(max_component_number_before, max_component_number_new) * self.actual_component_columns + self.COMPONENT_START_COLUMN
         self.table.setColumnCount(column_count)
 
         # update contents
@@ -162,8 +162,8 @@ class ViewDataManager(QObject):
             # store the records
             self.records.append(record)
 
-        # means there is greater ncomp and the headers are need to be updated
-        if max_ncomp_new > max_ncomp_before:
+        # means there is greater component number and the headers are need to be updated
+        if max_component_number_new > max_component_number_before:
             self.update_headers()
             self.table.resizeColumnsToContents()
 
