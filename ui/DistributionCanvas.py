@@ -30,7 +30,7 @@ class DistributionCanvas(QWidget):
     def init_ui(self):
         self.main_layout = QGridLayout(self)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
-        self.plot_widget = pg.PlotWidget(enableMenu=True)
+        self.plot_widget = pg.PlotWidget(enableMenu=False)
         self.main_layout.addWidget(self.plot_widget)
         self.target_style = dict(pen=None, symbol="o", symbolBrush=pg.mkBrush("#161B26"), symbolPen=None, symbolSize=5)
         self.target_item = pg.PlotDataItem(name="Target", **self.target_style)
