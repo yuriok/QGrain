@@ -18,7 +18,7 @@ class XAxisSpace(Enum):
     Log10 = 1
     Phi = 2
 
-class FittingCanvas(QWidget):
+class DistributionCanvas(QWidget):
     sigExpectedMeanValueChanged = Signal(tuple)
     logger = logging.getLogger("root.ui.FittingCanvas")
     gui_logger = logging.getLogger("GUI")
