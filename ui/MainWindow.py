@@ -2,8 +2,8 @@ import logging
 import time
 from typing import List
 
-from PySide2.QtCore import (QCoreApplication, QEventLoop, QMutex, Qt, QThread,
-                            Signal)
+from PySide2.QtCore import (QCoreApplication, QEventLoop, QMutex, QSettings,
+                            Qt, QThread, Signal)
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import (QAbstractItemView, QAction, QDockWidget,
                                QMainWindow, QMessageBox, QTableWidget,
@@ -87,11 +87,13 @@ class MainWindow(QMainWindow):
         self.canvas_dock = QDockWidget(self.tr("Canvas"))
         self.canvas = FittingCanvas()
         self.canvas_dock.setWidget(self.canvas)
+        self.canvas_dock.setObjectName("CanvasDock")
 
         # Control Panel
         self.control_panel_dock = QDockWidget(self.tr("Control Panel"))
         self.control_panel = ControlPanel()
         self.control_panel_dock.setWidget(self.control_panel)
+        self.control_panel_dock.setObjectName("ControlPanelDock")
 
         # Raw Data Table
         self.raw_data_dock = QDockWidget(self.tr("Raw Data Table"))
@@ -100,11 +102,13 @@ class MainWindow(QMainWindow):
         self.raw_data_table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.raw_data_table.setAlternatingRowColors(True)
         self.raw_data_dock.setWidget(self.raw_data_table)
+        self.raw_data_dock.setObjectName("RawDataTableDock")
 
         # Recorded Data Table
         self.recorded_data_dock = QDockWidget(self.tr("Recorded Data Table"))
         self.recorded_data_table = RecordedDataTable()
         self.recorded_data_dock.setWidget(self.recorded_data_table)
+        self.recorded_data_dock.setObjectName("RecordedDataTableDock")
 
         self.settings_window = SettingWindow(self)
         self.about_window = AboutWindow(self)
@@ -240,10 +244,27 @@ class MainWindow(QMainWindow):
         # emit after the threads are started
         self.sigSetup.emit()
 
+        settings = QSettings("./settings/ui.ini", QSettings.IniFormat)
+        settings.beginGroup("MainWindow")
+        geometry = settings.value("geometry")
+        if geometry is not None:
+            self.restoreGeometry(geometry)
+        windowState = settings.value("windowState")
+        if windowState is not None:
+            self.restoreState(windowState)
+        settings.endGroup()
+
     def closeEvent(self, e):
         # TODO: add task running check
         self.sigCleanup.emit()
         self.hide()
+
+        settings = QSettings("./settings/ui.ini", QSettings.IniFormat)
+        settings.beginGroup("MainWindow")
+        settings.setValue("geometry", self.saveGeometry())
+        settings.setValue("windowState", self.saveState())
+        settings.endGroup()
+
         time.sleep(2)
         self.gui_fitting_thread.terminate()
         self.multiprocessing_fitting_thread.terminate()
