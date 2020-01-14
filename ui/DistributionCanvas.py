@@ -52,8 +52,8 @@ class DistributionCanvas(QWidget):
         self.label_styles = {"font-family": "Times New Roman"}
         self.plot_widget.plotItem.setLabel("left", self.tr("Probability Density"), **self.label_styles)
         self.plot_widget.plotItem.setLabel("bottom", self.tr("Grain size")+" (μm)", **self.label_styles)
-        self.title_format = """<font face="Times New Roman">%s</font>"""
         # set title
+        self.title_format = """<font face="Times New Roman">%s</font>"""
         self.plot_widget.plotItem.setTitle(self.title_format % self.tr("Fitting Canvas"))
         # show grids
         self.plot_widget.plotItem.showGrid(True, True)
@@ -223,5 +223,5 @@ class DistributionCanvas(QWidget):
         self.png_exporter.export("./temp/current_distribution_canvas.png")
         self.svg_exporter.export("./temp/current_distribution_canvas.svg")
 
-    def on_single_iteration_finished(self, current_iteration, result: FittingResult):
+    def on_single_iteration_finished(self, current_iteration: int, result: FittingResult):
         self.update_canvas_by_data(result, current_iteration=current_iteration)
