@@ -3,9 +3,10 @@ from enum import Enum, unique
 
 import numpy as np
 import pyqtgraph as pg
+from pyqtgraph.exporters import ImageExporter, SVGExporter
 from PySide2.QtCore import Qt, Signal
 from PySide2.QtGui import QFont
-from PySide2.QtWidgets import QGridLayout, QWidget
+from PySide2.QtWidgets import QGridLayout, QPushButton, QWidget
 
 from models.FittingResult import FittingResult
 from models.SampleData import SampleData
@@ -31,29 +32,45 @@ class DistributionCanvas(QWidget):
         self.main_layout = QGridLayout(self)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.plot_widget = pg.PlotWidget(enableMenu=False)
-        self.main_layout.addWidget(self.plot_widget)
+        self.main_layout.addWidget(self.plot_widget, 0, 0)
+        # add image exporters
+        self.png_exporter = ImageExporter(self.plot_widget.plotItem)
+        self.svg_exporter = SVGExporter(self.plot_widget.plotItem)
+        # show all axis
+        self.plot_widget.plotItem.showAxis("left")
+        self.plot_widget.plotItem.showAxis("right")
+        self.plot_widget.plotItem.showAxis("top")
+        self.plot_widget.plotItem.showAxis("bottom")
+        # prepare the plot data item for target and fitted data
         self.target_style = dict(pen=None, symbol="o", symbolBrush=pg.mkBrush("#161B26"), symbolPen=None, symbolSize=5)
         self.target_item = pg.PlotDataItem(name="Target", **self.target_style)
         self.plot_widget.plotItem.addItem(self.target_item)
         self.sum_style = dict(pen=pg.mkPen("#062170", width=3, style=Qt.DashLine))
         self.fitted_item = pg.PlotDataItem(name="Fitted", **self.sum_style)
         self.plot_widget.plotItem.addItem(self.fitted_item)
+        # set labels
         self.label_styles = {"font-family": "Times New Roman"}
         self.plot_widget.plotItem.setLabel("left", self.tr("Probability Density"), **self.label_styles)
-        self.plot_widget.plotItem.setLabel("bottom", self.tr("Grain size")+" [μm]", **self.label_styles)
+        self.plot_widget.plotItem.setLabel("bottom", self.tr("Grain size")+" (μm)", **self.label_styles)
         self.title_format = """<font face="Times New Roman">%s</font>"""
+        # set title
         self.plot_widget.plotItem.setTitle(self.title_format % self.tr("Fitting Canvas"))
+        # show grids
         self.plot_widget.plotItem.showGrid(True, True)
+        # set the font of ticks
         self.tickFont = QFont("Arial")
         self.tickFont.setPointSize(8)
         self.plot_widget.plotItem.getAxis("left").tickFont = self.tickFont
+        self.plot_widget.plotItem.getAxis("right").tickFont = self.tickFont
+        self.plot_widget.plotItem.getAxis("top").tickFont = self.tickFont
         self.plot_widget.plotItem.getAxis("bottom").tickFont = self.tickFont
-        # self.plot_widget.plotItem.setMenuEnabled(False)
+        # set legend
         self.legend_format = """<font face="Times New Roman">%s</font>"""
         self.legend = pg.LegendItem(offset=(80, 50))
         self.legend.setParentItem(self.plot_widget.plotItem)
         self.legend.addItem(self.target_item, self.legend_format % self.tr("Target"))
         self.legend.addItem(self.fitted_item, self.legend_format % self.tr("Fitted"))
+
         self.x_axis_space = XAxisSpace.Log10
         self.component_curves = []
         self.component_lines = []
@@ -158,8 +175,8 @@ class DistributionCanvas(QWidget):
         self.position_limit = (sample.classes[0], sample.classes[-1])
         x_axis = self.plot_widget.plotItem.getAxis("bottom")
         x_axis.enableAutoSIPrefix(enable=False)
-        major_ticks= [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(sample.classes) if i%20==0]
-        minor_ticks= [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(sample.classes) if i%5==0]
+        major_ticks = [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(sample.classes) if i%20==0]
+        minor_ticks = [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(sample.classes) if i%5==0]
         all_ticks = [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(sample.classes)]
         x_axis.setTicks([major_ticks, minor_ticks, all_ticks])
         self.logger.debug("Target data has been changed to [%s].", sample.name)
@@ -203,6 +220,8 @@ class DistributionCanvas(QWidget):
 
     def on_fitting_epoch_suceeded(self, result: FittingResult):
         self.update_canvas_by_data(result)
+        self.png_exporter.export("./temp/current_distribution_canvas.png")
+        self.svg_exporter.export("./temp/current_distribution_canvas.svg")
 
     def on_single_iteration_finished(self, current_iteration, result: FittingResult):
         self.update_canvas_by_data(result, current_iteration=current_iteration)
