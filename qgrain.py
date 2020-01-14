@@ -13,7 +13,7 @@ from ui.MainWindow import GUILogHandler, MainWindow
 QGRAIN_VERSION = "0.2.4"
 
 def create_necessary_folders():
-    necessary_folders = ("./logs/",)
+    necessary_folders = ("./logs/", "./temp/")
     for folder in necessary_folders:
         if not os.path.exists(folder):
             os.mkdir(folder)

@@ -106,6 +106,7 @@ venv.bak/
 # vscode
 .vscode
 
-# logs
+# custom
 /logs
+/temp
 settings/ui.ini
