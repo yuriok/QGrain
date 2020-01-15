@@ -139,7 +139,6 @@ class ControlPanel(QWidget):
     def component_number(self, value: int):
         # check the validity
         # component number should be non-negative
-        # TODO: change the way to generate plot styles in `FittingCanvas`, and remove the limit of <=10
         if value < 1 or value > 10:
             self.gui_logger.info(self.tr("The component number should be >= 1 and <= 10."))
             return
