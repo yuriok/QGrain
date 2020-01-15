@@ -324,6 +324,7 @@ class ControlPanel(QWidget):
     def on_cancel_run_clicked(self):
         if self.auto_run_flag:
             self.auto_run_flag = False
+            self.on_widgets_enable_changed(True)
             self.logger.info("Auto run flag has been changed to False.")
 
         self.sigGUIResolverFittingCanceled.emit()
@@ -339,6 +340,7 @@ class ControlPanel(QWidget):
     def on_fitting_failed(self, message: str):
         if self.auto_run_flag:
             self.auto_run_flag = False
+            self.on_widgets_enable_changed(True)
             self.logger.info("Auto run was canceled.")
         self.show_error(self.tr("Fitting failed. {0}").format(message))
 
