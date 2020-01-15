@@ -139,7 +139,7 @@ class DistributionCanvas(QWidget):
         if component_number <= 0:
             raise ValueError(component_number)
         # clear
-        for name, curve in self.component_curves:
+        for curve in self.component_curves:
             self.plot_widget.plotItem.removeItem(curve)
             self.legend.removeItem(curve)
         for line in self.component_lines:
@@ -158,7 +158,7 @@ class DistributionCanvas(QWidget):
             self.plot_widget.plotItem.addItem(curve)
             self.plot_widget.plotItem.addItem(line)
             self.legend.addItem(curve, self.legend_format % component_name)
-            self.component_curves.append((component_name, curve))
+            self.component_curves.append(curve)
             self.component_lines.append(line)
         self.logger.debug("Items added.")
 
@@ -190,7 +190,7 @@ class DistributionCanvas(QWidget):
         # it should be checked during load data progress
         self.target_item.setData(sample.classes, sample.distribution, **self.target_style)
         self.fitted_item.clear()
-        for name, curve in self.component_curves:
+        for curve in self.component_curves:
             curve.clear()
         for line in self.component_lines:
             line.setValue(1)
@@ -208,9 +208,12 @@ class DistributionCanvas(QWidget):
         # update fitted
         self.fitted_item.setData(result.real_x, result.fitted_y, **self.sum_style)
         # update component curves
-        for i, component, (name, curve), style, line in zip(range(result.component_number),
-                                                           result.components, self.component_curves,
-                                                           self.component_styles, self.component_lines):
+        for i, component, style, curve, line in zip(
+                range(result.component_number),
+                result.components,
+                self.component_styles,
+                self.component_curves,
+                self.component_lines):
             curve.setData(result.real_x, component.component_y, **style)
             if np.isnan(component.mean) or np.isinf(component.mean):
                 continue
