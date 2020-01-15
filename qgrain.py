@@ -46,7 +46,7 @@ def get_language():
 def get_theme():
     settings = QSettings("./settings/qgrain.ini", QSettings.Format.IniFormat)
     settings.beginGroup("app")
-    theme = settings.value("apperance_theme")
+    theme = settings.value("theme")
     settings.endGroup()
     return theme
 
@@ -56,11 +56,22 @@ def setup_language(app: QApplication):
     trans.load("./i18n/"+lang)
     app.installTranslator(trans)
 
-def setup_theme(app: QApplication):
+def setup_theme(app: QApplication) -> bool:
     theme = get_theme()
     template_styles = open("./settings/qss/{0}.qss".format(theme)).read()
     custom_style = open("./settings/custom.qss").read()
     app.setStyleSheet(template_styles+custom_style)
+
+    if theme == "Aqua":
+        return True
+    elif theme == "Ubuntu":
+        return True
+    elif theme == "ElegantDark":
+        return False
+    elif theme == "MaterialDark":
+        return False
+    else:
+        raise NotImplementedError(theme)
 
 def setup_logging(main_window: MainWindow):
     format_str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -81,8 +92,8 @@ def main():
     splash.show()
     app.processEvents()
     setup_language(app)
-    setup_theme(app)
-    main_window = MainWindow("./settings/icons/light/")
+    is_light = setup_theme(app)
+    main_window = MainWindow(light=is_light)
     main_window.setWindowTitle("QGrain")
     main_window.setWindowIcon(QIcon("./settings/icons/icon.png"))
     setup_logging(main_window)

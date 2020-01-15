@@ -13,11 +13,15 @@ class LossCanvas(QWidget):
     logger = logging.getLogger("root.ui.FittingCanvas")
     gui_logger = logging.getLogger("GUI")
 
-    def __init__(self, parent=None, **kargs):
+    def __init__(self, parent=None, light=True, **kargs):
         super().__init__(parent, **kargs)
-        self.init_ui()
+        if light:
+            pg.setConfigOptions(foreground=pg.mkColor("k"))
+        else:
+            pg.setConfigOptions(foreground=pg.mkColor("w"))
+        self.init_ui(light)
 
-    def init_ui(self):
+    def init_ui(self, light: bool):
         self.main_layout = QGridLayout(self)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.plot_widget = pg.PlotWidget(enableMenu=False)
@@ -31,11 +35,14 @@ class LossCanvas(QWidget):
         self.plot_widget.plotItem.showAxis("top")
         self.plot_widget.plotItem.showAxis("bottom")
         # plot data item
-        self.style = dict(pen=pg.mkPen("#062170", width=3))
+        self.style = dict(pen=pg.mkPen("#1E90FF", width=3))
         self.plot_data_item = pg.PlotDataItem(name="Loss", **self.style)
         self.plot_widget.plotItem.addItem(self.plot_data_item)
         # set labels
-        self.label_styles = {"font-family": "Times New Roman"}
+        if light:
+            self.label_styles = {"font-family": "Times New Roman", "color": "black"}
+        else:
+            self.label_styles = {"font-family": "Times New Roman", "color": "white"}
         self.plot_widget.plotItem.setLabel("left", self.tr("Loss"), **self.label_styles)
         self.plot_widget.plotItem.setLabel("bottom", self.tr("Iteration"), **self.label_styles)
         # set title
@@ -56,10 +63,10 @@ class LossCanvas(QWidget):
         self.plot_widget.plotItem.getAxis("top").enableAutoSIPrefix(enable=False)
         self.plot_widget.plotItem.getAxis("bottom").enableAutoSIPrefix(enable=False)
         # set legend
-        self.legend_format = """<font face="Times New Roman">%s</font>"""
-        self.legend = pg.LegendItem(offset=(80, 50))
-        self.legend.setParentItem(self.plot_widget.plotItem)
-        self.legend.addItem(self.plot_data_item, self.legend_format % self.tr("Loss"))
+        # self.legend_format = """<font face="Times New Roman">%s</font>"""
+        # self.legend = pg.LegendItem(offset=(80, 50))
+        # self.legend.setParentItem(self.plot_widget.plotItem)
+        # self.legend.addItem(self.plot_data_item, self.legend_format % self.tr("Loss"))
         # set y log
         self.plot_widget.plotItem.setLogMode(y=True)
 
@@ -77,6 +84,7 @@ class LossCanvas(QWidget):
         if self.result_info is None:
             return
         name, distribution_type, component_number = self.result_info
+        self.plot_widget.plotItem.setTitle(self.title_format % name)
         self.png_exporter.export("./temp/loss_canvas/png/{0} - {1} - {2}.png".format(
             name, distribution_type, component_number))
         self.svg_exporter.export("./temp/loss_canvas/svg/{0} - {1} - {2}.svg".format(
@@ -85,7 +93,7 @@ class LossCanvas(QWidget):
     def on_single_iteration_finished(self, current_iteration: int, result: FittingResult):
         if current_iteration == 0:
             self.result_info = (result.name, result.distribution_type, result.component_number)
-            self.plot_widget.plotItem.setTitle(self.title_format % ("{0} "+self.tr("Iteration")+" ({1})").format(result.name, current_iteration))
+        self.plot_widget.plotItem.setTitle(self.title_format % ("{0} "+self.tr("Iteration")+" ({1})").format(result.name, current_iteration))
         loss = result.mean_squared_error
         self.x.append(current_iteration)
         self.y.append(loss)
