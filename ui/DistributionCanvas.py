@@ -54,7 +54,7 @@ class DistributionCanvas(QWidget):
         self.plot_widget.plotItem.setLabel("bottom", self.tr("Grain size")+" (μm)", **self.label_styles)
         # set title
         self.title_format = """<font face="Times New Roman">%s</font>"""
-        self.plot_widget.plotItem.setTitle(self.title_format % self.tr("Fitting Canvas"))
+        self.plot_widget.plotItem.setTitle(self.title_format % self.tr("Distribution Canvas"))
         # show grids
         self.plot_widget.plotItem.showGrid(True, True)
         # set the font of ticks
