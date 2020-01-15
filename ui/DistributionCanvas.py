@@ -201,7 +201,10 @@ class DistributionCanvas(QWidget):
         if current_iteration is None:
             self.plot_widget.plotItem.setTitle(self.title_format % result.name)
         else:
-            self.plot_widget.plotItem.setTitle(self.title_format % ("{0} "+self.tr("Iteration")+" ({1})").format(result.name, current_iteration))
+            self.plot_widget.plotItem.setTitle(
+                self.title_format %
+                ("{0} "+self.tr("Iteration")+" ({1})").format(
+                    result.name, current_iteration))
         # update fitted
         self.fitted_item.setData(result.real_x, result.fitted_y, **self.sum_style)
         # update component curves
