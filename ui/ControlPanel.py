@@ -337,6 +337,12 @@ class ControlPanel(QWidget):
             return
         self.sigMultiProcessingFittingStarted.emit()
 
+    def on_fitting_started(self):
+        self.on_widgets_enable_changed(False)
+
+    def on_fitting_finished(self):
+        self.on_widgets_enable_changed(True)
+
     def on_fitting_failed(self, message: str):
         if self.auto_run_flag:
             self.auto_run_flag = False

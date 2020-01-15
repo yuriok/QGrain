@@ -148,12 +148,13 @@ class MainWindow(QMainWindow):
         self.data_manager.sigTargetDataChanged.connect(self.distribution_canvas.on_target_data_changed)
         self.data_manager.sigDataRecorded.connect(self.recorded_data_table.on_data_recorded)
 
+        self.gui_resolver.sigFittingStarted.connect(self.control_panel.on_fitting_started)
+        self.gui_resolver.sigFittingFinished.connect(self.control_panel.on_fitting_finished)
         self.gui_resolver.sigFittingEpochSucceeded.connect(self.control_panel.on_fitting_epoch_suceeded)
         self.gui_resolver.sigFittingEpochSucceeded.connect(self.distribution_canvas.on_fitting_epoch_suceeded)
         self.gui_resolver.sigFittingEpochSucceeded.connect(self.data_manager.on_fitting_epoch_suceeded)
         self.gui_resolver.sigSingleIterationFinished.connect(self.loss_canvas.on_single_iteration_finished)
         self.gui_resolver.sigSingleIterationFinished.connect(self.distribution_canvas.on_single_iteration_finished)
-        self.gui_resolver.sigWidgetsEnable.connect(self.control_panel.on_widgets_enable_changed)
         self.gui_resolver.sigFittingFailed.connect(self.control_panel.on_fitting_failed)
 
         self.multiprocessing_resolver.sigTaskInitialized.connect(self.task_window.on_task_initialized)
