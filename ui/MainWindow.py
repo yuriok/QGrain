@@ -42,10 +42,13 @@ class MainWindow(QMainWindow):
     sigCleanup = Signal()
     logger = logging.getLogger("root.MainWindow")
     gui_logger = logging.getLogger("GUI")
-    def __init__(self, icon_folder, *args, **kwargs):
+    def __init__(self, light=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.icon_folder = icon_folder
-        self.init_ui()
+        if light:
+            self.icon_folder = "./settings/icons/light/"
+        else:
+            self.icon_folder = "./settings/icons/dark/"
+        self.init_ui(light)
         self.status_bar = self.statusBar()
         self.gui_fitting_thread = QThread()
         self.gui_resolver = GUIResolver()
@@ -63,7 +66,7 @@ class MainWindow(QMainWindow):
     def show_message(self, message):
         self.status_bar.showMessage(message)
 
-    def init_ui(self):
+    def init_ui(self, light: bool):
         # Menu
         self.file_menu = self.menuBar().addMenu(self.tr("File"))
         self.load_action = QAction(QIcon(self.icon_folder+"load.png"), self.tr("Load"), self)
@@ -89,12 +92,12 @@ class MainWindow(QMainWindow):
         self.setDockNestingEnabled(True)
         # Loss Canvas
         self.loss_canvas_dock = QDockWidget(self.tr("Loss Canvas"))
-        self.loss_canvas = LossCanvas()
+        self.loss_canvas = LossCanvas(light=light)
         self.loss_canvas_dock.setWidget(self.loss_canvas)
         self.loss_canvas_dock.setObjectName("LossCanvasDock")
         # Distribution Canvas
         self.distribution_canvas_dock = QDockWidget(self.tr("Distribution Canvas"))
-        self.distribution_canvas = DistributionCanvas()
+        self.distribution_canvas = DistributionCanvas(light=light)
         self.distribution_canvas_dock.setWidget(self.distribution_canvas)
         self.distribution_canvas_dock.setObjectName("DistributionCanvasDock")
 
