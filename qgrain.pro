@@ -4,7 +4,8 @@ SOURCES = ./ui/AboutWindow.py \
         ./ui/ControlPanel.py \
         ./ui/DataManager.py \
         ./ui/DataSetting.py \
-        ./ui/FittingCanvas.py \
+        ./ui/DistributionCanvas.py \
+        ./ui/LossCanvas.py \
         ./ui/MainWindow.py \
         ./ui/RecordedDataTable.py \
         ./ui/SettingWindow.py \

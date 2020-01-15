@@ -326,17 +326,7 @@ It should be positive.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="298"/>
-        <source>The fitting result may be not valid, auto run stoped.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="ui/ControlPanel.py" line="304"/>
-        <source>The auto run has reached the last sample and stoped.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="ui/ControlPanel.py" line="341"/>
+        <location filename="ui/ControlPanel.py" line="351"/>
         <source>Fitting failed. {0}</source>
         <translation type="unfinished"></translation>
     </message>
@@ -361,6 +351,16 @@ The samples from current to the end will be processed one by one.</source>
         <location filename="ui/ControlPanel.py" line="104"/>
         <source>Click to record the current fitting result.
 Note: It will record the LAST SUCCESS fitting result, NOT CURRENT SAMPLE.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/ControlPanel.py" line="298"/>
+        <source>The fitting result may be not valid, auto running stoped.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/ControlPanel.py" line="304"/>
+        <source>The auto running has reached the last sample and stoped.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -562,121 +562,139 @@ If the samples are too many, the massive charts will slow the running of Excel h
     </message>
 </context>
 <context>
-    <name>FittingCanvas</name>
+    <name>DistributionCanvas</name>
     <message>
-        <location filename="ui/FittingCanvas.py" line="42"/>
+        <location filename="ui/DistributionCanvas.py" line="53"/>
         <source>Probability Density</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/FittingCanvas.py" line="43"/>
+        <location filename="ui/DistributionCanvas.py" line="54"/>
         <source>Grain size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/FittingCanvas.py" line="45"/>
-        <source>Fitting Canvas</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="ui/FittingCanvas.py" line="55"/>
+        <location filename="ui/DistributionCanvas.py" line="76"/>
         <source>Target</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/FittingCanvas.py" line="56"/>
+        <location filename="ui/DistributionCanvas.py" line="77"/>
         <source>Fitted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/DistributionCanvas.py" line="211"/>
+        <source>Iteration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/DistributionCanvas.py" line="57"/>
+        <source>Distribution Canvas</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>GUIResolver</name>
     <message>
-        <location filename="resolvers/GUIResolver.py" line="68"/>
+        <location filename="resolvers/GUIResolver.py" line="69"/>
         <source>There is no valid data to fit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="resolvers/GUIResolver.py" line="93"/>
+        <location filename="resolvers/GUIResolver.py" line="94"/>
         <source>Fitting failed during global fitting progress.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="resolvers/GUIResolver.py" line="100"/>
+        <location filename="resolvers/GUIResolver.py" line="101"/>
         <source>Fitting failed during final fitting progress.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="resolvers/GUIResolver.py" line="107"/>
+        <location filename="resolvers/GUIResolver.py" line="108"/>
         <source>Unknown exception raise in fitting progress.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>LossCanvas</name>
+    <message>
+        <location filename="ui/LossCanvas.py" line="62"/>
+        <source>Loss</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/LossCanvas.py" line="85"/>
+        <source>Iteration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/LossCanvas.py" line="43"/>
+        <source>Loss Canvas</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="ui/MainWindow.py" line="66"/>
+        <location filename="ui/MainWindow.py" line="67"/>
         <source>File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="67"/>
+        <location filename="ui/MainWindow.py" line="68"/>
         <source>Load</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="69"/>
+        <location filename="ui/MainWindow.py" line="70"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="71"/>
+        <location filename="ui/MainWindow.py" line="72"/>
         <source>Docks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="87"/>
-        <source>Canvas</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="ui/MainWindow.py" line="92"/>
+        <location filename="ui/MainWindow.py" line="101"/>
         <source>Control Panel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="76"/>
-        <source>Raw Table</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="ui/MainWindow.py" line="78"/>
-        <source>Recorded Table</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="ui/MainWindow.py" line="80"/>
+        <location filename="ui/MainWindow.py" line="83"/>
         <source>Reset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="82"/>
+        <location filename="ui/MainWindow.py" line="85"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="83"/>
+        <location filename="ui/MainWindow.py" line="86"/>
         <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="97"/>
+        <location filename="ui/MainWindow.py" line="107"/>
         <source>Raw Data Table</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="105"/>
+        <location filename="ui/MainWindow.py" line="116"/>
         <source>Recorded Data Table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/MainWindow.py" line="90"/>
+        <source>Loss Canvas</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/MainWindow.py" line="95"/>
+        <source>Distribution Canvas</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
