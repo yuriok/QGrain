@@ -18,7 +18,7 @@ TEMP_FOLDER_LIMIT_SIZE = 1024 * 1024 * 1024
 
 def getdirsize(dir):
    size = 0
-   for root, dirs, files in os.walk(dir):
+   for root, _, files in os.walk(dir):
       size += sum([os.path.getsize(os.path.join(root, name)) for name in files])
    return size
 
