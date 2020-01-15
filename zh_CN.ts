@@ -117,14 +117,19 @@ It&apos;s recommended to use ralatively lower level in global optimization proce
 <context>
     <name>AppSetting</name>
     <message>
-        <location filename="ui/AppSetting.py" line="19"/>
+        <location filename="ui/AppSetting.py" line="23"/>
         <source>App Settings:</source>
         <translation>应用设置：</translation>
     </message>
     <message>
-        <location filename="ui/AppSetting.py" line="22"/>
+        <location filename="ui/AppSetting.py" line="26"/>
         <source>Language</source>
         <translation>语言</translation>
+    </message>
+    <message>
+        <location filename="ui/AppSetting.py" line="30"/>
+        <source>Theme</source>
+        <translation>主题</translation>
     </message>
 </context>
 <context>
@@ -581,32 +586,32 @@ If the samples are too many, the massive charts will slow the running of Excel h
 <context>
     <name>DistributionCanvas</name>
     <message>
-        <location filename="ui/DistributionCanvas.py" line="53"/>
+        <location filename="ui/DistributionCanvas.py" line="88"/>
         <source>Probability Density</source>
         <translation>概率密度</translation>
     </message>
     <message>
-        <location filename="ui/DistributionCanvas.py" line="54"/>
+        <location filename="ui/DistributionCanvas.py" line="89"/>
         <source>Grain size</source>
         <translation>粒径</translation>
     </message>
     <message>
-        <location filename="ui/DistributionCanvas.py" line="76"/>
+        <location filename="ui/DistributionCanvas.py" line="111"/>
         <source>Target</source>
         <translation>目标</translation>
     </message>
     <message>
-        <location filename="ui/DistributionCanvas.py" line="77"/>
+        <location filename="ui/DistributionCanvas.py" line="112"/>
         <source>Fitted</source>
         <translation>拟合</translation>
     </message>
     <message>
-        <location filename="ui/DistributionCanvas.py" line="211"/>
+        <location filename="ui/DistributionCanvas.py" line="234"/>
         <source>Iteration</source>
         <translation>迭代数</translation>
     </message>
     <message>
-        <location filename="ui/DistributionCanvas.py" line="57"/>
+        <location filename="ui/DistributionCanvas.py" line="92"/>
         <source>Distribution Canvas</source>
         <translation>分布图表</translation>
     </message>
@@ -637,17 +642,17 @@ If the samples are too many, the massive charts will slow the running of Excel h
 <context>
     <name>LossCanvas</name>
     <message>
-        <location filename="ui/LossCanvas.py" line="62"/>
+        <location filename="ui/LossCanvas.py" line="46"/>
         <source>Loss</source>
         <translation>损失</translation>
     </message>
     <message>
-        <location filename="ui/LossCanvas.py" line="85"/>
+        <location filename="ui/LossCanvas.py" line="96"/>
         <source>Iteration</source>
         <translation>迭代数</translation>
     </message>
     <message>
-        <location filename="ui/LossCanvas.py" line="43"/>
+        <location filename="ui/LossCanvas.py" line="50"/>
         <source>Loss Canvas</source>
         <translation>损失图表</translation>
     </message>
@@ -655,62 +660,62 @@ If the samples are too many, the massive charts will slow the running of Excel h
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="ui/MainWindow.py" line="67"/>
+        <location filename="ui/MainWindow.py" line="71"/>
         <source>File</source>
         <translation>文件</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="68"/>
+        <location filename="ui/MainWindow.py" line="72"/>
         <source>Load</source>
         <translation>加载</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="70"/>
+        <location filename="ui/MainWindow.py" line="74"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="72"/>
+        <location filename="ui/MainWindow.py" line="76"/>
         <source>Docks</source>
         <translation>窗口</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="101"/>
+        <location filename="ui/MainWindow.py" line="105"/>
         <source>Control Panel</source>
         <translation>控制面板</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="83"/>
+        <location filename="ui/MainWindow.py" line="87"/>
         <source>Reset</source>
         <translation>重置</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="85"/>
+        <location filename="ui/MainWindow.py" line="89"/>
         <source>Settings</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="86"/>
+        <location filename="ui/MainWindow.py" line="90"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="107"/>
+        <location filename="ui/MainWindow.py" line="111"/>
         <source>Raw Data Table</source>
         <translation>原始数据表格</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="116"/>
+        <location filename="ui/MainWindow.py" line="120"/>
         <source>Recorded Data Table</source>
         <translation>记录数据表格</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="90"/>
+        <location filename="ui/MainWindow.py" line="94"/>
         <source>Loss Canvas</source>
         <translation>损失图表</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="95"/>
+        <location filename="ui/MainWindow.py" line="99"/>
         <source>Distribution Canvas</source>
         <translation>分布图表</translation>
     </message>
