@@ -198,13 +198,10 @@ class DistributionCanvas(QWidget):
     def update_canvas_by_data(self, result: FittingResult, current_iteration=None):
         # TODO: check component number
         # update the title of canvas
-        sample_name = result.name
-        if sample_name is None or sample_name == "":
-            sample_name = "UNKNOWN"
         if current_iteration is None:
-            self.plot_widget.plotItem.setTitle(self.title_format % sample_name)
+            self.plot_widget.plotItem.setTitle(self.title_format % result.name)
         else:
-            self.plot_widget.plotItem.setTitle(self.title_format % "{0} iter({1})".format(sample_name, current_iteration))
+            self.plot_widget.plotItem.setTitle(self.title_format % ("{0} "+self.tr("Iteration")+" ({1})").format(result.name, current_iteration))
         # update fitted
         self.fitted_item.setData(result.real_x, result.fitted_y, **self.sum_style)
         # update component curves
@@ -222,13 +219,6 @@ class DistributionCanvas(QWidget):
             line.setValue(space_value)
 
     def on_fitting_epoch_suceeded(self, result: FittingResult):
-        self.update_canvas_by_data(result)
-        self.png_exporter.export("./temp/distribution_canvas/png/{0} - {1} - {2}.png".format(
-            result.name, result.distribution_type, result.component_number))
-        self.svg_exporter.export("./temp/distribution_canvas/svg/{0} - {1} - {2}.svg".format(
-            result.name, result.distribution_type, result.component_number))
-
-    def redisplay_fitting_result(self, result: FittingResult):
         self.update_canvas_by_data(result)
         self.png_exporter.export("./temp/distribution_canvas/png/{0} - {1} - {2}.png".format(
             result.name, result.distribution_type, result.component_number))
