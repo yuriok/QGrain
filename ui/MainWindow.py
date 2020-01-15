@@ -150,6 +150,8 @@ class MainWindow(QMainWindow):
 
         self.gui_resolver.sigFittingStarted.connect(self.control_panel.on_fitting_started)
         self.gui_resolver.sigFittingFinished.connect(self.control_panel.on_fitting_finished)
+        self.gui_resolver.sigFittingStarted.connect(self.loss_canvas.on_fitting_started)
+        self.gui_resolver.sigFittingFinished.connect(self.loss_canvas.on_fitting_finished)
         self.gui_resolver.sigFittingEpochSucceeded.connect(self.control_panel.on_fitting_epoch_suceeded)
         self.gui_resolver.sigFittingEpochSucceeded.connect(self.distribution_canvas.on_fitting_epoch_suceeded)
         self.gui_resolver.sigFittingEpochSucceeded.connect(self.data_manager.on_fitting_epoch_suceeded)
