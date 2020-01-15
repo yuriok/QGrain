@@ -71,8 +71,11 @@ class LossCanvas(QWidget):
     def on_fitting_started(self):
         self.x.clear()
         self.y.clear()
+        self.result_info = None
 
     def on_fitting_finished(self):
+        if self.result_info is None:
+            return
         name, distribution_type, component_number = self.result_info
         self.png_exporter.export("./temp/loss_canvas/png/{0} - {1} - {2}.png".format(
             name, distribution_type, component_number))
