@@ -220,8 +220,17 @@ class DistributionCanvas(QWidget):
 
     def on_fitting_epoch_suceeded(self, result: FittingResult):
         self.update_canvas_by_data(result)
-        self.png_exporter.export("./temp/current_distribution_canvas.png")
-        self.svg_exporter.export("./temp/current_distribution_canvas.svg")
+        self.png_exporter.export("./temp/distribution_canvas/png/{0} - {1} - {2}.png".format(
+            result.name, result.distribution_type, result.component_number))
+        self.svg_exporter.export("./temp/distribution_canvas/svg/{0} - {1} - {2}.svg".format(
+            result.name, result.distribution_type, result.component_number))
+
+    def redisplay_fitting_result(self, result: FittingResult):
+        self.update_canvas_by_data(result)
+        self.png_exporter.export("./temp/distribution_canvas/png/{0} - {1} - {2}.png".format(
+            result.name, result.distribution_type, result.component_number))
+        self.svg_exporter.export("./temp/distribution_canvas/svg/{0} - {1} - {2}.svg".format(
+            result.name, result.distribution_type, result.component_number))
 
     def on_single_iteration_finished(self, current_iteration: int, result: FittingResult):
         self.update_canvas_by_data(result, current_iteration=current_iteration)
