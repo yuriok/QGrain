@@ -61,6 +61,7 @@ class LossCanvas(QWidget):
         # data
         self.x = []
         self.y = []
+        self.result_info = None
 
     def on_single_iteration_finished(self, current_iteration: int, result: FittingResult):
         if current_iteration == 0:
@@ -68,9 +69,13 @@ class LossCanvas(QWidget):
                 self.x.clear()
                 self.y.clear()
                 # save figures
-                self.png_exporter.export("./temp/current_loss_canvas.png")
-                self.svg_exporter.export("./temp/current_loss_canvas.svg")
+                name, distribution_type, component_number = self.result_info
+                self.png_exporter.export("./temp/loss_canvas/png/{0} - {1} - {2}.png".format(
+                    name, distribution_type, component_number))
+                self.svg_exporter.export("./temp/loss_canvas/svg/{0} - {1} - {2}.svg".format(
+                    name, distribution_type, component_number))
             else:
+                self.result_info = (result.name, result.distribution_type, result.component_number)
                 self.plot_widget.plotItem.setTitle(self.title_format % result.name)
         loss = result.mean_squared_error
         self.x.append(current_iteration)
