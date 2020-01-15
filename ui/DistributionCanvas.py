@@ -64,6 +64,11 @@ class DistributionCanvas(QWidget):
         self.plot_widget.plotItem.getAxis("right").tickFont = self.tickFont
         self.plot_widget.plotItem.getAxis("top").tickFont = self.tickFont
         self.plot_widget.plotItem.getAxis("bottom").tickFont = self.tickFont
+        # set auto SI
+        self.plot_widget.plotItem.getAxis("left").enableAutoSIPrefix(enable=False)
+        self.plot_widget.plotItem.getAxis("right").enableAutoSIPrefix(enable=False)
+        self.plot_widget.plotItem.getAxis("top").enableAutoSIPrefix(enable=False)
+        self.plot_widget.plotItem.getAxis("bottom").enableAutoSIPrefix(enable=False)
         # set legend
         self.legend_format = """<font face="Times New Roman">%s</font>"""
         self.legend = pg.LegendItem(offset=(80, 50))
@@ -173,12 +178,12 @@ class DistributionCanvas(QWidget):
 
         # the range to limit the positions of lines
         self.position_limit = (sample.classes[0], sample.classes[-1])
-        x_axis = self.plot_widget.plotItem.getAxis("bottom")
-        x_axis.enableAutoSIPrefix(enable=False)
         major_ticks = [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(sample.classes) if i%20==0]
         minor_ticks = [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(sample.classes) if i%5==0]
         all_ticks = [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(sample.classes)]
-        x_axis.setTicks([major_ticks, minor_ticks, all_ticks])
+        self.plot_widget.plotItem.getAxis("top").setTicks([major_ticks, minor_ticks, all_ticks])
+        self.plot_widget.plotItem.getAxis("bottom").setTicks([major_ticks, minor_ticks, all_ticks])
+
         self.logger.debug("Target data has been changed to [%s].", sample.name)
 
         # update the title of canvas
