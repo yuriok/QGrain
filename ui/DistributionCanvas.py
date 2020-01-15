@@ -61,7 +61,7 @@ class DistributionCanvas(QWidget):
                 dict(pen=pg.mkPen("#FD0006", width=2, style=Qt.DashLine)),
                 dict(pen=pg.mkPen("#009B95", width=2, style=Qt.DashLine))]
         else:
-            self.target_style = dict(pen=None, symbol="o", symbolBrush=pg.mkBrush("#ffffff"), symbolPen=None, symbolSize=5)
+            self.target_style = dict(pen=None, symbol="o", symbolBrush=pg.mkBrush("#afafaf"), symbolPen=None, symbolSize=5)
             self.sum_style = dict(pen=pg.mkPen("#062170", width=3, style=Qt.DashLine))
             self.component_styles = [
                 dict(pen=pg.mkPen("#600CAC", width=2, style=Qt.DashLine)),
