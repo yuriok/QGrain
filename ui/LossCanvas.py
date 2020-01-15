@@ -63,20 +63,21 @@ class LossCanvas(QWidget):
         self.y = []
         self.result_info = None
 
+    def on_fitting_started(self):
+        self.x.clear()
+        self.y.clear()
+
+    def on_fitting_finished(self):
+        name, distribution_type, component_number = self.result_info
+        self.png_exporter.export("./temp/loss_canvas/png/{0} - {1} - {2}.png".format(
+            name, distribution_type, component_number))
+        self.svg_exporter.export("./temp/loss_canvas/svg/{0} - {1} - {2}.svg".format(
+            name, distribution_type, component_number))
+
     def on_single_iteration_finished(self, current_iteration: int, result: FittingResult):
         if current_iteration == 0:
-            if len(self.x) != 0 and len(self.y) != 0:
-                self.x.clear()
-                self.y.clear()
-                # save figures
-                name, distribution_type, component_number = self.result_info
-                self.png_exporter.export("./temp/loss_canvas/png/{0} - {1} - {2}.png".format(
-                    name, distribution_type, component_number))
-                self.svg_exporter.export("./temp/loss_canvas/svg/{0} - {1} - {2}.svg".format(
-                    name, distribution_type, component_number))
-            else:
-                self.result_info = (result.name, result.distribution_type, result.component_number)
-                self.plot_widget.plotItem.setTitle(self.title_format % result.name)
+            self.result_info = (result.name, result.distribution_type, result.component_number)
+            self.plot_widget.plotItem.setTitle(self.title_format % ("{0} "+self.tr("Iteration")+" ({1})").format(result.name, current_iteration))
         loss = result.mean_squared_error
         self.x.append(current_iteration)
         self.y.append(loss)
