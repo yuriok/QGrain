@@ -274,7 +274,7 @@ class ControlPanel(QWidget):
         self.data_index = index
         self.logger.debug("Sample data at [%d] is selected.", index)
 
-    def on_widgets_enable_changed(self, enable: bool):
+    def change_enable_states(self, enable: bool):
         if self.auto_run_flag and enable:
             return
         self.distribution_weibull_radio_button.setEnabled(enable)
@@ -297,13 +297,13 @@ class ControlPanel(QWidget):
             self.logger.warning("The fitting result may be not valid, auto running stoped.")
             self.gui_logger.warning(self.tr("The fitting result may be not valid, auto running stoped."))
             self.auto_run_flag = False
-            self.on_widgets_enable_changed(True)
+            self.change_enable_states(True)
 
         if self.data_index == self.data_length-1:
             self.logger.info("The auto running has reached the last sample and stoped.")
             self.gui_logger.info(self.tr("The auto running has reached the last sample and stoped."))
             self.auto_run_flag = False
-            self.on_widgets_enable_changed(True)
+            self.change_enable_states(True)
 
         if self.auto_run_flag:
             self.auto_run_timer.start(5)
@@ -324,7 +324,7 @@ class ControlPanel(QWidget):
     def on_cancel_run_clicked(self):
         if self.auto_run_flag:
             self.auto_run_flag = False
-            self.on_widgets_enable_changed(True)
+            self.change_enable_states(True)
             self.logger.info("Auto run flag has been changed to False.")
 
         self.sigGUIResolverFittingCanceled.emit()
@@ -338,15 +338,15 @@ class ControlPanel(QWidget):
         self.sigMultiProcessingFittingStarted.emit()
 
     def on_fitting_started(self):
-        self.on_widgets_enable_changed(False)
+        self.change_enable_states(False)
 
     def on_fitting_finished(self):
-        self.on_widgets_enable_changed(True)
+        self.change_enable_states(True)
 
     def on_fitting_failed(self, message: str):
         if self.auto_run_flag:
             self.auto_run_flag = False
-            self.on_widgets_enable_changed(True)
+            self.change_enable_states(True)
             self.logger.info("Auto running was canceled due to the failure of fitting.")
         self.show_error(self.tr("Fitting failed. {0}").format(message))
 
