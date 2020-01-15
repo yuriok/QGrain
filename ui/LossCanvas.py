@@ -50,6 +50,11 @@ class LossCanvas(QWidget):
         self.plot_widget.plotItem.getAxis("right").tickFont = self.tickFont
         self.plot_widget.plotItem.getAxis("top").tickFont = self.tickFont
         self.plot_widget.plotItem.getAxis("bottom").tickFont = self.tickFont
+        # set auto SI
+        self.plot_widget.plotItem.getAxis("left").enableAutoSIPrefix(enable=False)
+        self.plot_widget.plotItem.getAxis("right").enableAutoSIPrefix(enable=False)
+        self.plot_widget.plotItem.getAxis("top").enableAutoSIPrefix(enable=False)
+        self.plot_widget.plotItem.getAxis("bottom").enableAutoSIPrefix(enable=False)
         # set legend
         self.legend_format = """<font face="Times New Roman">%s</font>"""
         self.legend = pg.LegendItem(offset=(80, 50))
