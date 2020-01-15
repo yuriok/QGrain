@@ -17,9 +17,10 @@ class CancelError(Exception):
 
 
 class GUIResolver(QObject, Resolver):
+    sigFittingStarted = Signal()
+    sigFittingFinished = Signal()
     sigSingleIterationFinished = Signal(int, FittingResult)
     sigFittingEpochSucceeded = Signal(FittingResult)
-    sigWidgetsEnable = Signal(bool)
     sigFittingFailed = Signal(str) # emit hint text
     logger = logging.getLogger(name="root.resolvers.GUIResolver")
 
@@ -80,13 +81,13 @@ class GUIResolver(QObject, Resolver):
         if self.expected_params is not None:
             self.initial_guess = self.expected_params
 
-        self.sigWidgetsEnable.emit(False)
+        self.sigFittingStarted.emit()
         self.logger.debug("Fitting progress started.")
 
     def on_fitting_finished(self):
         self.current_iteration = 0
         self.expected_params = None
-        self.sigWidgetsEnable.emit(True)
+        self.sigFittingFinished.emit()
         self.logger.debug("Fitting progress finished.")
 
     def on_global_fitting_failed(self, algorithm_result: OptimizeResult):
