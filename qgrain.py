@@ -82,7 +82,7 @@ def main():
     app.processEvents()
     setup_language(app)
     setup_theme(app)
-    main_window = MainWindow()
+    main_window = MainWindow("./settings/icons/light/")
     main_window.setWindowTitle("QGrain")
     main_window.setWindowIcon(QIcon("./settings/icons/icon.png"))
     setup_logging(main_window)
