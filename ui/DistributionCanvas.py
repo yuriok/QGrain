@@ -11,7 +11,7 @@ from PySide2.QtWidgets import QGridLayout, QPushButton, QWidget
 from models.FittingResult import FittingResult
 from models.SampleData import SampleData
 
-pg.setConfigOptions(foreground=pg.mkColor("k"), background=pg.mkColor("#FFFFFF00"), antialias=True)
+pg.setConfigOptions(background=pg.mkColor("#FFFFFF00"), antialias=True)
 
 @unique
 class XAxisSpace(Enum):
@@ -24,11 +24,15 @@ class DistributionCanvas(QWidget):
     logger = logging.getLogger("root.ui.FittingCanvas")
     gui_logger = logging.getLogger("GUI")
 
-    def __init__(self, parent=None, **kargs):
+    def __init__(self, parent=None, light=True, **kargs):
         super().__init__(parent, **kargs)
-        self.init_ui()
+        if light:
+            pg.setConfigOptions(foreground=pg.mkColor("k"))
+        else:
+            pg.setConfigOptions(foreground=pg.mkColor("w"))
+        self.init_ui(light)
 
-    def init_ui(self):
+    def init_ui(self, light: bool):
         self.main_layout = QGridLayout(self)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.plot_widget = pg.PlotWidget(enableMenu=False)
@@ -41,15 +45,46 @@ class DistributionCanvas(QWidget):
         self.plot_widget.plotItem.showAxis("right")
         self.plot_widget.plotItem.showAxis("top")
         self.plot_widget.plotItem.showAxis("bottom")
+        # prepare the styles
+        if light:
+            self.target_style = dict(pen=None, symbol="o", symbolBrush=pg.mkBrush("#161B26"), symbolPen=None, symbolSize=5)
+            self.sum_style = dict(pen=pg.mkPen("#062170", width=3, style=Qt.DashLine))
+            self.component_styles = [
+                dict(pen=pg.mkPen("#600CAC", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#0E51A7", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#FFC900", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#EA0037", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#C0F400", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#00AA72", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#53DF00", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#FF7100", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#FD0006", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#009B95", width=2, style=Qt.DashLine))]
+        else:
+            self.target_style = dict(pen=None, symbol="o", symbolBrush=pg.mkBrush("#ffffff"), symbolPen=None, symbolSize=5)
+            self.sum_style = dict(pen=pg.mkPen("#062170", width=3, style=Qt.DashLine))
+            self.component_styles = [
+                dict(pen=pg.mkPen("#600CAC", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#0E51A7", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#FFC900", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#EA0037", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#C0F400", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#00AA72", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#53DF00", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#FF7100", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#FD0006", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#009B95", width=2, style=Qt.DashLine))]
         # prepare the plot data item for target and fitted data
-        self.target_style = dict(pen=None, symbol="o", symbolBrush=pg.mkBrush("#161B26"), symbolPen=None, symbolSize=5)
         self.target_item = pg.PlotDataItem(name="Target", **self.target_style)
         self.plot_widget.plotItem.addItem(self.target_item)
-        self.sum_style = dict(pen=pg.mkPen("#062170", width=3, style=Qt.DashLine))
         self.fitted_item = pg.PlotDataItem(name="Fitted", **self.sum_style)
         self.plot_widget.plotItem.addItem(self.fitted_item)
         # set labels
-        self.label_styles = {"font-family": "Times New Roman"}
+        # bug of pyqtgraph, can not perform the foreground to labels
+        if light:
+            self.label_styles = {"font-family": "Times New Roman", "color": "black"}
+        else:
+            self.label_styles = {"font-family": "Times New Roman", "color": "white"}
         self.plot_widget.plotItem.setLabel("left", self.tr("Probability Density"), **self.label_styles)
         self.plot_widget.plotItem.setLabel("bottom", self.tr("Grain size")+" (μm)", **self.label_styles)
         # set title
@@ -81,18 +116,6 @@ class DistributionCanvas(QWidget):
         self.component_lines = []
         self.position_limit = None
         self.position_cache = []
-        self.component_styles = [
-            dict(pen=pg.mkPen("#600CAC", width=2, style=Qt.DashLine)),
-            dict(pen=pg.mkPen("#0E51A7", width=2, style=Qt.DashLine)),
-            dict(pen=pg.mkPen("#FFC900", width=2, style=Qt.DashLine)),
-            dict(pen=pg.mkPen("#EA0037", width=2, style=Qt.DashLine)),
-            dict(pen=pg.mkPen("#C0F400", width=2, style=Qt.DashLine)),
-            dict(pen=pg.mkPen("#00AA72", width=2, style=Qt.DashLine)),
-            dict(pen=pg.mkPen("#53DF00", width=2, style=Qt.DashLine)),
-            dict(pen=pg.mkPen("#FF7100", width=2, style=Qt.DashLine)),
-            dict(pen=pg.mkPen("#FD0006", width=2, style=Qt.DashLine)),
-            dict(pen=pg.mkPen("#009B95", width=2, style=Qt.DashLine))]
-
 
     def raw2space(self, value: float) -> float:
         processed = value

@@ -75,12 +75,12 @@ QLineEdit {
 	selection-color: rgb(60, 63, 65);
 }
 QLabel {
-	color:rgb(255,255,255);	
+	color:rgb(255,255,255);
 }
 QProgressBar {
 	text-align: center;
 	color: rgb(240, 240, 240);
-	border-width: 1px; 
+	border-width: 1px;
 	border-radius: 10px;
 	border-color: rgb(58, 58, 58);
 	border-style: inset;
@@ -194,3 +194,21 @@ QCheckBox::indicator:unchecked {
 QStatusBar {
 	color:rgb(240,240,240);
 }
+
+
+/* Custom */
+QRadioButton,
+QDockWidget,
+QScrollBar,
+PlotWidget,
+QHeaderView:section,
+QTableView,
+QTableView QTableCornerButton::section,
+QHeaderView:active {color: rgb(255, 255, 255); background-color: rgb(82, 82, 82);}
+
+QTableView {
+    alternate-background-color: rgb(42, 42, 42);
+    selection-background-color: rgb(128, 128, 128);
+}
+
+QHeaderView:section {border: 0px;}
