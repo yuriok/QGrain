@@ -28,7 +28,8 @@ class ComponentFittingResult:
                  algorithm_data: AlgorithmData,
                  params: Iterable[float], fraction: float):
         assert np.isreal(fraction) and fraction is not None
-        assert fraction >= 0.0 and fraction <= 1.0
+        # iteration may pass invalid fraction value
+        # assert fraction >= 0.0 and fraction <= 1.0
 
         self.__real_x = real_x
         self.__fitting_space_x = fitting_space_x

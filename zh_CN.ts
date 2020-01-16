@@ -117,14 +117,19 @@ It&apos;s recommended to use ralatively lower level in global optimization proce
 <context>
     <name>AppSetting</name>
     <message>
-        <location filename="ui/AppSetting.py" line="19"/>
+        <location filename="ui/AppSetting.py" line="23"/>
         <source>App Settings:</source>
         <translation>应用设置：</translation>
     </message>
     <message>
-        <location filename="ui/AppSetting.py" line="22"/>
+        <location filename="ui/AppSetting.py" line="26"/>
         <source>Language</source>
         <translation>语言</translation>
+    </message>
+    <message>
+        <location filename="ui/AppSetting.py" line="30"/>
+        <source>Theme</source>
+        <translation>主题</translation>
     </message>
 </context>
 <context>
@@ -334,17 +339,7 @@ It should be positive.</source>
         <translation>粒度数据还未被加载，操作是无效的。</translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="298"/>
-        <source>The fitting result may be not valid, auto run stoped.</source>
-        <translation>拟合结果可能是无效的，自动运行停止了。</translation>
-    </message>
-    <message>
-        <location filename="ui/ControlPanel.py" line="304"/>
-        <source>The auto run has reached the last sample and stoped.</source>
-        <translation>自动运行已经达到了最后一个样品，并且停止了。</translation>
-    </message>
-    <message>
-        <location filename="ui/ControlPanel.py" line="341"/>
+        <location filename="ui/ControlPanel.py" line="351"/>
         <source>Fitting failed. {0}</source>
         <translation>拟合失败。{0}</translation>
     </message>
@@ -373,6 +368,16 @@ The samples from current to the end will be processed one by one.</source>
 Note: It will record the LAST SUCCESS fitting result, NOT CURRENT SAMPLE.</source>
         <translation>点击以记录当前的拟合结果。
 注意：记录的是上次成功的拟合结果，而不是当前样品的。</translation>
+    </message>
+    <message>
+        <location filename="ui/ControlPanel.py" line="298"/>
+        <source>The fitting result may be not valid, auto running stoped.</source>
+        <translation>拟合的结果可能是无效的，自动运行停止了。</translation>
+    </message>
+    <message>
+        <location filename="ui/ControlPanel.py" line="304"/>
+        <source>The auto running has reached the last sample and stoped.</source>
+        <translation>自动运行已经到达了最后一个样品，并且停止了。</translation>
     </message>
 </context>
 <context>
@@ -579,122 +584,140 @@ If the samples are too many, the massive charts will slow the running of Excel h
     </message>
 </context>
 <context>
-    <name>FittingCanvas</name>
+    <name>DistributionCanvas</name>
     <message>
-        <location filename="ui/FittingCanvas.py" line="42"/>
+        <location filename="ui/DistributionCanvas.py" line="88"/>
         <source>Probability Density</source>
         <translation>概率密度</translation>
     </message>
     <message>
-        <location filename="ui/FittingCanvas.py" line="43"/>
+        <location filename="ui/DistributionCanvas.py" line="89"/>
         <source>Grain size</source>
         <translation>粒径</translation>
     </message>
     <message>
-        <location filename="ui/FittingCanvas.py" line="45"/>
-        <source>Fitting Canvas</source>
-        <translation>拟合图表</translation>
-    </message>
-    <message>
-        <location filename="ui/FittingCanvas.py" line="55"/>
+        <location filename="ui/DistributionCanvas.py" line="111"/>
         <source>Target</source>
         <translation>目标</translation>
     </message>
     <message>
-        <location filename="ui/FittingCanvas.py" line="56"/>
+        <location filename="ui/DistributionCanvas.py" line="112"/>
         <source>Fitted</source>
         <translation>拟合</translation>
+    </message>
+    <message>
+        <location filename="ui/DistributionCanvas.py" line="234"/>
+        <source>Iteration</source>
+        <translation>迭代数</translation>
+    </message>
+    <message>
+        <location filename="ui/DistributionCanvas.py" line="92"/>
+        <source>Distribution Canvas</source>
+        <translation>分布图表</translation>
     </message>
 </context>
 <context>
     <name>GUIResolver</name>
     <message>
-        <location filename="resolvers/GUIResolver.py" line="68"/>
+        <location filename="resolvers/GUIResolver.py" line="69"/>
         <source>There is no valid data to fit.</source>
         <translation>没有有效的数据用以拟合。</translation>
     </message>
     <message>
-        <location filename="resolvers/GUIResolver.py" line="93"/>
+        <location filename="resolvers/GUIResolver.py" line="94"/>
         <source>Fitting failed during global fitting progress.</source>
         <translation>在全局拟合过程中拟合失败。</translation>
     </message>
     <message>
-        <location filename="resolvers/GUIResolver.py" line="100"/>
+        <location filename="resolvers/GUIResolver.py" line="101"/>
         <source>Fitting failed during final fitting progress.</source>
         <translation>在最终拟合过程中拟合失败。</translation>
     </message>
     <message>
-        <location filename="resolvers/GUIResolver.py" line="107"/>
+        <location filename="resolvers/GUIResolver.py" line="108"/>
         <source>Unknown exception raise in fitting progress.</source>
         <translation>拟合过程中出现了未知的异常。</translation>
     </message>
 </context>
 <context>
+    <name>LossCanvas</name>
+    <message>
+        <location filename="ui/LossCanvas.py" line="46"/>
+        <source>Loss</source>
+        <translation>损失</translation>
+    </message>
+    <message>
+        <location filename="ui/LossCanvas.py" line="96"/>
+        <source>Iteration</source>
+        <translation>迭代数</translation>
+    </message>
+    <message>
+        <location filename="ui/LossCanvas.py" line="50"/>
+        <source>Loss Canvas</source>
+        <translation>损失图表</translation>
+    </message>
+</context>
+<context>
     <name>MainWindow</name>
     <message>
-        <location filename="ui/MainWindow.py" line="66"/>
+        <location filename="ui/MainWindow.py" line="71"/>
         <source>File</source>
         <translation>文件</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="67"/>
+        <location filename="ui/MainWindow.py" line="72"/>
         <source>Load</source>
         <translation>加载</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="69"/>
+        <location filename="ui/MainWindow.py" line="74"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="71"/>
+        <location filename="ui/MainWindow.py" line="76"/>
         <source>Docks</source>
         <translation>窗口</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="87"/>
-        <source>Canvas</source>
-        <translation>图表</translation>
-    </message>
-    <message>
-        <location filename="ui/MainWindow.py" line="92"/>
+        <location filename="ui/MainWindow.py" line="105"/>
         <source>Control Panel</source>
         <translation>控制面板</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="76"/>
-        <source>Raw Table</source>
-        <translation>原始表格</translation>
-    </message>
-    <message>
-        <location filename="ui/MainWindow.py" line="78"/>
-        <source>Recorded Table</source>
-        <translation>记录表格</translation>
-    </message>
-    <message>
-        <location filename="ui/MainWindow.py" line="80"/>
+        <location filename="ui/MainWindow.py" line="87"/>
         <source>Reset</source>
         <translation>重置</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="82"/>
+        <location filename="ui/MainWindow.py" line="89"/>
         <source>Settings</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="83"/>
+        <location filename="ui/MainWindow.py" line="90"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="97"/>
+        <location filename="ui/MainWindow.py" line="111"/>
         <source>Raw Data Table</source>
         <translation>原始数据表格</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="105"/>
+        <location filename="ui/MainWindow.py" line="120"/>
         <source>Recorded Data Table</source>
         <translation>记录数据表格</translation>
+    </message>
+    <message>
+        <location filename="ui/MainWindow.py" line="94"/>
+        <source>Loss Canvas</source>
+        <translation>损失图表</translation>
+    </message>
+    <message>
+        <location filename="ui/MainWindow.py" line="99"/>
+        <source>Distribution Canvas</source>
+        <translation>分布图表</translation>
     </message>
 </context>
 <context>

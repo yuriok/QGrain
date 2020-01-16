@@ -128,7 +128,7 @@ QLCDNumber {
 QProgressBar {
 	text-align: center;
 	color: rgb(240, 240, 240);
-	border-width: 1px; 
+	border-width: 1px;
 	border-radius: 10px;
 	border-color: rgb(230, 230, 230);
 	border-style: solid;
@@ -557,3 +557,21 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
 QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
    background: none;
 }
+
+
+/* Custom */
+QDockWidget,
+QScrollBar,
+PlotWidget,
+QHeaderView:section,
+QTableView,
+QTableView QTableCornerButton::section,
+QHeaderView:active {color: rgb(0,0,0); background-color: #ececec;}
+
+QTableView {
+    alternate-background-color: #ffffff;
+	selection-color: #ffffff;
+    selection-background-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(0, 113, 255, 255), stop:1 rgba(91, 171, 252, 255));
+}
+
+QHeaderView:section {border: 0px;}
