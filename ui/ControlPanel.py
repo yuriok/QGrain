@@ -139,7 +139,6 @@ class ControlPanel(QWidget):
     def component_number(self, value: int):
         # check the validity
         # component number should be non-negative
-        # TODO: change the way to generate plot styles in `FittingCanvas`, and remove the limit of <=10
         if value < 1 or value > 10:
             self.gui_logger.info(self.tr("The component number should be >= 1 and <= 10."))
             return
@@ -274,7 +273,7 @@ class ControlPanel(QWidget):
         self.data_index = index
         self.logger.debug("Sample data at [%d] is selected.", index)
 
-    def on_widgets_enable_changed(self, enable: bool):
+    def change_enable_states(self, enable: bool):
         if self.auto_run_flag and enable:
             return
         self.distribution_weibull_radio_button.setEnabled(enable)
@@ -294,16 +293,16 @@ class ControlPanel(QWidget):
 
     def on_fitting_epoch_suceeded(self, result: FittingResult):
         if self.auto_run_flag and result.has_invalid_value:
-            self.logger.warning("The fitting result may be not valid, auto run stoped.")
-            self.gui_logger.warning(self.tr("The fitting result may be not valid, auto run stoped."))
+            self.logger.warning("The fitting result may be not valid, auto running stoped.")
+            self.gui_logger.warning(self.tr("The fitting result may be not valid, auto running stoped."))
             self.auto_run_flag = False
-            self.on_widgets_enable_changed(True)
+            self.change_enable_states(True)
 
         if self.data_index == self.data_length-1:
-            self.logger.info("The auto run has reached the last sample and stoped.")
-            self.gui_logger.info(self.tr("The auto run has reached the last sample and stoped."))
+            self.logger.info("The auto running has reached the last sample and stoped.")
+            self.gui_logger.info(self.tr("The auto running has reached the last sample and stoped."))
             self.auto_run_flag = False
-            self.on_widgets_enable_changed(True)
+            self.change_enable_states(True)
 
         if self.auto_run_flag:
             self.auto_run_timer.start(5)
@@ -319,11 +318,12 @@ class ControlPanel(QWidget):
         # from current sample to fit, to avoid that it need to resart from the first sample every time
         self.data_index = self.data_index
         self.auto_run_flag = True
-        self.logger.info("Auto run started from sample [%s].", self.current_name)
+        self.logger.info("Auto running started from sample [%s].", self.current_name)
 
     def on_cancel_run_clicked(self):
         if self.auto_run_flag:
             self.auto_run_flag = False
+            self.change_enable_states(True)
             self.logger.info("Auto run flag has been changed to False.")
 
         self.sigGUIResolverFittingCanceled.emit()
@@ -336,10 +336,17 @@ class ControlPanel(QWidget):
             return
         self.sigMultiProcessingFittingStarted.emit()
 
+    def on_fitting_started(self):
+        self.change_enable_states(False)
+
+    def on_fitting_finished(self):
+        self.change_enable_states(True)
+
     def on_fitting_failed(self, message: str):
         if self.auto_run_flag:
             self.auto_run_flag = False
-            self.logger.info("Auto run was canceled.")
+            self.change_enable_states(True)
+            self.logger.info("Auto running was canceled due to the failure of fitting.")
         self.show_error(self.tr("Fitting failed. {0}").format(message))
 
     def setup_all(self):

@@ -2,8 +2,8 @@ import logging
 import time
 from typing import List
 
-from PySide2.QtCore import (QCoreApplication, QEventLoop, QMutex, Qt, QThread,
-                            Signal)
+from PySide2.QtCore import (QCoreApplication, QEventLoop, QMutex, QSettings,
+                            Qt, QThread, Signal)
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import (QAbstractItemView, QAction, QDockWidget,
                                QMainWindow, QMessageBox, QTableWidget,
@@ -15,7 +15,8 @@ from resolvers.MultiprocessingResolver import MultiProcessingResolver
 from ui.AboutWindow import AboutWindow
 from ui.ControlPanel import ControlPanel
 from ui.DataManager import DataManager
-from ui.FittingCanvas import FittingCanvas
+from ui.DistributionCanvas import DistributionCanvas
+from ui.LossCanvas import LossCanvas
 from ui.RecordedDataTable import RecordedDataTable
 from ui.SettingWindow import SettingWindow
 from ui.TaskWindow import TaskWindow
@@ -41,9 +42,13 @@ class MainWindow(QMainWindow):
     sigCleanup = Signal()
     logger = logging.getLogger("root.MainWindow")
     gui_logger = logging.getLogger("GUI")
-    def __init__(self, *args, **kwargs):
+    def __init__(self, light=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.init_ui()
+        if light:
+            self.icon_folder = "./settings/icons/light/"
+        else:
+            self.icon_folder = "./settings/icons/dark/"
+        self.init_ui(light)
         self.status_bar = self.statusBar()
         self.gui_fitting_thread = QThread()
         self.gui_resolver = GUIResolver()
@@ -61,37 +66,46 @@ class MainWindow(QMainWindow):
     def show_message(self, message):
         self.status_bar.showMessage(message)
 
-    def init_ui(self):
+    def init_ui(self, light: bool):
         # Menu
         self.file_menu = self.menuBar().addMenu(self.tr("File"))
-        self.load_action = QAction(QIcon("./settings/icons/open.png"), self.tr("Load"), self)
+        self.load_action = QAction(QIcon(self.icon_folder+"load.png"), self.tr("Load"), self)
         self.file_menu.addAction(self.load_action)
-        self.save_action = QAction(QIcon("./settings/icons/save.png"), self.tr("Save"), self)
+        self.save_action = QAction(QIcon(self.icon_folder+"save.png"), self.tr("Save"), self)
         self.file_menu.addAction(self.save_action)
         self.docks_menu = self.menuBar().addMenu(self.tr("Docks"))
-        self.canvas_action = QAction(QIcon("./settings/icons/canvas.png"), self.tr("Canvas"), self)
-        self.docks_menu.addAction(self.canvas_action)
-        self.control_panel_action = QAction(QIcon("./settings/icons/control.png"), self.tr("Control Panel"), self)
+        self.loss_canvas_action = QAction(QIcon(self.icon_folder+"canvas.png"), self.tr("Loss Canvas"), self)
+        self.docks_menu.addAction(self.loss_canvas_action)
+        self.distribution_canvas_action = QAction(QIcon(self.icon_folder+"canvas.png"), self.tr("Distribution Canvas"), self)
+        self.docks_menu.addAction(self.distribution_canvas_action)
+        self.control_panel_action = QAction(QIcon(self.icon_folder+"control.png"), self.tr("Control Panel"), self)
         self.docks_menu.addAction(self.control_panel_action)
-        self.raw_data_table_action = QAction(QIcon("./settings/icons/raw_table.png"), self.tr("Raw Table"), self)
+        self.raw_data_table_action = QAction(QIcon(self.icon_folder+"raw_data_table.png"), self.tr("Raw Data Table"), self)
         self.docks_menu.addAction(self.raw_data_table_action)
-        self.recorded_data_table_action = QAction(QIcon("./settings/icons/recorded_table.png"), self.tr("Recorded Table"), self)
+        self.recorded_data_table_action = QAction(QIcon(self.icon_folder+"recorded_data_table.png"), self.tr("Recorded Data Table"), self)
         self.docks_menu.addAction(self.recorded_data_table_action)
-        self.reset_docks_actions = QAction(QIcon("./settings/icons/reset.png"), self.tr("Reset"), self)
+        self.reset_docks_actions = QAction(QIcon(self.icon_folder+"reset.png"), self.tr("Reset"), self)
         self.docks_menu.addAction(self.reset_docks_actions)
         self.settings_action = self.menuBar().addAction(self.tr("Settings"))
         self.about_action = self.menuBar().addAction(self.tr("About"))
 
         self.setDockNestingEnabled(True)
-        # Canvas
-        self.canvas_dock = QDockWidget(self.tr("Canvas"))
-        self.canvas = FittingCanvas()
-        self.canvas_dock.setWidget(self.canvas)
+        # Loss Canvas
+        self.loss_canvas_dock = QDockWidget(self.tr("Loss Canvas"))
+        self.loss_canvas = LossCanvas(light=light)
+        self.loss_canvas_dock.setWidget(self.loss_canvas)
+        self.loss_canvas_dock.setObjectName("LossCanvasDock")
+        # Distribution Canvas
+        self.distribution_canvas_dock = QDockWidget(self.tr("Distribution Canvas"))
+        self.distribution_canvas = DistributionCanvas(light=light)
+        self.distribution_canvas_dock.setWidget(self.distribution_canvas)
+        self.distribution_canvas_dock.setObjectName("DistributionCanvasDock")
 
         # Control Panel
         self.control_panel_dock = QDockWidget(self.tr("Control Panel"))
         self.control_panel = ControlPanel()
         self.control_panel_dock.setWidget(self.control_panel)
+        self.control_panel_dock.setObjectName("ControlPanelDock")
 
         # Raw Data Table
         self.raw_data_dock = QDockWidget(self.tr("Raw Data Table"))
@@ -100,11 +114,13 @@ class MainWindow(QMainWindow):
         self.raw_data_table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.raw_data_table.setAlternatingRowColors(True)
         self.raw_data_dock.setWidget(self.raw_data_table)
+        self.raw_data_dock.setObjectName("RawDataTableDock")
 
         # Recorded Data Table
         self.recorded_data_dock = QDockWidget(self.tr("Recorded Data Table"))
         self.recorded_data_table = RecordedDataTable()
         self.recorded_data_dock.setWidget(self.recorded_data_table)
+        self.recorded_data_dock.setObjectName("RecordedDataTableDock")
 
         self.settings_window = SettingWindow(self)
         self.about_window = AboutWindow(self)
@@ -115,7 +131,7 @@ class MainWindow(QMainWindow):
         self.control_panel.sigDistributionTypeChanged.connect(self.multiprocessing_resolver.on_distribution_type_changed)
         self.control_panel.sigComponentNumberChanged.connect(self.gui_resolver.on_component_number_changed)
         self.control_panel.sigComponentNumberChanged.connect(self.multiprocessing_resolver.on_component_number_changed)
-        self.control_panel.sigComponentNumberChanged.connect(self.canvas.on_component_number_changed)
+        self.control_panel.sigComponentNumberChanged.connect(self.distribution_canvas.on_component_number_changed)
         self.control_panel.sigFocusSampleChanged.connect(self.data_manager.on_focus_sample_changed)
         self.control_panel.sigFocusSampleChanged.connect(self.on_focus_sample_changed)
         self.control_panel.sigGUIResolverSettingsChanged.connect(self.gui_resolver.on_settings_changed)
@@ -127,20 +143,24 @@ class MainWindow(QMainWindow):
         # Connect directly
         self.control_panel.record_button.clicked.connect(self.data_manager.record_current_data)
 
-        self.canvas.sigExpectedMeanValueChanged.connect(self.gui_resolver.on_excepted_mean_value_changed)
+        self.distribution_canvas.sigExpectedMeanValueChanged.connect(self.gui_resolver.on_excepted_mean_value_changed)
 
         self.data_manager.sigDataLoaded.connect(self.on_data_loaded)
         self.data_manager.sigDataLoaded.connect(self.control_panel.on_data_loaded)
         self.data_manager.sigDataLoaded.connect(self.multiprocessing_resolver.on_data_loaded)
         self.data_manager.sigTargetDataChanged.connect(self.gui_resolver.on_target_data_changed)
-        self.data_manager.sigTargetDataChanged.connect(self.canvas.on_target_data_changed)
+        self.data_manager.sigTargetDataChanged.connect(self.distribution_canvas.on_target_data_changed)
         self.data_manager.sigDataRecorded.connect(self.recorded_data_table.on_data_recorded)
 
+        self.gui_resolver.sigFittingStarted.connect(self.control_panel.on_fitting_started)
+        self.gui_resolver.sigFittingFinished.connect(self.control_panel.on_fitting_finished)
+        self.gui_resolver.sigFittingStarted.connect(self.loss_canvas.on_fitting_started)
+        self.gui_resolver.sigFittingFinished.connect(self.loss_canvas.on_fitting_finished)
         self.gui_resolver.sigFittingEpochSucceeded.connect(self.control_panel.on_fitting_epoch_suceeded)
-        self.gui_resolver.sigFittingEpochSucceeded.connect(self.canvas.on_fitting_epoch_suceeded)
+        self.gui_resolver.sigFittingEpochSucceeded.connect(self.distribution_canvas.on_fitting_epoch_suceeded)
         self.gui_resolver.sigFittingEpochSucceeded.connect(self.data_manager.on_fitting_epoch_suceeded)
-        self.gui_resolver.sigSingleIterationFinished.connect(self.canvas.on_single_iteration_finished)
-        self.gui_resolver.sigWidgetsEnable.connect(self.control_panel.on_widgets_enable_changed)
+        self.gui_resolver.sigSingleIterationFinished.connect(self.loss_canvas.on_single_iteration_finished)
+        self.gui_resolver.sigSingleIterationFinished.connect(self.distribution_canvas.on_single_iteration_finished)
         self.gui_resolver.sigFittingFailed.connect(self.control_panel.on_fitting_failed)
 
         self.multiprocessing_resolver.sigTaskInitialized.connect(self.task_window.on_task_initialized)
@@ -152,7 +172,8 @@ class MainWindow(QMainWindow):
         self.recorded_data_table.sigRemoveRecords.connect(self.data_manager.remove_data)
 
         # Dock menu actions
-        self.canvas_action.triggered.connect(self.show_canvas_dock)
+        self.loss_canvas_action.triggered.connect(self.show_loss_canvas_dock)
+        self.distribution_canvas_action.triggered.connect(self.show_distribution_canvas_dock)
         self.control_panel_action.triggered.connect(self.show_control_panel_dock)
         self.raw_data_table_action.triggered.connect(self.show_raw_data_dock)
         self.recorded_data_table_action.triggered.connect(self.show_recorded_data_dock)
@@ -176,23 +197,32 @@ class MainWindow(QMainWindow):
         self.settings_window.algorithm_setting.sigAlgorithmSettingChanged.connect(self.multiprocessing_resolver.on_algorithm_settings_changed)
 
     def reset_dock_layout(self):
-        self.canvas_dock.setFloating(False)
-        self.control_panel_dock.setFloating(False)
-        self.raw_data_dock.setFloating(False)
-        self.recorded_data_dock.setFloating(False)
-        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.canvas_dock)
-        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.raw_data_dock)
-        self.splitDockWidget(self.raw_data_dock, self.recorded_data_dock, Qt.Orientation.Horizontal)
-        self.splitDockWidget(self.canvas_dock, self.control_panel_dock, Qt.Orientation.Vertical)
-        self.canvas_dock.show()
+        self.loss_canvas_dock.show()
+        self.distribution_canvas_dock.show()
         self.raw_data_dock.show()
         self.recorded_data_dock.show()
         self.control_panel_dock.show()
-        self.resizeDocks((self.canvas_dock, self.control_panel_dock), (self.height()*0.6, self.height()*0.4), Qt.Orientation.Vertical)
-        self.resizeDocks((self.canvas_dock, self.control_panel_dock, self.raw_data_dock, self.recorded_data_dock), (self.width()*0.5, self.width()*0.5, self.width()*0.25, self.width()*0.25), Qt.Orientation.Horizontal)
 
-    def show_canvas_dock(self):
-        self.canvas_dock.show()
+        self.distribution_canvas_dock.setFloating(False)
+        self.loss_canvas_dock.setFloating(False)
+        self.control_panel_dock.setFloating(False)
+        self.raw_data_dock.setFloating(False)
+        self.recorded_data_dock.setFloating(False)
+
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.loss_canvas_dock)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.raw_data_dock)
+        self.splitDockWidget(self.raw_data_dock, self.recorded_data_dock, Qt.Orientation.Horizontal)
+        self.splitDockWidget(self.loss_canvas_dock, self.control_panel_dock, Qt.Orientation.Vertical)
+        self.tabifyDockWidget(self.loss_canvas_dock, self.distribution_canvas_dock)
+
+        self.resizeDocks((self.loss_canvas_dock, self.control_panel_dock), (self.height()*0.6, self.height()*0.4), Qt.Orientation.Vertical)
+        self.resizeDocks((self.loss_canvas_dock, self.control_panel_dock, self.raw_data_dock, self.recorded_data_dock), (self.width()*0.5, self.width()*0.5, self.width()*0.25, self.width()*0.25), Qt.Orientation.Horizontal)
+
+    def show_loss_canvas_dock(self):
+        self.loss_canvas_dock.show()
+
+    def show_distribution_canvas_dock(self):
+        self.distribution_canvas_dock.show()
 
     def show_control_panel_dock(self):
         self.control_panel_dock.show()
@@ -240,10 +270,27 @@ class MainWindow(QMainWindow):
         # emit after the threads are started
         self.sigSetup.emit()
 
+        settings = QSettings("./settings/ui.ini", QSettings.IniFormat)
+        settings.beginGroup("MainWindow")
+        geometry = settings.value("geometry")
+        if geometry is not None:
+            self.restoreGeometry(geometry)
+        windowState = settings.value("windowState")
+        if windowState is not None:
+            self.restoreState(windowState)
+        settings.endGroup()
+
     def closeEvent(self, e):
         # TODO: add task running check
         self.sigCleanup.emit()
         self.hide()
+
+        settings = QSettings("./settings/ui.ini", QSettings.IniFormat)
+        settings.beginGroup("MainWindow")
+        settings.setValue("geometry", self.saveGeometry())
+        settings.setValue("windowState", self.saveState())
+        settings.endGroup()
+
         time.sleep(2)
         self.gui_fitting_thread.terminate()
         self.multiprocessing_fitting_thread.terminate()
