@@ -13,7 +13,7 @@ class AboutWindow(QMainWindow):
         self.setCentralWidget(self.central_widget)
         self.layout = QGridLayout(self.central_widget)
         self.setWindowTitle(self.tr("About"))
-        self.setMinimumSize(600, 600)
+        # self.setMinimumSize(600, 600)
         self.text = QTextBrowser()
 
         self.layout.addWidget(self.text, 0, 0)

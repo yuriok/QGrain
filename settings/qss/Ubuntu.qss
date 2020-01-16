@@ -50,13 +50,13 @@ QComboBox:editable {
 	selection-background-color: #ffffff;
 }
 QComboBox QAbstractItemView {
-	color:rgb(81,72,65);	
+	color:rgb(81,72,65);
 	background: #ffffff;
 	selection-color: #ffffff;
 	selection-background-color: rgb(246, 134, 86);
 }
 QComboBox:!editable:on, QComboBox::drop-down:editable:on {
-	color:  #1e1d23;	
+	color:  #1e1d23;
 	background: #ffffff;
 }
 QDateTimeEdit {
@@ -148,7 +148,7 @@ QPlainTextEdit {
 QProgressBar {
 	text-align: center;
 	color: rgb(0, 0, 0);
-	border-width: 1px; 
+	border-width: 1px;
 	border-radius: 10px;
 	border-style: inset;
 	border-color: rgb(150,150,150);
@@ -399,7 +399,7 @@ QScrollBar::right-arrow:horizontal {
 }
 QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
  	background: none;
-} 
+}
 QScrollBar:vertical {
 	max-width: 20px;
 	border: 1px transparent grey;
@@ -562,3 +562,19 @@ QToolBox::tab:selected {
 	color:rgb(81,72,65);
 	background-color: #ffffff;
 }
+
+
+/* Custom */
+QDockWidget,
+PlotWidget,
+QHeaderView:section,
+QTableView,
+QTableView QTableCornerButton::section,
+QHeaderView:active {color: rgb(17,17,17); background-color: #f0f0f0;}
+
+QTableView {
+    alternate-background-color: #ffffff;
+    selection-background-color: rgb(246, 134, 86);
+}
+
+QHeaderView:section {border: 0px;}

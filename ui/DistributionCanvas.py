@@ -3,14 +3,15 @@ from enum import Enum, unique
 
 import numpy as np
 import pyqtgraph as pg
+from pyqtgraph.exporters import ImageExporter, SVGExporter
 from PySide2.QtCore import Qt, Signal
 from PySide2.QtGui import QFont
-from PySide2.QtWidgets import QGridLayout, QWidget
+from PySide2.QtWidgets import QGridLayout, QPushButton, QWidget
 
 from models.FittingResult import FittingResult
 from models.SampleData import SampleData
 
-pg.setConfigOptions(foreground=pg.mkColor("k"), background=pg.mkColor("#FFFFFF00"), antialias=True)
+pg.setConfigOptions(background=pg.mkColor("#FFFFFF00"), antialias=True)
 
 @unique
 class XAxisSpace(Enum):
@@ -18,59 +19,103 @@ class XAxisSpace(Enum):
     Log10 = 1
     Phi = 2
 
-class FittingCanvas(QWidget):
+class DistributionCanvas(QWidget):
     sigExpectedMeanValueChanged = Signal(tuple)
     logger = logging.getLogger("root.ui.FittingCanvas")
     gui_logger = logging.getLogger("GUI")
 
-    def __init__(self, parent=None, **kargs):
+    def __init__(self, parent=None, light=True, **kargs):
         super().__init__(parent, **kargs)
-        self.init_ui()
+        if light:
+            pg.setConfigOptions(foreground=pg.mkColor("k"))
+        else:
+            pg.setConfigOptions(foreground=pg.mkColor("w"))
+        self.init_ui(light)
 
-    def init_ui(self):
+    def init_ui(self, light: bool):
         self.main_layout = QGridLayout(self)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
-        self.plot_widget = pg.PlotWidget(enableMenu=True)
-        self.main_layout.addWidget(self.plot_widget)
-        self.target_style = dict(pen=None, symbol="o", symbolBrush=pg.mkBrush("#161B26"), symbolPen=None, symbolSize=5)
+        self.plot_widget = pg.PlotWidget(enableMenu=False)
+        self.main_layout.addWidget(self.plot_widget, 0, 0)
+        # add image exporters
+        self.png_exporter = ImageExporter(self.plot_widget.plotItem)
+        self.svg_exporter = SVGExporter(self.plot_widget.plotItem)
+        # show all axis
+        self.plot_widget.plotItem.showAxis("left")
+        self.plot_widget.plotItem.showAxis("right")
+        self.plot_widget.plotItem.showAxis("top")
+        self.plot_widget.plotItem.showAxis("bottom")
+        # prepare the styles
+        if light:
+            self.target_style = dict(pen=None, symbol="o", symbolBrush=pg.mkBrush("#161B26"), symbolPen=None, symbolSize=5)
+            self.sum_style = dict(pen=pg.mkPen("#062170", width=3, style=Qt.DashLine))
+            self.component_styles = [
+                dict(pen=pg.mkPen("#600CAC", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#0E51A7", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#FFC900", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#EA0037", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#C0F400", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#00AA72", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#53DF00", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#FF7100", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#FD0006", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#009B95", width=2, style=Qt.DashLine))]
+        else:
+            self.target_style = dict(pen=None, symbol="o", symbolBrush=pg.mkBrush("#afafaf"), symbolPen=None, symbolSize=5)
+            self.sum_style = dict(pen=pg.mkPen("#062170", width=3, style=Qt.DashLine))
+            self.component_styles = [
+                dict(pen=pg.mkPen("#600CAC", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#0E51A7", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#FFC900", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#EA0037", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#C0F400", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#00AA72", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#53DF00", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#FF7100", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#FD0006", width=2, style=Qt.DashLine)),
+                dict(pen=pg.mkPen("#009B95", width=2, style=Qt.DashLine))]
+        # prepare the plot data item for target and fitted data
         self.target_item = pg.PlotDataItem(name="Target", **self.target_style)
         self.plot_widget.plotItem.addItem(self.target_item)
-        self.sum_style = dict(pen=pg.mkPen("#062170", width=3, style=Qt.DashLine))
         self.fitted_item = pg.PlotDataItem(name="Fitted", **self.sum_style)
         self.plot_widget.plotItem.addItem(self.fitted_item)
-        self.label_styles = {"font-family": "Times New Roman"}
+        # set labels
+        # bug of pyqtgraph, can not perform the foreground to labels
+        if light:
+            self.label_styles = {"font-family": "Times New Roman", "color": "black"}
+        else:
+            self.label_styles = {"font-family": "Times New Roman", "color": "white"}
         self.plot_widget.plotItem.setLabel("left", self.tr("Probability Density"), **self.label_styles)
-        self.plot_widget.plotItem.setLabel("bottom", self.tr("Grain size")+" [μm]", **self.label_styles)
+        self.plot_widget.plotItem.setLabel("bottom", self.tr("Grain size")+" (μm)", **self.label_styles)
+        # set title
         self.title_format = """<font face="Times New Roman">%s</font>"""
-        self.plot_widget.plotItem.setTitle(self.title_format % self.tr("Fitting Canvas"))
+        self.plot_widget.plotItem.setTitle(self.title_format % self.tr("Distribution Canvas"))
+        # show grids
         self.plot_widget.plotItem.showGrid(True, True)
+        # set the font of ticks
         self.tickFont = QFont("Arial")
         self.tickFont.setPointSize(8)
         self.plot_widget.plotItem.getAxis("left").tickFont = self.tickFont
+        self.plot_widget.plotItem.getAxis("right").tickFont = self.tickFont
+        self.plot_widget.plotItem.getAxis("top").tickFont = self.tickFont
         self.plot_widget.plotItem.getAxis("bottom").tickFont = self.tickFont
-        # self.plot_widget.plotItem.setMenuEnabled(False)
+        # set auto SI
+        self.plot_widget.plotItem.getAxis("left").enableAutoSIPrefix(enable=False)
+        self.plot_widget.plotItem.getAxis("right").enableAutoSIPrefix(enable=False)
+        self.plot_widget.plotItem.getAxis("top").enableAutoSIPrefix(enable=False)
+        self.plot_widget.plotItem.getAxis("bottom").enableAutoSIPrefix(enable=False)
+        # set legend
         self.legend_format = """<font face="Times New Roman">%s</font>"""
         self.legend = pg.LegendItem(offset=(80, 50))
         self.legend.setParentItem(self.plot_widget.plotItem)
         self.legend.addItem(self.target_item, self.legend_format % self.tr("Target"))
         self.legend.addItem(self.fitted_item, self.legend_format % self.tr("Fitted"))
+
         self.x_axis_space = XAxisSpace.Log10
         self.component_curves = []
         self.component_lines = []
         self.position_limit = None
         self.position_cache = []
-        self.component_styles = [
-            dict(pen=pg.mkPen("#600CAC", width=2, style=Qt.DashLine)),
-            dict(pen=pg.mkPen("#0E51A7", width=2, style=Qt.DashLine)),
-            dict(pen=pg.mkPen("#FFC900", width=2, style=Qt.DashLine)),
-            dict(pen=pg.mkPen("#EA0037", width=2, style=Qt.DashLine)),
-            dict(pen=pg.mkPen("#C0F400", width=2, style=Qt.DashLine)),
-            dict(pen=pg.mkPen("#00AA72", width=2, style=Qt.DashLine)),
-            dict(pen=pg.mkPen("#53DF00", width=2, style=Qt.DashLine)),
-            dict(pen=pg.mkPen("#FF7100", width=2, style=Qt.DashLine)),
-            dict(pen=pg.mkPen("#FD0006", width=2, style=Qt.DashLine)),
-            dict(pen=pg.mkPen("#009B95", width=2, style=Qt.DashLine))]
-
 
     def raw2space(self, value: float) -> float:
         processed = value
@@ -114,25 +159,25 @@ class FittingCanvas(QWidget):
                 self.position_cache[i] = raw_value
         self.sigExpectedMeanValueChanged.emit(tuple(self.position_cache))
 
-    def on_component_number_changed(self, ncomp: int):
+    def on_component_number_changed(self, component_number: int):
         self.logger.info("Received the component changed signal, start to change clear and add data items.")
-        # Check the validity of `ncomp`
-        if type(ncomp) != int:
-            raise TypeError(ncomp)
-        if ncomp <= 0:
-            raise ValueError(ncomp)
+        # Check the validity of `component_number`
+        if type(component_number) != int:
+            raise TypeError(component_number)
+        if component_number <= 0:
+            raise ValueError(component_number)
         # clear
-        for name, curve in self.component_curves:
+        for curve in self.component_curves:
             self.plot_widget.plotItem.removeItem(curve)
             self.legend.removeItem(curve)
         for line in self.component_lines:
             self.plot_widget.plotItem.removeItem(line)
         self.component_curves.clear()
         self.component_lines.clear()
-        self.position_cache = np.ones(ncomp)
+        self.position_cache = np.ones(component_number)
         self.logger.debug("Items cleared.")
         # add
-        for i in range(ncomp):
+        for i in range(component_number):
             component_name = "C{0}".format(i+1)
             curve = pg.PlotDataItem(name=component_name,**self.component_styles[i])
             line = pg.InfiniteLine(angle=90, movable=False, pen=self.component_styles[i]["pen"])
@@ -141,7 +186,7 @@ class FittingCanvas(QWidget):
             self.plot_widget.plotItem.addItem(curve)
             self.plot_widget.plotItem.addItem(line)
             self.legend.addItem(curve, self.legend_format % component_name)
-            self.component_curves.append((component_name, curve))
+            self.component_curves.append(curve)
             self.component_lines.append(line)
         self.logger.debug("Items added.")
 
@@ -156,12 +201,12 @@ class FittingCanvas(QWidget):
 
         # the range to limit the positions of lines
         self.position_limit = (sample.classes[0], sample.classes[-1])
-        x_axis = self.plot_widget.plotItem.getAxis("bottom")
-        x_axis.enableAutoSIPrefix(enable=False)
-        major_ticks= [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(sample.classes) if i%20==0]
-        minor_ticks= [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(sample.classes) if i%5==0]
+        major_ticks = [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(sample.classes) if i%20==0]
+        minor_ticks = [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(sample.classes) if i%5==0]
         all_ticks = [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(sample.classes)]
-        x_axis.setTicks([major_ticks, minor_ticks, all_ticks])
+        self.plot_widget.plotItem.getAxis("top").setTicks([major_ticks, minor_ticks, all_ticks])
+        self.plot_widget.plotItem.getAxis("bottom").setTicks([major_ticks, minor_ticks, all_ticks])
+
         self.logger.debug("Target data has been changed to [%s].", sample.name)
 
         # update the title of canvas
@@ -173,7 +218,7 @@ class FittingCanvas(QWidget):
         # it should be checked during load data progress
         self.target_item.setData(sample.classes, sample.distribution, **self.target_style)
         self.fitted_item.clear()
-        for name, curve in self.component_curves:
+        for curve in self.component_curves:
             curve.clear()
         for line in self.component_lines:
             line.setValue(1)
@@ -181,19 +226,22 @@ class FittingCanvas(QWidget):
     def update_canvas_by_data(self, result: FittingResult, current_iteration=None):
         # TODO: check component number
         # update the title of canvas
-        sample_name = result.name
-        if sample_name is None or sample_name == "":
-            sample_name = "UNKNOWN"
         if current_iteration is None:
-            self.plot_widget.plotItem.setTitle(self.title_format % sample_name)
+            self.plot_widget.plotItem.setTitle(self.title_format % result.name)
         else:
-            self.plot_widget.plotItem.setTitle(self.title_format % "{0} iter({1})".format(sample_name, current_iteration))
+            self.plot_widget.plotItem.setTitle(
+                self.title_format %
+                ("{0} "+self.tr("Iteration")+" ({1})").format(
+                    result.name, current_iteration))
         # update fitted
         self.fitted_item.setData(result.real_x, result.fitted_y, **self.sum_style)
         # update component curves
-        for i, component, (name, curve), style, line in zip(range(result.component_number),
-                                                           result.components, self.component_curves,
-                                                           self.component_styles, self.component_lines):
+        for i, component, style, curve, line in zip(
+                range(result.component_number),
+                result.components,
+                self.component_styles,
+                self.component_curves,
+                self.component_lines):
             curve.setData(result.real_x, component.component_y, **style)
             if np.isnan(component.mean) or np.isinf(component.mean):
                 continue
@@ -203,6 +251,10 @@ class FittingCanvas(QWidget):
 
     def on_fitting_epoch_suceeded(self, result: FittingResult):
         self.update_canvas_by_data(result)
+        self.png_exporter.export("./temp/distribution_canvas/png/{0} - {1} - {2}.png".format(
+            result.name, result.distribution_type, result.component_number))
+        self.svg_exporter.export("./temp/distribution_canvas/svg/{0} - {1} - {2}.svg".format(
+            result.name, result.distribution_type, result.component_number))
 
-    def on_single_iteration_finished(self, current_iteration, result: FittingResult):
+    def on_single_iteration_finished(self, current_iteration: int, result: FittingResult):
         self.update_canvas_by_data(result, current_iteration=current_iteration)
