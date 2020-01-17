@@ -19,9 +19,10 @@ xcopy /IYE %USERPROFILE%\Desktop\QGrain\i18n %USERPROFILE%\Desktop\QGrain\dist\Q
 xcopy /IYE %USERPROFILE%\Desktop\QGrain\settings %USERPROFILE%\Desktop\QGrain\dist\QGrain\settings && ^
 xcopy /IYE %USERPROFILE%\Desktop\QGrain\docs %USERPROFILE%\Desktop\QGrain\dist\QGrain\docs && ^
 xcopy /IYE %USERPROFILE%\Desktop\QGrain\samples %USERPROFILE%\Desktop\QGrain\dist\QGrain\samples && ^
+copy %USERPROFILE%\Desktop\QGrain\LICENSE.rtf %USERPROFILE%\Desktop\QGrain\dist\QGrain\ && ^
 del %USERPROFILE%\Desktop\QGrain\dist\QGrain\settings\ui.ini && ^
 
 echo 5. back to desktop directory && ^
-cd %USERPROFILE%\Desktop\ && ^
+cd %USERPROFILE%\Desktop\QGrain && ^
 
 echo Finished!!!
