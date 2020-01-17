@@ -103,5 +103,7 @@ def main():
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
+    import multiprocessing
+    multiprocessing.set_start_method('spawn', True)
     freeze_support()
     main()
