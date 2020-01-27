@@ -134,8 +134,8 @@ class GUIResolver(QObject, Resolver):
         pass
 
     def on_fitting_succeeded(self, fitting_result):
-        if self.inherit_params:
-            self.last_succeeded_params = fitting_result.x
+        # record the succeeded params
+        self.last_succeeded_params = fitting_result.x
         self.logger.info("The epoch of fitting has finished, the fitted parameters are: [%s]", fitting_result.x)
         self.sigFittingEpochSucceeded.emit(self.get_fitting_result(fitting_result.x))
 
