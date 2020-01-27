@@ -66,6 +66,23 @@ class TestResolver(unittest.TestCase):
             actual = raw[left: right]
             self.assertListEqual(actual, expected)
 
+    def test_has_hooks(self):
+        hooks = ["on_data_fed",
+                 "on_data_not_prepared",
+                 "on_fitting_started",
+                 "on_fitting_finished",
+                 "on_global_fitting_failed",
+                 "on_global_fitting_succeeded",
+                 "on_final_fitting_failed",
+                 "on_exception_raised_while_fitting",
+                 "on_fitting_succeeded",
+                 "local_iteration_callback",
+                 "global_iteration_callback"]
+
+        attrs = dir(self.resolver)
+        for hook_name in hooks:
+            self.assertTrue(hook_name in attrs)
+
     def test_feed_data(self):
         self.resolver.feed_data(SampleData("Sample_021", self.x, self.y))
         self.assertEqual(self.resolver.sample_name, "Sample_021")
