@@ -1,4 +1,5 @@
 numpy==1.18.1
+palettable==3.3.0
 pyqtgraph==0.11.0rc0
 PySide2==5.14.0
 scipy==1.4.1
