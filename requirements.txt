@@ -3,6 +3,7 @@ palettable==3.3.0
 pyqtgraph==0.11.0rc0
 PySide2==5.14.0
 scipy==1.4.1
+scikit-learn==0.22.1
 shiboken2==5.14.0
 xlrd==1.2.0
 XlsxWriter==1.2.7
