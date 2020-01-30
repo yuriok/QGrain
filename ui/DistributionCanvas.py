@@ -206,7 +206,6 @@ class DistributionCanvas(QWidget):
             line.setValue(1)
 
     def update_canvas_by_data(self, result: FittingResult, current_iteration=None):
-        # TODO: check component number
         # update the title of canvas
         if current_iteration is None:
             self.plot_widget.plotItem.setTitle(self.title_format % result.name)
