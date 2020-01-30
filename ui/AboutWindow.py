@@ -13,7 +13,7 @@ class AboutWindow(QMainWindow):
         self.setCentralWidget(self.central_widget)
         self.layout = QGridLayout(self.central_widget)
         self.setWindowTitle(self.tr("About"))
-        # self.setMinimumSize(600, 600)
+        self.setMinimumSize(400, 300)
         self.text = QTextBrowser()
 
         self.layout.addWidget(self.text, 0, 0)
@@ -23,7 +23,7 @@ class AboutWindow(QMainWindow):
 <font face="Arial">
     <h2>QGrain</h2>
     <p>QGrain is an easy to use software that can unmix the multi-modal grain size distribution to some single modals.</p>
-    <p>It's writted by Python. This makes it can benefit from the great open source and scientific computation communities.</p>
+    <p>It's written by Python. This makes it can benefit from the great open source and scientific computation communities.</p>
     <p>QGrain is still during the rapid development stage, its functionalities and usages may changes many and many times. And of course, there probably are some bugs. We are very sorry for its immaturity.</p>
     <p>We are really hope to receive your feedbacks. Whatever it's bug report, request of new feature, disscusion on algorithms.</p>
     <p>Moreover, we are looking forward that there are some partners to join the development of QGrain.</>
@@ -32,6 +32,8 @@ class AboutWindow(QMainWindow):
     <ul>
         <li>Yuming Liu <i><a href="mailto:\\liuyuming@ieecas.cn">liuyuming@ieecas.cn</a></li></i>
     </ul>
+    <h4>Website:</h4>
+    <p><a href="https://qgrain.net">https://qgrain.net</a></p>
 </font>
 """)
         self.text.setOpenExternalLinks(True)
