@@ -170,11 +170,6 @@ It&apos;s recommended to use ralatively lower level in global optimization proce
         <translation>含有额外一个未知参数的广义Weibull分布。</translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="60"/>
-        <source>Components:</source>
-        <translation>组分：</translation>
-    </message>
-    <message>
         <location filename="ui/ControlPanel.py" line="61"/>
         <source>Select the component number of the mixed distribution.</source>
         <translation>选择混合分布的组分数量。</translation>
@@ -309,37 +304,37 @@ It should be positive.</source>
         <translation>点击以拟合所有样品。将会使用所有的CPU核心来加速计算。</translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="144"/>
+        <location filename="ui/ControlPanel.py" line="143"/>
         <source>The component number should be &gt;= 1 and &lt;= 10.</source>
         <translation>组分数量应该大于等于1，小于等于10。</translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="163"/>
+        <location filename="ui/ControlPanel.py" line="162"/>
         <source>It has reached the first/last sample.</source>
         <translation>已经到达第一个/最后一个样品。</translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="197"/>
+        <location filename="ui/ControlPanel.py" line="196"/>
         <source>Info</source>
         <translation>信息</translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="200"/>
+        <location filename="ui/ControlPanel.py" line="199"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="203"/>
+        <location filename="ui/ControlPanel.py" line="202"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="208"/>
+        <location filename="ui/ControlPanel.py" line="207"/>
         <source>The grain size data has not been loaded, the operation is invalid.</source>
         <translation>粒度数据还未被加载，操作是无效的。</translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="351"/>
+        <location filename="ui/ControlPanel.py" line="350"/>
         <source>Fitting failed. {0}</source>
         <translation>拟合失败。{0}</translation>
     </message>
@@ -370,14 +365,19 @@ Note: It will record the LAST SUCCESS fitting result, NOT CURRENT SAMPLE.</sourc
 注意：记录的是上次成功的拟合结果，而不是当前样品的。</translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="298"/>
+        <location filename="ui/ControlPanel.py" line="297"/>
         <source>The fitting result may be not valid, auto running stoped.</source>
         <translation>拟合的结果可能是无效的，自动运行停止了。</translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="304"/>
+        <location filename="ui/ControlPanel.py" line="303"/>
         <source>The auto running has reached the last sample and stoped.</source>
         <translation>自动运行已经到达了最后一个样品，并且停止了。</translation>
+    </message>
+    <message>
+        <location filename="ui/ControlPanel.py" line="60"/>
+        <source>Component Number:</source>
+        <translation>组分数：</translation>
     </message>
 </context>
 <context>
@@ -413,7 +413,7 @@ Note: It will record the LAST SUCCESS fitting result, NOT CURRENT SAMPLE.</sourc
         <translation>数据已经加载。</translation>
     </message>
     <message>
-        <location filename="ui/DataManager.py" line="297"/>
+        <location filename="ui/DataManager.py" line="296"/>
         <source>Can not access the selected file due to permission issue, please check whether it&apos;s opened by another program.</source>
         <translation>由于权限问题，无法操作选择的文件，请检查其是否被其他程序打开。</translation>
     </message>
@@ -464,7 +464,7 @@ If you are sure that the CSV file and layout setting are correct, please check t
         <translation>至少一个样品名称是空的，请给每个样品一个独特的名称来识别。</translation>
     </message>
     <message>
-        <location filename="ui/DataManager.py" line="300"/>
+        <location filename="ui/DataManager.py" line="299"/>
         <source>Unknown exception raised. See the log for more details.</source>
         <translation>出现了未知的异常。查看日志以获得更多的信息。</translation>
     </message>
@@ -494,7 +494,7 @@ If you are sure that the CSV file and layout setting are correct, please check t
         <translation>保存记录的数据</translation>
     </message>
     <message>
-        <location filename="ui/DataManager.py" line="290"/>
+        <location filename="ui/DataManager.py" line="289"/>
         <source>The data has been saved to the file.</source>
         <translation>数据已经被保存到文件中。</translation>
     </message>
@@ -586,32 +586,32 @@ If the samples are too many, the massive charts will slow the running of Excel h
 <context>
     <name>DistributionCanvas</name>
     <message>
-        <location filename="ui/DistributionCanvas.py" line="88"/>
+        <location filename="ui/DistributionCanvas.py" line="70"/>
         <source>Probability Density</source>
         <translation>概率密度</translation>
     </message>
     <message>
-        <location filename="ui/DistributionCanvas.py" line="89"/>
+        <location filename="ui/DistributionCanvas.py" line="71"/>
         <source>Grain size</source>
         <translation>粒径</translation>
     </message>
     <message>
-        <location filename="ui/DistributionCanvas.py" line="111"/>
+        <location filename="ui/DistributionCanvas.py" line="93"/>
         <source>Target</source>
         <translation>目标</translation>
     </message>
     <message>
-        <location filename="ui/DistributionCanvas.py" line="112"/>
+        <location filename="ui/DistributionCanvas.py" line="94"/>
         <source>Fitted</source>
         <translation>拟合</translation>
     </message>
     <message>
-        <location filename="ui/DistributionCanvas.py" line="234"/>
+        <location filename="ui/DistributionCanvas.py" line="215"/>
         <source>Iteration</source>
         <translation>迭代数</translation>
     </message>
     <message>
-        <location filename="ui/DistributionCanvas.py" line="92"/>
+        <location filename="ui/DistributionCanvas.py" line="74"/>
         <source>Distribution Canvas</source>
         <translation>分布图表</translation>
     </message>
@@ -619,22 +619,22 @@ If the samples are too many, the massive charts will slow the running of Excel h
 <context>
     <name>GUIResolver</name>
     <message>
-        <location filename="resolvers/GUIResolver.py" line="69"/>
+        <location filename="resolvers/GUIResolver.py" line="74"/>
         <source>There is no valid data to fit.</source>
         <translation>没有有效的数据用以拟合。</translation>
     </message>
     <message>
-        <location filename="resolvers/GUIResolver.py" line="94"/>
+        <location filename="resolvers/GUIResolver.py" line="99"/>
         <source>Fitting failed during global fitting progress.</source>
         <translation>在全局拟合过程中拟合失败。</translation>
     </message>
     <message>
-        <location filename="resolvers/GUIResolver.py" line="101"/>
+        <location filename="resolvers/GUIResolver.py" line="106"/>
         <source>Fitting failed during final fitting progress.</source>
         <translation>在最终拟合过程中拟合失败。</translation>
     </message>
     <message>
-        <location filename="resolvers/GUIResolver.py" line="108"/>
+        <location filename="resolvers/GUIResolver.py" line="113"/>
         <source>Unknown exception raise in fitting progress.</source>
         <translation>拟合过程中出现了未知的异常。</translation>
     </message>
@@ -660,64 +660,158 @@ If the samples are too many, the massive charts will slow the running of Excel h
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="ui/MainWindow.py" line="71"/>
+        <location filename="ui/MainWindow.py" line="72"/>
         <source>File</source>
         <translation>文件</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="72"/>
+        <location filename="ui/MainWindow.py" line="73"/>
         <source>Load</source>
         <translation>加载</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="74"/>
+        <location filename="ui/MainWindow.py" line="75"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="76"/>
+        <location filename="ui/MainWindow.py" line="77"/>
         <source>Docks</source>
         <translation>窗口</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="105"/>
+        <location filename="ui/MainWindow.py" line="113"/>
         <source>Control Panel</source>
         <translation>控制面板</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="87"/>
+        <location filename="ui/MainWindow.py" line="90"/>
         <source>Reset</source>
         <translation>重置</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="89"/>
+        <location filename="ui/MainWindow.py" line="92"/>
         <source>Settings</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="90"/>
+        <location filename="ui/MainWindow.py" line="93"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="111"/>
+        <location filename="ui/MainWindow.py" line="119"/>
         <source>Raw Data Table</source>
         <translation>原始数据表格</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="120"/>
+        <location filename="ui/MainWindow.py" line="128"/>
         <source>Recorded Data Table</source>
         <translation>记录数据表格</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="94"/>
+        <location filename="ui/MainWindow.py" line="102"/>
         <source>Loss Canvas</source>
         <translation>损失图表</translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="99"/>
+        <location filename="ui/MainWindow.py" line="107"/>
         <source>Distribution Canvas</source>
         <translation>分布图表</translation>
+    </message>
+    <message>
+        <location filename="ui/MainWindow.py" line="97"/>
+        <source>PCA Panel</source>
+        <translation>主成分分析面板</translation>
+    </message>
+</context>
+<context>
+    <name>PCAPanel</name>
+    <message>
+        <location filename="ui/PCAPanel.py" line="74"/>
+        <source>Transformed</source>
+        <translation>转换值</translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="75"/>
+        <source>Sample Index</source>
+        <translation>样品序号</translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="78"/>
+        <source>PCA Canvas</source>
+        <translation>主成分分析图表</translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="100"/>
+        <source>Assign Component Number</source>
+        <translation>指定成分数</translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="138"/>
+        <source>Least Information Fraction:</source>
+        <translation>最少信息含量：</translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="106"/>
+        <source>Perform</source>
+        <translation>执行</translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="107"/>
+        <source>Save</source>
+        <translation>保存</translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="124"/>
+        <source>Info</source>
+        <translation>信息</translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="127"/>
+        <source>Warning</source>
+        <translation>警告</translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="130"/>
+        <source>Error</source>
+        <translation>错误</translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="134"/>
+        <source>Component Number:</source>
+        <translation>组分数:</translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="144"/>
+        <source>The component number / least information fraction is necessary.</source>
+        <translation>组分数/最少信息含量是必须的。</translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="156"/>
+        <source>Please load data first.</source>
+        <translation>请先加载数据。</translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="181"/>
+        <source>Component</source>
+        <translation>组分</translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="195"/>
+        <source>The PCA algorithm has not been performed.</source>
+        <translation>主成分分析算法还未被执行。</translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="197"/>
+        <source>Save Recorded Data</source>
+        <translation>保存记录的数据</translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="214"/>
+        <source>PCA result has been saved to:
+[%s].</source>
+        <translation>主成分分析结果已经保存至：[%s]。</translation>
     </message>
 </context>
 <context>
