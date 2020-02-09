@@ -12,9 +12,11 @@ This method is for the user who has experience on Python and Shell. If you are u
 
 1. Install Python
 
-    For Linux and Mac OS X users, you may have the built-in Python interpreter. You can run the command `python` or `python3` in your terminal to check if Python is existing.
+    For Linux and Mac OS X users, you may have the built-in Python3 interpreter. You can run the command `python` or `python3` in your terminal to check if Python is existing.
 
-    If you do not have the Python installed, you can visit the [official website of Python](https://www.python.org/downloads/) to download and install the Python interpreter.
+    Note: Using `python` or `python3` depends on the alias or the filename of your Python3 interpreter.
+
+    If you do not have Python3 installed, you can visit the [official website of Python](https://www.python.org/downloads/) to download and install the Python interpreter.
 
 2. Download the codes of QGrain
 
@@ -44,14 +46,12 @@ This method is for the user who has experience on Python and Shell. If you are u
 
     Please run the command `python qgrain.py` or `python3 qgrain.py` to launch QGrain.
 
-    Note: Using `python` or `python3` depends on the alias or the filename of your Python interpreter.
-
     If it goes well, you can see the app interface like this.
 
     ![App Appearance](../figures/app_appearance.png)
 
 ## 2. Use executable file
 
-We have packed the executable setup file for Windows users.
+We have packed the executable setup file for **Windows** users.
 
 You can download it from [here](https://github.com/QGrain-Organization/QGrain/releases).
