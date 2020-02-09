@@ -17,6 +17,7 @@ from ui.ControlPanel import ControlPanel
 from ui.DataManager import DataManager
 from ui.DistributionCanvas import DistributionCanvas
 from ui.LossCanvas import LossCanvas
+from ui.PCAPanel import PCAPanel
 from ui.RecordedDataTable import RecordedDataTable
 from ui.SettingWindow import SettingWindow
 from ui.TaskWindow import TaskWindow
@@ -74,6 +75,8 @@ class MainWindow(QMainWindow):
         self.save_action = QAction(QIcon(self.icon_folder+"save.png"), self.tr("Save"), self)
         self.file_menu.addAction(self.save_action)
         self.docks_menu = self.menuBar().addMenu(self.tr("Docks"))
+        self.pca_panel_action = QAction(QIcon(self.icon_folder+"pca.png"), self.tr("PCA Panel"), self)
+        self.docks_menu.addAction(self.pca_panel_action)
         self.loss_canvas_action = QAction(QIcon(self.icon_folder+"canvas.png"), self.tr("Loss Canvas"), self)
         self.docks_menu.addAction(self.loss_canvas_action)
         self.distribution_canvas_action = QAction(QIcon(self.icon_folder+"canvas.png"), self.tr("Distribution Canvas"), self)
@@ -90,6 +93,11 @@ class MainWindow(QMainWindow):
         self.about_action = self.menuBar().addAction(self.tr("About"))
 
         self.setDockNestingEnabled(True)
+        # PCA Panel
+        self.pca_panel_dock = QDockWidget(self.tr("PCA Panel"))
+        self.pca_panel = PCAPanel(light=light)
+        self.pca_panel_dock.setWidget(self.pca_panel)
+        self.pca_panel_dock.setObjectName("PCAPanelDock")
         # Loss Canvas
         self.loss_canvas_dock = QDockWidget(self.tr("Loss Canvas"))
         self.loss_canvas = LossCanvas(light=light)
@@ -148,6 +156,7 @@ class MainWindow(QMainWindow):
         self.data_manager.sigDataLoaded.connect(self.on_data_loaded)
         self.data_manager.sigDataLoaded.connect(self.control_panel.on_data_loaded)
         self.data_manager.sigDataLoaded.connect(self.multiprocessing_resolver.on_data_loaded)
+        self.data_manager.sigDataLoaded.connect(self.pca_panel.on_data_loaded)
         self.data_manager.sigTargetDataChanged.connect(self.gui_resolver.on_target_data_changed)
         self.data_manager.sigTargetDataChanged.connect(self.distribution_canvas.on_target_data_changed)
         self.data_manager.sigDataRecorded.connect(self.recorded_data_table.on_data_recorded)
@@ -172,6 +181,7 @@ class MainWindow(QMainWindow):
         self.recorded_data_table.sigRemoveRecords.connect(self.data_manager.remove_data)
 
         # Dock menu actions
+        self.pca_panel_action.triggered.connect(self.show_pca_panel_dock)
         self.loss_canvas_action.triggered.connect(self.show_loss_canvas_dock)
         self.distribution_canvas_action.triggered.connect(self.show_distribution_canvas_dock)
         self.control_panel_action.triggered.connect(self.show_control_panel_dock)
@@ -197,26 +207,32 @@ class MainWindow(QMainWindow):
         self.settings_window.algorithm_setting.sigAlgorithmSettingChanged.connect(self.multiprocessing_resolver.on_algorithm_settings_changed)
 
     def reset_dock_layout(self):
+        self.pca_panel_dock.show()
         self.loss_canvas_dock.show()
         self.distribution_canvas_dock.show()
         self.raw_data_dock.show()
         self.recorded_data_dock.show()
         self.control_panel_dock.show()
 
+        self.pca_panel_dock.setFloating(False)
         self.distribution_canvas_dock.setFloating(False)
         self.loss_canvas_dock.setFloating(False)
         self.control_panel_dock.setFloating(False)
         self.raw_data_dock.setFloating(False)
         self.recorded_data_dock.setFloating(False)
 
-        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.loss_canvas_dock)
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.pca_panel_dock)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.raw_data_dock)
         self.splitDockWidget(self.raw_data_dock, self.recorded_data_dock, Qt.Orientation.Horizontal)
-        self.splitDockWidget(self.loss_canvas_dock, self.control_panel_dock, Qt.Orientation.Vertical)
-        self.tabifyDockWidget(self.loss_canvas_dock, self.distribution_canvas_dock)
+        self.splitDockWidget(self.pca_panel_dock, self.control_panel_dock, Qt.Orientation.Vertical)
+        self.tabifyDockWidget(self.pca_panel_dock, self.loss_canvas_dock)
+        self.tabifyDockWidget(self.pca_panel_dock, self.distribution_canvas_dock)
 
-        self.resizeDocks((self.loss_canvas_dock, self.control_panel_dock), (self.height()*0.6, self.height()*0.4), Qt.Orientation.Vertical)
-        self.resizeDocks((self.loss_canvas_dock, self.control_panel_dock, self.raw_data_dock, self.recorded_data_dock), (self.width()*0.5, self.width()*0.5, self.width()*0.25, self.width()*0.25), Qt.Orientation.Horizontal)
+        self.resizeDocks((self.pca_panel_dock, self.control_panel_dock), (self.height()*0.6, self.height()*0.4), Qt.Orientation.Vertical)
+        self.resizeDocks((self.pca_panel_dock, self.control_panel_dock, self.raw_data_dock, self.recorded_data_dock), (self.width()*0.5, self.width()*0.5, self.width()*0.25, self.width()*0.25), Qt.Orientation.Horizontal)
+
+    def show_pca_panel_dock(self):
+        self.pca_panel_dock.show()
 
     def show_loss_canvas_dock(self):
         self.loss_canvas_dock.show()

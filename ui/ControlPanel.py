@@ -57,7 +57,7 @@ class ControlPanel(QWidget):
         self.main_layout.addWidget(self.distribution_weibull_radio_button, 0, 2)
         self.main_layout.addWidget(self.distribution_gen_weibull_radio_button, 0, 3)
         # Component number
-        self.component_number_label = QLabel(self.tr("Components:"))
+        self.component_number_label = QLabel(self.tr("Component Number:"))
         self.component_number_label.setToolTip(self.tr("Select the component number of the mixed distribution."))
         self.component_number_display = QLabel(self.tr("Unknown"))
         self.component_number_add_button = QPushButton(self.tr("+"))
