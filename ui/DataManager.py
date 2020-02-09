@@ -267,13 +267,12 @@ class DataManager(QObject):
 
     def save_data(self):
         filename, type_str = self.file_dialog.getSaveFileName(None, self.tr("Save Recorded Data"), None, "Excel (*.xlsx);;97-2003 Excel (*.xls);;CSV (*.csv)")
-        self.logger.info("File path to save is [%s].", filename)
         if filename is None or filename == "":
             self.logger.info("The path is None or empty, ignored.")
             return
         if os.path.exists(filename):
             self.logger.warning("This file has existed and will be replaced. Filename: %s.", filename)
-
+        self.logger.info("File path to save is [%s].", filename)
         if ".xlsx" in type_str:
             file_type = FileType.XLSX
         elif "97-2003" in type_str:

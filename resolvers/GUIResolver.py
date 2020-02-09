@@ -50,8 +50,13 @@ class GUIResolver(QObject, Resolver):
         self.last_succeeded_params = None
 
     def on_settings_changed(self, kwargs: dict):
+        attrs = dir(self)
         for setting, value in kwargs.items():
-            setattr(self, setting, value)
+            # check the existence of that setting
+            if setting in attrs:
+                setattr(self, setting, value)
+            else:
+                raise NotImplementedError(setting)
             self.logger.info("Setting [%s] have been changed to [%s].", setting, value)
 
     def on_algorithm_settings_changed(self, settings: dict):
@@ -129,8 +134,8 @@ class GUIResolver(QObject, Resolver):
         pass
 
     def on_fitting_succeeded(self, fitting_result):
-        if self.inherit_params:
-            self.last_succeeded_params = fitting_result.x
+        # record the succeeded params
+        self.last_succeeded_params = fitting_result.x
         self.logger.info("The epoch of fitting has finished, the fitted parameters are: [%s]", fitting_result.x)
         self.sigFittingEpochSucceeded.emit(self.get_fitting_result(fitting_result.x))
 
