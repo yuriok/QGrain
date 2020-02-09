@@ -164,11 +164,6 @@ It&apos;s recommended to use ralatively lower level in global optimization proce
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="60"/>
-        <source>Components:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="ui/ControlPanel.py" line="61"/>
         <source>Select the component number of the mixed distribution.</source>
         <translation type="unfinished"></translation>
@@ -301,37 +296,37 @@ It should be positive.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="144"/>
+        <location filename="ui/ControlPanel.py" line="143"/>
         <source>The component number should be &gt;= 1 and &lt;= 10.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="163"/>
+        <location filename="ui/ControlPanel.py" line="162"/>
         <source>It has reached the first/last sample.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="197"/>
+        <location filename="ui/ControlPanel.py" line="196"/>
         <source>Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="200"/>
+        <location filename="ui/ControlPanel.py" line="199"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="203"/>
+        <location filename="ui/ControlPanel.py" line="202"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="208"/>
+        <location filename="ui/ControlPanel.py" line="207"/>
         <source>The grain size data has not been loaded, the operation is invalid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="351"/>
+        <location filename="ui/ControlPanel.py" line="350"/>
         <source>Fitting failed. {0}</source>
         <translation type="unfinished"></translation>
     </message>
@@ -359,13 +354,18 @@ Note: It will record the LAST SUCCESS fitting result, NOT CURRENT SAMPLE.</sourc
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="298"/>
+        <location filename="ui/ControlPanel.py" line="297"/>
         <source>The fitting result may be not valid, auto running stoped.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/ControlPanel.py" line="304"/>
+        <location filename="ui/ControlPanel.py" line="303"/>
         <source>The auto running has reached the last sample and stoped.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/ControlPanel.py" line="60"/>
+        <source>Component Number:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -402,7 +402,7 @@ Note: It will record the LAST SUCCESS fitting result, NOT CURRENT SAMPLE.</sourc
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/DataManager.py" line="297"/>
+        <location filename="ui/DataManager.py" line="296"/>
         <source>Can not access the selected file due to permission issue, please check whether it&apos;s opened by another program.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -450,7 +450,7 @@ If you are sure that the CSV file and layout setting are correct, please check t
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/DataManager.py" line="300"/>
+        <location filename="ui/DataManager.py" line="299"/>
         <source>Unknown exception raised. See the log for more details.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -480,7 +480,7 @@ If you are sure that the CSV file and layout setting are correct, please check t
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/DataManager.py" line="290"/>
+        <location filename="ui/DataManager.py" line="289"/>
         <source>The data has been saved to the file.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -569,32 +569,32 @@ If the samples are too many, the massive charts will slow the running of Excel h
 <context>
     <name>DistributionCanvas</name>
     <message>
-        <location filename="ui/DistributionCanvas.py" line="88"/>
+        <location filename="ui/DistributionCanvas.py" line="70"/>
         <source>Probability Density</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/DistributionCanvas.py" line="89"/>
+        <location filename="ui/DistributionCanvas.py" line="71"/>
         <source>Grain size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/DistributionCanvas.py" line="111"/>
+        <location filename="ui/DistributionCanvas.py" line="93"/>
         <source>Target</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/DistributionCanvas.py" line="112"/>
+        <location filename="ui/DistributionCanvas.py" line="94"/>
         <source>Fitted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/DistributionCanvas.py" line="234"/>
+        <location filename="ui/DistributionCanvas.py" line="215"/>
         <source>Iteration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/DistributionCanvas.py" line="92"/>
+        <location filename="ui/DistributionCanvas.py" line="74"/>
         <source>Distribution Canvas</source>
         <translation type="unfinished"></translation>
     </message>
@@ -602,22 +602,22 @@ If the samples are too many, the massive charts will slow the running of Excel h
 <context>
     <name>GUIResolver</name>
     <message>
-        <location filename="resolvers/GUIResolver.py" line="69"/>
+        <location filename="resolvers/GUIResolver.py" line="74"/>
         <source>There is no valid data to fit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="resolvers/GUIResolver.py" line="94"/>
+        <location filename="resolvers/GUIResolver.py" line="99"/>
         <source>Fitting failed during global fitting progress.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="resolvers/GUIResolver.py" line="101"/>
+        <location filename="resolvers/GUIResolver.py" line="106"/>
         <source>Fitting failed during final fitting progress.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="resolvers/GUIResolver.py" line="108"/>
+        <location filename="resolvers/GUIResolver.py" line="113"/>
         <source>Unknown exception raise in fitting progress.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -643,63 +643,157 @@ If the samples are too many, the massive charts will slow the running of Excel h
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="ui/MainWindow.py" line="71"/>
+        <location filename="ui/MainWindow.py" line="72"/>
         <source>File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="72"/>
+        <location filename="ui/MainWindow.py" line="73"/>
         <source>Load</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="74"/>
+        <location filename="ui/MainWindow.py" line="75"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="76"/>
+        <location filename="ui/MainWindow.py" line="77"/>
         <source>Docks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="105"/>
+        <location filename="ui/MainWindow.py" line="113"/>
         <source>Control Panel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="87"/>
+        <location filename="ui/MainWindow.py" line="90"/>
         <source>Reset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="89"/>
+        <location filename="ui/MainWindow.py" line="92"/>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="90"/>
+        <location filename="ui/MainWindow.py" line="93"/>
         <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="111"/>
+        <location filename="ui/MainWindow.py" line="119"/>
         <source>Raw Data Table</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="120"/>
+        <location filename="ui/MainWindow.py" line="128"/>
         <source>Recorded Data Table</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="94"/>
+        <location filename="ui/MainWindow.py" line="102"/>
         <source>Loss Canvas</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ui/MainWindow.py" line="99"/>
+        <location filename="ui/MainWindow.py" line="107"/>
         <source>Distribution Canvas</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/MainWindow.py" line="97"/>
+        <source>PCA Panel</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PCAPanel</name>
+    <message>
+        <location filename="ui/PCAPanel.py" line="74"/>
+        <source>Transformed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="75"/>
+        <source>Sample Index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="78"/>
+        <source>PCA Canvas</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="100"/>
+        <source>Assign Component Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="138"/>
+        <source>Least Information Fraction:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="106"/>
+        <source>Perform</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="107"/>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="124"/>
+        <source>Info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="127"/>
+        <source>Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="130"/>
+        <source>Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="134"/>
+        <source>Component Number:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="144"/>
+        <source>The component number / least information fraction is necessary.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="156"/>
+        <source>Please load data first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="181"/>
+        <source>Component</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="195"/>
+        <source>The PCA algorithm has not been performed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="197"/>
+        <source>Save Recorded Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/PCAPanel.py" line="214"/>
+        <source>PCA result has been saved to:
+[%s].</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

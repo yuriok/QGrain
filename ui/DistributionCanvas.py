@@ -2,6 +2,8 @@ import logging
 from enum import Enum, unique
 
 import numpy as np
+from palettable.cartocolors.qualitative import Bold_10 as LightPalette
+from palettable.cartocolors.qualitative import Pastel_10 as DarkPalette
 import pyqtgraph as pg
 from pyqtgraph.exporters import ImageExporter, SVGExporter
 from PySide2.QtCore import Qt, Signal
@@ -21,7 +23,7 @@ class XAxisSpace(Enum):
 
 class DistributionCanvas(QWidget):
     sigExpectedMeanValueChanged = Signal(tuple)
-    logger = logging.getLogger("root.ui.FittingCanvas")
+    logger = logging.getLogger("root.ui.DistributionCanvas")
     gui_logger = logging.getLogger("GUI")
 
     def __init__(self, parent=None, light=True, **kargs):
@@ -48,32 +50,12 @@ class DistributionCanvas(QWidget):
         # prepare the styles
         if light:
             self.target_style = dict(pen=None, symbol="o", symbolBrush=pg.mkBrush("#161B26"), symbolPen=None, symbolSize=5)
-            self.sum_style = dict(pen=pg.mkPen("#062170", width=3, style=Qt.DashLine))
-            self.component_styles = [
-                dict(pen=pg.mkPen("#600CAC", width=2, style=Qt.DashLine)),
-                dict(pen=pg.mkPen("#0E51A7", width=2, style=Qt.DashLine)),
-                dict(pen=pg.mkPen("#FFC900", width=2, style=Qt.DashLine)),
-                dict(pen=pg.mkPen("#EA0037", width=2, style=Qt.DashLine)),
-                dict(pen=pg.mkPen("#C0F400", width=2, style=Qt.DashLine)),
-                dict(pen=pg.mkPen("#00AA72", width=2, style=Qt.DashLine)),
-                dict(pen=pg.mkPen("#53DF00", width=2, style=Qt.DashLine)),
-                dict(pen=pg.mkPen("#FF7100", width=2, style=Qt.DashLine)),
-                dict(pen=pg.mkPen("#FD0006", width=2, style=Qt.DashLine)),
-                dict(pen=pg.mkPen("#009B95", width=2, style=Qt.DashLine))]
+            self.sum_style = dict(pen=pg.mkPen("#062170", width=3))
+            self.component_styles = [dict(pen=pg.mkPen(hex_color, width=2, style=Qt.DashLine)) for hex_color in LightPalette.hex_colors]
         else:
             self.target_style = dict(pen=None, symbol="o", symbolBrush=pg.mkBrush("#afafaf"), symbolPen=None, symbolSize=5)
-            self.sum_style = dict(pen=pg.mkPen("#062170", width=3, style=Qt.DashLine))
-            self.component_styles = [
-                dict(pen=pg.mkPen("#600CAC", width=2, style=Qt.DashLine)),
-                dict(pen=pg.mkPen("#0E51A7", width=2, style=Qt.DashLine)),
-                dict(pen=pg.mkPen("#FFC900", width=2, style=Qt.DashLine)),
-                dict(pen=pg.mkPen("#EA0037", width=2, style=Qt.DashLine)),
-                dict(pen=pg.mkPen("#C0F400", width=2, style=Qt.DashLine)),
-                dict(pen=pg.mkPen("#00AA72", width=2, style=Qt.DashLine)),
-                dict(pen=pg.mkPen("#53DF00", width=2, style=Qt.DashLine)),
-                dict(pen=pg.mkPen("#FF7100", width=2, style=Qt.DashLine)),
-                dict(pen=pg.mkPen("#FD0006", width=2, style=Qt.DashLine)),
-                dict(pen=pg.mkPen("#009B95", width=2, style=Qt.DashLine))]
+            self.sum_style = dict(pen=pg.mkPen("#062170", width=3))
+            self.component_styles = [dict(pen=pg.mkPen(hex_color, width=2, style=Qt.DashLine)) for hex_color in DarkPalette.hex_colors]
         # prepare the plot data item for target and fitted data
         self.target_item = pg.PlotDataItem(name="Target", **self.target_style)
         self.plot_widget.plotItem.addItem(self.target_item)
@@ -160,7 +142,7 @@ class DistributionCanvas(QWidget):
         self.sigExpectedMeanValueChanged.emit(tuple(self.position_cache))
 
     def on_component_number_changed(self, component_number: int):
-        self.logger.info("Received the component changed signal, start to change clear and add data items.")
+        self.logger.info("Received the component changed signal, start to clear and add data items.")
         # Check the validity of `component_number`
         if type(component_number) != int:
             raise TypeError(component_number)
@@ -179,8 +161,8 @@ class DistributionCanvas(QWidget):
         # add
         for i in range(component_number):
             component_name = "C{0}".format(i+1)
-            curve = pg.PlotDataItem(name=component_name,**self.component_styles[i])
-            line = pg.InfiniteLine(angle=90, movable=False, pen=self.component_styles[i]["pen"])
+            curve = pg.PlotDataItem(name=component_name,**self.component_styles[i%len(self.component_styles)])
+            line = pg.InfiniteLine(angle=90, movable=False, pen=self.component_styles[i%len(self.component_styles)]["pen"])
             line.setMovable(True)
             line.sigDragged.connect(self.on_line_position_changed)
             self.plot_widget.plotItem.addItem(curve)
@@ -224,7 +206,6 @@ class DistributionCanvas(QWidget):
             line.setValue(1)
 
     def update_canvas_by_data(self, result: FittingResult, current_iteration=None):
-        # TODO: check component number
         # update the title of canvas
         if current_iteration is None:
             self.plot_widget.plotItem.setTitle(self.title_format % result.name)
@@ -236,13 +217,12 @@ class DistributionCanvas(QWidget):
         # update fitted
         self.fitted_item.setData(result.real_x, result.fitted_y, **self.sum_style)
         # update component curves
-        for i, component, style, curve, line in zip(
+        for i, component, curve, line in zip(
                 range(result.component_number),
                 result.components,
-                self.component_styles,
                 self.component_curves,
                 self.component_lines):
-            curve.setData(result.real_x, component.component_y, **style)
+            curve.setData(result.real_x, component.component_y, **self.component_styles[i%len(self.component_styles)])
             if np.isnan(component.mean) or np.isinf(component.mean):
                 continue
             space_value = self.raw2space(component.mean)

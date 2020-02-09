@@ -7,6 +7,7 @@ SOURCES = ./ui/AboutWindow.py \
         ./ui/DistributionCanvas.py \
         ./ui/LossCanvas.py \
         ./ui/MainWindow.py \
+        ./ui/PCAPanel.py \
         ./ui/RecordedDataTable.py \
         ./ui/SettingWindow.py \
         ./ui/TaskWindow.py \
