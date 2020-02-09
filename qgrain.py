@@ -11,7 +11,7 @@ from PySide2.QtWidgets import QApplication, QSplashScreen
 
 from ui.MainWindow import GUILogHandler, MainWindow
 
-QGRAIN_VERSION = "0.2.5"
+QGRAIN_VERSION = "0.2.6"
 
 # 1 GB
 TEMP_FOLDER_LIMIT_SIZE = 1024 * 1024 * 1024
