@@ -189,6 +189,10 @@ class PCAPanel(QWidget):
 
         self.transformed = transformed
         self.logger.debug("PCA algorithm performed.")
+        # export chart to file
+        self.png_exporter.export("./temp/pca_panel/png/pca.png")
+        self.svg_exporter.export("./temp/pca_panel/svg/pca.svg")
+
 
     def on_save_clicked(self):
         if self.transformed is None:

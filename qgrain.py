@@ -30,6 +30,7 @@ def check_temp_folder():
 
 def create_necessary_folders():
     necessary_folders = ("./logs/", "./temp/",
+                         "./temp/pca_panel", "./temp/pca_panel/png", "./temp/pca_panel/svg",
                          "./temp/distribution_canvas", "./temp/distribution_canvas/png", "./temp/distribution_canvas/svg",
                          "./temp/loss_canvas", "./temp/loss_canvas/png", "./temp/loss_canvas/svg")
     for folder in necessary_folders:
