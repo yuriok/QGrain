@@ -9,9 +9,12 @@ from PySide2.QtCore import QSettings, QTranslator
 from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtWidgets import QApplication, QSplashScreen
 
+import pyqtgraph as pg
+pg.setConfigOptions(antialias=True)
+
 from ui.MainWindow import GUILogHandler, MainWindow
 
-QGRAIN_VERSION = "0.2.6"
+QGRAIN_VERSION = "0.2.6.1"
 
 # 1 GB
 TEMP_FOLDER_LIMIT_SIZE = 1024 * 1024 * 1024
@@ -30,6 +33,7 @@ def check_temp_folder():
 
 def create_necessary_folders():
     necessary_folders = ("./logs/", "./temp/",
+                         "./temp/pca_panel", "./temp/pca_panel/png", "./temp/pca_panel/svg",
                          "./temp/distribution_canvas", "./temp/distribution_canvas/png", "./temp/distribution_canvas/svg",
                          "./temp/loss_canvas", "./temp/loss_canvas/png", "./temp/loss_canvas/svg")
     for folder in necessary_folders:
@@ -63,12 +67,16 @@ def setup_theme(app: QApplication) -> bool:
     app.setStyleSheet(template_styles+custom_style)
 
     if theme == "Aqua":
+        pg.setConfigOptions(background=pg.mkColor("#ececec"))
         return True
     elif theme == "Ubuntu":
+        pg.setConfigOptions(background=pg.mkColor("#f0f0f0"))
         return True
     elif theme == "ElegantDark":
+        pg.setConfigOptions(background=pg.mkColor("#525252"))
         return False
     elif theme == "MaterialDark":
+        pg.setConfigOptions(background=pg.mkColor("#1e1d23"))
         return False
     else:
         raise NotImplementedError(theme)

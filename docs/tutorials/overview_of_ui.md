@@ -30,6 +30,17 @@ The dock to dynamically display the distribution of raw data and fitting result 
 
 ![Appearance of Distribution Canvas](../figures/distribution_canvas.png)
 
+For the dock which contains canvas, you can follow the following mouse interaction to adjust the figure.
+
+* **Left button**: Interacts with items in the scene (select/move objects, etc). If there are no movable objects under the mouse cursor, then dragging with the left button will pan the scene instead.
+* **Right button drag**: Scales the scene. Dragging left/right scales horizontally; dragging up/down scales vertically (although some scenes will have their x/y scales locked together). If there are x/y axes fisible in the scene, then right-dragging over the axis will _only_ affect that axis.
+* **Right button click**: Clicking the right button in most cases will show a context menu with a variety of options depending on the object(s) under the mouse cursor.
+* **Middle button (or wheel) drag**: Dragging the mouse with the wheel pressed down will always pan the scene (this is useful in instances where panning with the left button is prevented by other objects in the scene).
+* **Wheel spin**: Zooms the scene in and out.
+
+Moreover, you can check the `temp` folder of QGrain to get the files of canvas.
+Note: If the size of `temp` folder is larger than 1 GB, it will be cleared when the app is initialized.
+
 ### Control Panel
 
 The dock to control the fitting behaviours.
@@ -56,6 +67,8 @@ The dock to control the fitting behaviours.
 ### Raw Data Table
 
 The dock to show the GSD data of samples.
+
+By clicking the row of sample, you can set this sample as current sample and process it.
 
 ![Appearance of Raw Data Table](../figures/raw_data_table.png)
 
