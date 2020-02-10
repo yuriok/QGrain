@@ -110,3 +110,4 @@ venv.bak/
 /logs
 /temp
 settings/ui.ini
+/docs/*/*.pdf
