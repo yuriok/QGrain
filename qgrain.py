@@ -14,7 +14,7 @@ pg.setConfigOptions(antialias=True)
 
 from ui.MainWindow import GUILogHandler, MainWindow
 
-QGRAIN_VERSION = "0.2.6"
+QGRAIN_VERSION = "0.2.6.1"
 
 # 1 GB
 TEMP_FOLDER_LIMIT_SIZE = 1024 * 1024 * 1024
