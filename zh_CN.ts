@@ -216,7 +216,7 @@ It should be positive.</source>
     <message>
         <location filename="ui/ControlPanel.py" line="74"/>
         <source>Inherit Parameters</source>
-        <translation>遗传参数</translation>
+        <translation>继承参数</translation>
     </message>
     <message>
         <location filename="ui/ControlPanel.py" line="78"/>
@@ -342,7 +342,7 @@ It should be positive.</source>
         <location filename="ui/ControlPanel.py" line="75"/>
         <source>Whether to inherit the parameters of last fitting.
 It will improve the accuracy and efficiency when the samples are continuous.</source>
-        <translation>是否遗传上次拟合的参数。
+        <translation>是否继承上次拟合的参数。
 如果样品时连续的，这会提高准确度和效率。</translation>
     </message>
     <message>
