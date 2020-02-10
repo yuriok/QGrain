@@ -16,12 +16,13 @@ cd %USERPROFILE%\Desktop\QGrain\dist\ && ^
 rename qgrain QGrain && ^
 cd QGrain && ^
 rename qgrain.exe QGrain.exe && ^
+rename qgrain.exe.manifest QGrain.exe.manifest && ^
 xcopy /IYE %USERPROFILE%\Desktop\QGrain\i18n %USERPROFILE%\Desktop\QGrain\dist\QGrain\i18n && ^
 xcopy /IYE %USERPROFILE%\Desktop\QGrain\settings %USERPROFILE%\Desktop\QGrain\dist\QGrain\settings && ^
-xcopy /IYE %USERPROFILE%\Desktop\QGrain\docs %USERPROFILE%\Desktop\QGrain\dist\QGrain\docs && ^
 xcopy /IYE %USERPROFILE%\Desktop\QGrain\samples %USERPROFILE%\Desktop\QGrain\dist\QGrain\samples && ^
 xcopy /IYE %USERPROFILE%\BuildQGrain\Lib\site-packages\palettable\colorbrewer\data %USERPROFILE%\Desktop\QGrain\dist\QGrain\palettable\colorbrewer\data && ^
 copy %USERPROFILE%\Desktop\QGrain\LICENSE.rtf %USERPROFILE%\Desktop\QGrain\dist\QGrain\ && ^
+copy %USERPROFILE%\Desktop\QGrain\docs\tutorials\document.pdf %USERPROFILE%\Desktop\QGrain\dist\QGrain\document.pdf && ^
 del %USERPROFILE%\Desktop\QGrain\dist\QGrain\settings\ui.ini && ^
 echo 6. back to desktop directory && ^
 cd %USERPROFILE%\Desktop\QGrain && ^

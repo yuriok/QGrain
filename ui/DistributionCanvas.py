@@ -13,8 +13,6 @@ from PySide2.QtWidgets import QGridLayout, QPushButton, QWidget
 from models.FittingResult import FittingResult
 from models.SampleData import SampleData
 
-pg.setConfigOptions(background=pg.mkColor("#FFFFFF00"), antialias=True)
-
 @unique
 class XAxisSpace(Enum):
     Raw = 0
