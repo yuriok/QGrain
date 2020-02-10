@@ -10,7 +10,7 @@ from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtWidgets import QApplication, QSplashScreen
 
 import pyqtgraph as pg
-pg.setConfigOptions(background=pg.mkColor("#FFFFFF00"), antialias=True)
+pg.setConfigOptions(antialias=True)
 
 from ui.MainWindow import GUILogHandler, MainWindow
 
@@ -67,12 +67,16 @@ def setup_theme(app: QApplication) -> bool:
     app.setStyleSheet(template_styles+custom_style)
 
     if theme == "Aqua":
+        pg.setConfigOptions(background=pg.mkColor("#ececec"))
         return True
     elif theme == "Ubuntu":
+        pg.setConfigOptions(background=pg.mkColor("#f0f0f0"))
         return True
     elif theme == "ElegantDark":
+        pg.setConfigOptions(background=pg.mkColor("#525252"))
         return False
     elif theme == "MaterialDark":
+        pg.setConfigOptions(background=pg.mkColor("#1e1d23"))
         return False
     else:
         raise NotImplementedError(theme)
