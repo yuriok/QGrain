@@ -26,13 +26,26 @@ class DistributionCanvas(QWidget):
 
     def __init__(self, parent=None, light=True, **kargs):
         super().__init__(parent, **kargs)
+        self.set_skin_mode(light)
+        self.init_ui()
+
+    def set_skin_mode(self, light: str):
         if light:
             pg.setConfigOptions(foreground=pg.mkColor("k"))
+            # prepare styles
+            self.target_style = dict(pen=None, symbol="o", symbolBrush=pg.mkBrush("#161B26"), symbolPen=None, symbolSize=5)
+            self.sum_style = dict(pen=pg.mkPen("#062170", width=3))
+            self.component_styles = [dict(pen=pg.mkPen(hex_color, width=2, style=Qt.DashLine)) for hex_color in LightPalette.hex_colors]
+            # Due to the bug of pyqtgraph, can not perform the foreground to labels
+            self.label_styles = {"font-family": "Times New Roman", "color": "black"}
         else:
             pg.setConfigOptions(foreground=pg.mkColor("w"))
-        self.init_ui(light)
+            self.target_style = dict(pen=None, symbol="o", symbolBrush=pg.mkBrush("#afafaf"), symbolPen=None, symbolSize=5)
+            self.sum_style = dict(pen=pg.mkPen("#062170", width=3))
+            self.component_styles = [dict(pen=pg.mkPen(hex_color, width=2, style=Qt.DashLine)) for hex_color in DarkPalette.hex_colors]
+            self.label_styles = {"font-family": "Times New Roman", "color": "white"}
 
-    def init_ui(self, light: bool):
+    def init_ui(self):
         self.main_layout = QGridLayout(self)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.plot_widget = pg.PlotWidget(enableMenu=False)
@@ -40,31 +53,12 @@ class DistributionCanvas(QWidget):
         # add image exporters
         self.png_exporter = ImageExporter(self.plot_widget.plotItem)
         self.svg_exporter = SVGExporter(self.plot_widget.plotItem)
-        # show all axis
-        self.plot_widget.plotItem.showAxis("left")
-        self.plot_widget.plotItem.showAxis("right")
-        self.plot_widget.plotItem.showAxis("top")
-        self.plot_widget.plotItem.showAxis("bottom")
-        # prepare the styles
-        if light:
-            self.target_style = dict(pen=None, symbol="o", symbolBrush=pg.mkBrush("#161B26"), symbolPen=None, symbolSize=5)
-            self.sum_style = dict(pen=pg.mkPen("#062170", width=3))
-            self.component_styles = [dict(pen=pg.mkPen(hex_color, width=2, style=Qt.DashLine)) for hex_color in LightPalette.hex_colors]
-        else:
-            self.target_style = dict(pen=None, symbol="o", symbolBrush=pg.mkBrush("#afafaf"), symbolPen=None, symbolSize=5)
-            self.sum_style = dict(pen=pg.mkPen("#062170", width=3))
-            self.component_styles = [dict(pen=pg.mkPen(hex_color, width=2, style=Qt.DashLine)) for hex_color in DarkPalette.hex_colors]
         # prepare the plot data item for target and fitted data
         self.target_item = pg.PlotDataItem(name="Target", **self.target_style)
         self.plot_widget.plotItem.addItem(self.target_item)
         self.fitted_item = pg.PlotDataItem(name="Fitted", **self.sum_style)
         self.plot_widget.plotItem.addItem(self.fitted_item)
         # set labels
-        # bug of pyqtgraph, can not perform the foreground to labels
-        if light:
-            self.label_styles = {"font-family": "Times New Roman", "color": "black"}
-        else:
-            self.label_styles = {"font-family": "Times New Roman", "color": "white"}
         self.plot_widget.plotItem.setLabel("left", self.tr("Probability Density"), **self.label_styles)
         self.plot_widget.plotItem.setLabel("bottom", self.tr("Grain size")+" (μm)", **self.label_styles)
         # set title
@@ -72,18 +66,14 @@ class DistributionCanvas(QWidget):
         self.plot_widget.plotItem.setTitle(self.title_format % self.tr("Distribution Canvas"))
         # show grids
         self.plot_widget.plotItem.showGrid(True, True)
-        # set the font of ticks
-        self.tickFont = QFont("Arial")
-        self.tickFont.setPointSize(8)
-        self.plot_widget.plotItem.getAxis("left").tickFont = self.tickFont
-        self.plot_widget.plotItem.getAxis("right").tickFont = self.tickFont
-        self.plot_widget.plotItem.getAxis("top").tickFont = self.tickFont
-        self.plot_widget.plotItem.getAxis("bottom").tickFont = self.tickFont
-        # set auto SI
-        self.plot_widget.plotItem.getAxis("left").enableAutoSIPrefix(enable=False)
-        self.plot_widget.plotItem.getAxis("right").enableAutoSIPrefix(enable=False)
-        self.plot_widget.plotItem.getAxis("top").enableAutoSIPrefix(enable=False)
-        self.plot_widget.plotItem.getAxis("bottom").enableAutoSIPrefix(enable=False)
+        self.tick_font = QFont("Arial")
+        self.tick_font.setPointSize(8)
+        # set all axes
+        for axis_name in ["left", "top", "right", "bottom"]:
+            self.plot_widget.plotItem.showAxis(axis_name)
+            # set the font of ticks
+            self.plot_widget.plotItem.getAxis(axis_name).tickFont = self.tick_font
+            self.plot_widget.plotItem.getAxis(axis_name).enableAutoSIPrefix(enable=False)
         # set legend
         self.legend_format = """<font face="Times New Roman">%s</font>"""
         self.legend = pg.LegendItem(offset=(80, 50))
@@ -178,17 +168,14 @@ class DistributionCanvas(QWidget):
             self.plot_widget.plotItem.setLogMode(x=True)
         else:
             raise NotImplementedError(self.x_axis_space)
-
         # the range to limit the positions of lines
         self.position_limit = (sample.classes[0], sample.classes[-1])
-        major_ticks = [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(sample.classes) if i%20==0]
-        minor_ticks = [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(sample.classes) if i%5==0]
-        all_ticks = [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for i, x_value in enumerate(sample.classes)]
+        all_ticks = [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for x_value in sample.classes]
+        major_ticks = all_ticks[::20]
+        minor_ticks = all_ticks[::5]
         self.plot_widget.plotItem.getAxis("top").setTicks([major_ticks, minor_ticks, all_ticks])
         self.plot_widget.plotItem.getAxis("bottom").setTicks([major_ticks, minor_ticks, all_ticks])
-
         self.logger.debug("Target data has been changed to [%s].", sample.name)
-
         # update the title of canvas
         if sample.name is None or sample.name == "":
             sample.name = "UNKNOWN"
