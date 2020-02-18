@@ -562,7 +562,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 /* Custom */
 QDockWidget,
 QScrollBar,
-PlotWidget,
+QChartView,
 QHeaderView:section,
 QTableView,
 QTableView QTableCornerButton::section,
