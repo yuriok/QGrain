@@ -19,17 +19,6 @@ class Canvas(QWidget):
         super().__init__(parent=parent)
         self.initUi()
         self.setAttribute(Qt.WA_StyledBackground, True)
-        # x = np.linspace(0.0, 2*np.pi, 1000)
-        # y1 = np.sin(x)
-        # y2 = np.cos(x)
-        # self.series1 = QtCharts.QLineSeries()
-        # self.series1.setName("Sin(x)")
-        # self.series1.replace(self.get_points(x, y1))
-        # self.chart.addSeries(self.series1)
-        # self.series2 = QtCharts.QLineSeries()
-        # self.series2.setName("Cos(x)")
-        # self.series2.replace(self.get_points(x, y2))
-        # self.chart.addSeries(self.series2)
 
     def initUi(self):
         self.mainLayout = QGridLayout(self)
@@ -38,9 +27,6 @@ class Canvas(QWidget):
         self.chartView = QtCharts.QChartView()
         self.chartView.setChart(self.chart)
         self.mainLayout.addWidget(self.chartView)
-
-    def toPoints(self, x: np.ndarray, y: np.ndarray):
-        return [QPointF(x_value, y_value) for x_value, y_value in zip(x, y)]
 
     def setupChartStyle(self):
         self.chart.setTitleFont(QFont("Times New Roman", 12))
@@ -54,6 +40,15 @@ class Canvas(QWidget):
         self.chart.legend().setFont(QFont("Times New Roman", 10))
         # self.chart.setAnimationOptions(QtCharts.QChart.AllAnimations)
         self.chart.setBackgroundVisible(False)
+
+    def setThemeMode(self, isDark: bool):
+        if isDark:
+            self.chart.setTheme(QtCharts.QChart.ChartThemeDark)
+        else:
+            self.chart.setTheme(QtCharts.QChart.ChartThemeLight)
+
+    def toPoints(self, x: np.ndarray, y: np.ndarray):
+        return [QPointF(x_value, y_value) for x_value, y_value in zip(x, y)]
 
     def exportToPng(self, filename: str):
         image = QImage(self.chartView.width(),
