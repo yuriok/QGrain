@@ -200,7 +200,7 @@ QStatusBar {
 QRadioButton,
 QDockWidget,
 QScrollBar,
-PlotWidget,
+QChartView,
 QHeaderView:section,
 QTableView,
 QTableView QTableCornerButton::section,
