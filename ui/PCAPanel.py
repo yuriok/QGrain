@@ -3,36 +3,35 @@ import logging
 import os
 
 import numpy as np
-import pyqtgraph as pg
 import xlsxwriter
 import xlwt
-from palettable.cartocolors.qualitative import Bold_10 as LightPalette
-from palettable.cartocolors.qualitative import Pastel_10 as DarkPalette
-from pyqtgraph.exporters import ImageExporter, SVGExporter
-from PySide2.QtCore import Qt, Signal
-from PySide2.QtGui import QFont, QRegExpValidator
+from PySide2.QtCharts import QtCharts
+from PySide2.QtCore import Qt
+from PySide2.QtGui import QRegExpValidator
 from PySide2.QtWidgets import (QCheckBox, QFileDialog, QGridLayout, QLabel,
                                QLineEdit, QMessageBox, QPushButton, QWidget)
 from sklearn.decomposition import PCA
 
+
 if __name__ == "__main__":
-    import os
-    import sys
+    import sys, os
     sys.path.append(os.getcwd())
 from models.SampleDataset import SampleDataset
+from ui.Canvas import Canvas
 
 
-class PCAPanel(QWidget):
+class PCAPanel(Canvas):
     logger = logging.getLogger("root.ui.PCAPanel")
     gui_logger = logging.getLogger("GUI")
 
-    def __init__(self, parent=None, light=True, **kargs):
-        super().__init__(parent, **kargs)
-        if light:
-            pg.setConfigOptions(foreground=pg.mkColor("k"))
-        else:
-            pg.setConfigOptions(foreground=pg.mkColor("w"))
-        self.init_ui(light)
+    def __init__(self, parent=None, isDark=True):
+        super().__init__(parent)
+        self.initChart()
+        self.setThemeMode(isDark)
+        self.setupChartStyle()
+
+        self.chart.legend().detachFromChart()
+        self.chart.legend().setPos(100.0, 60.0)
 
         self.file_dialog = QFileDialog(self)
         self.msg_box = QMessageBox(self)
@@ -47,54 +46,14 @@ class PCAPanel(QWidget):
         self.dataset = None
         self.transformed = None
 
-    def init_ui(self, light: bool):
-        self.main_layout = QGridLayout(self)
-        self.main_layout.setContentsMargins(0, 0, 0, 0)
-        self.plot_widget = pg.PlotWidget(enableMenu=False)
-        self.main_layout.addWidget(self.plot_widget, 0, 0, 1, 5)
-        # add image exporters
-        self.png_exporter = ImageExporter(self.plot_widget.plotItem)
-        self.svg_exporter = SVGExporter(self.plot_widget.plotItem)
-        # show all axis
-        self.plot_widget.plotItem.showAxis("left")
-        self.plot_widget.plotItem.showAxis("right")
-        self.plot_widget.plotItem.showAxis("top")
-        self.plot_widget.plotItem.showAxis("bottom")
-        # prepare the styles
-        if light:
-            self.component_styles = [dict(pen=pg.mkPen(hex_color, width=2)) for hex_color in LightPalette.hex_colors]
-        else:
-            self.component_styles = [dict(pen=pg.mkPen(hex_color, width=2)) for hex_color in DarkPalette.hex_colors]
-        # set labels
-        # bug of pyqtgraph, can not perform the foreground to labels
-        if light:
-            self.label_styles = {"font-family": "Times New Roman", "color": "black"}
-        else:
-            self.label_styles = {"font-family": "Times New Roman", "color": "white"}
-        self.plot_widget.plotItem.setLabel("left", self.tr("Transformed"), **self.label_styles)
-        self.plot_widget.plotItem.setLabel("bottom", self.tr("Sample Index"), **self.label_styles)
-        # set title
-        self.title_format = """<font face="Times New Roman">%s</font>"""
-        self.plot_widget.plotItem.setTitle(self.title_format % self.tr("PCA Canvas"))
-        # show grids
-        self.plot_widget.plotItem.showGrid(True, True)
-        # set the font of ticks
-        self.tickFont = QFont("Arial")
-        self.tickFont.setPointSize(8)
-        self.plot_widget.plotItem.getAxis("left").tickFont = self.tickFont
-        self.plot_widget.plotItem.getAxis("right").tickFont = self.tickFont
-        self.plot_widget.plotItem.getAxis("top").tickFont = self.tickFont
-        self.plot_widget.plotItem.getAxis("bottom").tickFont = self.tickFont
-        # set auto SI
-        self.plot_widget.plotItem.getAxis("left").enableAutoSIPrefix(enable=False)
-        self.plot_widget.plotItem.getAxis("right").enableAutoSIPrefix(enable=False)
-        self.plot_widget.plotItem.getAxis("top").enableAutoSIPrefix(enable=False)
-        self.plot_widget.plotItem.getAxis("bottom").enableAutoSIPrefix(enable=False)
-        # set legend
-        self.legend_format = """<font face="Times New Roman">%s</font>"""
-        self.legend = pg.LegendItem(offset=(80, 50))
-        self.legend.setParentItem(self.plot_widget.plotItem)
-
+    def initUI(self):
+        super().initUI()
+        # use anotehr widget to pack other controls
+        self.controlContainer = QWidget(self)
+        self.controlLayout = QGridLayout(self.controlContainer)
+        self.controlLayout.setContentsMargins(0, 0, 0, 0)
+        self.mainLayout.addWidget(self.controlContainer, 1, 0)
+        # prepare controls
         self.component_number_validator = QRegExpValidator(r"^[1-9]\d*$") # >= 1
         self.fraction_validator = QRegExpValidator(r"^(0(\.\d{1,4})?|1(\.0{1,4})?)$") # 0.0000 - 1.0000
         self.assign_component_number_checkbox = QCheckBox(self.tr("Assign Component Number"))
@@ -105,15 +64,30 @@ class PCAPanel(QWidget):
         self.param_edit.setText("0.9")
         self.perform_button = QPushButton(self.tr("Perform"))
         self.save_button = QPushButton(self.tr("Save"))
-        self.main_layout.addWidget(self.assign_component_number_checkbox, 1, 0)
-        self.main_layout.addWidget(self.checkbox_state_label, 1, 1)
-        self.main_layout.addWidget(self.param_edit, 1, 2)
-        self.main_layout.addWidget(self.perform_button, 1, 3)
-        self.main_layout.addWidget(self.save_button, 1, 4)
+        self.controlLayout.addWidget(self.assign_component_number_checkbox, 0, 0)
+        self.controlLayout.addWidget(self.checkbox_state_label, 0, 1)
+        self.controlLayout.addWidget(self.param_edit, 0, 2)
+        self.controlLayout.addWidget(self.perform_button, 0, 3)
+        self.controlLayout.addWidget(self.save_button, 0, 4)
         # connect
         self.assign_component_number_checkbox.stateChanged.connect(self.on_assign_checkbox_changed)
         self.perform_button.clicked.connect(self.on_perform_clicked)
         self.save_button.clicked.connect(self.on_save_clicked)
+
+    def initChart(self):
+        # init axes
+        self.axisX = QtCharts.QValueAxis()
+        self.axisX.setLabelFormat("%i")
+        self.chart.addAxis(self.axisX, Qt.AlignBottom)
+        self.axisY = QtCharts.QValueAxis()
+        self.chart.addAxis(self.axisY, Qt.AlignLeft)
+        # set title
+        self.chart.setTitle(self.tr("PCA Canvas"))
+        # set labels
+        self.axisX.setTitleText(self.tr("Sample Index"))
+        self.axisY.setTitleText(self.tr("Transformed"))
+        # use demo to let it perform normal
+        self.showDemo(self.axisX, self.axisY)
 
     def show_message(self, title: str, message: str):
         self.msg_box.setWindowTitle(title)
@@ -150,6 +124,7 @@ class PCAPanel(QWidget):
 
     def on_data_loaded(self, dataset: SampleDataset):
         self.dataset = dataset
+        self.on_perform_clicked()
 
     def get_data_matrix(self):
         if self.dataset is None:
@@ -161,6 +136,8 @@ class PCAPanel(QWidget):
         return np.array(matrix)
 
     def on_perform_clicked(self):
+        # necessary to stop
+        self.stopDemo()
         n_components = self.get_param_value()
         if n_components is None:
             return
@@ -173,26 +150,26 @@ class PCAPanel(QWidget):
         sample_number, dimension_number = transformed.shape
         x = np.array(range(1, sample_number+1))
         # clear
-        for item in self.plot_data_items:
-            self.plot_widget.plotItem.removeItem(item)
-            self.legend.removeItem(item)
-        self.plot_data_items.clear()
+        self.chart.removeAllSeries()
         for i in range(dimension_number):
-            item_name = self.tr("Component") + " " + str(i+1)
-            plot_data_item = pg.PlotDataItem(name=item_name)
-            plot_data_item.setData(
-                x, transformed[:, i],
-                **self.component_styles[i % len(self.component_styles)])
-            self.plot_widget.plotItem.addItem(plot_data_item)
-            self.legend.addItem(plot_data_item, self.legend_format % item_name)
-            self.plot_data_items.append(plot_data_item)
+            componentName = self.tr("Component") + " " + str(i+1)
+            series = QtCharts.QLineSeries()
+            series.setName(componentName)
+            series.replace(self.toPoints(x, transformed[:, i]))
+            self.chart.addSeries(series)
+            series.attachAxis(self.axisX)
+            series.attachAxis(self.axisY)
+        # update the size of legend
+        self.chart.legend().setMinimumSize(150.0, 30*(2+dimension_number))
+        # reset the range of axes
+        self.axisX.setRange(x[0], x[-1])
+        self.axisY.setRange(np.min(transformed), np.max(transformed))
 
         self.transformed = transformed
         self.logger.debug("PCA algorithm performed.")
         # export chart to file
-        self.png_exporter.export("./temp/pca_panel/png/pca.png")
-        self.svg_exporter.export("./temp/pca_panel/svg/pca.svg")
-
+        self.exportToPng("./temp/pca_panel/png/pca.png")
+        self.exportToSvg("./temp/pca_panel/svg/pca.svg")
 
     def on_save_clicked(self):
         if self.transformed is None:
@@ -252,11 +229,11 @@ class PCAPanel(QWidget):
                 sheet.write(sample_index+1, dimension_index+1, self.transformed[sample_index, dimension_index])
         workbook.close()
 
+
 if __name__ == "__main__":
-    import sys
     from PySide2.QtWidgets import QApplication
-    pg.setConfigOptions(background=pg.mkColor("#ffffff00"))
     app = QApplication(sys.argv)
-    panel = PCAPanel(light=True)
+    panel = PCAPanel(isDark=False)
+    panel.chart.legend().hide()
     panel.show()
     sys.exit(app.exec_())

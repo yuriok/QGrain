@@ -1,16 +1,19 @@
 import logging
+from typing import List
 
 import numpy as np
 from PySide2.QtCharts import QtCharts
-from PySide2.QtCore import QMutex, QPointF, Qt, Signal
-from PySide2.QtGui import QBrush, QColor, QFont, QPen
+from PySide2.QtCore import QMutex, Qt, Signal
+from PySide2.QtGui import QColor, QPen
 
+if __name__ == "__main__":
+    import sys, os
+    sys.path.append(os.getcwd())
 from models.FittingResult import FittingResult
 from models.SampleData import SampleData
 from ui.Canvas import Canvas
 from ui.InfiniteLine import InfiniteLine
 
-from typing import List
 
 class DistributionCanvas(Canvas):
     sigExpectedMeanValueChanged = Signal(tuple)
@@ -19,9 +22,9 @@ class DistributionCanvas(Canvas):
 
     def __init__(self, parent=None, isDark=True):
         super().__init__(parent)
+        self.setThemeMode(isDark)
         self.initChart()
         self.setupChartStyle()
-        self.setThemeMode(isDark)
         self.chart.legend().detachFromChart()
         self.chart.legend().setPos(100.0, 60.0)
         self.__infiniteLineMutex = QMutex()
@@ -56,6 +59,7 @@ class DistributionCanvas(Canvas):
         self.axisX.setTitleText(self.tr("Grain size")+" (μm)")
         self.axisY.setTitleText(self.tr("Probability Density"))
 
+        self.showDemo(self.axisX, self.axisY, xLog=True)
         self.componentSeries = [] # type: List[QtChart.QLineSeries]
         self.componentInfiniteLines = [] # type: List[InfiniteLine]
 
@@ -108,6 +112,8 @@ class DistributionCanvas(Canvas):
         self.logger.debug("Target data has been changed to [%s].", sample.name)
 
     def update_canvas_by_data(self, result: FittingResult, current_iteration=None):
+        # necessary to stop
+        self.stopDemo()
         # update the title of canvas
         if current_iteration is not None:
             self.chart.setTitle(("{0} "+self.tr("Iteration")+" ({1})").format(
@@ -146,3 +152,12 @@ class DistributionCanvas(Canvas):
         expectedMeanValues = tuple(sorted([line.value for line in self.componentInfiniteLines]))
         self.sigExpectedMeanValueChanged.emit(expectedMeanValues)
         self.__infiniteLineMutex.unlock()
+
+
+if __name__ == "__main__":
+    from PySide2.QtWidgets import QApplication
+    app = QApplication(sys.argv)
+    canvas = DistributionCanvas(isDark=False)
+    canvas.chart.legend().hide()
+    canvas.show()
+    sys.exit(app.exec_())
