@@ -43,13 +43,13 @@ class MainWindow(QMainWindow):
     sigCleanup = Signal()
     logger = logging.getLogger("root.MainWindow")
     gui_logger = logging.getLogger("GUI")
-    def __init__(self, light=True, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if light:
-            self.icon_folder = "./settings/icons/light/"
-        else:
+    def __init__(self, isDark=True):
+        super().__init__()
+        if isDark:
             self.icon_folder = "./settings/icons/dark/"
-        self.init_ui(light)
+        else:
+            self.icon_folder = "./settings/icons/light/"
+        self.init_ui(isDark)
         self.status_bar = self.statusBar()
         self.gui_fitting_thread = QThread()
         self.gui_resolver = GUIResolver()
@@ -67,7 +67,7 @@ class MainWindow(QMainWindow):
     def show_message(self, message):
         self.status_bar.showMessage(message)
 
-    def init_ui(self, light: bool):
+    def init_ui(self, isDark: bool):
         # Menu
         self.file_menu = self.menuBar().addMenu(self.tr("File"))
         self.load_action = QAction(QIcon(self.icon_folder+"load.png"), self.tr("Load"), self)
@@ -95,17 +95,17 @@ class MainWindow(QMainWindow):
         self.setDockNestingEnabled(True)
         # PCA Panel
         self.pca_panel_dock = QDockWidget(self.tr("PCA Panel"))
-        self.pca_panel = PCAPanel(light=light)
+        self.pca_panel = PCAPanel(isDark=isDark)
         self.pca_panel_dock.setWidget(self.pca_panel)
         self.pca_panel_dock.setObjectName("PCAPanelDock")
         # Loss Canvas
         self.loss_canvas_dock = QDockWidget(self.tr("Loss Canvas"))
-        self.loss_canvas = LossCanvas(light=light)
+        self.loss_canvas = LossCanvas(isDark=isDark)
         self.loss_canvas_dock.setWidget(self.loss_canvas)
         self.loss_canvas_dock.setObjectName("LossCanvasDock")
         # Distribution Canvas
         self.distribution_canvas_dock = QDockWidget(self.tr("Distribution Canvas"))
-        self.distribution_canvas = DistributionCanvas(light=light)
+        self.distribution_canvas = DistributionCanvas(isDark=isDark)
         self.distribution_canvas_dock.setWidget(self.distribution_canvas)
         self.distribution_canvas_dock.setObjectName("DistributionCanvasDock")
 
