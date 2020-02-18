@@ -1,133 +1,69 @@
 import logging
-from enum import Enum, unique
 
 import numpy as np
-from palettable.cartocolors.qualitative import Bold_10 as LightPalette
-from palettable.cartocolors.qualitative import Pastel_10 as DarkPalette
-import pyqtgraph as pg
-from pyqtgraph.exporters import ImageExporter, SVGExporter
-from PySide2.QtCore import Qt, Signal
-from PySide2.QtGui import QFont
-from PySide2.QtWidgets import QGridLayout, QPushButton, QWidget
+from PySide2.QtCharts import QtCharts
+from PySide2.QtCore import QMutex, QPointF, Qt, Signal
+from PySide2.QtGui import QBrush, QColor, QFont, QPen
 
 from models.FittingResult import FittingResult
 from models.SampleData import SampleData
+from ui.Canvas import Canvas
+from ui.InfiniteLine import InfiniteLine
 
-@unique
-class XAxisSpace(Enum):
-    Raw = 0
-    Log10 = 1
-    Phi = 2
+from typing import List
 
-class DistributionCanvas(QWidget):
+class DistributionCanvas(Canvas):
     sigExpectedMeanValueChanged = Signal(tuple)
     logger = logging.getLogger("root.ui.DistributionCanvas")
     gui_logger = logging.getLogger("GUI")
 
-    def __init__(self, parent=None, light=True, **kargs):
-        super().__init__(parent, **kargs)
-        self.set_skin_mode(light)
-        self.init_ui()
+    def __init__(self, parent=None, light=True):
+        super().__init__(parent)
+        self.setThemeMode(light)
+        self.initChart()
+        self.setupChartStyle()
+        self.chart.legend().detachFromChart()
+        self.chart.legend().setPos(100.0, 60.0)
+        self.__infiniteLineMutex = QMutex()
 
-    def set_skin_mode(self, light: str):
+    def setThemeMode(self, light: str):
         if light:
-            pg.setConfigOptions(foreground=pg.mkColor("k"))
-            # prepare styles
-            self.target_style = dict(pen=None, symbol="o", symbolBrush=pg.mkBrush("#161B26"), symbolPen=None, symbolSize=5)
-            self.sum_style = dict(pen=pg.mkPen("#062170", width=3))
-            self.component_styles = [dict(pen=pg.mkPen(hex_color, width=2, style=Qt.DashLine)) for hex_color in LightPalette.hex_colors]
-            # Due to the bug of pyqtgraph, can not perform the foreground to labels
-            self.label_styles = {"font-family": "Times New Roman", "color": "black"}
+            self.chart.setTheme(QtCharts.QChart.ChartThemeLight)
         else:
-            pg.setConfigOptions(foreground=pg.mkColor("w"))
-            self.target_style = dict(pen=None, symbol="o", symbolBrush=pg.mkBrush("#afafaf"), symbolPen=None, symbolSize=5)
-            self.sum_style = dict(pen=pg.mkPen("#062170", width=3))
-            self.component_styles = [dict(pen=pg.mkPen(hex_color, width=2, style=Qt.DashLine)) for hex_color in DarkPalette.hex_colors]
-            self.label_styles = {"font-family": "Times New Roman", "color": "white"}
+            self.chart.setTheme(QtCharts.QChart.ChartThemeDark)
 
-    def init_ui(self):
-        self.main_layout = QGridLayout(self)
-        self.main_layout.setContentsMargins(0, 0, 0, 0)
-        self.plot_widget = pg.PlotWidget(enableMenu=False)
-        self.main_layout.addWidget(self.plot_widget, 0, 0)
-        # add image exporters
-        self.png_exporter = ImageExporter(self.plot_widget.plotItem)
-        self.svg_exporter = SVGExporter(self.plot_widget.plotItem)
-        # prepare the plot data item for target and fitted data
-        self.target_item = pg.PlotDataItem(name="Target", **self.target_style)
-        self.plot_widget.plotItem.addItem(self.target_item)
-        self.fitted_item = pg.PlotDataItem(name="Fitted", **self.sum_style)
-        self.plot_widget.plotItem.addItem(self.fitted_item)
-        # set labels
-        self.plot_widget.plotItem.setLabel("left", self.tr("Probability Density"), **self.label_styles)
-        self.plot_widget.plotItem.setLabel("bottom", self.tr("Grain size")+" (μm)", **self.label_styles)
+    def initChart(self):
+        # init axes
+        self.axisX = QtCharts.QLogValueAxis()
+        self.axisX.setBase(10.0)
+        self.axisX.setMinorTickCount(-1)
+        self.chart.addAxis(self.axisX, Qt.AlignBottom)
+        self.axisY = QtCharts.QValueAxis()
+        self.chart.addAxis(self.axisY, Qt.AlignLeft)
+
+        # init two const series
+        self.targetSeries = QtCharts.QScatterSeries()
+        self.targetSeries.setName(self.tr("Target"))
+        self.targetSeries.setMarkerSize(5.0)
+        self.targetSeries.setPen(QPen(QColor(255, 255, 255, 0)))
+        self.chart.addSeries(self.targetSeries)
+        self.fittedSeries = QtCharts.QLineSeries()
+        self.fittedSeries.setName(self.tr("Fitted"))
+        self.chart.addSeries(self.fittedSeries)
+        # attach series to axes
+        self.targetSeries.attachAxis(self.axisX)
+        self.targetSeries.attachAxis(self.axisY)
+        self.fittedSeries.attachAxis(self.axisX)
+        self.fittedSeries.attachAxis(self.axisY)
+
         # set title
-        self.title_format = """<font face="Times New Roman">%s</font>"""
-        self.plot_widget.plotItem.setTitle(self.title_format % self.tr("Distribution Canvas"))
-        # show grids
-        self.plot_widget.plotItem.showGrid(True, True)
-        self.tick_font = QFont("Arial")
-        self.tick_font.setPointSize(8)
-        # set all axes
-        for axis_name in ["left", "top", "right", "bottom"]:
-            self.plot_widget.plotItem.showAxis(axis_name)
-            # set the font of ticks
-            self.plot_widget.plotItem.getAxis(axis_name).tickFont = self.tick_font
-            self.plot_widget.plotItem.getAxis(axis_name).enableAutoSIPrefix(enable=False)
-        # set legend
-        self.legend_format = """<font face="Times New Roman">%s</font>"""
-        self.legend = pg.LegendItem(offset=(80, 50))
-        self.legend.setParentItem(self.plot_widget.plotItem)
-        self.legend.addItem(self.target_item, self.legend_format % self.tr("Target"))
-        self.legend.addItem(self.fitted_item, self.legend_format % self.tr("Fitted"))
+        self.chart.setTitle(self.tr("Distribution Canvas"))
+        # set labels
+        self.axisX.setTitleText(self.tr("Grain size")+" (μm)")
+        self.axisY.setTitleText(self.tr("Probability Density"))
 
-        self.x_axis_space = XAxisSpace.Log10
-        self.component_curves = []
-        self.component_lines = []
-        self.position_limit = None
-        self.position_cache = []
-
-    def raw2space(self, value: float) -> float:
-        processed = value
-        if self.position_limit is not None:
-            lower, upper = self.position_limit
-            if processed < lower:
-                processed = lower
-            elif processed > upper:
-                processed = upper
-        if self.x_axis_space == XAxisSpace.Raw:
-            return processed
-        elif self.x_axis_space == XAxisSpace.Log10:
-            return np.log10(processed)
-        elif self.x_axis_space == XAxisSpace.Phi:
-            return -np.log2(processed)
-        else:
-            raise NotImplementedError(self.x_axis_space)
-
-    def space2raw(self, value: float) -> float:
-        if self.x_axis_space == XAxisSpace.Raw:
-            processed = value
-        elif self.x_axis_space == XAxisSpace.Log10:
-            processed = 10**value
-        elif self.x_axis_space == XAxisSpace.Phi:
-            processed = 2**(-value)
-        else:
-            raise NotImplementedError(self.x_axis_space)
-        if self.position_limit is not None:
-            lower, upper = self.position_limit
-            if processed < lower:
-                processed = lower
-            elif processed > upper:
-                processed = upper
-        return processed
-
-    def on_line_position_changed(self, current_line):
-        for i, line in enumerate(self.component_lines):
-            if current_line is line:
-                raw_value = self.space2raw(current_line.getXPos())
-                current_line.setValue(self.raw2space(raw_value))
-                self.position_cache[i] = raw_value
-        self.sigExpectedMeanValueChanged.emit(tuple(self.position_cache))
+        self.componentSeries = [] # type: List[QtChart.QLineSeries]
+        self.componentInfiniteLines = [] # type: List[InfiniteLine]
 
     def on_component_number_changed(self, component_number: int):
         self.logger.info("Received the component changed signal, start to clear and add data items.")
@@ -137,89 +73,82 @@ class DistributionCanvas(QWidget):
         if component_number <= 0:
             raise ValueError(component_number)
         # clear
-        for curve in self.component_curves:
-            self.plot_widget.plotItem.removeItem(curve)
-            self.legend.removeItem(curve)
-        for line in self.component_lines:
-            self.plot_widget.plotItem.removeItem(line)
-        self.component_curves.clear()
-        self.component_lines.clear()
-        self.position_cache = np.ones(component_number)
+        for series in self.componentSeries:
+            self.chart.removeSeries(series)
+        for line in self.componentInfiniteLines:
+            line.disconnectFromChart()
+        self.componentSeries.clear()
+        self.componentInfiniteLines.clear()
         self.logger.debug("Items cleared.")
         # add
         for i in range(component_number):
-            component_name = "C{0}".format(i+1)
-            curve = pg.PlotDataItem(name=component_name,**self.component_styles[i%len(self.component_styles)])
-            line = pg.InfiniteLine(angle=90, movable=False, pen=self.component_styles[i%len(self.component_styles)]["pen"])
-            line.setMovable(True)
-            line.sigDragged.connect(self.on_line_position_changed)
-            self.plot_widget.plotItem.addItem(curve)
-            self.plot_widget.plotItem.addItem(line)
-            self.legend.addItem(curve, self.legend_format % component_name)
-            self.component_curves.append(curve)
-            self.component_lines.append(line)
+            componentName = "C{0}".format(i+1)
+            # series
+            series = QtCharts.QLineSeries()
+            series.setName(componentName)
+            self.chart.addSeries(series)
+            series.attachAxis(self.axisX)
+            series.attachAxis(self.axisY)
+            # line
+            line = InfiniteLine(isHorizontal=False, chart=self.chart,
+                                pen=series.pen(), callback=self.on_infinite_line_moved)
+            self.componentSeries.append(series)
+            self.componentInfiniteLines.append(line)
+        # update the size of legend
+        self.chart.legend().setMinimumSize(150.0, 30*(2+component_number))
         self.logger.debug("Items added.")
 
     def on_target_data_changed(self, sample: SampleData):
-        # change the value space of x axis
-        if self.x_axis_space == XAxisSpace.Raw:
-            self.plot_widget.plotItem.setLogMode(x=False)
-        elif self.x_axis_space == XAxisSpace.Log10:
-            self.plot_widget.plotItem.setLogMode(x=True)
-        else:
-            raise NotImplementedError(self.x_axis_space)
-        # the range to limit the positions of lines
-        self.position_limit = (sample.classes[0], sample.classes[-1])
-        all_ticks = [(self.raw2space(x_value), "{0:0.2f}".format(x_value)) for x_value in sample.classes]
-        major_ticks = all_ticks[::20]
-        minor_ticks = all_ticks[::5]
-        self.plot_widget.plotItem.getAxis("top").setTicks([major_ticks, minor_ticks, all_ticks])
-        self.plot_widget.plotItem.getAxis("bottom").setTicks([major_ticks, minor_ticks, all_ticks])
-        self.logger.debug("Target data has been changed to [%s].", sample.name)
         # update the title of canvas
         if sample.name is None or sample.name == "":
             sample.name = "UNKNOWN"
-        self.plot_widget.plotItem.setTitle(self.title_format % sample.name)
-        # update target
-        # target data (i.e. grain size classes and distribution) should have no nan value indeed
-        # it should be checked during load data progress
-        self.target_item.setData(sample.classes, sample.distribution, **self.target_style)
-        self.fitted_item.clear()
-        for curve in self.component_curves:
-            curve.clear()
-        for line in self.component_lines:
-            line.setValue(1)
+        self.chart.setTitle(sample.name)
+        self.targetSeries.replace(self.toPoints(sample.classes, sample.distribution))
+        self.fittedSeries.clear()
+        for series in self.componentSeries:
+            series.clear()
+        for line in self.componentInfiniteLines:
+            line.value = 1.0
+        self.axisX.setRange(sample.classes[0], sample.classes[-1])
+        self.axisY.setRange(0.0, np.max(sample.distribution)*1.2)
+        self.logger.debug("Target data has been changed to [%s].", sample.name)
 
     def update_canvas_by_data(self, result: FittingResult, current_iteration=None):
         # update the title of canvas
-        if current_iteration is None:
-            self.plot_widget.plotItem.setTitle(self.title_format % result.name)
-        else:
-            self.plot_widget.plotItem.setTitle(
-                self.title_format %
-                ("{0} "+self.tr("Iteration")+" ({1})").format(
-                    result.name, current_iteration))
-        # update fitted
-        self.fitted_item.setData(result.real_x, result.fitted_y, **self.sum_style)
-        # update component curves
-        for i, component, curve, line in zip(
-                range(result.component_number),
+        if current_iteration is not None:
+            self.chart.setTitle(("{0} "+self.tr("Iteration")+" ({1})").format(
+                result.name, current_iteration))
+        # update fitted series
+        self.fittedSeries.replace(self.toPoints(result.real_x, result.fitted_y))
+        # update component series
+        for i, (component, series, line) in enumerate(zip(
                 result.components,
-                self.component_curves,
-                self.component_lines):
-            curve.setData(result.real_x, component.component_y, **self.component_styles[i%len(self.component_styles)])
+                self.componentSeries,
+                self.componentInfiniteLines)):
+            series.replace(self.toPoints(result.real_x, component.component_y))
+            # display the median (modal size) and fraction for users
+            componentName = "C{0}".format(i+1)
+            series.setName(componentName + " ({0:.1f} μm, {1:.1%})".format(component.median, component.fraction))
             if np.isnan(component.mean) or np.isinf(component.mean):
-                continue
-            space_value = self.raw2space(component.mean)
-            self.position_cache[i] = self.space2raw(space_value)
-            line.setValue(space_value)
+                # if mean is invalid, set the position of this line to initial position
+                line.value = 1.0
+            else:
+                line.value = component.mean
 
     def on_fitting_epoch_suceeded(self, result: FittingResult):
         self.update_canvas_by_data(result)
-        self.png_exporter.export("./temp/distribution_canvas/png/{0} - {1} - {2}.png".format(
+        self.exportToPng("./temp/distribution_canvas/png/{0} - {1} - {2}.png".format(
             result.name, result.distribution_type, result.component_number))
-        self.svg_exporter.export("./temp/distribution_canvas/svg/{0} - {1} - {2}.svg".format(
+        self.exportToSvg("./temp/distribution_canvas/svg/{0} - {1} - {2}.svg".format(
             result.name, result.distribution_type, result.component_number))
 
     def on_single_iteration_finished(self, current_iteration: int, result: FittingResult):
         self.update_canvas_by_data(result, current_iteration=current_iteration)
+
+    def on_infinite_line_moved(self):
+        # this method will be called by another object directly
+        # use lock to keep safety
+        self.__infiniteLineMutex.lock()
+        expectedMeanValues = tuple(sorted([line.value for line in self.componentInfiniteLines]))
+        self.sigExpectedMeanValueChanged.emit(expectedMeanValues)
+        self.__infiniteLineMutex.unlock()
