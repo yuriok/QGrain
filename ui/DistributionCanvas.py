@@ -17,20 +17,14 @@ class DistributionCanvas(Canvas):
     logger = logging.getLogger("root.ui.DistributionCanvas")
     gui_logger = logging.getLogger("GUI")
 
-    def __init__(self, parent=None, light=True):
+    def __init__(self, parent=None, isDark=True):
         super().__init__(parent)
-        self.setThemeMode(light)
         self.initChart()
         self.setupChartStyle()
+        self.setThemeMode(isDark)
         self.chart.legend().detachFromChart()
         self.chart.legend().setPos(100.0, 60.0)
         self.__infiniteLineMutex = QMutex()
-
-    def setThemeMode(self, light: str):
-        if light:
-            self.chart.setTheme(QtCharts.QChart.ChartThemeLight)
-        else:
-            self.chart.setTheme(QtCharts.QChart.ChartThemeDark)
 
     def initChart(self):
         # init axes
