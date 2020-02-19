@@ -20,49 +20,49 @@ class AllDistributionCanvas(Canvas):
 
     def __init__(self, parent=None, isDark=True):
         super().__init__(parent)
-        self.setThemeMode(isDark)
-        self.initChart()
-        self.setupChartStyle()
+        self.set_theme_mode(isDark)
+        self.init_chart()
+        self.setup_chart_style()
         self.chart.legend().hide()
 
-    def initChart(self):
+    def init_chart(self):
         # init axes
-        self.axisX = QtCharts.QLogValueAxis()
-        self.axisX.setBase(10.0)
-        self.axisX.setMinorTickCount(-1)
-        self.chart.addAxis(self.axisX, Qt.AlignBottom)
-        self.axisY = QtCharts.QValueAxis()
-        self.chart.addAxis(self.axisY, Qt.AlignLeft)
+        self.axis_x = QtCharts.QLogValueAxis()
+        self.axis_x.setBase(10.0)
+        self.axis_x.setMinorTickCount(-1)
+        self.chart.addAxis(self.axis_x, Qt.AlignBottom)
+        self.axis_y = QtCharts.QValueAxis()
+        self.chart.addAxis(self.axis_y, Qt.AlignLeft)
         # set title
         self.chart.setTitle(self.tr("All Distribution Canvas"))
         # set labels
-        self.axisX.setTitleText(self.tr("Grain size")+" (μm)")
-        self.axisY.setTitleText(self.tr("Probability Density"))
+        self.axis_x.setTitleText(self.tr("Grain size")+" (μm)")
+        self.axis_y.setTitleText(self.tr("Probability Density"))
 
-        self.showDemo(self.axisX, self.axisY, xLog=True)
+        self.show_demo(self.axis_x, self.axis_y, xLog=True)
 
     def on_data_loaded(self, dataset: SampleDataset):
-        self.stopDemo()
+        self.stop_demo()
         self.chart.removeAllSeries()
-        maxY = -1.0
+        max_y = -1.0
         for sample in dataset.samples:
             series = QtCharts.QLineSeries()
             series.setName(sample.name)
-            series.replace(self.toPoints(sample.classes, sample.distribution))
+            series.replace(self.to_points(sample.classes, sample.distribution))
             self.chart.addSeries(series)
             pen = QPen(QColor(series.pen().color()),
                        1.0)
             series.setPen(pen)
-            series.attachAxis(self.axisX)
-            series.attachAxis(self.axisY)
-            currentMaxY = np.max(sample.distribution)
-            if currentMaxY > maxY:
-                maxY = currentMaxY
-        self.axisX.setRange(dataset.classes[0], dataset.classes[-1])
-        self.axisY.setRange(0.0, maxY*1.2)
+            series.attachAxis(self.axis_x)
+            series.attachAxis(self.axis_y)
+            current_max_y = np.max(sample.distribution)
+            if current_max_y > max_y:
+                max_y = current_max_y
+        self.axis_x.setRange(dataset.classes[0], dataset.classes[-1])
+        self.axis_y.setRange(0.0, max_y*1.2)
 
-        self.exportToPng("./temp/all_distribution_canvas.png")
-        self.exportToSvg("./temp/all_distribution_canvas.svg")
+        self.export_to_png("./temp/all_distribution_canvas.png")
+        self.export_to_svg("./temp/all_distribution_canvas.svg")
 
 
 if __name__ == "__main__":

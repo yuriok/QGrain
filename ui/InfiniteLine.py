@@ -9,55 +9,55 @@ from PySide2.QtWidgets import (QGraphicsItem, QGraphicsSceneHoverEvent,
 
 
 class InfiniteLine(QGraphicsItem):
-    def __init__(self, isHorizontal: bool, chart: QtCharts.QChart,
-                 pen: Optional[QPen] = None, hoverPen: Optional[QPen] = None,
+    def __init__(self, is_horizontal: bool, chart: QtCharts.QChart,
+                 pen: Optional[QPen] = None, hover_pen: Optional[QPen] = None,
                  callback: Callable = None):
         super().__init__()
-        self.__isHorizontal = isHorizontal
+        self.__is_horizontal = is_horizontal
         self.__chart = chart
         self.__callback = callback
 
         self.__pen = QPen(QColor(0x000000), 3.0) if pen is None else pen
-        self.__hoverPen = QPen(QColor(0xff0000), 5.0) if hoverPen is None else hoverPen
-        self.__currentPen = self.__pen
+        self.__hover_pen = QPen(QColor(0xff0000), 5.0) if hover_pen is None else hover_pen
+        self.__current_pen = self.__pen
 
         self.__value = None
-        self.value = sum(self.valueRange) / 2
+        self.value = sum(self.value_range) / 2
         assert self.__value is not None
 
         self.setAcceptHoverEvents(True)
-        self.connectToChart(chart)
+        self.connect_to_chart(chart)
 
     def boundingRect(self) -> QRectF:
-        w = self.__currentPen.widthF()
-        if self.isHorizontal:
+        w = self.__current_pen.widthF()
+        if self.is_horizontal:
             return QRectF(QPointF(0.0, -w/2), QSizeF(self.length, w*2))
         else:
             return QRectF(QPointF(-w/2, 0.0), QSizeF(w*2, self.length))
 
     def paint(self, painter: QPainter, style: QStyleOptionGraphicsItem, widget: QWidget):
         painter.save()
-        painter.setPen(self.__currentPen)
+        painter.setPen(self.__current_pen)
         # painter.setRenderHint(QPainter.Antialiasing)
-        w = self.__currentPen.widthF()
-        if self.isHorizontal:
+        w = self.__current_pen.widthF()
+        if self.is_horizontal:
             painter.drawLine(w/2, 0.0, self.length-w/2, 0.0)
         else:
             painter.drawLine(0.0, w/2, 0.0, self.length-w/2)
         painter.restore()
 
     def hoverEnterEvent(self, event: QGraphicsSceneHoverEvent):
-        self.__currentPen = self.hoverPen
+        self.__current_pen = self.hover_pen
         self.update()
         return True
 
     def hoverLeaveEvent(self, event: QGraphicsSceneHoverEvent):
-        self.__currentPen = self.pen
+        self.__current_pen = self.pen
         self.update()
         return True
 
     def mouseMoveEvent(self, event: QGraphicsSceneMouseEvent):
-        if self.isHorizontal:
+        if self.is_horizontal:
             new = self.__chart.mapToValue(event.scenePos()).y()
         else:
             new = self.__chart.mapToValue(event.scenePos()).x()
@@ -71,29 +71,29 @@ class InfiniteLine(QGraphicsItem):
     def mouseReleaseEvent(self, event): pass
 
     @property
-    def isHorizontal(self) -> bool:
-        return self.__isHorizontal
+    def is_horizontal(self) -> bool:
+        return self.__is_horizontal
 
-    @isHorizontal.setter
-    def isHorizontal(self, value: bool):
+    @is_horizontal.setter
+    def is_horizontal(self, value: bool):
         if isinstance(value, bool):
-            self.__isHorizontal = value
+            self.__is_horizontal = value
         else:
             raise TypeError(value)
 
     @property
     def length(self) -> float:
-        if self.isHorizontal:
+        if self.is_horizontal:
             return self.__chart.plotArea().width()
         else:
             return self.__chart.plotArea().height()
 
     @property
-    def valueRange(self) -> Tuple[float, float]:
+    def value_range(self) -> Tuple[float, float]:
         top_left = self.__chart.mapToValue(self.__chart.plotArea().topLeft())
         bottom_right = self.__chart.mapToValue(
             self.__chart.plotArea().bottomRight())
-        if self.isHorizontal:
+        if self.is_horizontal:
             left, right = top_left.y(), bottom_right.y()
         else:
             left, right = top_left.x(), bottom_right.x()
@@ -108,10 +108,10 @@ class InfiniteLine(QGraphicsItem):
 
     @value.setter
     def value(self, chart_value: Union[int, float]):
-        left, right = self.valueRange
+        left, right = self.value_range
         if chart_value < left or chart_value > right:
             return
-        if self.isHorizontal:
+        if self.is_horizontal:
             pos = self.__chart.mapToPosition(QPointF(0.0, chart_value))
             self.setY(pos.y())
         else:
@@ -131,29 +131,29 @@ class InfiniteLine(QGraphicsItem):
             raise TypeError(value)
 
     @property
-    def hoverPen(self) -> QPen:
-        return self.__hoverPen
+    def hover_pen(self) -> QPen:
+        return self.__hover_pen
 
-    @hoverPen.setter
-    def hoverPen(self, value: QPen):
+    @hover_pen.setter
+    def hover_pen(self, value: QPen):
         if isinstance(value, QPen):
-            self.__hoverPen = value
+            self.__hover_pen = value
         else:
             raise TypeError(value)
 
-    def connectToChart(self, chart: QtCharts.QChart):
+    def connect_to_chart(self, chart: QtCharts.QChart):
         self.__chart = chart
         chart.scene().addItem(self)
-        chart.plotAreaChanged.connect(self.onPlotAreaChanged)
-        self.onPlotAreaChanged(chart.plotArea())
+        chart.plotAreaChanged.connect(self.on_plot_area_changed)
+        self.on_plot_area_changed(chart.plotArea())
 
-    def disconnectFromChart(self):
+    def disconnect_from_chart(self):
         self.__chart.scene().removeItem(self)
-        self.__chart.plotAreaChanged.disconnect(self.onPlotAreaChanged)
+        self.__chart.plotAreaChanged.disconnect(self.on_plot_area_changed)
 
-    def onPlotAreaChanged(self, plotArea: QRectF):
-        if self.isHorizontal:
-            self.setX(plotArea.left())
+    def on_plot_area_changed(self, plot_area: QRectF):
+        if self.is_horizontal:
+            self.setX(plot_area.left())
         else:
-            self.setY(plotArea.top())
+            self.setY(plot_area.top())
         self.value = self.value
