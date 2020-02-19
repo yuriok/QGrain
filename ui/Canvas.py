@@ -117,9 +117,13 @@ class Canvas(QWidget):
         self.chart_view.restoreGeometry(geometry)
 
     def export_to_svg(self, filename: str):
+        geometry = self.chart_view.saveGeometry()
+        # set geometry to make it in order
+        self.chart_view.setGeometry(0, 0, 800, 600)
         generator = QSvgGenerator()
         generator.setFileName(filename)
         self.chart_view.render(generator)
+        self.chart_view.restoreGeometry(geometry)
 
 
 if __name__ == "__main__":
