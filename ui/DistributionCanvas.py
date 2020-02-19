@@ -140,7 +140,7 @@ class DistributionCanvas(Canvas):
     def on_fitting_epoch_suceeded(self, result: FittingResult):
         self.update_canvas_by_data(result)
         self.export_to_png("./images/distribution_canvas/png/{0} - {1} - {2}.png".format(
-            result.name, result.distribution_type, result.component_number), pixel_ration=2.0)
+            result.name, result.distribution_type, result.component_number), pixel_ratio=2.0)
         self.export_to_svg("./images/distribution_canvas/svg/{0} - {1} - {2}.svg".format(
             result.name, result.distribution_type, result.component_number))
 

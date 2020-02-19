@@ -101,18 +101,18 @@ class Canvas(QWidget):
             self.chart.removeSeries(self.demo_series)
             del self.demo_series
 
-    def export_to_png(self, filename: str, pixel_ration: Union[int, float] = 1.0):
+    def export_to_png(self, filename: str, pixel_ratio: Union[int, float] = 1.0):
         geometry = self.chart_view.saveGeometry()
         # set geometry to make it in order
         self.chart_view.setGeometry(0, 0, 800, 600)
-        if not isinstance(pixel_ration, (int, float)):
-            raise TypeError(pixel_ration)
-        if pixel_ration <= 0:
-            raise ValueError(pixel_ration)
-        image = QImage(int(self.chart_view.width()*pixel_ration),
-                       int(self.chart_view.height()*pixel_ration),
+        if not isinstance(pixel_ratio, (int, float)):
+            raise TypeError(pixel_ratio)
+        if pixel_ratio <= 0:
+            raise ValueError(pixel_ratio)
+        image = QImage(int(self.chart_view.width()*pixel_ratio),
+                       int(self.chart_view.height()*pixel_ratio),
                        QImage.Format_ARGB32)
-        image.setDevicePixelRatio(pixel_ration)
+        image.setDevicePixelRatio(pixel_ratio)
         self.chart_view.render(image)
         image.save(filename)
         self.chart_view.restoreGeometry(geometry)
