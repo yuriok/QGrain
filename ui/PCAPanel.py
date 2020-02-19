@@ -45,6 +45,7 @@ class PCAPanel(Canvas):
         self.plot_data_items = []
         self.dataset = None
         self.transformed = None
+        self.inverse_transformed = None
 
     def init_ui(self):
         super().init_ui()
@@ -152,27 +153,34 @@ class PCAPanel(Canvas):
         # clear
         self.chart.removeAllSeries()
         for i in range(dimension_number):
-            componentName = self.tr("Component") + " " + str(i+1)
+            component_name = "C{0} ({1:0.2%})".format(i+1, pca.explained_variance_ratio_[i])
             series = QtCharts.QLineSeries()
-            series.setName(componentName)
+            series.setName(component_name)
             series.replace(self.to_points(x, transformed[:, i]))
             self.chart.addSeries(series)
             series.attachAxis(self.axis_x)
             series.attachAxis(self.axis_y)
         # update the size of legend
-        self.chart.legend().setMinimumSize(150.0, 30*(2+dimension_number))
+        self.chart.legend().setMinimumSize(120.0, 30*(2+dimension_number))
         # reset the range of axes
         self.axis_x.setRange(x[0], x[-1])
         self.axis_y.setRange(np.min(transformed), np.max(transformed))
 
         self.transformed = transformed
+        # split the pca components
+        def get_split_distributions(index):
+            processed = np.zeros_like(transformed)
+            processed[:, index] = transformed[:, index]
+            return pca.inverse_transform(processed)
+        self.inverse_transformed = [get_split_distributions(i) for i in range(dimension_number)]
+
         self.logger.debug("PCA algorithm performed.")
         # export chart to file
         self.export_to_png("./images/pca_panel.png", pixel_ratio=2.0)
         self.export_to_svg("./images/pca_panel.svg")
 
     def on_save_clicked(self):
-        if self.transformed is None:
+        if self.transformed is None or self.inverse_transformed is None:
             self.show_warning(self.tr("The PCA algorithm has not been performed."))
             return
         filename, type_str = self.file_dialog.getSaveFileName(None, self.tr("Save Recorded Data"), None, "Excel (*.xlsx);;97-2003 Excel (*.xls);;CSV (*.csv)")
@@ -214,6 +222,18 @@ class PCAPanel(Canvas):
             sheet.write(sample_index+1, 0, self.dataset.samples[sample_index].name)
             for dimension_index in range(dimension_number):
                 sheet.write(sample_index+1, dimension_index+1, self.transformed[sample_index, dimension_index])
+
+        for i, split_distribution in enumerate(self.inverse_transformed):
+            component_sheet = workbook.add_sheet("Component"+str(i+1))
+            component_sheet.write(0, 0, "Sample Name")
+            classes_number = len(self.dataset.classes)
+            for j in range(classes_number):
+                component_sheet.write(0, j+1, self.dataset.classes[j])
+            for sample_index in range(sample_number):
+                component_sheet.write(sample_index+1, 0, self.dataset.samples[sample_index].name)
+                for classes_index in range(classes_number):
+                    component_sheet.write(sample_index+1, classes_index+1, split_distribution[sample_index, classes_index])
+
         workbook.save(filename)
 
     def save_as_xlsx(self, filename: str):
@@ -227,6 +247,18 @@ class PCAPanel(Canvas):
             sheet.write(sample_index+1, 0, self.dataset.samples[sample_index].name)
             for dimension_index in range(dimension_number):
                 sheet.write(sample_index+1, dimension_index+1, self.transformed[sample_index, dimension_index])
+
+        for i, split_distribution in enumerate(self.inverse_transformed):
+            component_sheet = workbook.add_worksheet("Component"+str(i+1))
+            component_sheet.write(0, 0, "Sample Name")
+            classes_number = len(self.dataset.classes)
+            for j in range(classes_number):
+                component_sheet.write(0, j+1, self.dataset.classes[j])
+            for sample_index in range(sample_number):
+                component_sheet.write(sample_index+1, 0, self.dataset.samples[sample_index].name)
+                for classes_index in range(classes_number):
+                    component_sheet.write(sample_index+1, classes_index+1, split_distribution[sample_index, classes_index])
+
         workbook.close()
 
 
