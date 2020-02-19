@@ -566,7 +566,7 @@ QToolBox::tab:selected {
 
 /* Custom */
 QDockWidget,
-PlotWidget,
+QChartView,
 QHeaderView:section,
 QTableView,
 QTableView QTableCornerButton::section,
