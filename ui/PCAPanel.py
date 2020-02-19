@@ -26,9 +26,9 @@ class PCAPanel(Canvas):
 
     def __init__(self, parent=None, isDark=True):
         super().__init__(parent)
-        self.initChart()
-        self.setThemeMode(isDark)
-        self.setupChartStyle()
+        self.init_chart()
+        self.set_theme_mode(isDark)
+        self.setup_chart_style()
 
         self.chart.legend().detachFromChart()
         self.chart.legend().setPos(100.0, 60.0)
@@ -46,13 +46,13 @@ class PCAPanel(Canvas):
         self.dataset = None
         self.transformed = None
 
-    def initUI(self):
-        super().initUI()
+    def init_ui(self):
+        super().init_ui()
         # use anotehr widget to pack other controls
-        self.controlContainer = QWidget(self)
-        self.controlLayout = QGridLayout(self.controlContainer)
-        self.controlLayout.setContentsMargins(0, 0, 0, 0)
-        self.mainLayout.addWidget(self.controlContainer, 1, 0)
+        self.control_container = QWidget(self)
+        self.control_layout = QGridLayout(self.control_container)
+        self.control_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.addWidget(self.control_container, 1, 0)
         # prepare controls
         self.component_number_validator = QRegExpValidator(r"^[1-9]\d*$") # >= 1
         self.fraction_validator = QRegExpValidator(r"^(0(\.\d{1,4})?|1(\.0{1,4})?)$") # 0.0000 - 1.0000
@@ -64,30 +64,30 @@ class PCAPanel(Canvas):
         self.param_edit.setText("0.9")
         self.perform_button = QPushButton(self.tr("Perform"))
         self.save_button = QPushButton(self.tr("Save"))
-        self.controlLayout.addWidget(self.assign_component_number_checkbox, 0, 0)
-        self.controlLayout.addWidget(self.checkbox_state_label, 0, 1)
-        self.controlLayout.addWidget(self.param_edit, 0, 2)
-        self.controlLayout.addWidget(self.perform_button, 0, 3)
-        self.controlLayout.addWidget(self.save_button, 0, 4)
+        self.control_layout.addWidget(self.assign_component_number_checkbox, 0, 0)
+        self.control_layout.addWidget(self.checkbox_state_label, 0, 1)
+        self.control_layout.addWidget(self.param_edit, 0, 2)
+        self.control_layout.addWidget(self.perform_button, 0, 3)
+        self.control_layout.addWidget(self.save_button, 0, 4)
         # connect
         self.assign_component_number_checkbox.stateChanged.connect(self.on_assign_checkbox_changed)
         self.perform_button.clicked.connect(self.on_perform_clicked)
         self.save_button.clicked.connect(self.on_save_clicked)
 
-    def initChart(self):
+    def init_chart(self):
         # init axes
-        self.axisX = QtCharts.QValueAxis()
-        self.axisX.setLabelFormat("%i")
-        self.chart.addAxis(self.axisX, Qt.AlignBottom)
-        self.axisY = QtCharts.QValueAxis()
-        self.chart.addAxis(self.axisY, Qt.AlignLeft)
+        self.axis_x = QtCharts.QValueAxis()
+        self.axis_x.setLabelFormat("%i")
+        self.chart.addAxis(self.axis_x, Qt.AlignBottom)
+        self.axis_y = QtCharts.QValueAxis()
+        self.chart.addAxis(self.axis_y, Qt.AlignLeft)
         # set title
         self.chart.setTitle(self.tr("PCA Canvas"))
         # set labels
-        self.axisX.setTitleText(self.tr("Sample Index"))
-        self.axisY.setTitleText(self.tr("Transformed"))
+        self.axis_x.setTitleText(self.tr("Sample Index"))
+        self.axis_y.setTitleText(self.tr("Transformed"))
         # use demo to let it perform normal
-        self.showDemo(self.axisX, self.axisY)
+        self.show_demo(self.axis_x, self.axis_y)
 
     def show_message(self, title: str, message: str):
         self.msg_box.setWindowTitle(title)
@@ -137,7 +137,7 @@ class PCAPanel(Canvas):
 
     def on_perform_clicked(self):
         # necessary to stop
-        self.stopDemo()
+        self.stop_demo()
         n_components = self.get_param_value()
         if n_components is None:
             return
@@ -155,21 +155,21 @@ class PCAPanel(Canvas):
             componentName = self.tr("Component") + " " + str(i+1)
             series = QtCharts.QLineSeries()
             series.setName(componentName)
-            series.replace(self.toPoints(x, transformed[:, i]))
+            series.replace(self.to_points(x, transformed[:, i]))
             self.chart.addSeries(series)
-            series.attachAxis(self.axisX)
-            series.attachAxis(self.axisY)
+            series.attachAxis(self.axis_x)
+            series.attachAxis(self.axis_y)
         # update the size of legend
         self.chart.legend().setMinimumSize(150.0, 30*(2+dimension_number))
         # reset the range of axes
-        self.axisX.setRange(x[0], x[-1])
-        self.axisY.setRange(np.min(transformed), np.max(transformed))
+        self.axis_x.setRange(x[0], x[-1])
+        self.axis_y.setRange(np.min(transformed), np.max(transformed))
 
         self.transformed = transformed
         self.logger.debug("PCA algorithm performed.")
         # export chart to file
-        self.exportToPng("./temp/pca_panel.png")
-        self.exportToSvg("./temp/pca_panel.svg")
+        self.export_to_png("./temp/pca_panel.png")
+        self.export_to_svg("./temp/pca_panel.svg")
 
     def on_save_clicked(self):
         if self.transformed is None:
