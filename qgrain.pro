@@ -1,10 +1,13 @@
 SOURCES = ./ui/AboutWindow.py \
         ./ui/AlgorithmSetting.py \
+        ./ui/AllDistributionCanvas.py \
         ./ui/AppSetting.py \
+        ./ui/Canvas.py \
         ./ui/ControlPanel.py \
         ./ui/DataManager.py \
         ./ui/DataSetting.py \
         ./ui/DistributionCanvas.py \
+        ./ui/InfiniteLine.py \
         ./ui/LossCanvas.py \
         ./ui/MainWindow.py \
         ./ui/PCAPanel.py \
