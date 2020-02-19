@@ -1,5 +1,4 @@
 import logging
-import random
 
 import numpy as np
 from PySide2.QtCharts import QtCharts
