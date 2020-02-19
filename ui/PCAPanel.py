@@ -168,7 +168,7 @@ class PCAPanel(Canvas):
         self.transformed = transformed
         self.logger.debug("PCA algorithm performed.")
         # export chart to file
-        self.export_to_png("./temp/pca_panel.png")
+        self.export_to_png("./temp/pca_panel.png", pixel_ration=2.0)
         self.export_to_svg("./temp/pca_panel.svg")
 
     def on_save_clicked(self):
