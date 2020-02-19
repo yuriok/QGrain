@@ -97,6 +97,8 @@ class DistributionCanvas(Canvas):
         self.logger.debug("Items added.")
 
     def on_target_data_changed(self, sample: SampleData):
+        # necessary to stop
+        self.stopDemo()
         # update the title of canvas
         if sample.name is None or sample.name == "":
             sample.name = "UNKNOWN"
