@@ -9,12 +9,9 @@ from PySide2.QtCore import QSettings, QTranslator
 from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtWidgets import QApplication, QSplashScreen
 
-import pyqtgraph as pg
-pg.setConfigOptions(antialias=True)
-
 from ui.MainWindow import GUILogHandler, MainWindow
 
-QGRAIN_VERSION = "0.2.6.1"
+QGRAIN_VERSION = "0.2.7"
 
 # 1 GB
 TEMP_FOLDER_LIMIT_SIZE = 1024 * 1024 * 1024
@@ -67,17 +64,13 @@ def setup_theme(app: QApplication) -> bool:
     app.setStyleSheet(template_styles+custom_style)
 
     if theme == "Aqua":
-        pg.setConfigOptions(background=pg.mkColor("#ececec"))
-        return True
+        return False
     elif theme == "Ubuntu":
-        pg.setConfigOptions(background=pg.mkColor("#f0f0f0"))
-        return True
+        return False
     elif theme == "ElegantDark":
-        pg.setConfigOptions(background=pg.mkColor("#525252"))
-        return False
+        return True
     elif theme == "MaterialDark":
-        pg.setConfigOptions(background=pg.mkColor("#1e1d23"))
-        return False
+        return True
     else:
         raise NotImplementedError(theme)
 
@@ -100,8 +93,8 @@ def main():
     splash.show()
     app.processEvents()
     setup_language(app)
-    is_light = setup_theme(app)
-    main_window = MainWindow(light=is_light)
+    isDark = setup_theme(app)
+    main_window = MainWindow(isDark=isDark)
     main_window.setWindowTitle("QGrain")
     main_window.setWindowIcon(QIcon("./settings/icons/icon.png"))
     setup_logging(main_window)
