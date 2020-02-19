@@ -60,8 +60,8 @@ class AllDistributionCanvas(Canvas):
         self.axis_x.setRange(dataset.classes[0], dataset.classes[-1])
         self.axis_y.setRange(0.0, max_y*1.2)
 
-        self.export_to_png("./temp/all_distribution_canvas.png", pixel_ration=5.0)
-        self.export_to_svg("./temp/all_distribution_canvas.svg")
+        self.export_to_png("./images/all_distribution_canvas.png", pixel_ration=5.0)
+        self.export_to_svg("./images/all_distribution_canvas.svg")
 
 
 if __name__ == "__main__":
