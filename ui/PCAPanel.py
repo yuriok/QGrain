@@ -24,10 +24,10 @@ class PCAPanel(Canvas):
     logger = logging.getLogger("root.ui.PCAPanel")
     gui_logger = logging.getLogger("GUI")
 
-    def __init__(self, parent=None, isDark=True):
+    def __init__(self, parent=None, is_dark=True):
         super().__init__(parent)
         self.init_chart()
-        self.set_theme_mode(isDark)
+        self.set_theme_mode(is_dark)
         self.setup_chart_style()
 
         self.chart.legend().detachFromChart()
@@ -265,7 +265,7 @@ class PCAPanel(Canvas):
 if __name__ == "__main__":
     from PySide2.QtWidgets import QApplication
     app = QApplication(sys.argv)
-    panel = PCAPanel(isDark=False)
+    panel = PCAPanel(is_dark=False)
     panel.chart.legend().hide()
     panel.show()
     sys.exit(app.exec_())
