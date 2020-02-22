@@ -16,9 +16,9 @@ class LossCanvas(Canvas):
     logger = logging.getLogger("root.ui.FittingCanvas")
     gui_logger = logging.getLogger("GUI")
 
-    def __init__(self, parent=None, isDark=True):
+    def __init__(self, parent=None, is_dark=True):
         super().__init__(parent)
-        self.set_theme_mode(isDark)
+        self.set_theme_mode(is_dark)
         self.init_chart()
         self.setup_chart_style()
         self.chart.legend().hide()
@@ -86,7 +86,7 @@ class LossCanvas(Canvas):
 if __name__ == "__main__":
     from PySide2.QtWidgets import QApplication
     app = QApplication(sys.argv)
-    canvas = LossCanvas(isDark=False)
+    canvas = LossCanvas(is_dark=False)
     canvas.chart.legend().hide()
     canvas.show()
     sys.exit(app.exec_())

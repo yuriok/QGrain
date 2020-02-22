@@ -43,8 +43,8 @@ class Canvas(QWidget):
         self.chart.setBackgroundVisible(False)
         self.chart_view.setRenderHint(QPainter.Antialiasing)
 
-    def set_theme_mode(self, isDark: bool):
-        if isDark:
+    def set_theme_mode(self, is_dark: bool):
+        if is_dark:
             self.chart.setTheme(QtCharts.QChart.ChartThemeDark)
         else:
             self.chart.setTheme(QtCharts.QChart.ChartThemeLight)
