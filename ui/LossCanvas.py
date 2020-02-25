@@ -45,7 +45,7 @@ class LossCanvas(Canvas):
         self.axis_x.setTitleText(self.tr("Iteration"))
         self.axis_y.setTitleText(self.tr("Loss"))
 
-        self.show_demo(self.axis_x, self.axis_y, yLog=True)
+        self.show_demo(self.axis_x, self.axis_y, y_log=True)
         # data
         self.result_info = None
         self.max_loss = -sys.maxsize
