@@ -52,9 +52,9 @@ class Canvas(QWidget):
     def to_points(self, x: np.ndarray, y: np.ndarray):
         return [QPointF(x_value, y_value) for x_value, y_value in zip(x, y)]
 
-    def show_demo(self, axisX: QtCharts.QAbstractAxis,
-                 axisY: QtCharts.QAbstractAxis,
-                 xLog=False, yLog=False):
+    def show_demo(self, axis_x: QtCharts.QAbstractAxis,
+                 axis_y: QtCharts.QAbstractAxis,
+                 x_log=False, y_log=False):
         def love(x, a):
             return np.abs(x)**(2/3) + (0.9*np.sqrt(np.abs(3.3-x**2))) * np.sin(a*np.pi*x)
         series = QtCharts.QLineSeries()
@@ -63,23 +63,23 @@ class Canvas(QWidget):
         x = np.linspace(-np.sqrt(3.3), np.sqrt(3.3), 1000)
         y = love(x, a)
 
-        series.replace(self.to_points(10**x if xLog else x, 10**y if yLog else y))
+        series.replace(self.to_points(10**x if x_log else x, 10**y if y_log else y))
         self.chart.addSeries(series)
-        series.attachAxis(axisX)
-        series.attachAxis(axisY)
+        series.attachAxis(axis_x)
+        series.attachAxis(axis_y)
         scale = 1.2
         minX = -np.sqrt(3.3) * scale
         maxX = np.sqrt(3.3) * scale
         minY = -1.5737869944381024 * scale
         maxY = 2.367369351208529 * scale
-        if xLog:
-            axisX.setRange(10**minX, 10**maxX)
+        if x_log:
+            axis_x.setRange(10**minX, 10**maxX)
         else:
-            axisX.setRange(minX, maxX)
-        if yLog:
-            axisY.setRange(10**minY, 10**maxY)
+            axis_x.setRange(minX, maxX)
+        if y_log:
+            axis_y.setRange(10**minY, 10**maxY)
         else:
-            axisY.setRange(minY, maxY)
+            axis_y.setRange(minY, maxY)
 
         def update():
             nonlocal a
@@ -87,7 +87,7 @@ class Canvas(QWidget):
             if a > 33:
                 a = 3.3
             y = love(x, a)
-            series.replace(self.to_points(10**x if xLog else x, 10**y if yLog else y))
+            series.replace(self.to_points(10**x if x_log else x, 10**y if y_log else y))
         self.demo_series = series
         self.demo_timer = QTimer()
         self.demo_timer.timeout.connect(update)
