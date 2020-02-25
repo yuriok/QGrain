@@ -38,7 +38,7 @@ class AllDistributionCanvas(Canvas):
         self.axis_x.setTitleText(self.tr("Grain size")+" (μm)")
         self.axis_y.setTitleText(self.tr("Probability Density"))
 
-        self.show_demo(self.axis_x, self.axis_y, xLog=True)
+        self.show_demo(self.axis_x, self.axis_y, x_log=True)
 
     def on_data_loaded(self, dataset: SampleDataset):
         self.stop_demo()

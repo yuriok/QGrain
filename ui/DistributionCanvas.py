@@ -59,7 +59,7 @@ class DistributionCanvas(Canvas):
         self.axis_x.setTitleText(self.tr("Grain size")+" (μm)")
         self.axis_y.setTitleText(self.tr("Probability Density"))
 
-        self.show_demo(self.axis_x, self.axis_y, xLog=True)
+        self.show_demo(self.axis_x, self.axis_y, x_log=True)
         self.component_series = [] # type: List[QtChart.QLineSeries]
         self.component_infinite_lines = [] # type: List[InfiniteLine]
 
@@ -96,7 +96,7 @@ class DistributionCanvas(Canvas):
         self.chart.legend().setMinimumSize(150.0, 30*(2+component_number))
         self.logger.debug("Items added.")
 
-    def on_target_data_changed(self, sample: SampleData):
+    def show_target_distribution(self, sample: SampleData):
         # necessary to stop
         self.stop_demo()
         # update the title of canvas
@@ -113,7 +113,7 @@ class DistributionCanvas(Canvas):
         self.axis_y.setRange(0.0, np.max(sample.distribution)*1.2)
         self.logger.debug("Target data has been changed to [%s].", sample.name)
 
-    def update_canvas_by_data(self, result: FittingResult, current_iteration=None):
+    def show_fitting_result(self, result: FittingResult, current_iteration=None):
         # necessary to stop
         self.stop_demo()
         # update the title of canvas
@@ -138,14 +138,14 @@ class DistributionCanvas(Canvas):
                 line.value = component.mean
 
     def on_fitting_epoch_suceeded(self, result: FittingResult):
-        self.update_canvas_by_data(result)
+        self.show_fitting_result(result)
         self.export_to_png("./images/distribution_canvas/png/{0} - {1} - {2}.png".format(
             result.name, result.distribution_type, result.component_number), pixel_ratio=2.0)
         self.export_to_svg("./images/distribution_canvas/svg/{0} - {1} - {2}.svg".format(
             result.name, result.distribution_type, result.component_number))
 
     def on_single_iteration_finished(self, current_iteration: int, result: FittingResult):
-        self.update_canvas_by_data(result, current_iteration=current_iteration)
+        self.show_fitting_result(result, current_iteration=current_iteration)
 
     def on_infinite_line_moved(self):
         # this method will be called by another object directly

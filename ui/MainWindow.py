@@ -167,7 +167,7 @@ class MainWindow(QMainWindow):
         self.data_manager.sigDataLoaded.connect(self.pca_panel.on_data_loaded)
         self.data_manager.sigDataLoaded.connect(self.all_distribution_canvas.on_data_loaded)
         self.data_manager.sigTargetDataChanged.connect(self.gui_resolver.on_target_data_changed)
-        self.data_manager.sigTargetDataChanged.connect(self.distribution_canvas.on_target_data_changed)
+        self.data_manager.sigTargetDataChanged.connect(self.distribution_canvas.show_target_distribution)
         self.data_manager.sigDataRecorded.connect(self.recorded_data_table.on_data_recorded)
 
         self.gui_resolver.sigFittingStarted.connect(self.control_panel.on_fitting_started)
