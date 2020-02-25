@@ -100,8 +100,6 @@ class DistributionCanvas(Canvas):
         # necessary to stop
         self.stop_demo()
         # update the title of canvas
-        if sample.name is None or sample.name == "":
-            sample.name = "UNKNOWN"
         self.chart.setTitle(sample.name)
         self.target_series.replace(self.to_points(sample.classes, sample.distribution))
         self.fitted_series.clear()
