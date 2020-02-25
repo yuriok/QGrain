@@ -28,6 +28,7 @@ class DistributionCanvas(Canvas):
         self.chart.legend().detachFromChart()
         self.chart.legend().setPos(100.0, 60.0)
         self.__infinite_line_mutex = QMutex()
+        self.__current_component_number = None
 
     def init_chart(self):
         # init axes
@@ -94,6 +95,7 @@ class DistributionCanvas(Canvas):
             self.component_infinite_lines.append(line)
         # update the size of legend
         self.chart.legend().setMinimumSize(150.0, 30*(2+component_number))
+        self.__current_component_number = component_number
         self.logger.debug("Items added.")
 
     def show_target_distribution(self, sample: SampleData):
@@ -114,10 +116,17 @@ class DistributionCanvas(Canvas):
     def show_fitting_result(self, result: FittingResult, current_iteration=None):
         # necessary to stop
         self.stop_demo()
-        # update the title of canvas
-        if current_iteration is not None:
+        # check the component number
+        if self.__current_component_number != result.component_number:
+            self.on_component_number_changed(result.component_number)
+        # update the title
+        if current_iteration is None:
+            self.chart.setTitle(result.name)
+        else:
             self.chart.setTitle(("{0} "+self.tr("Iteration")+" ({1})").format(
                 result.name, current_iteration))
+        # update target series
+        self.target_series.replace(self.to_points(result.real_x, result.target_y))
         # update fitted series
         self.fitted_series.replace(self.to_points(result.real_x, result.fitted_y))
         # update component series
