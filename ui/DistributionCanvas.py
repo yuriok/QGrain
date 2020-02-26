@@ -28,6 +28,7 @@ class DistributionCanvas(Canvas):
         self.chart.legend().detachFromChart()
         self.chart.legend().setPos(100.0, 60.0)
         self.__infinite_line_mutex = QMutex()
+        # used to check if it's necessary to update the component series and lines
         self.__current_component_number = None
 
     def init_chart(self):
@@ -65,12 +66,9 @@ class DistributionCanvas(Canvas):
         self.component_infinite_lines = [] # type: List[InfiniteLine]
 
     def on_component_number_changed(self, component_number: int):
-        self.logger.info("Received the component changed signal, start to clear and add data items.")
-        # Check the validity of `component_number`
-        if type(component_number) != int:
-            raise TypeError(component_number)
-        if component_number <= 0:
-            raise ValueError(component_number)
+        # use assert because the error must be handled in other place
+        assert isinstance(component_number, int)
+        assert component_number > 0
         # clear
         for series in self.component_series:
             self.chart.removeSeries(series)
@@ -78,7 +76,6 @@ class DistributionCanvas(Canvas):
             line.disconnect_from_chart()
         self.component_series.clear()
         self.component_infinite_lines.clear()
-        self.logger.debug("Items cleared.")
         # add
         for i in range(component_number):
             component_name = "C{0}".format(i+1)
@@ -96,7 +93,6 @@ class DistributionCanvas(Canvas):
         # update the size of legend
         self.chart.legend().setMinimumSize(150.0, 30*(2+component_number))
         self.__current_component_number = component_number
-        self.logger.debug("Items added.")
 
     def show_target_distribution(self, sample: SampleData):
         # necessary to stop
@@ -111,7 +107,6 @@ class DistributionCanvas(Canvas):
             line.value = 1.0
         self.axis_x.setRange(sample.classes[0], sample.classes[-1])
         self.axis_y.setRange(0.0, np.max(sample.distribution)*1.2)
-        self.logger.debug("Target data has been changed to [%s].", sample.name)
 
     def show_fitting_result(self, result: FittingResult, current_iteration=None):
         # necessary to stop
