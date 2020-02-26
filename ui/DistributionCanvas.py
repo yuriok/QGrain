@@ -106,7 +106,7 @@ class DistributionCanvas(Canvas):
         for line in self.component_infinite_lines:
             line.value = 1.0
         self.axis_x.setRange(sample.classes[0], sample.classes[-1])
-        self.axis_y.setRange(0.0, np.max(sample.distribution)*1.2)
+        self.axis_y.setRange(0.0, round(np.max(sample.distribution)*1.2, 2))
 
     def show_fitting_result(self, result: FittingResult, current_iteration=None):
         # necessary to stop
@@ -138,6 +138,8 @@ class DistributionCanvas(Canvas):
                 line.value = 1.0
             else:
                 line.value = component.mean
+        self.axis_x.setRange(result.real_x[0], result.real_x[-1])
+        self.axis_y.setRange(0.0, round(np.max(result.target_y)*1.2, 2))
 
     def on_fitting_epoch_suceeded(self, result: FittingResult):
         self.show_fitting_result(result)
