@@ -153,8 +153,8 @@ class DistributionCanvas(Canvas):
         # this method will be called by another object directly
         # use lock to keep safety
         self.__infinite_line_mutex.lock()
-        expectedMeanValues = tuple(sorted([line.value for line in self.component_infinite_lines]))
-        self.sigExpectedMeanValueChanged.emit(expectedMeanValues)
+        expected_mean_values = tuple(sorted([line.value for line in self.component_infinite_lines]))
+        self.sigExpectedMeanValueChanged.emit(expected_mean_values)
         self.__infinite_line_mutex.unlock()
 
 
