@@ -164,7 +164,7 @@ class PCAPanel(Canvas):
         self.chart.legend().setMinimumSize(120.0, 30*(2+dimension_number))
         # reset the range of axes
         self.axis_x.setRange(x[0], x[-1])
-        self.axis_y.setRange(np.min(transformed), np.max(transformed))
+        self.axis_y.setRange(round(np.min(transformed)*1.2, 2), round(np.max(transformed)*1.2, 2))
 
         self.transformed = transformed
         # split the pca components
