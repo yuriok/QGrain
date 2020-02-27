@@ -40,16 +40,6 @@ class TestGUIResolver(unittest.TestCase):
             self.resolver.on_distribution_type_changed(distribution_type)
             self.assertEqual(self.resolver.distribution_type, distribution_type)
 
-    def test_on_settings_changed(self):
-        # valid keys
-        self.resolver.on_inherit_params_changed(True)
-        self.assertTrue(self.resolver.inherit_params)
-        self.resolver.on_inherit_params_changed(False)
-        self.assertFalse(self.resolver.inherit_params)
-        # invalid keys
-        with self.assertRaises(NotImplementedError):
-            self.resolver.on_inherit_params_changed({"some_not_exist_key": True})
-
     def test_on_algorithm_settings_changed(self):
         settings = dict(
             global_optimization_maxiter=100,
@@ -79,7 +69,7 @@ class TestGUIResolver(unittest.TestCase):
         self.assertIs(self.resolver.initial_guess, last)
 
     def test_not_inherit_params(self):
-        self.resolver.on_inherit_params_changed({"inherit_params": False})
+        self.resolver.on_inherit_params_changed(False)
         self.resolver.on_target_data_changed(self.default_sample_data)
         self.resolver.try_fit()
         self.assertIsNotNone(self.resolver.last_succeeded_params)
