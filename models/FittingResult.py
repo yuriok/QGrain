@@ -139,16 +139,18 @@ class FittingResult:
         self.__real_x = real_x
         self.__fitting_space_x = fitting_space_x
         self.__bin_numbers = bin_numbers
+        self.__x_offset = x_offset
         self.__target_y = target_y
         self.__distribution_type = algorithm_data.distribution_type
         self.__component_number = algorithm_data.component_number
         self.__param_count = algorithm_data.param_count
         self.__param_names = algorithm_data.param_names
         self.__components = [] # type: List[ComponentFittingResult]
-        self.update(algorithm_data, fitted_params, x_offset)
+        self.update(fitted_params)
 
 
-    def update(self, algorithm_data: AlgorithmData, fitted_params: Iterable[float], x_offset: float):
+    def update(self, fitted_params: Iterable[float]):
+        algorithm_data = AlgorithmData.get_algorithm_data(self.distribution_type, self.component_number)
         if np.any(np.isnan(fitted_params)):
             self.__fitted_y = np.full_like(self.__fitting_space_x, fill_value=np.nan)
             self.__error_array = np.full_like(self.__fitting_space_x, fill_value=np.nan)
@@ -157,7 +159,7 @@ class FittingResult:
             self.__kendall_tau = (np.nan, np.nan)
             self.__spearman_r = (np.nan, np.nan)
         else:
-            self.__fitted_y = algorithm_data.mixed_func(self.__fitting_space_x - x_offset, *fitted_params)
+            self.__fitted_y = algorithm_data.mixed_func(self.__fitting_space_x - self.__x_offset, *fitted_params)
             # some test for fitting result
             self.__error_array = self.__target_y - self.__fitted_y
             self.__mean_squared_error = np.mean(np.square(self.__error_array))
@@ -168,7 +170,7 @@ class FittingResult:
             # https://scipy.github.io/devdocs/generated/scipy.stats.spearmanr.html
             self.__spearman_r = spearmanr(self.__target_y, self.__fitted_y)
 
-        processed_params = algorithm_data.process_params(fitted_params, x_offset)
+        processed_params = algorithm_data.process_params(fitted_params, self.__x_offset)
         if  len(self.__components) == 0:
             for params, fraction in processed_params:
                 component_result = ComponentFittingResult(self.real_x, self.fitting_space_x, algorithm_data, params, fraction)
