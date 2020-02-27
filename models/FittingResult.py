@@ -1,5 +1,6 @@
-from uuid import uuid4, UUID
+import copy
 from typing import Callable, Dict, Iterable, List, Tuple
+from uuid import UUID, uuid4
 
 import numpy as np
 from scipy.interpolate import interp1d
@@ -127,7 +128,8 @@ class FittingResult:
     def __init__(self, name: str, real_x: np.ndarray,
                  fitting_space_x: np.ndarray, bin_numbers: np.ndarray,
                  target_y: np.ndarray, algorithm_data: AlgorithmData,
-                 fitted_params: Iterable[float], x_offset: float):
+                 fitted_params: Iterable[float], x_offset: float,
+                 fitting_history: List[np.ndarray] = None):
         length = len(real_x)
         assert len(fitting_space_x) == length
         assert len(bin_numbers) == length
@@ -145,6 +147,7 @@ class FittingResult:
         self.__component_number = algorithm_data.component_number
         self.__param_count = algorithm_data.param_count
         self.__param_names = algorithm_data.param_names
+        self.__fitting_history = [fitted_params] if fitting_history is None else fitting_history
         self.__components = [] # type: List[ComponentFittingResult]
         self.update(fitted_params)
 
@@ -253,3 +256,14 @@ class FittingResult:
             if component.has_nan:
                 return True
         return False
+
+    @property
+    def history(self):
+        copy_result = copy.deepcopy(self)
+        for fitted_params in self.__fitting_history:
+            copy_result.update(fitted_params)
+            yield copy_result
+
+    @property
+    def iteration_number(self):
+        return len(self.__fitting_history)

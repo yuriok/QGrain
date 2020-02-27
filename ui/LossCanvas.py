@@ -22,6 +22,7 @@ class LossCanvas(Canvas):
         self.init_chart()
         self.setup_chart_style()
         self.chart.legend().hide()
+        self.observe_iteration_tag = False
 
     def init_chart(self):
         # init axes
@@ -46,41 +47,34 @@ class LossCanvas(Canvas):
         self.axis_y.setTitleText(self.tr("Loss"))
 
         self.show_demo(self.axis_x, self.axis_y, y_log=True)
-        # data
-        self.result_info = None
-        self.max_loss = -sys.maxsize
-        self.min_loss = sys.maxsize
 
-    def on_fitting_started(self):
-        self.loss_series.clear()
-        self.result_info = None
-        self.max_loss = -sys.maxsize
-        self.min_loss = sys.maxsize
+    def on_observe_iteration_changed(self, value: bool):
+        self.observe_iteration_tag = value
 
-    def on_fitting_finished(self):
-        if self.result_info is None:
+    def show_fitting_result(self, result: FittingResult):
+        if not self.observe_iteration_tag:
             return
-        name, distribution_type, component_number = self.result_info
-        self.chart.setTitle(name)
-        self.export_pixmap("./images/loss_canvas/png/{0} - {1} - {2}.png".format(
-            name, distribution_type, component_number))
-        self.export_svg("./images/loss_canvas/svg/{0} - {1} - {2}.svg".format(
-            name, distribution_type, component_number))
+        self.stop_demo()
+        self.loss_series.clear()
+        max_loss = -sys.maxsize
+        min_loss = sys.maxsize
+        for i, result_in_process in enumerate(result.history):
+            self.loss_series.append(i, result_in_process.mean_squared_error)
+            if result_in_process.mean_squared_error > max_loss:
+                max_loss = result_in_process.mean_squared_error
+            if result_in_process.mean_squared_error < min_loss:
+                min_loss = result_in_process.mean_squared_error
+            # self.chart.setTitle(("{0} "+self.tr("Iteration")+" ({1})").format(result.name, i))
+            # self.axis_x.setRange(0.0, current_iteration)
+            # self.axis_y.setRange(min_Loss, max_loss)
 
-    def on_single_iteration_finished(self, current_iteration: int, result: FittingResult):
-        if current_iteration == 0:
-            # necessary to stop
-            self.stop_demo()
-            self.result_info = (result.name, result.distribution_type, result.component_number)
-        self.chart.setTitle(("{0} "+self.tr("Iteration")+" ({1})").format(result.name, current_iteration))
-        loss = result.mean_squared_error
-        self.loss_series.append(current_iteration, loss)
-        self.axis_x.setRange(0.0, current_iteration)
-        if loss > self.max_loss:
-            self.max_loss = loss
-        if loss < self.min_loss:
-            self.min_loss = loss
-        self.axis_y.setRange(self.min_loss, self.max_loss)
+        self.axis_x.setRange(0, result.iteration_number-1)
+        self.axis_y.setRange(min_loss, max_loss)
+        self.chart.setTitle(result.name)
+        self.export_pixmap("./images/loss_canvas/png/{0} - {1} - {2}.png".format(
+            result.name, result.distribution_type, result.component_number))
+        self.export_svg("./images/loss_canvas/svg/{0} - {1} - {2}.svg".format(
+            result.name, result.distribution_type, result.component_number))
 
 
 if __name__ == "__main__":
