@@ -22,7 +22,6 @@ class Resolver:
                  minimizer_maxiter=500):
         self.__distribution_type = DistributionType.GeneralWeibull
         self.__component_number = 3
-        self.__algorithm_data_cache = {}
         self.refresh()
 
         # algorithms settings
@@ -70,13 +69,7 @@ class Resolver:
         self.refresh()
 
     def refresh(self):
-        key = (self.distribution_type, self.component_number)
-        if key in self.__algorithm_data_cache.keys():
-            self.algorithm_data = self.__algorithm_data_cache[key]
-        else:
-            algorithm_data = AlgorithmData(*key)
-            self.__algorithm_data_cache.update({key: algorithm_data})
-            self.algorithm_data = algorithm_data
+        self.algorithm_data = AlgorithmData.get_algorithm_data(self.distribution_type, self.component_number)
         self.initial_guess = self.algorithm_data.defaults
 
     @staticmethod
