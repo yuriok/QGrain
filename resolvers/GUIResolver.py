@@ -133,11 +133,11 @@ class GUIResolver(QObject, Resolver):
     def global_iteration_callback(self, fitted_params, function_value, accept):
         pass
 
-    def on_fitting_succeeded(self, fitting_result):
+    def on_fitting_succeeded(self, algorithm_result: OptimizeResult):
         # record the succeeded params
-        self.last_succeeded_params = fitting_result.x
-        self.logger.info("The epoch of fitting has finished, the fitted parameters are: [%s]", fitting_result.x)
-        self.sigFittingEpochSucceeded.emit(self.get_fitting_result(fitting_result.x))
+        self.last_succeeded_params = algorithm_result.x
+        self.logger.info("The epoch of fitting has finished, the fitted parameters are: [%s]", algorithm_result.x)
+        self.sigFittingEpochSucceeded.emit(self.get_fitting_result(algorithm_result.x))
 
     # call this func by another thread
     # so, lock is necessary
