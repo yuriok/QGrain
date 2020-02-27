@@ -62,9 +62,9 @@ class LossCanvas(Canvas):
             return
         name, distribution_type, component_number = self.result_info
         self.chart.setTitle(name)
-        self.export_to_png("./images/loss_canvas/png/{0} - {1} - {2}.png".format(
+        self.export_pixmap("./images/loss_canvas/png/{0} - {1} - {2}.png".format(
             name, distribution_type, component_number))
-        self.export_to_svg("./images/loss_canvas/svg/{0} - {1} - {2}.svg".format(
+        self.export_svg("./images/loss_canvas/svg/{0} - {1} - {2}.svg".format(
             name, distribution_type, component_number))
 
     def on_single_iteration_finished(self, current_iteration: int, result: FittingResult):
