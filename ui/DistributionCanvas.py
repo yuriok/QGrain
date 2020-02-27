@@ -1,10 +1,14 @@
 import logging
 from typing import List
 
+import cv2
 import numpy as np
+from PIL import Image
 from PySide2.QtCharts import QtCharts
-from PySide2.QtCore import QMutex, Qt, QTimer, Signal
+from PySide2.QtCore import (QCoreApplication, QEventLoop, QMutex,
+                            QStandardPaths, Qt, QTimer, Signal)
 from PySide2.QtGui import QColor, QPen
+from PySide2.QtWidgets import QFileDialog
 
 if __name__ == "__main__":
     import sys, os
@@ -32,6 +36,12 @@ class DistributionCanvas(Canvas):
         self.__iteration_timer = QTimer()
         # used to check if it's necessary to update the component series and lines
         self.__current_component_number = None
+        self.video_format_options = {self.tr("MP4 (*.mp4)"): "mp4v",
+                                     self.tr("AVI Motion-JPEG (*.avi)"): "MJPG",
+                                     self.tr("AVI MPEG-4.2 (*.avi)"): "MP42",
+                                     self.tr("AVI MPEG-4.3 (*.avi)"): "DIV3",
+                                     self.tr("AVI MPEG-4 (*.avi)"): "DIVX"}
+        self.file_dialog = QFileDialog(self)
 
     def init_chart(self):
         # init axes
@@ -179,6 +189,35 @@ class DistributionCanvas(Canvas):
             self.export_svg("./images/distribution_canvas/svg/{0} - {1} - {2}.svg".format(
                 result.name, result.distribution_type, result.component_number))
             self.__iteration_mutex.unlock()
+
+    def generate_video(self, result: FittingResult):
+        # necessary to stop
+        self.stop_demo()
+        # update target series
+        self.target_series.replace(self.to_points(result.real_x, result.target_y))
+        # check the component number
+        if self.__current_component_number != result.component_number:
+            self.on_component_number_changed(result.component_number)
+        width = 800
+        height = 600
+        pixel_ratio = 1.0
+        video_size = (int(width*pixel_ratio), int(height*pixel_ratio))
+        fps = 30.0
+        desktop_path = QStandardPaths.standardLocations(QStandardPaths.DesktopLocation)[0]
+        filename, format_name = self.file_dialog.getSaveFileName(
+            self, self.tr("Select Filename"),
+            desktop_path, ";;".join([format_name for format_name, fourcc in self.video_format_options.items()]))
+        video = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*self.video_format_options[format_name]), fps, video_size)
+        for current_iteration, result_in_process in enumerate(result.history):
+            self.chart.setTitle(("{0} "+self.tr("Iteration")+" ({1})").format(
+                    result.name, current_iteration))
+            self.__update_components(result_in_process)
+            QCoreApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
+            pixmap = self.get_pixmap(width=width, height=height, pixel_ratio=pixel_ratio)
+            mat = cv2.cvtColor(np.asarray(Image.fromqpixmap(pixmap)), cv2.COLOR_RGB2BGR)
+            video.write(mat)
+
+        video.release()
 
     def on_infinite_line_moved(self):
         # this method will be called by another object directly

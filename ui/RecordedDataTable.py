@@ -207,6 +207,7 @@ class RecordedDataTable(QWidget):
     sigRemoveRecords = Signal(list)
     sigShowDistribution = Signal(FittingResult)
     sigShowLoss = Signal(FittingResult)
+    sigGenerateDistributionVideo = Signal(FittingResult)
     def __init__(self, parent=None, **kargs):
         super().__init__(parent, **kargs)
         self.init_ui()
@@ -226,6 +227,8 @@ class RecordedDataTable(QWidget):
         self.remove_action.triggered.connect(self.remove_selection)
         self.show_distribution_action = self.menu.addAction(self.tr("Show Distribution"))
         self.show_distribution_action.triggered.connect(self.show_distribution)
+        self.generate_distribution_video_action = self.menu.addAction(self.tr("Generate Distribution Video"))
+        self.generate_distribution_video_action.triggered.connect(self.generate_distribution_video)
         self.show_loss_action = self.menu.addAction(self.tr("Show Loss"))
         self.show_loss_action.triggered.connect(self.show_loss)
         self.table.customContextMenuRequested.connect(self.show_menu)
@@ -249,3 +252,7 @@ class RecordedDataTable(QWidget):
     def show_loss(self):
         record = self.manager.get_selected_record()
         self.sigShowLoss.emit(record)
+
+    def generate_distribution_video(self):
+        record = self.manager.get_selected_record()
+        self.sigGenerateDistributionVideo.emit(record)
