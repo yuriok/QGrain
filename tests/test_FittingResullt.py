@@ -220,7 +220,7 @@ class TestFittingResult(unittest.TestCase):
         fitting_result = self.gen_by_defaluts()
         y1 = fitting_result.fitted_y
         self.fitted_params[0] = 4.2145
-        fitting_result.update(self.algorithm_data, self.fitted_params, self.x_offset)
+        fitting_result.update(self.fitted_params)
         y2 = fitting_result.fitted_y
         self.assertIsNot(y1, y2)
 
