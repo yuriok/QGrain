@@ -1,4 +1,6 @@
+import weakref
 from enum import Enum, unique
+from threading import Lock
 from typing import Callable, Dict, Iterable, List, Tuple
 
 import numpy as np
@@ -354,6 +356,9 @@ def get_param_by_mean(distribution_type: DistributionType, component_number: int
 
 
 class AlgorithmData:
+    __cache = weakref.WeakValueDictionary()
+    __cache_lock = Lock()
+
     def __init__(self, distribution_type: DistributionType, component_number: int):
         check_component_number(component_number)
         self.__distribution_type = distribution_type
@@ -467,6 +472,19 @@ class AlgorithmData:
     def kurtosis(self) -> Callable:
         return self.__kurtosis
 
+    @classmethod
+    def get_algorithm_data(cls, distribution_type: DistributionType,
+                           component_number: int):
+        cls.__cache_lock.acquire()
+        key = (distribution_type, component_number)
+        if key in cls.__cache:
+            data = cls.__cache[key]
+        else:
+            data = AlgorithmData(distribution_type, component_number)
+            cls.__cache[key] = data
+        cls.__cache_lock.release()
+        return data
+
     def process_params(self, fitted_params: Iterable, x_offset: float) -> Tuple[Tuple[Tuple, float]]:
         params_copy = np.array(fitted_params)
         param_count = get_param_count(self.distribution_type)
@@ -477,3 +495,26 @@ class AlgorithmData:
 
     def get_param_by_mean(self, mean_values: Iterable):
         return get_param_by_mean(self.distribution_type, self.component_number, mean_values)
+
+
+if __name__ == "__main__":
+    # test the generating speed of algorithm data
+    import time
+    import sys
+    start_uncached = time.time()
+    data_list_uncached = []
+    for i in range(10000):
+        for component_number in range(3, 11):
+            data = AlgorithmData(DistributionType.GeneralWeibull, component_number)
+            data_list_uncached.append(data)
+    end_uncached = time.time()
+    print("Uncached time spent:", end_uncached-start_uncached, "s")
+
+    start_cached = time.time()
+    data_list_cached = []
+    for i in range(10000):
+        for component_number in range(3, 11):
+            data = AlgorithmData.get_algorithm_data(DistributionType.GeneralWeibull, component_number)
+            data_list_cached.append(data)
+    end_cached = time.time()
+    print("Cached time spent:", end_cached-start_cached, "s")
