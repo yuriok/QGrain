@@ -189,6 +189,7 @@ class MainWindow(QMainWindow):
         self.recorded_data_table.sigRemoveRecords.connect(self.data_manager.remove_data)
         self.recorded_data_table.sigShowDistribution.connect(self.distribution_canvas.show_fitting_result)
         self.recorded_data_table.sigShowLoss.connect(self.loss_canvas.show_fitting_result)
+        self.recorded_data_table.sigGenerateDistributionVideo.connect(self.distribution_canvas.generate_video)
         # Dock menu actions
         self.pca_panel_action.triggered.connect(self.show_pca_panel_dock)
         self.loss_canvas_action.triggered.connect(self.show_loss_canvas_dock)
