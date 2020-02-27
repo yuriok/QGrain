@@ -143,9 +143,9 @@ class DistributionCanvas(Canvas):
 
     def on_fitting_epoch_suceeded(self, result: FittingResult):
         self.show_fitting_result(result)
-        self.export_to_png("./images/distribution_canvas/png/{0} - {1} - {2}.png".format(
+        self.export_pixmap("./images/distribution_canvas/png/{0} - {1} - {2}.png".format(
             result.name, result.distribution_type, result.component_number), pixel_ratio=2.0)
-        self.export_to_svg("./images/distribution_canvas/svg/{0} - {1} - {2}.svg".format(
+        self.export_svg("./images/distribution_canvas/svg/{0} - {1} - {2}.svg".format(
             result.name, result.distribution_type, result.component_number))
 
     def on_single_iteration_finished(self, current_iteration: int, result: FittingResult):
