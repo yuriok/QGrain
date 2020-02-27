@@ -19,22 +19,17 @@ class CancelError(Exception):
 class GUIResolver(QObject, Resolver):
     sigFittingStarted = Signal()
     sigFittingFinished = Signal()
-    sigSingleIterationFinished = Signal(int, FittingResult)
-    sigFittingEpochSucceeded = Signal(FittingResult)
+    sigFittingSucceeded = Signal(FittingResult)
     sigFittingFailed = Signal(str) # emit hint text
     logger = logging.getLogger(name="root.resolvers.GUIResolver")
 
-    def __init__(self, inherit_params=True, emit_iteration=False, time_interval=0.05):
+    def __init__(self, inherit_params=True):
         super().__init__()
         Resolver.__init__(self)
         # settings
         self.expected_params = None
         self.inherit_params = inherit_params
         self.last_succeeded_params = None
-        self.emit_iteration = emit_iteration
-        self.time_interval = time_interval
-
-        self.current_iteration = 0
 
         self.cancel_flag = False
         self.cancel_mutex = QMutex()
@@ -49,15 +44,9 @@ class GUIResolver(QObject, Resolver):
         # clear if type changed
         self.last_succeeded_params = None
 
-    def on_settings_changed(self, kwargs: dict):
-        attrs = dir(self)
-        for setting, value in kwargs.items():
-            # check the existence of that setting
-            if setting in attrs:
-                setattr(self, setting, value)
-            else:
-                raise NotImplementedError(setting)
-            self.logger.info("Setting [%s] have been changed to [%s].", setting, value)
+    def on_inherit_params_changed(self, value: bool):
+        self.inherit_params = value
+        self.logger.info("Setting [%s] have been changed to [%s].", "inherit_params", value)
 
     def on_algorithm_settings_changed(self, settings: dict):
         self.change_settings(**settings)
@@ -75,7 +64,7 @@ class GUIResolver(QObject, Resolver):
         self.logger.error("There is no valid data to fit.")
 
     def on_fitting_started(self):
-        self.current_iteration = 0
+        super().on_fitting_started()
         if self.inherit_params and \
             self.last_succeeded_params is not None and \
             len(self.last_succeeded_params) == len(self.algorithm_data.defaults):
@@ -90,7 +79,6 @@ class GUIResolver(QObject, Resolver):
         self.logger.debug("Fitting progress started.")
 
     def on_fitting_finished(self):
-        self.current_iteration = 0
         self.expected_params = None
         self.sigFittingFinished.emit()
         self.logger.debug("Fitting progress finished.")
@@ -123,12 +111,7 @@ class GUIResolver(QObject, Resolver):
             raise CancelError()
         else:
             self.cancel_mutex.unlock()
-
-        if self.emit_iteration:
-            time.sleep(self.time_interval)
-            fitting_result = self.get_fitting_result(fitted_params)
-            self.sigSingleIterationFinished.emit(self.current_iteration, fitting_result)
-        self.current_iteration += 1
+        super().local_iteration_callback(fitted_params)
 
     def global_iteration_callback(self, fitted_params, function_value, accept):
         pass
@@ -137,7 +120,7 @@ class GUIResolver(QObject, Resolver):
         # record the succeeded params
         self.last_succeeded_params = algorithm_result.x
         self.logger.info("The epoch of fitting has finished, the fitted parameters are: [%s]", algorithm_result.x)
-        self.sigFittingEpochSucceeded.emit(self.get_fitting_result(algorithm_result.x))
+        self.sigFittingSucceeded.emit(self.get_fitting_result(algorithm_result.x))
 
     # call this func by another thread
     # so, lock is necessary

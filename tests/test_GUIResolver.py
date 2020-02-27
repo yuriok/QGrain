@@ -14,7 +14,7 @@ class TestGUIResolver(unittest.TestCase):
         self.resolver = GUIResolver()
         self.resolver.distribution_type = DistributionType.Normal
         self.resolver.component_number = 1
-        self.resolver.sigFittingEpochSucceeded.connect(self.on_fitting_finished)
+        self.resolver.sigFittingSucceeded.connect(self.on_fitting_finished)
         self.fitting_result = None
         x = np.linspace(-10, 10, 201)
         y = norm.pdf(x, 5.45, 2.21)
@@ -42,17 +42,13 @@ class TestGUIResolver(unittest.TestCase):
 
     def test_on_settings_changed(self):
         # valid keys
-        self.resolver.on_settings_changed({"emit_iteration": True})
-        self.assertTrue(self.resolver.emit_iteration)
-        self.resolver.on_settings_changed({"emit_iteration": False})
-        self.assertFalse(self.resolver.emit_iteration)
-        self.resolver.on_settings_changed({"inherit_params": True})
+        self.resolver.on_inherit_params_changed(True)
         self.assertTrue(self.resolver.inherit_params)
-        self.resolver.on_settings_changed({"inherit_params": False})
+        self.resolver.on_inherit_params_changed(False)
         self.assertFalse(self.resolver.inherit_params)
         # invalid keys
         with self.assertRaises(NotImplementedError):
-            self.resolver.on_settings_changed({"some_not_exist_key": True})
+            self.resolver.on_inherit_params_changed({"some_not_exist_key": True})
 
     def test_on_algorithm_settings_changed(self):
         settings = dict(
@@ -69,7 +65,7 @@ class TestGUIResolver(unittest.TestCase):
         self.resolver.try_fit()
 
     def test_inherit_params(self):
-        self.resolver.on_settings_changed({"inherit_params": True})
+        self.resolver.on_inherit_params_changed({"inherit_params": True})
         self.resolver.on_target_data_changed(self.default_sample_data)
         self.resolver.try_fit()
         self.assertIsNotNone(self.resolver.last_succeeded_params)
@@ -83,7 +79,7 @@ class TestGUIResolver(unittest.TestCase):
         self.assertIs(self.resolver.initial_guess, last)
 
     def test_not_inherit_params(self):
-        self.resolver.on_settings_changed({"inherit_params": False})
+        self.resolver.on_inherit_params_changed({"inherit_params": False})
         self.resolver.on_target_data_changed(self.default_sample_data)
         self.resolver.try_fit()
         self.assertIsNotNone(self.resolver.last_succeeded_params)

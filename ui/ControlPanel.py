@@ -17,7 +17,8 @@ class ControlPanel(QWidget):
     sigComponentNumberChanged = Signal(int)
     sigFocusSampleChanged = Signal(int) # index of the sample
     sigDataSettingsChanged = Signal(dict)
-    sigGUIResolverSettingsChanged = Signal(dict)
+    sigObserveIterationChanged = Signal(bool)
+    sigInheritParamsChanged = Signal(bool)
     sigGUIResolverFittingStarted = Signal()
     sigGUIResolverFittingCanceled = Signal()
     sigMultiProcessingFittingStarted = Signal()
@@ -241,15 +242,15 @@ class ControlPanel(QWidget):
 
     def on_show_iteration_changed(self, state: Qt.CheckState):
         if state == Qt.Checked:
-            self.sigGUIResolverSettingsChanged.emit({"emit_iteration": True})
+            self.sigObserveIterationChanged.emit(True)
         else:
-            self.sigGUIResolverSettingsChanged.emit({"emit_iteration": False})
+            self.sigObserveIterationChanged.emit(False)
 
     def on_inherit_params_changed(self, state: Qt.CheckState):
         if state == Qt.Checked:
-            self.sigGUIResolverSettingsChanged.emit({"inherit_params": True})
+            self.sigInheritParamsChanged.emit(True)
         else:
-            self.sigGUIResolverSettingsChanged.emit({"inherit_params": False})
+            self.sigInheritParamsChanged.emit(False)
 
     def on_auto_fit_changed(self, state: Qt.CheckState):
         if state == Qt.Checked:
@@ -291,7 +292,7 @@ class ControlPanel(QWidget):
         self.record_button.setEnabled(enable)
         self.multiprocessing_button.setEnabled(enable)
 
-    def on_fitting_epoch_suceeded(self, result: FittingResult):
+    def on_fitting_suceeded(self, result: FittingResult):
         if self.auto_run_flag and result.has_invalid_value:
             self.logger.warning("The fitting result may be not valid, auto running stoped.")
             self.gui_logger.warning(self.tr("The fitting result may be not valid, auto running stoped."))

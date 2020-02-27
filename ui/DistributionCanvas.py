@@ -3,7 +3,7 @@ from typing import List
 
 import numpy as np
 from PySide2.QtCharts import QtCharts
-from PySide2.QtCore import QMutex, Qt, Signal
+from PySide2.QtCore import QMutex, Qt, QTimer, Signal
 from PySide2.QtGui import QColor, QPen
 
 if __name__ == "__main__":
@@ -28,6 +28,8 @@ class DistributionCanvas(Canvas):
         self.chart.legend().detachFromChart()
         self.chart.legend().setPos(100.0, 60.0)
         self.__infinite_line_mutex = QMutex()
+        self.__iteration_mutex = QMutex()
+        self.__iteration_timer = QTimer()
         # used to check if it's necessary to update the component series and lines
         self.__current_component_number = None
 
@@ -64,6 +66,7 @@ class DistributionCanvas(Canvas):
         self.show_demo(self.axis_x, self.axis_y, x_log=True)
         self.component_series = [] # type: List[QtChart.QLineSeries]
         self.component_infinite_lines = [] # type: List[InfiniteLine]
+        self.observe_iteration_tag = False
 
     def on_component_number_changed(self, component_number: int):
         # use assert because the error must be handled in other place
@@ -94,6 +97,9 @@ class DistributionCanvas(Canvas):
         self.chart.legend().setMinimumSize(150.0, 30*(2+component_number))
         self.__current_component_number = component_number
 
+    def on_observe_iteration_changed(self, value: bool):
+        self.observe_iteration_tag = value
+
     def show_target_distribution(self, sample: SampleData):
         # necessary to stop
         self.stop_demo()
@@ -108,30 +114,17 @@ class DistributionCanvas(Canvas):
         self.axis_x.setRange(sample.classes[0], sample.classes[-1])
         self.axis_y.setRange(0.0, round(np.max(sample.distribution)*1.2, 2))
 
-    def show_fitting_result(self, result: FittingResult, current_iteration=None):
-        # necessary to stop
-        self.stop_demo()
-        # check the component number
-        if self.__current_component_number != result.component_number:
-            self.on_component_number_changed(result.component_number)
-        # update the title
-        if current_iteration is None:
-            self.chart.setTitle(result.name)
-        else:
-            self.chart.setTitle(("{0} "+self.tr("Iteration")+" ({1})").format(
-                result.name, current_iteration))
-        # update target series
-        self.target_series.replace(self.to_points(result.real_x, result.target_y))
+    def __update_components(self, result: FittingResult):
         # update fitted series
         self.fitted_series.replace(self.to_points(result.real_x, result.fitted_y))
         # update component series
-        for i, (component, series, line) in enumerate(zip(
+        for component_index, (component, series, line) in enumerate(zip(
                 result.components,
                 self.component_series,
                 self.component_infinite_lines)):
             series.replace(self.to_points(result.real_x, component.component_y))
             # display the median (modal size) and fraction for users
-            component_name = "C{0}".format(i+1)
+            component_name = "C{0}".format(component_index+1)
             series.setName(component_name + " ({0:.1f} μm, {1:.1%})".format(component.median, component.fraction))
             if np.isnan(component.mean) or np.isinf(component.mean):
                 # if mean is invalid, set the position of this line to initial position
@@ -141,15 +134,51 @@ class DistributionCanvas(Canvas):
         self.axis_x.setRange(result.real_x[0], result.real_x[-1])
         self.axis_y.setRange(0.0, round(np.max(result.target_y)*1.2, 2))
 
-    def on_fitting_epoch_suceeded(self, result: FittingResult):
-        self.show_fitting_result(result)
-        self.export_pixmap("./images/distribution_canvas/png/{0} - {1} - {2}.png".format(
-            result.name, result.distribution_type, result.component_number), pixel_ratio=2.0)
-        self.export_svg("./images/distribution_canvas/svg/{0} - {1} - {2}.svg".format(
-            result.name, result.distribution_type, result.component_number))
+    def show_fitting_result(self, result: FittingResult):
+        # necessary to stop
+        self.stop_demo()
+        success = self.__iteration_mutex.tryLock()
+        if not success:
+            return
+        # update target series
+        self.target_series.replace(self.to_points(result.real_x, result.target_y))
+        # check the component number
+        if self.__current_component_number != result.component_number:
+            self.on_component_number_changed(result.component_number)
 
-    def on_single_iteration_finished(self, current_iteration: int, result: FittingResult):
-        self.show_fitting_result(result, current_iteration=current_iteration)
+        generator = result.history
+        current_iteration = 0
+
+        def closure():
+            try:
+                nonlocal current_iteration
+                result_in_process = next(generator)
+                self.chart.setTitle(("{0} "+self.tr("Iteration")+" ({1})").format(
+                    result.name, current_iteration))
+                self.__update_components(result_in_process)
+                current_iteration += 1
+            except StopIteration:
+                self.__iteration_timer.stop()
+                self.__iteration_timer.timeout.disconnect(closure)
+                self.chart.setTitle(result.name)
+                self.__update_components(result)
+                self.export_pixmap("./images/distribution_canvas/png/{0} - {1} - {2}.png".format(
+                    result.name, result.distribution_type, result.component_number), pixel_ratio=2.0)
+                self.export_svg("./images/distribution_canvas/svg/{0} - {1} - {2}.svg".format(
+                    result.name, result.distribution_type, result.component_number))
+                self.__iteration_mutex.unlock()
+
+        if self.observe_iteration_tag:
+            self.__iteration_timer.timeout.connect(closure)
+            self.__iteration_timer.start(1000//30)
+        else:
+            self.chart.setTitle(result.name)
+            self.__update_components(result)
+            self.export_pixmap("./images/distribution_canvas/png/{0} - {1} - {2}.png".format(
+                result.name, result.distribution_type, result.component_number), pixel_ratio=2.0)
+            self.export_svg("./images/distribution_canvas/svg/{0} - {1} - {2}.svg".format(
+                result.name, result.distribution_type, result.component_number))
+            self.__iteration_mutex.unlock()
 
     def on_infinite_line_moved(self):
         # this method will be called by another object directly

@@ -196,11 +196,17 @@ class ViewDataManager(QObject):
 
         return uuids_and_names_to_remove
 
+    def get_selected_record(self) -> FittingResult:
+        row = self.table.selectedRanges()[0].topRow()
+        return self.records[row-self.TABLE_HEADER_ROWS]
+
 
 class RecordedDataTable(QWidget):
     logger = logging.getLogger("root.ui.RecordedDataTable")
     gui_logger = logging.getLogger("GUI")
     sigRemoveRecords = Signal(list)
+    sigShowDistribution = Signal(FittingResult)
+    sigShowLoss = Signal(FittingResult)
     def __init__(self, parent=None, **kargs):
         super().__init__(parent, **kargs)
         self.init_ui()
@@ -218,6 +224,10 @@ class RecordedDataTable(QWidget):
         self.menu = QMenu(self.table)
         self.remove_action = self.menu.addAction(self.tr("Remove"))
         self.remove_action.triggered.connect(self.remove_selection)
+        self.show_distribution_action = self.menu.addAction(self.tr("Show Distribution"))
+        self.show_distribution_action.triggered.connect(self.show_distribution)
+        self.show_loss_action = self.menu.addAction(self.tr("Show Loss"))
+        self.show_loss_action.triggered.connect(self.show_loss)
         self.table.customContextMenuRequested.connect(self.show_menu)
 
     def show_menu(self, pos):
@@ -231,3 +241,11 @@ class RecordedDataTable(QWidget):
         uuids_and_names = self.manager.remove_selected_records()
         self.logger.debug("The selected records below will be removed: [%s].", uuids_and_names)
         self.sigRemoveRecords.emit(uuids_and_names)
+
+    def show_distribution(self):
+        record = self.manager.get_selected_record()
+        self.sigShowDistribution.emit(record)
+
+    def show_loss(self):
+        record = self.manager.get_selected_record()
+        self.sigShowLoss.emit(record)

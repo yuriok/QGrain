@@ -57,6 +57,7 @@ class DataManager(QObject):
     sigDataLoaded = Signal(SampleDataset)
     sigTargetDataChanged = Signal(SampleData)
     sigDataRecorded = Signal(list) # List[FittingResult]
+    sigShowFittingResult = Signal(FittingResult)
     logger = logging.getLogger("root.data.DataManager")
     gui_logger = logging.getLogger("GUI")
 
@@ -209,7 +210,7 @@ class DataManager(QObject):
         self.sigTargetDataChanged.emit(self.dataset.samples[index])
         self.logger.debug("Focus sample data changed, the data has been emitted.")
 
-    def on_fitting_epoch_suceeded(self, result: FittingResult):
+    def on_fitting_suceeded(self, result: FittingResult):
         self.logger.info("Epoch for sample [%s] has finished, mean squared error is [%E].", result.name, result.mean_squared_error)
         self.current_fitting_result = result
         if self.auto_record_flag:
@@ -220,10 +221,9 @@ class DataManager(QObject):
                 if exec_result == QMessageBox.Discard:
                     self.logger.info("Fitting result of sample [%s] was discarded by user.", result.name)
                     return
-                else:
-                    self.record_current_data()
-            else:
-                self.record_current_data()
+
+            self.record_current_data()
+            self.sigShowFittingResult.emit(result)
 
     def on_multiprocessing_task_finished(self, succeeded_results: Iterable[FittingResult], failed_tasks: Iterable[FittingTask]):
         for fitting_result in succeeded_results:
