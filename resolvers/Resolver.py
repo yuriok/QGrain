@@ -43,6 +43,7 @@ class Resolver:
         # parameters to preprocess the data
         self.start_index = None # type: int
         self.end_index = None # type: int
+        self.fitting_history = None # type: List[np.ndarray]
 
     @property
     def distribution_type(self) -> DistributionType:
@@ -108,7 +109,7 @@ class Resolver:
         pass
 
     def on_fitting_started(self):
-        pass
+        self.fitting_history = []
 
     def on_fitting_finished(self):
         pass
@@ -126,7 +127,7 @@ class Resolver:
         pass
 
     def local_iteration_callback(self, fitted_params: Iterable[float]):
-        pass
+        self.fitting_history.append(fitted_params)
 
     def global_iteration_callback(self, fitted_params: Iterable[float], function_value: float, accept: bool):
         pass
@@ -196,11 +197,13 @@ class Resolver:
             else:
                 raise NotImplementedError(key)
 
-    def get_fitting_result(self, fitted_params: Iterable[float]):
+    def get_fitting_result(self, fitted_params: Iterable[float],
+                           fitting_history: List[np.ndarray] = None):
         result = FittingResult(self.sample_name, self.real_x,
-                                 self.fitting_space_x, self.bin_numbers,
-                                 self.target_y, self.algorithm_data,
-                                 fitted_params, self.x_offset)
+                               self.fitting_space_x, self.bin_numbers,
+                               self.target_y, self.algorithm_data,
+                               fitted_params, self.x_offset,
+                               fitting_history=self.fitting_history if fitting_history is None else fitting_history)
         return result
 
     def try_fit(self):

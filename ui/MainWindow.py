@@ -150,7 +150,9 @@ class MainWindow(QMainWindow):
         self.control_panel.sigComponentNumberChanged.connect(self.distribution_canvas.on_component_number_changed)
         self.control_panel.sigFocusSampleChanged.connect(self.data_manager.on_focus_sample_changed)
         self.control_panel.sigFocusSampleChanged.connect(self.on_focus_sample_changed)
-        self.control_panel.sigGUIResolverSettingsChanged.connect(self.gui_resolver.on_settings_changed)
+        self.control_panel.sigObserveIterationChanged.connect(self.distribution_canvas.on_observe_iteration_changed)
+        self.control_panel.sigObserveIterationChanged.connect(self.loss_canvas.on_observe_iteration_changed)
+        self.control_panel.sigInheritParamsChanged.connect(self.gui_resolver.on_inherit_params_changed)
         self.control_panel.sigGUIResolverFittingStarted.connect(self.gui_resolver.try_fit)
 
         self.control_panel.sigDataSettingsChanged.connect(self.data_manager.on_settings_changed)
@@ -169,16 +171,13 @@ class MainWindow(QMainWindow):
         self.data_manager.sigTargetDataChanged.connect(self.gui_resolver.on_target_data_changed)
         self.data_manager.sigTargetDataChanged.connect(self.distribution_canvas.show_target_distribution)
         self.data_manager.sigDataRecorded.connect(self.recorded_data_table.on_data_recorded)
+        self.data_manager.sigShowFittingResult.connect(self.distribution_canvas.show_fitting_result)
+        self.data_manager.sigShowFittingResult.connect(self.loss_canvas.show_fitting_result)
 
         self.gui_resolver.sigFittingStarted.connect(self.control_panel.on_fitting_started)
         self.gui_resolver.sigFittingFinished.connect(self.control_panel.on_fitting_finished)
-        self.gui_resolver.sigFittingStarted.connect(self.loss_canvas.on_fitting_started)
-        self.gui_resolver.sigFittingFinished.connect(self.loss_canvas.on_fitting_finished)
-        self.gui_resolver.sigFittingEpochSucceeded.connect(self.control_panel.on_fitting_epoch_suceeded)
-        self.gui_resolver.sigFittingEpochSucceeded.connect(self.distribution_canvas.on_fitting_epoch_suceeded)
-        self.gui_resolver.sigFittingEpochSucceeded.connect(self.data_manager.on_fitting_epoch_suceeded)
-        self.gui_resolver.sigSingleIterationFinished.connect(self.loss_canvas.on_single_iteration_finished)
-        self.gui_resolver.sigSingleIterationFinished.connect(self.distribution_canvas.on_single_iteration_finished)
+        self.gui_resolver.sigFittingSucceeded.connect(self.control_panel.on_fitting_suceeded)
+        self.gui_resolver.sigFittingSucceeded.connect(self.data_manager.on_fitting_suceeded)
         self.gui_resolver.sigFittingFailed.connect(self.control_panel.on_fitting_failed)
 
         self.multiprocessing_resolver.sigTaskInitialized.connect(self.task_window.on_task_initialized)
@@ -188,7 +187,8 @@ class MainWindow(QMainWindow):
 
         self.raw_data_table.cellClicked.connect(self.on_data_item_clicked)
         self.recorded_data_table.sigRemoveRecords.connect(self.data_manager.remove_data)
-
+        self.recorded_data_table.sigShowDistribution.connect(self.distribution_canvas.show_fitting_result)
+        self.recorded_data_table.sigShowLoss.connect(self.loss_canvas.show_fitting_result)
         # Dock menu actions
         self.pca_panel_action.triggered.connect(self.show_pca_panel_dock)
         self.loss_canvas_action.triggered.connect(self.show_loss_canvas_dock)
