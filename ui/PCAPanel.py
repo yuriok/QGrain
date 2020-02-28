@@ -25,7 +25,7 @@ class PCAPanel(Canvas):
     gui_logger = logging.getLogger("GUI")
 
     def __init__(self, parent=None, is_dark=True):
-        super().__init__(parent)
+        super().__init__("PCAPanel", parent=parent)
         self.init_chart()
         self.set_theme_mode(is_dark)
         self.setup_chart_style()

@@ -18,16 +18,13 @@ if __name__ == "__main__":
     import os, sys
     sys.path.append(os.getcwd())
 
-from ui.ChartExportDialog import ChartExportDialog
+from ui.ChartExportingDialog import ChartExportingDialog
 
 
 class Canvas(QWidget):
-    def __init__(self, parent: Optional[QWidget] = None):
+    def __init__(self, setting_group: str, parent: Optional[QWidget] = None):
         super().__init__(parent=parent)
-        self.init_ui()
         self.setAttribute(Qt.WA_StyledBackground, True)
-
-    def init_ui(self):
         self.main_layout = QGridLayout(self)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.chart = QtCharts.QChart()
@@ -35,7 +32,7 @@ class Canvas(QWidget):
         self.chart_view.setChart(self.chart)
         self.main_layout.addWidget(self.chart_view)
 
-        self.export_dialog = ChartExportDialog(self)
+        self.export_dialog = ChartExportingDialog(self, setting_group)
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.edit_action = QAction(self.tr("Edit"))
         self.addAction(self.edit_action)
@@ -152,13 +149,13 @@ class Canvas(QWidget):
         self.chart_view.restoreGeometry(geometry)
 
     def on_export_clicked(self):
-        self.export_dialog.update_preview()
+        self.export_dialog.update()
         self.export_dialog.exec_()
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    canvs = Canvas()
+    canvs = Canvas("Canvas")
     canvs.chart.legend().hide()
     axisX = QtCharts.QValueAxis()
     axisY = QtCharts.QValueAxis()

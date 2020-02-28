@@ -18,7 +18,7 @@ class AllDistributionCanvas(Canvas):
     gui_logger = logging.getLogger("GUI")
 
     def __init__(self, parent=None, is_dark=True):
-        super().__init__(parent)
+        super().__init__("AllDistributionCanvas", parent=parent)
         self.set_theme_mode(is_dark)
         self.init_chart()
         self.setup_chart_style()
