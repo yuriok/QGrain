@@ -21,7 +21,8 @@ class ChartExportingDialog(QDialog):
     def init_ui(self):
         self.main_layout = QGridLayout(self)
         self.preview_label = QLabel()
-        self.preview_label.setFixedSize(400, 300)
+        self.preview_label.setFixedHeight(400)
+        self.preview_label.setAlignment(Qt.AlignCenter)
         self.main_layout.addWidget(self.preview_label, 0, 0, 1, 4)
         self.int_validator = QIntValidator()
         self.int_validator.setRange(100, 10000)
@@ -124,10 +125,10 @@ class ChartExportingDialog(QDialog):
 
         pixmap = self.canvas.get_pixmap(width=self.width, height=self.height,
                                         pixel_ratio=self.pixel_ratio)
-        preview_width = self.preview_label.width()
-        preview_height = self.preview_label.height()
-        preview_pixel_ratio = min(self.width*self.pixel_ratio/preview_width,
-                                  self.height*self.pixel_ratio/preview_height)
+
+        preview_width = 400
+        preview_height = preview_width * self.height / self.width
+        preview_pixel_ratio = self.width * self.pixel_ratio / preview_width
         pixmap.setDevicePixelRatio(preview_pixel_ratio)
         self.preview_label.setPixmap(pixmap)
 
