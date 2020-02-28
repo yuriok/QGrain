@@ -198,9 +198,9 @@ class DistributionCanvas(Canvas):
         # check the component number
         if self.__current_component_number != result.component_number:
             self.on_component_number_changed(result.component_number)
-        width = 800
-        height = 600
-        pixel_ratio = 1.0
+        width = self.export_dialog.width
+        height = self.export_dialog.height
+        pixel_ratio = self.export_dialog.pixel_ratio
         video_size = (int(width*pixel_ratio), int(height*pixel_ratio))
         fps = 30.0
         desktop_path = QStandardPaths.standardLocations(QStandardPaths.DesktopLocation)[0]
