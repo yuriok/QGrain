@@ -1,4 +1,4 @@
-QLabel, QPushButton, QCheckBox, QRadioButton, QMenu, QMenuBar, QDockWidget, QLineEdit, QComboBox, QTabBar::tab {font-family: Tahoma, Microsoft YaHei, Arial, sans-serif;}
+QLabel, QPushButton, QCheckBox, QRadioButton, QMenu, QMenuBar, QDockWidget, QLineEdit, QComboBox, QTabBar::tab, QTextBrowser {font-family: Tahoma, Microsoft YaHei, Arial, sans-serif;}
 
 /* QMenu {font: italic;} */
 
