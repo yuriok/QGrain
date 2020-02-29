@@ -175,9 +175,6 @@ class PCAPanel(Canvas):
         self.inverse_transformed = [get_split_distributions(i) for i in range(dimension_number)]
 
         self.logger.debug("PCA algorithm performed.")
-        # export chart to file
-        self.export_pixmap("./images/pca_panel.png", pixel_ratio=2.0)
-        self.export_svg("./images/pca_panel.svg")
 
     def on_save_clicked(self):
         if self.transformed is None or self.inverse_transformed is None:
