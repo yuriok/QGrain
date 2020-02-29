@@ -34,8 +34,8 @@ class Canvas(QWidget):
 
         self.export_dialog = ChartExportingDialog(self, setting_group)
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
-        self.edit_action = QAction(self.tr("Edit"))
-        self.addAction(self.edit_action)
+        # self.edit_action = QAction(self.tr("Edit"))
+        # self.addAction(self.edit_action)
         self.export_action = QAction(self.tr("Export"))
         self.export_action.triggered.connect(self.on_export_clicked)
         self.addAction(self.export_action)
