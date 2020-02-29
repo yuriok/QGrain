@@ -21,7 +21,7 @@ def getdirsize(dir):
    return size
 
 def create_necessary_folders():
-    necessary_folders = ("./logs/")
+    necessary_folders = ("./logs/",)
     for folder in necessary_folders:
         if not os.path.exists(folder):
             os.mkdir(folder)
