@@ -29,7 +29,7 @@ class PCAPanel(Canvas):
         self.init_chart()
         self.set_theme_mode(is_dark)
         self.setup_chart_style()
-
+        self.init_ui()
         self.chart.legend().detachFromChart()
         self.chart.legend().setPos(100.0, 60.0)
 
@@ -47,8 +47,8 @@ class PCAPanel(Canvas):
         self.transformed = None
         self.inverse_transformed = None
 
+
     def init_ui(self):
-        super().init_ui()
         # use anotehr widget to pack other controls
         self.control_container = QWidget(self)
         self.control_layout = QGridLayout(self.control_container)

@@ -111,3 +111,4 @@ venv.bak/
 /images
 settings/ui.ini
 /docs/*/*.pdf
+*.ini
