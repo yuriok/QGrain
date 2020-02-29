@@ -172,10 +172,6 @@ class DistributionCanvas(Canvas):
                 self.__iteration_timer.timeout.disconnect(closure)
                 self.chart.setTitle(result.name)
                 self.__update_components(result)
-                self.export_pixmap("./images/distribution_canvas/png/{0} - {1} - {2}.png".format(
-                    result.name, result.distribution_type, result.component_number), pixel_ratio=2.0)
-                self.export_svg("./images/distribution_canvas/svg/{0} - {1} - {2}.svg".format(
-                    result.name, result.distribution_type, result.component_number))
                 self.__iteration_mutex.unlock()
 
         if self.observe_iteration_tag:
@@ -184,10 +180,6 @@ class DistributionCanvas(Canvas):
         else:
             self.chart.setTitle(result.name)
             self.__update_components(result)
-            self.export_pixmap("./images/distribution_canvas/png/{0} - {1} - {2}.png".format(
-                result.name, result.distribution_type, result.component_number), pixel_ratio=2.0)
-            self.export_svg("./images/distribution_canvas/svg/{0} - {1} - {2}.svg".format(
-                result.name, result.distribution_type, result.component_number))
             self.__iteration_mutex.unlock()
 
     def generate_video(self, result: FittingResult):

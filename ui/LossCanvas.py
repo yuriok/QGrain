@@ -71,10 +71,6 @@ class LossCanvas(Canvas):
         self.axis_x.setRange(0, result.iteration_number-1)
         self.axis_y.setRange(min_loss, max_loss)
         self.chart.setTitle(result.name)
-        self.export_pixmap("./images/loss_canvas/png/{0} - {1} - {2}.png".format(
-            result.name, result.distribution_type, result.component_number))
-        self.export_svg("./images/loss_canvas/svg/{0} - {1} - {2}.svg".format(
-            result.name, result.distribution_type, result.component_number))
 
 
 if __name__ == "__main__":
