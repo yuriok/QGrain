@@ -197,8 +197,10 @@ class ViewDataManager(QObject):
         return uuids_and_names_to_remove
 
     def get_selected_record(self) -> FittingResult:
-        row = self.table.selectedRanges()[0].topRow()
-        return self.records[row-self.TABLE_HEADER_ROWS]
+        ranges = self.table.selectedRanges()
+        if len(ranges) != 0:
+            row = ranges[0].topRow()
+            return self.records[row-self.TABLE_HEADER_ROWS]
 
 
 class RecordedDataTable(QWidget):
@@ -247,12 +249,15 @@ class RecordedDataTable(QWidget):
 
     def show_distribution(self):
         record = self.manager.get_selected_record()
-        self.sigShowDistribution.emit(record)
+        if record is not None:
+            self.sigShowDistribution.emit(record)
 
     def show_loss(self):
         record = self.manager.get_selected_record()
-        self.sigShowLoss.emit(record)
+        if record is not None:
+            self.sigShowLoss.emit(record)
 
     def generate_distribution_video(self):
         record = self.manager.get_selected_record()
-        self.sigGenerateDistributionVideo.emit(record)
+        if record is not None:
+            self.sigGenerateDistributionVideo.emit(record)
