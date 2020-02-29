@@ -242,7 +242,7 @@ class MainWindow(QMainWindow):
         self.tabifyDockWidget(self.pca_panel_dock, self.all_distribution_canvas_dock)
         self.tabifyDockWidget(self.pca_panel_dock, self.distribution_canvas_dock)
 
-        self.resizeDocks((self.pca_panel_dock, self.control_panel_dock), (self.height()*0.6, self.height()*0.4), Qt.Orientation.Vertical)
+        self.resizeDocks((self.pca_panel_dock, self.control_panel_dock), (self.height()*0.65, self.height()*0.35), Qt.Orientation.Vertical)
         self.resizeDocks((self.pca_panel_dock, self.control_panel_dock, self.raw_data_dock, self.recorded_data_dock), (self.width()*0.5, self.width()*0.5, self.width()*0.25, self.width()*0.25), Qt.Orientation.Horizontal)
 
     def show_pca_panel_dock(self):
