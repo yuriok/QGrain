@@ -13,8 +13,6 @@ from ui.MainWindow import GUILogHandler, MainWindow
 
 QGRAIN_VERSION = "0.2.7"
 
-# 1 GB
-IMAGES_FOLDER_LIMIT_SIZE = 1024 * 1024 * 1024
 
 def getdirsize(dir):
    size = 0
@@ -22,16 +20,8 @@ def getdirsize(dir):
       size += sum([os.path.getsize(os.path.join(root, name)) for name in files])
    return size
 
-# clean the images folder if it's too large
-def check_images_folder():
-    images_size = getdirsize("./images/")
-    if images_size > IMAGES_FOLDER_LIMIT_SIZE:
-        shutil.rmtree("./images/", ignore_errors=True)
-
 def create_necessary_folders():
-    necessary_folders = ("./logs/", "./images/",
-                         "./images/distribution_canvas", "./images/distribution_canvas/png", "./images/distribution_canvas/svg",
-                         "./images/loss_canvas", "./images/loss_canvas/png", "./images/loss_canvas/svg")
+    necessary_folders = ("./logs/")
     for folder in necessary_folders:
         if not os.path.exists(folder):
             os.mkdir(folder)
