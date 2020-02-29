@@ -10,23 +10,12 @@ from ui.DataSetting import DataSetting
 
 
 class SettingWindow(QMainWindow):
-    sigSaveSettings = Signal(QSettings)
-    sigRestoreSettings = Signal(QSettings)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.settings = QSettings("./settings/qgrain.ini", QSettings.Format.IniFormat)
         self.init_ui()
         # self.setWindowFlags(Qt.Drawer | Qt.WindowStaysOnTopHint)
         self.setWindowFlags(Qt.Drawer)
         self.setWindowTitle(self.tr("Settings"))
-        self.sigRestoreSettings.connect(self.data_setting.restore_settings)
-        self.sigRestoreSettings.connect(self.algorithm_setting.restore_settings)
-        self.sigRestoreSettings.connect(self.app_setting.restore_settings)
-        self.sigSaveSettings.connect(self.data_setting.save_settings)
-        self.sigSaveSettings.connect(self.algorithm_setting.save_settings)
-        self.sigSaveSettings.connect(self.app_setting.save_settings)
-        self.restore_button.clicked.connect(self.on_restore_clicked)
-        self.save_button.clicked.connect(self.on_save_clicked)
 
     def init_ui(self):
         self.central_widget = QWidget(self)
@@ -38,17 +27,6 @@ class SettingWindow(QMainWindow):
         self.main_layout.addWidget(self.algorithm_setting, 1, 0, 1, 2)
         self.app_setting = AppSetting()
         self.main_layout.addWidget(self.app_setting, 2, 0, 1, 2)
-        self.restore_button = QPushButton(self.tr("Restore"))
-        self.save_button = QPushButton(self.tr("Save"))
-        self.main_layout.addWidget(self.restore_button, 3, 0)
-        self.main_layout.addWidget(self.save_button, 3, 1)
 
     def setup_all(self):
-        self.sigRestoreSettings.emit(self.settings)
-        self.sigSaveSettings.emit(self.settings)
-
-    def on_restore_clicked(self):
-        self.sigRestoreSettings.emit(self.settings)
-
-    def on_save_clicked(self):
-        self.sigSaveSettings.emit(self.settings)
+        pass

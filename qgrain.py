@@ -37,16 +37,16 @@ def create_necessary_folders():
             os.mkdir(folder)
 
 def get_language():
-    settings = QSettings("./settings/qgrain.ini", QSettings.Format.IniFormat)
+    settings = QSettings("./settings/QGrain.ini", QSettings.Format.IniFormat)
     settings.beginGroup("app")
-    lang = settings.value("language")
+    lang = settings.value("language", defaultValue="en", type=str)
     settings.endGroup()
     return lang
 
 def get_theme():
-    settings = QSettings("./settings/qgrain.ini", QSettings.Format.IniFormat)
+    settings = QSettings("./settings/QGrain.ini", QSettings.Format.IniFormat)
     settings.beginGroup("app")
-    theme = settings.value("theme")
+    theme = settings.value("theme", defaultValue="MaterialDark", type=str)
     settings.endGroup()
     return theme
 
