@@ -62,6 +62,7 @@ class AllDistributionCanvas(Canvas):
 
 
 if __name__ == "__main__":
+    import sys
     from PySide2.QtWidgets import QApplication
     app = QApplication(sys.argv)
     canvas = AllDistributionCanvas(is_dark=False)
