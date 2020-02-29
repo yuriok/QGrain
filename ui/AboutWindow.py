@@ -18,7 +18,7 @@ class AboutWindow(QMainWindow):
 
         self.layout.addWidget(self.text, 0, 0)
         self.setWindowFlags(Qt.Drawer)
-        self.text.setSource("./about.md")
+        self.text.setSource("./settings/about.md")
         self.text.setOpenExternalLinks(True)
 
     def closeEvent(self, e):
