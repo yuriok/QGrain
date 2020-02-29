@@ -3,6 +3,7 @@ SOURCES = ./ui/AboutWindow.py \
         ./ui/AllDistributionCanvas.py \
         ./ui/AppSetting.py \
         ./ui/Canvas.py \
+        ./ui/ChartExportingDialog.py \
         ./ui/ControlPanel.py \
         ./ui/DataManager.py \
         ./ui/DataSetting.py \
