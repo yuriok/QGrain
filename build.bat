@@ -22,6 +22,8 @@ xcopy /IYE %USERPROFILE%\Desktop\QGrain\settings %USERPROFILE%\Desktop\QGrain\di
 xcopy /IYE %USERPROFILE%\Desktop\QGrain\samples %USERPROFILE%\Desktop\QGrain\dist\QGrain\samples && ^
 copy %USERPROFILE%\Desktop\QGrain\LICENSE.rtf %USERPROFILE%\Desktop\QGrain\dist\QGrain\ && ^
 copy %USERPROFILE%\Desktop\QGrain\docs\tutorials\document.pdf %USERPROFILE%\Desktop\QGrain\dist\QGrain\document.pdf && ^
+del %USERPROFILE%\Desktop\QGrain\dist\QGrain\settings\chart_exporting.ini && ^
+del %USERPROFILE%\Desktop\QGrain\dist\QGrain\settings\QGrain.ini && ^
 del %USERPROFILE%\Desktop\QGrain\dist\QGrain\settings\ui.ini && ^
 echo 6. back to desktop directory && ^
 cd %USERPROFILE%\Desktop\QGrain && ^
