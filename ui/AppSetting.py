@@ -15,6 +15,8 @@ class AppSetting(QWidget):
                               ("Elegant Dark", "ElegantDark"),
                               ("Material Dark", "MaterialDark"),
                               ("Ubuntu", "Ubuntu")]
+        self.settings = QSettings("./settings/QGrain.ini", QSettings.Format.IniFormat)
+        self.settings.beginGroup("app")
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.init_ui()
 
@@ -35,26 +37,28 @@ class AppSetting(QWidget):
         self.main_layout.addWidget(self.theme_label, 2, 0)
         self.main_layout.addWidget(self.theme_combo_box, 2, 1)
 
-    def save_settings(self, settings: QSettings):
-        settings.beginGroup("app")
-        _, lang = self.language_options[self.language_combo_box.currentIndex()]
-        settings.setValue("language", lang)
-        self.logger.info("Language has been changed to [%s].", lang)
-        _, theme = self.theme_options[self.theme_combo_box.currentIndex()]
-        settings.setValue("theme", theme)
-        self.logger.info("Theme has been changed to [%s].", theme)
-        settings.endGroup()
+        self.language_combo_box.currentIndexChanged.connect(self.on_language_changed)
+        self.theme_combo_box.currentIndexChanged.connect(self.on_theme_changed)
+        self.restore()
 
-    def restore_settings(self, settings: QSettings):
-        settings.beginGroup("app")
-        language = settings.value("language")
+    def on_language_changed(self, index: int):
+        _, lang = self.language_options[index]
+        self.settings.setValue("language", lang)
+        self.logger.info("Language has been changed to [%s].", lang)
+
+    def on_theme_changed(self, index: int):
+        _, theme = self.theme_options[index]
+        self.settings.setValue("theme", theme)
+        self.logger.info("Theme has been changed to [%s].", theme)
+
+    def restore(self):
+        language = self.settings.value("language", defaultValue="en", type=str)
         for i, (_, language_value) in enumerate(self.language_options):
             if language == language_value:
                 self.language_combo_box.setCurrentIndex(i)
                 break
-        theme = settings.value("theme")
+        theme = self.settings.value("theme", defaultValue="MaterialDark", type=str)
         for i, (_, theme_value) in enumerate(self.theme_options):
             if theme == theme_value:
                 self.theme_combo_box.setCurrentIndex(i)
                 break
-        settings.endGroup()

@@ -14,6 +14,8 @@ class AlgorithmSetting(QWidget):
         super().__init__()
         self.msg_box = QMessageBox(self)
         self.msg_box.setWindowFlags(Qt.Drawer)
+        self.settings = QSettings("./settings/QGrain.ini", QSettings.Format.IniFormat)
+        self.settings.beginGroup("algorithm")
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.init_ui()
 
@@ -77,8 +79,17 @@ class AlgorithmSetting(QWidget):
         self.final_maxiter_edit.setValidator(self.int_validator)
         self.main_layout.addWidget(self.final_maxiter_edit, 7, 1)
 
-    def save_settings(self, settings: QSettings):
-        settings.beginGroup("algorithm")
+        self.global_maxiter_edit.textChanged.connect(self.on_settings_changed)
+        self.global_success_iter_edit.textChanged.connect(self.on_settings_changed)
+        self.global_stepsize_edit.textChanged.connect(self.on_settings_changed)
+        self.minimizer_tolerance_level_edit.textChanged.connect(self.on_settings_changed)
+        self.minimizer_maxiter_edit.textChanged.connect(self.on_settings_changed)
+        self.final_tolerance_level_edit.textChanged.connect(self.on_settings_changed)
+        self.final_maxiter_edit.textChanged.connect(self.on_settings_changed)
+
+        self.restore()
+
+    def on_settings_changed(self):
         global_optimization_maxiter = self.global_maxiter_edit.text()
         global_optimization_success_iter = self.global_success_iter_edit.text()
         global_optimization_stepsize = self.global_stepsize_edit.text()
@@ -86,13 +97,6 @@ class AlgorithmSetting(QWidget):
         minimizer_maxiter = self.minimizer_maxiter_edit.text()
         final_tolerance_level = self.final_tolerance_level_edit.text()
         final_maxiter = self.final_maxiter_edit.text()
-        settings.setValue("global_optimization_maxiter", global_optimization_maxiter)
-        settings.setValue("global_optimization_success_iter", global_optimization_success_iter)
-        settings.setValue("global_optimization_stepsize", global_optimization_stepsize)
-        settings.setValue("minimizer_tolerance_level", minimizer_tolerance_level)
-        settings.setValue("minimizer_maxiter", minimizer_maxiter)
-        settings.setValue("final_tolerance_level", final_tolerance_level)
-        settings.setValue("final_maxiter", final_maxiter)
 
         try:
             signal_data = dict(
@@ -105,36 +109,22 @@ class AlgorithmSetting(QWidget):
                 final_maxiter=int(final_maxiter))
 
             self.sigAlgorithmSettingChanged.emit(signal_data)
-
         except ValueError:
-            self.logger.exception("Unknown exception raised, maybe the `QLineEdit` widget has not a valid `QValidator`.", stack_info=True)
-            self.gui_logger.error(self.tr("Unknown exception raised. Settings of data loading did not be saved."))
-            # this exception raise when the `str` values can not be converted to int
-            # that means the `ini` file maybe modified incorrectly
-            self.msg_box.setWindowTitle(self.tr("Error"))
-            self.msg_box.setText(self.tr("Unknown exception raised. Settings of data loading did not be saved."))
-            self.msg_box.exec_()
-        finally:
-            settings.endGroup()
+            return
 
-    def restore_settings(self, settings: QSettings):
-        settings.beginGroup("algorithm")
-        try:
-            self.global_maxiter_edit.setText(settings.value("global_optimization_maxiter"))
-            self.global_success_iter_edit.setText(settings.value("global_optimization_success_iter"))
-            self.global_stepsize_edit.setText(settings.value("global_optimization_stepsize"))
-            self.minimizer_tolerance_level_edit.setText(settings.value("minimizer_tolerance_level"))
-            self.minimizer_maxiter_edit.setText(settings.value("minimizer_maxiter"))
-            self.final_tolerance_level_edit.setText(settings.value("final_tolerance_level"))
-            self.final_maxiter_edit.setText(settings.value("final_maxiter"))
+        self.settings.setValue("global_optimization_maxiter", global_optimization_maxiter)
+        self.settings.setValue("global_optimization_success_iter", global_optimization_success_iter)
+        self.settings.setValue("global_optimization_stepsize", global_optimization_stepsize)
+        self.settings.setValue("minimizer_tolerance_level", minimizer_tolerance_level)
+        self.settings.setValue("minimizer_maxiter", minimizer_maxiter)
+        self.settings.setValue("final_tolerance_level", final_tolerance_level)
+        self.settings.setValue("final_maxiter", final_maxiter)
 
-        except Exception:
-            self.logger.exception("Unknown exception occurred. Maybe the type of values which were set to `QSettings` is not `str`.", stack_info=True)
-            self.gui_logger.error(self.tr("Unknown exception raised. Settings of data loading did not be restored."))
-            # this exception raise when the values are not `str`
-            # that means there are some bugs in the set progress
-            self.msg_box.setWindowTitle(self.tr("Error"))
-            self.msg_box.setText(self.tr("Unknown exception raised. Settings of data loading did not be restored."))
-            self.msg_box.exec_()
-        finally:
-            settings.endGroup()
+    def restore(self):
+        self.global_maxiter_edit.setText(self.settings.value("global_optimization_maxiter", defaultValue="100"))
+        self.global_success_iter_edit.setText(self.settings.value("global_optimization_success_iter", defaultValue="3"))
+        self.global_stepsize_edit.setText(self.settings.value("global_optimization_stepsize", defaultValue="1.0"))
+        self.minimizer_tolerance_level_edit.setText(self.settings.value("minimizer_tolerance_level", defaultValue="8"))
+        self.minimizer_maxiter_edit.setText(self.settings.value("minimizer_maxiter", defaultValue="500"))
+        self.final_tolerance_level_edit.setText(self.settings.value("final_tolerance_level", defaultValue="100"))
+        self.final_maxiter_edit.setText(self.settings.value("final_maxiter", defaultValue="1000"))
