@@ -1,3 +1,3 @@
-coverage run -m unittest discover ./tests
+coverage run -m pytest
 coverage report -i
 coverage html -i
