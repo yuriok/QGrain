@@ -13,6 +13,6 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     entry_points = {
-        'console_scripts': ['qgrain=QGrain.main:exec_qgrain'],
+        'console_scripts': ['qgrain=QGrain.main:main'],
     }
 )

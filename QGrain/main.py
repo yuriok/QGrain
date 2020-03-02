@@ -1,4 +1,4 @@
-
+__all__ = ["QGRAIN_VERSION", "main"]
 
 import logging
 import os
@@ -79,7 +79,7 @@ def setup_logging(main_window: MainWindow):
     logging.getLogger().addHandler(file_handler)
     logging.getLogger("GUI").addHandler(gui_handler)
 
-def main():
+def exec_qgrain():
     create_necessary_folders()
     app = QApplication(sys.argv)
     logo = QPixmap(os.path.join(QGRAIN_ROOT_PATH, "settings", "icons", "splash_logo.png"))
@@ -97,11 +97,11 @@ def main():
     splash.finish(main_window)
     sys.exit(app.exec_())
 
-def exec_qgrain():
+def main():
     import multiprocessing
     multiprocessing.set_start_method('spawn', True)
     freeze_support()
-    main()
+    exec_qgrain()
 
 if __name__ == "__main__":
-    exec_qgrain()
+    main()
