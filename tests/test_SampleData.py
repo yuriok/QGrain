@@ -4,8 +4,7 @@ import unittest
 
 import numpy as np
 
-sys.path.append(os.getcwd())
-from models.SampleData import *
+from QGrain.models.SampleData import *
 
 
 # the properties should be read-only to avoid the modification by mistake

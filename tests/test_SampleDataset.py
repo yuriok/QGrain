@@ -4,14 +4,13 @@ import unittest
 
 import numpy as np
 
-sys.path.append(os.getcwd())
-from models.SampleDataset import *
+from QGrain.models.SampleDataset import *
 
 
 class TestIsCremental(unittest.TestCase):
     def setUp(self):
         self.dataset = SampleDataset()
-    
+
     def tearDown(self):
         self.dataset = None
 
@@ -46,13 +45,13 @@ class TestIsCremental(unittest.TestCase):
 class TestValidateClasses(unittest.TestCase):
     def setUp(self):
         self.dataset = SampleDataset()
-    
+
     def tearDown(self):
         self.dataset = None
 
     def test_valid(self):
         self.dataset.validate_classes(np.linspace(0.1, 10, 100, dtype=np.float64))
-    
+
     def test_none(self):
         with self.assertRaises(AssertionError):
             self.dataset.validate_classes(None)
@@ -68,7 +67,7 @@ class TestValidateClasses(unittest.TestCase):
     def test_length_zero(self):
         with self.assertRaises(ArrayEmptyError):
             self.dataset.validate_classes(np.ones((0,), dtype=np.float64))
-    
+
     def test_has_nan(self):
         with self.assertRaises(NaNError):
             classes = np.linspace(0.1, 10, 100, dtype=np.float64)
@@ -83,7 +82,7 @@ class TestValidateClasses(unittest.TestCase):
 class TestValidateSampleName(unittest.TestCase):
     def setUp(self):
         self.dataset = SampleDataset()
-    
+
     def tearDown(self):
         self.dataset = None
 
@@ -106,13 +105,13 @@ class TestValidateSampleName(unittest.TestCase):
 class TestValidateDistribution(unittest.TestCase):
     def setUp(self):
         self.dataset = SampleDataset()
-    
+
     def tearDown(self):
         self.dataset = None
 
     def test_valid(self):
         self.dataset.validate_distribution(np.ones((100,), dtype=np.float64))
-    
+
     def test_none(self):
         with self.assertRaises(AssertionError):
             self.dataset.validate_distribution(None)
@@ -128,7 +127,7 @@ class TestValidateDistribution(unittest.TestCase):
     def test_length_zero(self):
         with self.assertRaises(ArrayEmptyError):
             self.dataset.validate_distribution(np.ones((0,)))
-    
+
     def test_has_nan(self):
         with self.assertRaises(NaNError):
             distribution = np.ones((100,), dtype=np.float64)
@@ -143,7 +142,7 @@ class TestValidateDistribution(unittest.TestCase):
 class TestAddBatch(unittest.TestCase):
     def setUp(self):
         self.dataset = SampleDataset()
-    
+
     def tearDown(self):
         self.dataset = None
 
