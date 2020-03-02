@@ -13,7 +13,7 @@ from PySide2.QtWidgets import QApplication, QSplashScreen
 
 from QGrain.ui.MainWindow import GUILogHandler, MainWindow
 
-QGRAIN_VERSION = "0.2.7"
+QGRAIN_VERSION = "0.2.7.1"
 QGRAIN_ROOT_PATH = os.path.dirname(__file__)
 
 
