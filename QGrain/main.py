@@ -1,3 +1,5 @@
+
+
 import logging
 import os
 import shutil
@@ -95,8 +97,11 @@ def main():
     splash.finish(main_window)
     sys.exit(app.exec_())
 
-if __name__ == "__main__":
+def exec_qgrain():
     import multiprocessing
     multiprocessing.set_start_method('spawn', True)
     freeze_support()
     main()
+
+if __name__ == "__main__":
+    exec_qgrain()
