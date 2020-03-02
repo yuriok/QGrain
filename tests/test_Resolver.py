@@ -1,13 +1,14 @@
-import types
 import os
 import sys
+import types
 import unittest
 
 import numpy as np
 from scipy.stats import norm
 
-sys.path.append(os.getcwd())
-from resolvers.Resolver import *
+from QGrain.algorithms import DistributionType
+from QGrain.models.SampleData import SampleData
+from QGrain.resolvers.Resolver import *
 
 
 exec_flag = False

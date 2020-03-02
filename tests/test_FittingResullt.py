@@ -4,8 +4,8 @@ import unittest
 
 import numpy as np
 
-sys.path.append(os.getcwd())
-from models.FittingResult import *
+from QGrain.algorithms import *
+from QGrain.models.FittingResult import *
 
 
 class TestComponentFittingResult(unittest.TestCase):

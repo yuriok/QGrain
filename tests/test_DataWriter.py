@@ -1,15 +1,18 @@
 import os
 import sys
+import types
 import unittest
+from uuid import uuid4
 
 import numpy as np
-from scipy.stats import norm
 import xlrd
+from scipy.stats import norm
 
-sys.path.append(os.getcwd())
-from models.DataWriter import *
-from models.SampleData import SampleData
-from resolvers.Resolver import Resolver
+from QGrain.algorithms import DistributionType
+from QGrain.models.DataLoader import FileType
+from QGrain.models.DataWriter import *
+from QGrain.models.SampleData import SampleData
+from QGrain.resolvers.Resolver import Resolver
 
 
 class TestColumnToChar(unittest.TestCase):
@@ -35,8 +38,6 @@ class TestToCellName(unittest.TestCase):
 
 global fitting_result
 fitting_result = None
-import types
-from uuid import uuid4
 
 def success_hook(self, algorithm_result):
     global fitting_result

@@ -1,15 +1,17 @@
+import csv
 import os
 import sys
 import unittest
-
-import numpy as np
-
-sys.path.append(os.getcwd())
-from models.DataLoader import *
+from typing import Iterable
 from uuid import uuid4
 
-import xlwt
+import numpy as np
 import xlsxwriter
+import xlwt
+
+from QGrain.models.DataLayoutSetting import *
+from QGrain.models.DataLoader import *
+
 
 class TestProcessRawData(unittest.TestCase):
     def setUp(self):
