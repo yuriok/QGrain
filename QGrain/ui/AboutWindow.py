@@ -1,6 +1,12 @@
-from PySide2.QtCore import Qt
+__all__ = ["AboutWindow"]
+
+import os
+
+from PySide2.QtCore import Qt, QUrl
 from PySide2.QtWidgets import (QGridLayout, QMainWindow, QTextBrowser,
                                QTextEdit, QWidget)
+
+QGRAIN_ROOT_PATH = os.path.dirname(os.path.dirname(__file__))
 
 
 class AboutWindow(QMainWindow):
@@ -17,7 +23,8 @@ class AboutWindow(QMainWindow):
         self.text = QTextBrowser()
         self.layout.addWidget(self.text, 0, 0)
         self.setWindowFlags(Qt.Drawer)
-        self.text.setSource("./settings/about.md")
+        with open(os.path.join(QGRAIN_ROOT_PATH, "settings", "about.md"), mode="r") as text:
+            self.text.setMarkdown(text.read())
         self.text.setOpenExternalLinks(True)
 
 

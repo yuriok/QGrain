@@ -1,12 +1,16 @@
+__all__ = ["DataSetting"]
+
 import logging
+import os
 
 from PySide2.QtCore import QSettings, Qt, Signal
 from PySide2.QtGui import QIcon, QIntValidator, QValidator
 from PySide2.QtWidgets import (QCheckBox, QGridLayout, QLabel, QLineEdit,
                                QMessageBox, QWidget)
 
-from models.DataLayoutSetting import DataLayoutError, DataLayoutSetting
+from QGrain.models.DataLayoutSetting import DataLayoutError, DataLayoutSetting
 
+QGRAIN_ROOT_PATH = os.path.dirname(os.path.dirname(__file__))
 
 class DataSetting(QWidget):
     sigDataSettingChanged = Signal(dict)
@@ -16,7 +20,7 @@ class DataSetting(QWidget):
         super().__init__()
         self.msg_box = QMessageBox(self)
         self.msg_box.setWindowFlags(Qt.Drawer)
-        self.settings = QSettings("./settings/QGrain.ini", QSettings.Format.IniFormat)
+        self.settings = QSettings(os.path.join(QGRAIN_ROOT_PATH, "settings", "QGrain.ini"), QSettings.Format.IniFormat)
         self.settings.beginGroup("data")
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.init_ui()

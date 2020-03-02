@@ -1,3 +1,5 @@
+__all__ = ["SampleTag", "SampleData"]
+
 
 from enum import Enum, unique
 from uuid import uuid4, UUID
@@ -36,7 +38,7 @@ class SampleData:
     @property
     def uuid(self) -> UUID:
         return self.__uuid
-    
+
     @property
     def name(self) -> str:
         return self.__name
@@ -48,7 +50,7 @@ class SampleData:
     @property
     def distribution(self) -> np.ndarray:
         return self.__distribution
-    
+
     @property
     def tag(self) -> SampleTag:
         return self.__tag

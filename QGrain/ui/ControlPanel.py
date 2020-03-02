@@ -1,3 +1,5 @@
+__all__ = ["ControlPanel"]
+
 import logging
 import os
 
@@ -7,9 +9,9 @@ from PySide2.QtGui import QFont
 from PySide2.QtWidgets import (QCheckBox, QGridLayout, QLabel, QMessageBox,
                                QPushButton, QRadioButton, QWidget)
 
-from algorithms import DistributionType
-from models.FittingResult import FittingResult
-from models.SampleDataset import SampleDataset
+from QGrain.algorithms import DistributionType
+from QGrain.models.FittingResult import FittingResult
+from QGrain.models.SampleDataset import SampleDataset
 
 
 class ControlPanel(QWidget):

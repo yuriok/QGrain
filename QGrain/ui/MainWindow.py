@@ -1,4 +1,7 @@
+__all__ = ["GUILogHandler", "MainWindow"]
+
 import logging
+import os
 import time
 from typing import List
 
@@ -9,20 +12,21 @@ from PySide2.QtWidgets import (QAbstractItemView, QAction, QDockWidget,
                                QMainWindow, QMessageBox, QTableWidget,
                                QTableWidgetItem)
 
-from models.SampleDataset import SampleDataset
-from resolvers.GUIResolver import GUIResolver
-from resolvers.MultiprocessingResolver import MultiProcessingResolver
-from ui.AboutWindow import AboutWindow
-from ui.AllDistributionCanvas import AllDistributionCanvas
-from ui.ControlPanel import ControlPanel
-from ui.DataManager import DataManager
-from ui.DistributionCanvas import DistributionCanvas
-from ui.LossCanvas import LossCanvas
-from ui.PCAPanel import PCAPanel
-from ui.RecordedDataTable import RecordedDataTable
-from ui.SettingWindow import SettingWindow
-from ui.TaskWindow import TaskWindow
+from QGrain.models.SampleDataset import SampleDataset
+from QGrain.resolvers.GUIResolver import GUIResolver
+from QGrain.resolvers.MultiprocessingResolver import MultiProcessingResolver
+from QGrain.ui.AboutWindow import AboutWindow
+from QGrain.ui.AllDistributionCanvas import AllDistributionCanvas
+from QGrain.ui.ControlPanel import ControlPanel
+from QGrain.ui.DataManager import DataManager
+from QGrain.ui.DistributionCanvas import DistributionCanvas
+from QGrain.ui.LossCanvas import LossCanvas
+from QGrain.ui.PCAPanel import PCAPanel
+from QGrain.ui.RecordedDataTable import RecordedDataTable
+from QGrain.ui.SettingWindow import SettingWindow
+from QGrain.ui.TaskWindow import TaskWindow
 
+QGRAIN_ROOT_PATH = os.path.dirname(os.path.dirname(__file__))
 
 class GUILogHandler(logging.Handler):
     def __init__(self, target_widget):
@@ -47,9 +51,9 @@ class MainWindow(QMainWindow):
     def __init__(self, is_dark=True):
         super().__init__()
         if is_dark:
-            self.icon_folder = "./settings/icons/dark/"
+            self.icon_folder = os.path.join(QGRAIN_ROOT_PATH, "settings", "icons", "dark")
         else:
-            self.icon_folder = "./settings/icons/light/"
+            self.icon_folder = os.path.join(QGRAIN_ROOT_PATH, "settings", "icons", "light")
         self.init_ui(is_dark)
         self.status_bar = self.statusBar()
         self.gui_fitting_thread = QThread()
@@ -303,7 +307,7 @@ class MainWindow(QMainWindow):
         # emit after the threads are started
         self.sigSetup.emit()
 
-        settings = QSettings("./settings/ui.ini", QSettings.IniFormat)
+        settings = QSettings(os.path.join(QGRAIN_ROOT_PATH, "settings", "ui.ini"), QSettings.IniFormat)
         settings.beginGroup("MainWindow")
         geometry = settings.value("geometry")
         if geometry is not None:
@@ -318,7 +322,7 @@ class MainWindow(QMainWindow):
         self.sigCleanup.emit()
         self.hide()
 
-        settings = QSettings("./settings/ui.ini", QSettings.IniFormat)
+        settings = QSettings(os.path.join(QGRAIN_ROOT_PATH, "settings", "ui.ini"), QSettings.IniFormat)
         settings.beginGroup("MainWindow")
         settings.setValue("geometry", self.saveGeometry())
         settings.setValue("windowState", self.saveState())

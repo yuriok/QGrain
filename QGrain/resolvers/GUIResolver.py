@@ -1,3 +1,5 @@
+__all__ = ["CancelError", "GUIResolver"]
+
 import logging
 import time
 
@@ -6,10 +8,10 @@ from PySide2.QtCore import QMutex, QObject, Signal, Slot
 from scipy.interpolate import interp1d
 from scipy.optimize import OptimizeResult
 
-from algorithms import DistributionType
-from models.FittingResult import FittingResult
-from models.SampleData import SampleData
-from resolvers.Resolver import Resolver
+from QGrain.algorithms import DistributionType
+from QGrain.models.FittingResult import FittingResult
+from QGrain.models.SampleData import SampleData
+from QGrain.resolvers.Resolver import Resolver
 
 
 class CancelError(Exception):

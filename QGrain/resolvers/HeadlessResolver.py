@@ -1,10 +1,14 @@
+__all__ = ["FittingTask", "FinalLocalOptimizationError",
+           "GlobalOptimizationError",
+           "HeadlessResolver"]
+
 import numpy as np
 from scipy.optimize import OptimizeResult
 
-from algorithms import DistributionType
-from models.FittingResult import FittingResult
-from models.SampleData import SampleData
-from resolvers.Resolver import Resolver
+from QGrain.algorithms import DistributionType
+from QGrain.models.FittingResult import FittingResult
+from QGrain.models.SampleData import SampleData
+from QGrain.resolvers.Resolver import Resolver
 
 
 class FittingTask:

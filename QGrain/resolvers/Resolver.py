@@ -1,12 +1,14 @@
+__all__ = ["Resolver"]
+
 from enum import Enum, unique
 from typing import Dict, Iterable, List, Tuple
 
 import numpy as np
 from scipy.optimize import OptimizeResult, basinhopping, minimize
 
-from algorithms import AlgorithmData, DistributionType
-from models.FittingResult import FittingResult
-from models.SampleData import SampleData
+from QGrain.algorithms import AlgorithmData, DistributionType
+from QGrain.models.FittingResult import FittingResult
+from QGrain.models.SampleData import SampleData
 
 
 class Resolver:
