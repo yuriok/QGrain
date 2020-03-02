@@ -1,19 +1,17 @@
+__all__ = ["LossCanvas"]
+
 import logging
 import sys
 
 from PySide2.QtCharts import QtCharts
 from PySide2.QtCore import Qt
 
-
-if __name__ == "__main__":
-    import sys, os
-    sys.path.append(os.getcwd())
-from models.FittingResult import FittingResult
-from ui.Canvas import Canvas
+from QGrain.models.FittingResult import FittingResult
+from QGrain.ui.Canvas import Canvas
 
 
 class LossCanvas(Canvas):
-    logger = logging.getLogger("root.ui.FittingCanvas")
+    logger = logging.getLogger("root.ui.LossCanvas")
     gui_logger = logging.getLogger("GUI")
 
     def __init__(self, parent=None, is_dark=True):
@@ -74,6 +72,7 @@ class LossCanvas(Canvas):
 
 
 if __name__ == "__main__":
+    import sys
     from PySide2.QtWidgets import QApplication
     app = QApplication(sys.argv)
     canvas = LossCanvas(is_dark=False)

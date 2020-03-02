@@ -1,3 +1,5 @@
+__all__ = ["AllDistributionCanvas"]
+
 import logging
 
 import numpy as np
@@ -5,12 +7,9 @@ from PySide2.QtCharts import QtCharts
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QColor, QPen
 
-if __name__ == "__main__":
-    import sys, os
-    sys.path.append(os.getcwd())
-from models.SampleData import SampleData
-from models.SampleDataset import SampleDataset
-from ui.Canvas import Canvas
+from QGrain.models.SampleData import SampleData
+from QGrain.models.SampleDataset import SampleDataset
+from QGrain.ui.Canvas import Canvas
 
 
 class AllDistributionCanvas(Canvas):

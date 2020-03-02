@@ -1,3 +1,5 @@
+__all__ = ["DistributionCanvas"]
+
 import logging
 from typing import List
 
@@ -10,13 +12,10 @@ from PySide2.QtCore import (QCoreApplication, QEventLoop, QMutex,
 from PySide2.QtGui import QColor, QPen
 from PySide2.QtWidgets import QFileDialog
 
-if __name__ == "__main__":
-    import sys, os
-    sys.path.append(os.getcwd())
-from models.FittingResult import FittingResult
-from models.SampleData import SampleData
-from ui.Canvas import Canvas
-from ui.InfiniteLine import InfiniteLine
+from QGrain.models.FittingResult import FittingResult
+from QGrain.models.SampleData import SampleData
+from QGrain.ui.Canvas import Canvas
+from QGrain.ui.InfiniteLine import InfiniteLine
 
 
 class DistributionCanvas(Canvas):
@@ -221,6 +220,7 @@ class DistributionCanvas(Canvas):
 
 
 if __name__ == "__main__":
+    import sys
     from PySide2.QtWidgets import QApplication
     app = QApplication(sys.argv)
     canvas = DistributionCanvas(is_dark=False)

@@ -1,9 +1,17 @@
+__all__ = ["ClassesNotIncrementalError",
+           "ClassesNotMatchError",
+           "NaNError",
+           "ArrayEmptyError",
+           "SampleNameEmptyError",
+           "DistributionSumError",
+           "SampleDataset"]
+
 from typing import Callable, Dict, Iterable, List, Tuple
 from uuid import UUID
 
 import numpy as np
 
-from models.SampleData import SampleData
+from QGrain.models.SampleData import SampleData
 
 
 class ClassesNotIncrementalError(Exception):

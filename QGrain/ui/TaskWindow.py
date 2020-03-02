@@ -1,3 +1,5 @@
+__all__ = ["TaskWindow"]
+
 from enum import Enum, unique
 from math import sqrt
 from typing import Iterable, Tuple
@@ -5,8 +7,8 @@ from typing import Iterable, Tuple
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import QGridLayout, QLabel, QMainWindow, QWidget
 
-from models.FittingResult import FittingResult
-from resolvers.HeadlessResolver import FittingTask
+from QGrain.models.FittingResult import FittingResult
+from QGrain.resolvers.HeadlessResolver import FittingTask
 
 
 @unique

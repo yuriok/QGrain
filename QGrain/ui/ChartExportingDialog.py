@@ -1,3 +1,6 @@
+__all__ = ["ChartExportingDialog"]
+
+import os
 import sys
 from typing import Optional, Union
 
@@ -7,12 +10,13 @@ from PySide2.QtGui import QDoubleValidator, QIntValidator
 from PySide2.QtWidgets import (QDialog, QFileDialog, QGridLayout, QLabel,
                                QLineEdit, QPushButton)
 
+QGRAIN_ROOT_PATH = os.path.dirname(os.path.dirname(__file__))
 
 class ChartExportingDialog(QDialog):
     def __init__(self, canvas, setting_group: str):
         super().__init__(parent=canvas)
         self.canvas = canvas
-        self.settings = QSettings("./settings/chart_exporting.ini", QSettings.Format.IniFormat)
+        self.settings = QSettings(os.path.join(QGRAIN_ROOT_PATH, "settings", "chart_exporting.ini"), QSettings.Format.IniFormat)
         self.settings.beginGroup(setting_group)
         self.file_dialog = QFileDialog(self)
         self.init_ui()

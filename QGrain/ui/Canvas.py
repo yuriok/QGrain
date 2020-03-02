@@ -1,3 +1,5 @@
+__all__ = ["Canvas"]
+
 import math
 import sys
 from typing import Optional, Union
@@ -14,11 +16,7 @@ from PySide2.QtWidgets import (QAction, QApplication, QGraphicsItem,
                                QGraphicsSceneMouseEvent, QGraphicsView,
                                QGridLayout, QStyleOptionGraphicsItem, QWidget)
 
-if __name__ == "__main__":
-    import os, sys
-    sys.path.append(os.getcwd())
-
-from ui.ChartExportingDialog import ChartExportingDialog
+from QGrain.ui.ChartExportingDialog import ChartExportingDialog
 
 
 class Canvas(QWidget):
