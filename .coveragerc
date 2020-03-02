@@ -2,6 +2,6 @@
 omit =
     */test_*.py
     */__init__.py
-    ui/*.py
+    QGrain/ui/*.py
 source=
-    .
+    QGrain
