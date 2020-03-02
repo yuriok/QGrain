@@ -9,9 +9,10 @@ from PySide2.QtCore import QSettings, QTranslator
 from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtWidgets import QApplication, QSplashScreen
 
-from ui.MainWindow import GUILogHandler, MainWindow
+from QGrain.ui.MainWindow import GUILogHandler, MainWindow
 
 QGRAIN_VERSION = "0.2.7"
+QGRAIN_ROOT_PATH = os.path.dirname(__file__)
 
 
 def getdirsize(dir):
@@ -21,20 +22,20 @@ def getdirsize(dir):
    return size
 
 def create_necessary_folders():
-    necessary_folders = ("./logs/",)
+    necessary_folders = (os.path.join(QGRAIN_ROOT_PATH, "logs"),)
     for folder in necessary_folders:
         if not os.path.exists(folder):
             os.mkdir(folder)
 
 def get_language():
-    settings = QSettings("./settings/QGrain.ini", QSettings.Format.IniFormat)
+    settings = QSettings(os.path.join(QGRAIN_ROOT_PATH, "settings", "QGrain.ini"), QSettings.Format.IniFormat)
     settings.beginGroup("app")
     lang = settings.value("language", defaultValue="en", type=str)
     settings.endGroup()
     return lang
 
 def get_theme():
-    settings = QSettings("./settings/QGrain.ini", QSettings.Format.IniFormat)
+    settings = QSettings(os.path.join(QGRAIN_ROOT_PATH, "settings", "QGrain.ini"), QSettings.Format.IniFormat)
     settings.beginGroup("app")
     theme = settings.value("theme", defaultValue="MaterialDark", type=str)
     settings.endGroup()
@@ -43,13 +44,15 @@ def get_theme():
 def setup_language(app: QApplication):
     lang = get_language()
     trans = QTranslator(app)
-    trans.load("./i18n/"+lang)
+    trans.load(os.path.join(QGRAIN_ROOT_PATH, "i18n", lang))
     app.installTranslator(trans)
 
 def setup_theme(app: QApplication) -> bool:
     theme = get_theme()
-    template_styles = open("./settings/qss/{0}.qss".format(theme)).read()
-    custom_style = open("./settings/custom.qss").read()
+    with open(os.path.join(QGRAIN_ROOT_PATH, "settings", "qss", "{0}.qss".format(theme))) as template:
+        template_styles = template.read()
+    with open(os.path.join(QGRAIN_ROOT_PATH, "settings", "custom.qss")) as custom:
+        custom_style = custom.read()
     app.setStyleSheet(template_styles+custom_style)
 
     if theme == "Aqua":
@@ -65,7 +68,7 @@ def setup_theme(app: QApplication) -> bool:
 
 def setup_logging(main_window: MainWindow):
     format_str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    file_handler = TimedRotatingFileHandler("./logs/qgrain.log", when="D", backupCount=256, encoding="utf-8")
+    file_handler = TimedRotatingFileHandler(os.path.join(QGRAIN_ROOT_PATH, "logs", "qgrain.log"), when="D", backupCount=256, encoding="utf-8")
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(logging.Formatter(format_str))
     gui_handler = GUILogHandler(main_window)
@@ -77,7 +80,7 @@ def setup_logging(main_window: MainWindow):
 def main():
     create_necessary_folders()
     app = QApplication(sys.argv)
-    logo = QPixmap("./settings/icons/splash_logo.png")
+    logo = QPixmap(os.path.join(QGRAIN_ROOT_PATH, "settings", "icons", "splash_logo.png"))
     splash = QSplashScreen(logo)
     splash.show()
     app.processEvents()
@@ -85,7 +88,7 @@ def main():
     is_dark = setup_theme(app)
     main_window = MainWindow(is_dark=is_dark)
     main_window.setWindowTitle("QGrain")
-    main_window.setWindowIcon(QIcon("./settings/icons/icon.png"))
+    main_window.setWindowIcon(QIcon(os.path.join(QGRAIN_ROOT_PATH, "settings", "icons", "icon.png")))
     setup_logging(main_window)
     main_window.show()
     main_window.setup_all()
