@@ -4,8 +4,7 @@ import unittest
 
 import numpy as np
 
-sys.path.append(os.getcwd())
-from algorithms import *
+from QGrain.algorithms import *
 
 
 NORMAL_PARAM_COUNT = 2
@@ -18,7 +17,7 @@ class TestCheckComponentNumber(unittest.TestCase):
     def test_1_to_100(self):
         for i in range(1, 101):
             check_component_number(i)
-    
+
     # invalid cases
     def test_str(self):
         with self.assertRaises(TypeError):
@@ -70,11 +69,11 @@ class TestGetBaseFuncName(unittest.TestCase):
     @staticmethod
     def has_func(name):
         return name in globals().keys()
-    
+
     @staticmethod
     def get_func(name):
         return globals()[name]
-    
+
     def test_has_normal(self):
         func_name = get_base_func_name(DistributionType.Normal)
         self.assertTrue(self.has_func(func_name))
@@ -104,7 +103,7 @@ class TestGetBaseFuncName(unittest.TestCase):
         func = self.get_func(func_name)
         # the first param is x
         func(np.linspace(1, 11, 1001), *[i+1 for i in range(GENERAL_WEIBULL_PARAM_COUNT)])
-    
+
 
 class TestGetParamBounds(unittest.TestCase):
     # 1. each bound must has the left and right values
@@ -114,7 +113,7 @@ class TestGetParamBounds(unittest.TestCase):
         self.assertEqual(len(bound), 2)
         self.assertTrue(bound[0] is None == None or np.isreal(bound[0]))
         self.assertTrue(bound[1] is None == None or np.isreal(bound[1]))
-    
+
     def test_normal(self):
         bounds = get_param_bounds(DistributionType.Normal)
         self.assertEqual(len(bounds), NORMAL_PARAM_COUNT)
@@ -200,7 +199,7 @@ class TestMISC(unittest.TestCase):
         self.normal_params = get_params(DistributionType.Normal, 10)
         self.weibull_params = get_params(DistributionType.Weibull, 10)
         self.gen_weibull_params = get_params(DistributionType.GeneralWeibull, 10)
-    
+
     def tearDown(self):
         self.normal_params = None
         self.weibull_params = None
@@ -219,7 +218,7 @@ class TestMISC(unittest.TestCase):
     def test_get_constrains(self):
         for i in range(1, 101):
             get_constrains(i)
-    
+
     def test_get_defaults(self):
         get_defaults(self.normal_params)
         get_defaults(self.weibull_params)
@@ -232,12 +231,12 @@ class TestGetLambdaStr(unittest.TestCase):
         for i in range(1, 101):
             lambda_str = get_lambda_str(DistributionType.Normal, i)
             exec(lambda_str)
-    
+
     def test_weibull(self):
         for i in range(1, 101):
             lambda_str = get_lambda_str(DistributionType.Weibull, i)
             exec(lambda_str)
-    
+
     def test_gen_weibull(self):
         for i in range(1, 101):
             lambda_str = get_lambda_str(DistributionType.GeneralWeibull, i)
@@ -273,7 +272,7 @@ class TestProcessParams(unittest.TestCase):
             self.assertEqual(len(processed), i)
             for params, fraction in processed:
                 self.assertEqual(len(params), WEIBULL_PARAM_COUNT)
-    
+
     def test_gen_weibull(self):
         for i in range(1, 101):
             if i == 1:
@@ -525,7 +524,7 @@ class TestGetSingleFunc(unittest.TestCase):
     def get_func(distribution_type: DistributionType):
         name = get_base_func_name(distribution_type)
         return globals()[name]
-    
+
     def test_normal(self):
         actual_func = get_single_func(DistributionType.Normal)
         expected_func = self.get_func(DistributionType.Normal)
@@ -542,14 +541,14 @@ class TestGetSingleFunc(unittest.TestCase):
         self.assertIs(actual_func, expected_func)
 
 
-# the length of return values must be same as that of `get_defaults` 
+# the length of return values must be same as that of `get_defaults`
 class TestGetParamByMean(unittest.TestCase):
     def test_normal(self):
         for i in range(1, 101):
             params = get_param_by_mean(DistributionType.Normal, i, np.linspace(1, 10, i))
             if i == 0:
                 self.assertEqual(len(params), NORMAL_PARAM_COUNT)
-            else:    
+            else:
                 self.assertEqual(len(params), (NORMAL_PARAM_COUNT+1)*i - 1)
 
     def test_weibull(self):
@@ -557,7 +556,7 @@ class TestGetParamByMean(unittest.TestCase):
             params = get_param_by_mean(DistributionType.Weibull, i, np.linspace(1, 10, i))
             if i == 0:
                 self.assertEqual(len(params), WEIBULL_PARAM_COUNT)
-            else:    
+            else:
                 self.assertEqual(len(params), (WEIBULL_PARAM_COUNT+1)*i - 1)
 
     def test_gen_weibull(self):
@@ -565,7 +564,7 @@ class TestGetParamByMean(unittest.TestCase):
             params = get_param_by_mean(DistributionType.GeneralWeibull, i, np.linspace(1, 10, i))
             if i == 0:
                 self.assertEqual(len(params), GENERAL_WEIBULL_PARAM_COUNT)
-            else:    
+            else:
                 self.assertEqual(len(params), (GENERAL_WEIBULL_PARAM_COUNT+1)*i - 1)
 
 
