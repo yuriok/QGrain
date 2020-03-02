@@ -1,0 +1,3 @@
+recursive-include QGrain i18n/*
+recursive-include QGrain samples/*
+recursive-include QGrain settings/*
