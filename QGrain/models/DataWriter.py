@@ -1,4 +1,4 @@
-__all__ = ["DataWriter"]
+__all__ = ["column_to_char", "to_cell_name", "DataWriter"]
 
 import csv
 import json

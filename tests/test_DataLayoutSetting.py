@@ -4,8 +4,7 @@ import unittest
 
 import numpy as np
 
-sys.path.append(os.getcwd())
-from models.DataLayoutSetting import *
+from QGrain.models.DataLayoutSetting import *
 
 
 class TestDataLayoutSetting(unittest.TestCase):

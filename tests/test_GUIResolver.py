@@ -5,8 +5,10 @@ import unittest
 import numpy as np
 from scipy.stats import norm
 
-sys.path.append(os.getcwd())
-from resolvers.GUIResolver import *
+from QGrain.algorithms import DistributionType
+from QGrain.models.FittingResult import *
+from QGrain.models.SampleData import SampleData
+from QGrain.resolvers.GUIResolver import *
 
 
 class TestGUIResolver(unittest.TestCase):
