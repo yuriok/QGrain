@@ -1,7 +1,12 @@
+__all__ = ["AppSetting"]
+
 import logging
+import os
 
 from PySide2.QtCore import QSettings, Qt, Signal
 from PySide2.QtWidgets import QComboBox, QGridLayout, QLabel, QWidget
+
+QGRAIN_ROOT_PATH = os.path.dirname(os.path.dirname(__file__))
 
 
 class AppSetting(QWidget):
@@ -15,7 +20,7 @@ class AppSetting(QWidget):
                               ("Elegant Dark", "ElegantDark"),
                               ("Material Dark", "MaterialDark"),
                               ("Ubuntu", "Ubuntu")]
-        self.settings = QSettings("./settings/QGrain.ini", QSettings.Format.IniFormat)
+        self.settings = QSettings(os.path.join(QGRAIN_ROOT_PATH, "settings", "QGrain.ini"), QSettings.Format.IniFormat)
         self.settings.beginGroup("app")
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.init_ui()

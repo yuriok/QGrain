@@ -1,3 +1,5 @@
+__all__ = ["PCAPanel"]
+
 import csv
 import logging
 import os
@@ -12,12 +14,8 @@ from PySide2.QtWidgets import (QCheckBox, QFileDialog, QGridLayout, QLabel,
                                QLineEdit, QMessageBox, QPushButton, QWidget)
 from sklearn.decomposition import PCA
 
-
-if __name__ == "__main__":
-    import sys, os
-    sys.path.append(os.getcwd())
-from models.SampleDataset import SampleDataset
-from ui.Canvas import Canvas
+from QGrain.models.SampleDataset import SampleDataset
+from QGrain.ui.Canvas import Canvas
 
 
 class PCAPanel(Canvas):
@@ -260,6 +258,7 @@ class PCAPanel(Canvas):
 
 
 if __name__ == "__main__":
+    import sys
     from PySide2.QtWidgets import QApplication
     app = QApplication(sys.argv)
     panel = PCAPanel(is_dark=False)

@@ -1,9 +1,14 @@
+__all__ = ["AlgorithmSetting"]
+
 import logging
+import os
 
 from PySide2.QtCore import QSettings, Qt, Signal
 from PySide2.QtGui import QDoubleValidator, QIntValidator, QValidator
 from PySide2.QtWidgets import (QGridLayout, QLabel, QLineEdit, QMessageBox,
                                QWidget)
+
+QGRAIN_ROOT_PATH = os.path.dirname(os.path.dirname(__file__))
 
 
 class AlgorithmSetting(QWidget):
@@ -14,7 +19,7 @@ class AlgorithmSetting(QWidget):
         super().__init__()
         self.msg_box = QMessageBox(self)
         self.msg_box.setWindowFlags(Qt.Drawer)
-        self.settings = QSettings("./settings/QGrain.ini", QSettings.Format.IniFormat)
+        self.settings = QSettings(os.path.join(QGRAIN_ROOT_PATH, "settings", "QGrain.ini"), QSettings.Format.IniFormat)
         self.settings.beginGroup("algorithm")
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.init_ui()

@@ -1,3 +1,5 @@
+__all__ = ["ViewDataManager", "RecordedDataTable"]
+
 import logging
 from datetime import date, datetime, time
 from typing import Dict, List, Tuple
@@ -9,8 +11,8 @@ from PySide2.QtGui import QCursor
 from PySide2.QtWidgets import (QAbstractItemView, QGridLayout, QMenu,
                                QTableWidget, QTableWidgetItem, QWidget)
 
-from algorithms import DistributionType
-from models.FittingResult import FittingResult
+from QGrain.algorithms import DistributionType
+from QGrain.models.FittingResult import FittingResult
 
 
 class ViewDataManager(QObject):

@@ -1,12 +1,12 @@
-import sys
+__all__ = ["SettingWindow"]
 
 from PySide2.QtCore import QSettings, Qt, Signal
 from PySide2.QtGui import QIcon, QIntValidator, QValidator
 from PySide2.QtWidgets import QGridLayout, QMainWindow, QPushButton, QWidget
 
-from ui.AlgorithmSetting import AlgorithmSetting
-from ui.AppSetting import AppSetting
-from ui.DataSetting import DataSetting
+from QGrain.ui.AlgorithmSetting import AlgorithmSetting
+from QGrain.ui.AppSetting import AppSetting
+from QGrain.ui.DataSetting import DataSetting
 
 
 class SettingWindow(QMainWindow):

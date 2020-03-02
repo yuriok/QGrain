@@ -1,3 +1,5 @@
+__all__ = ["InfiniteLine"]
+
 from typing import Optional, Union, Tuple, Callable
 
 from PySide2.QtCharts import QtCharts

@@ -1,5 +1,8 @@
+__all__ = ["DataWriter"]
+
 import csv
 import json
+import os
 from datetime import date, datetime, time
 from typing import List
 
@@ -7,10 +10,11 @@ import numpy as np
 import xlsxwriter
 import xlwt
 
-from algorithms import DistributionType
-from models.DataLoader import FileType
-from models.FittingResult import FittingResult
+from QGrain.algorithms import DistributionType
+from QGrain.models.DataLoader import FileType
+from QGrain.models.FittingResult import FittingResult
 
+QGRAIN_ROOT_PATH = os.path.dirname(os.path.dirname(__file__))
 
 def column_to_char(column_index: int):
     column = column_index + 1
@@ -35,7 +39,7 @@ class DataWriter:
     MAX_PARAM_COUNT = 3
     def __init__(self):
         super().__init__()
-        self.style_file_path = "./settings/chart_styles.json"
+        self.style_file_path = os.path.join(QGRAIN_ROOT_PATH, "settings", "chart_styles.json")
         # see https://xlsxwriter.readthedocs.io/chart.html
 
     def get_distribution_name(self, distribution_type: DistributionType):

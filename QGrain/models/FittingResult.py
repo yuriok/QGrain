@@ -1,3 +1,5 @@
+__all__ = ["ComponentFittingResult", "FittingResult"]
+
 import copy
 from typing import Callable, Dict, Iterable, List, Tuple
 from uuid import UUID, uuid4
@@ -6,7 +8,7 @@ import numpy as np
 from scipy.interpolate import interp1d
 from scipy.stats import kendalltau, pearsonr, spearmanr
 
-from algorithms import AlgorithmData, DistributionType
+from QGrain.algorithms import AlgorithmData, DistributionType
 
 
 class ComponentFittingResult:

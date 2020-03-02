@@ -1,3 +1,4 @@
+__all__ = ["MultiProcessingResolver"]
 
 import logging
 import time
@@ -6,9 +7,9 @@ from typing import List
 
 from PySide2.QtCore import QObject, Signal
 
-from algorithms import DistributionType
-from models.SampleDataset import SampleDataset
-from resolvers.HeadlessResolver import FittingTask, HeadlessResolver
+from QGrain.algorithms import DistributionType
+from QGrain.models.SampleDataset import SampleDataset
+from QGrain.resolvers.HeadlessResolver import FittingTask, HeadlessResolver
 
 
 def run_task(task):
