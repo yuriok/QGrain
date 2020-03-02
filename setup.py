@@ -3,7 +3,7 @@ import os
 
 setup(
     name="QGrain",
-    version="0.2.7",
+    version="0.2.7.1",
     description="QGrain is an esay to use tool that can unmix and analyse the multi-modal grain size distribution.",
     platforms="all",
     author="Yuming Liu",
