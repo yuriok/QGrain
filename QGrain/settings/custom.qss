@@ -1,0 +1,11 @@
+QLabel, QPushButton, QCheckBox, QRadioButton, QMenu, QMenuBar, QDockWidget, QLineEdit, QComboBox, QTabBar::tab, QTextBrowser {font-family: Tahoma, Microsoft YaHei, Arial, sans-serif;}
+
+/* QMenu {font: italic;} */
+
+DataSetting, AlgorithmSetting, AppSetting {border: 2px solid;}
+
+QTableView QHeaderView::section {font-size: 10pt; font-family: Times New Roman;}
+/* QTableWidget::item {} */
+QTableWidget {font-size: 8pt; font-family: Times New Roman;}
+
+QMenuBar, QDockWidget {font-size: 10pt;}

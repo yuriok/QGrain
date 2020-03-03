@@ -1,23 +1,24 @@
-SOURCES = ./ui/AboutWindow.py \
-        ./ui/AlgorithmSetting.py \
-        ./ui/AllDistributionCanvas.py \
-        ./ui/AppSetting.py \
-        ./ui/Canvas.py \
-        ./ui/ControlPanel.py \
-        ./ui/DataManager.py \
-        ./ui/DataSetting.py \
-        ./ui/DistributionCanvas.py \
-        ./ui/InfiniteLine.py \
-        ./ui/LossCanvas.py \
-        ./ui/MainWindow.py \
-        ./ui/PCAPanel.py \
-        ./ui/RecordedDataTable.py \
-        ./ui/SettingWindow.py \
-        ./ui/TaskWindow.py \
-        ./resolvers/GUIResolver.py \
-        ./resolvers/HeadlessResolver.py \
-        ./resolvers/MultiprocessingResolver.py \
-        ./resolvers/Resolver.py \
-        ./qgrain.py
+SOURCES = ./QGrain/ui/AboutWindow.py \
+        ./QGrain/ui/AlgorithmSetting.py \
+        ./QGrain/ui/AllDistributionCanvas.py \
+        ./QGrain/ui/AppSetting.py \
+        ./QGrain/ui/Canvas.py \
+        ./QGrain/ui/ChartExportingDialog.py \
+        ./QGrain/ui/ControlPanel.py \
+        ./QGrain/ui/DataManager.py \
+        ./QGrain/ui/DataSetting.py \
+        ./QGrain/ui/DistributionCanvas.py \
+        ./QGrain/ui/InfiniteLine.py \
+        ./QGrain/ui/LossCanvas.py \
+        ./QGrain/ui/MainWindow.py \
+        ./QGrain/ui/PCAPanel.py \
+        ./QGrain/ui/RecordedDataTable.py \
+        ./QGrain/ui/SettingWindow.py \
+        ./QGrain/ui/TaskWindow.py \
+        ./QGrain/resolvers/GUIResolver.py \
+        ./QGrain/resolvers/HeadlessResolver.py \
+        ./QGrain/resolvers/MultiprocessingResolver.py \
+        ./QGrain/resolvers/Resolver.py \
+        ./QGrain/main.py
 TRANSLATIONS=en.ts zh_CN.ts
 CODECFORTR=UTF-8

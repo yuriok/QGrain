@@ -2,56 +2,96 @@
 
 **QGrain** is written by [Python](https://www.python.org/). So, it's **cross-platform**.
 
-It can be installed on **Windows**, **Linux**, **Mac OS X**, etc.
+Which means it can be installed on many kinds of systems, like **Windows**, **Linux**, **Mac OS X**, etc.
 
-There are two ways to install QGrain.
+Moreover, due to Python's features, there are two ways to install QGrain.
 
-## 1. Use Python interpreter
+## 1. Use executable file
 
-This method is for the user who has experience on Python and Shell. If you are unfamiliar with the knowledge, please see method 2 below.
+We have packed the executable setup file for **Windows** users. Because Windows doese not have Python internally installed, and Windows users are not used to the command line interface.
+
+You can download the latest version of QGrain from [here](https://github.com/QGrain-Organization/QGrain/releases).
+
+When the setup file was downloaded, what you need to do is double clicking the setup file to execute the installation program.
+
+All things are similar to other softwares on **Windows**. And then, you can see the shortcut on the desktop.
+
+## 2. Use Python
+
+This method is for the user who has experience on Python and Shell (i.e. command line interface). It use the Python interpreter to execute the source codes of QGrain.
+
+The advantage of this method is its expansibility. Through the `pip` (the package installer for Python), you can easily download and update QGrain. If you are not satisfied with some functionalities of QGrain, or there are some small bugs, you can modified the codes by yourself to solve these problems instead of waiting for a new update to fix them.
 
 1. Install Python
 
     For Linux and Mac OS X users, you may have the built-in Python3 interpreter. You can run the command `python` or `python3` in your terminal to check if Python is existing.
 
-    Note: Using `python` or `python3` depends on the alias or the filename of your Python3 interpreter.
+    Note: Using `python` or `python3` depends on the alias or the filename of your Python3 interpreter, rather than you can choose Python2 or Python3 at liberty. Python2 is too old and has been obsoleted.interpreter
 
-    If you do not have Python3 installed, you can visit the [official website of Python](https://www.python.org/downloads/) to download and install the Python interpreter.
+    If you have Python3 installed on you computer, you can see the text like below (test on Ubuntu 18.04 LTS). You can see the version of your Python. And the `>>>` symbols hint you that you have entered the interactive model of Python's interpreter. Type `quit()` to quit this model and back to the terminal.
 
-2. Download the codes of QGrain
+    ```bash
+    your_user_name:~$ python3
+    Python 3.6.9 (default, Nov  7 2019, 10:44:02)
+    [GCC 8.3.0] on linux
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>>
+    ```
 
-    The repository of QGrain is hosted on GitHub. The link is over [here](https://github.com/QGrain-Organization/QGrain).
+    If you have not Python3 yet, you can visit the [official website of Python](https://www.python.org/downloads/) to download and install it.
 
-    * You can clone the repository by running the following command if you have git installed.
+    Note: If you are **Windows** user, remember to check the **Add Python to Windows PATH** option while installing Python. If not, some commands in this tutorial may be **invalid**, due to the `PATH` mechanism of Windows.
 
-      `git clone https://github.com/QGrain-Organization/QGrain.git`
+2. Get source codes and install QGrain
 
-    * Or, you can download the pure codes directly by clicking [here](https://github.com/QGrain-Organization/QGrain/archive/master.zip).
+    We have upload QGrain to [PyPI](https://pypi.org/). So, you can get the codes very expediently through `pip`. By running the following command, you can get QGrain moudle installed.
 
-      If you choose to download the zip file, please extract it.
+    `pip install QGrain`
 
-3. Install requirements
+    For Chinese users, this command may be faster `pip install -i https://pypi.tuna.tsinghua.edu.cn/simple QGrain`.
 
-    QGrain has some dependent modules, it's necessary to install them.
+    Note: On some system, the name of `pip` of Python3 may be `pip3`.
 
-    * Change the working directory to the folder of QGrain' codes.
+    Run `pip install -U QGrain` to check and update QGrain.
 
-    * Install modules using **pip**.
+    In addition, you can download the codes from Github. The link of our repository is over [here](https://github.com/QGrain-Organization/QGrain).
+      * You can clone the repository by running the following command if you have `git` installed.
 
-      `pip install -r requirements.txt`
+          `git clone https://github.com/QGrain-Organization/QGrain.git`
 
-4. Run QGrain
+      * Or, you can download the pure codes directly by clicking [here](https://github.com/QGrain-Organization/QGrain/archive/master.zip).
+
+          If you choose to download the zip file, please extract it.
+
+    Then, you should changed the directory to QGrain's folder, and run the following command.
+
+    `python setup.py install` or `pip install .`
+
+3. Run QGrain
 
     Now, everything is ok.
 
-    Please run the command `python qgrain.py` or `python3 qgrain.py` to launch QGrain.
+    Then you can run `qgrain` command in your terminal.
 
-    If it goes well, you can see the app interface like this.
+    If it goes well, you can see the app interface like below.
+
+    If the command `qgrain` was not found. It may be caused by lack of Python's directory in the Windows `PATH` environment variable.
+
+    Bacause, QGrain will generate an executable file (e.g. qgrain.exe on Windows) to start this app, it's located at the `Scripts` sub-folder of your Python. If this folder is not in your `PATH`, the system can not find this executable file, and the command will raise the not found error.
+
+    In order to let the modification of `PATH` come into force, you need to restart your PC.
+
+    If restart did not solve your problem, you may need to check the `PATH` variable, and **APPEND** the root and `Scripts` folders of Python to the `PATH`.
+
+    For some users who do not want to modify the `PATH`, there also is another way to start QGrain.
+
+    1. Type `python` or `python3` to enter your Python interpreter.
+
+    2. Type following codes.
+
+        ```python
+        import QGrain
+        QGrain.main()
+        ```
 
     ![App Appearance](../figures/app_appearance.png)
-
-## 2. Use executable file
-
-We have packed the executable setup file for **Windows** users.
-
-You can download it from [here](https://github.com/QGrain-Organization/QGrain/releases).
