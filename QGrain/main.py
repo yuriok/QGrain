@@ -7,7 +7,7 @@ import sys
 from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
 from multiprocessing import freeze_support
 
-from PySide2.QtCore import QSettings, QTranslator
+from PySide2.QtCore import QSettings, QTranslator, Qt
 from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtWidgets import QApplication, QSplashScreen
 
@@ -81,6 +81,7 @@ def setup_logging(main_window: MainWindow):
 
 def exec_qgrain():
     create_necessary_folders()
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     app = QApplication(sys.argv)
     logo = QPixmap(os.path.join(QGRAIN_ROOT_PATH, "settings", "icons", "splash_logo.png"))
     splash = QSplashScreen(logo)
