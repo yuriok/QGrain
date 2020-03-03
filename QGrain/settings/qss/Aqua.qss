@@ -568,6 +568,14 @@ QTableView,
 QTableView QTableCornerButton::section,
 QHeaderView:active {color: rgb(0,0,0); background-color: #ececec;}
 
+QSpinBox, QDoubleSpinBox {
+	padding-right: 20px;
+	color: rgb(0,0,0);
+	border: 1px solid rgb(0,0,0);
+	background: #ececec;
+	min-width: 40px;
+}
+
 QTableView {
     alternate-background-color: #ffffff;
 	selection-color: #ffffff;

@@ -397,7 +397,15 @@ QChartView,
 QHeaderView:section,
 QTableView,
 QTableView QTableCornerButton::section,
-QHeaderView:active {color: #808086; background-color: #1e1d23;}
+QHeaderView:active {color: #a9b7c6; background-color: #1e1d23;}
+
+QSpinBox, QDoubleSpinBox {
+	padding-right: 20px;
+	color: #a9b7c6;
+	border: 1px solid #a9b7c6;
+	background: #1e1d23;
+	min-width: 40px;
+}
 
 QTableView {
     alternate-background-color: #000000;
