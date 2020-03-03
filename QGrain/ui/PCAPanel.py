@@ -29,7 +29,8 @@ class PCAPanel(Canvas):
         self.setup_chart_style()
         self.init_ui()
         self.chart.legend().detachFromChart()
-        self.chart.legend().setPos(100.0, 60.0)
+        # refine high-dpi issue
+        self.chart.legend().setPos(self.chart.plotArea().top() + 50, self.chart.plotArea().left() + 50.0)
 
         self.file_dialog = QFileDialog(self)
         self.msg_box = QMessageBox(self)
@@ -159,7 +160,7 @@ class PCAPanel(Canvas):
             series.attachAxis(self.axis_x)
             series.attachAxis(self.axis_y)
         # update the size of legend
-        self.chart.legend().setMinimumSize(120.0, 30*(2+dimension_number))
+        self.update_legend()
         # reset the range of axes
         self.axis_x.setRange(x[0], x[-1])
         self.axis_y.setRange(round(np.min(transformed)*1.2, 2), round(np.max(transformed)*1.2, 2))

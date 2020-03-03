@@ -8,7 +8,8 @@ import numpy as np
 from PySide2.QtCharts import QtCharts
 from PySide2.QtCore import QPointF, QRectF, QSizeF, Qt, QTimer
 from PySide2.QtGui import (QBrush, QColor, QDoubleValidator, QFont,
-                           QIntValidator, QPainter, QPen, QPixmap)
+                           QFontMetrics, QIntValidator, QPainter, QPen,
+                           QPixmap)
 from PySide2.QtSvg import QSvgGenerator
 from PySide2.QtWidgets import (QAction, QApplication, QGraphicsItem,
                                QGraphicsScene, QGraphicsSceneDragDropEvent,
@@ -61,6 +62,16 @@ class Canvas(QWidget):
 
     def to_points(self, x: np.ndarray, y: np.ndarray):
         return [QPointF(x_value, y_value) for x_value, y_value in zip(x, y)]
+
+    def update_legend(self):
+        # update the size of legend
+        names = [series.name() for series in self.chart.series()]
+        metrics = QFontMetrics(self.chart.legend().font(), self.chart_view)
+        dpi = metrics.fontDpi()
+        min_width = max([metrics.width(name) for name in names]) + dpi/2
+        min_height = (len(names) + dpi/10) * metrics.height()
+        self.chart.legend().setMinimumSize(min_width, min_height)
+
 
     def show_demo(self, axis_x: QtCharts.QAbstractAxis,
                  axis_y: QtCharts.QAbstractAxis,

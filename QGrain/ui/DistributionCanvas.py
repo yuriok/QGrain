@@ -29,7 +29,8 @@ class DistributionCanvas(Canvas):
         self.init_chart()
         self.setup_chart_style()
         self.chart.legend().detachFromChart()
-        self.chart.legend().setPos(100.0, 60.0)
+        # refine high-dpi issue
+        self.chart.legend().setPos(self.chart.plotArea().top() + 50, self.chart.plotArea().left() + 50.0)
         self.__infinite_line_mutex = QMutex()
         self.__iteration_mutex = QMutex()
         self.__iteration_timer = QTimer()
@@ -93,6 +94,7 @@ class DistributionCanvas(Canvas):
             component_name = "C{0}".format(i+1)
             # series
             series = QtCharts.QLineSeries()
+            series.nameChanged.connect(self.update_legend)
             series.setName(component_name)
             self.chart.addSeries(series)
             series.attachAxis(self.axis_x)
@@ -102,8 +104,6 @@ class DistributionCanvas(Canvas):
                                 pen=series.pen(), callback=self.on_infinite_line_moved)
             self.component_series.append(series)
             self.component_infinite_lines.append(line)
-        # update the size of legend
-        self.chart.legend().setMinimumSize(150.0, 30*(2+component_number))
         self.__current_component_number = component_number
 
     def on_observe_iteration_changed(self, value: bool):
@@ -224,6 +224,7 @@ if __name__ == "__main__":
     from PySide2.QtWidgets import QApplication
     app = QApplication(sys.argv)
     canvas = DistributionCanvas(is_dark=False)
+    canvas.on_component_number_changed(3)
     canvas.chart.legend().hide()
     canvas.show()
     sys.exit(app.exec_())
