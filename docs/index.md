@@ -12,6 +12,16 @@ Moreover, we are looking forward that there are some partners to join the develo
 
 If you have any idea, you can contact the authors below.
 
+---
+
+## Quick Start
+
+1. Download & Install [Python](https://www.python.org/downloads/)
+2. Run `pip install QGrain` in bash/cmd
+3. Run `qgrain` to start this app
+
+---
+
 ## Tutorials
 
 * [How to install QGrain](./tutorials/install)
