@@ -1,12 +1,24 @@
 # Overview of UI
 
-## The layout of app
+## Layout
 
-QGrain consists of some docks which are movable, scalable, divisible, floatable, and closable. By default, QGrain puts the docks which have canvas in the top left corner, and all these docks are tabified. In order to control this app conveniently, the dock of `Control Panel` is in the bottom left corner alone. On the right, there are the docks to display the raw data and recorded results.
+QGrain consists of several docks, i.e. small child windows. These docks may contains several widgets that collaborate to provide an certain function for users.
+
+The major feature of docks is its flexibility, that is, they are dockable, floatable, movable, scalable, divisible, and closable. These features makes you can adjust the layout as you please if you are not satisfied with it. The customized layout will be stored after you closed this app.
+
+Each dock can dock in main window and become the child window of main winodw. Each child window has its own title bar that
+displays its name. By double clicking its title bar or clicking its *Reset* button, you can float this dock, and it will become an independent window. Also, you can drag the title bar to make
+it floating.
+
+When you dragging this dock, there is a highlight rectangle to show you the area it will be put in. By this method, you can make the floating dock become docked again. Or, you can move it to another place. If you drag it around another dock, it will split and share the space with that dock. If you drag it on that dock, it will be tabbed, which means there is only one dock can ben displayed at the same time, and you can click the tabs below to switch between them.
+
+If you want to change the sizes of docks, you can drag the separator (i.e. the boundaries of docks) to adjust it. By clicking the *Close* button of dock, you can close the needless dock. If you want to display a dock that has been closed before, you can click the **Docks** menu and select the corresponding option to realize it again.
+
+By default, QGrain puts the docks which have canvas (i.e. chart) in the top left corner, and all these docks are tabified to reduce the occupancy of space. In order to control this app conveniently, the dock of `Control Panel` is in the bottom left corner alone. On the right, there are the docks to display the raw data and recorded results.
+
+If you want to reset the layout to default, you can click the `Reset` option in `Docks` menu.
 
 ![App Appearance With Data Loaded](../figures/app_appearance_with_data_loaded.png)
-
-If you are not satisfied with this default layout. You can adjust it as you please, the customized layout will be stored after you closed this app. If you want to reset the layout to default, you can click the **Reset** option of **Docks** menu. By double clicking the title or clicking the *Reset* button (top right corner of the dock) to float the dock. Drag the floating window above the other docks to tabify of split it. If you want to change the sizes of docks, you can drag the separator to adjust them. By clicking the *Close* button to close the needless docks. If you want to display a dock that has been closed before, you can click the **Docks** menu and select the corresponding option to realize it.
 
 ## Docks
 
@@ -24,22 +36,13 @@ Note: Only take effect when the **Observe Iteration** option of **Control Panel*
 
 ![Appearance of Loss Canvas](../figures/loss_canvas.png)
 
-### Distribution Cavas
+### Distribution Canvas
 
 The dock to dynamically display the distribution of raw data and fitting result of current sample.
 
 ![Appearance of Distribution Canvas](../figures/distribution_canvas.png)
 
 For the dock which contains canvas, you can follow the following mouse interaction to adjust the figure.
-
-* **Left button**: Interacts with items in the scene (select/move objects, etc). If there are no movable objects under the mouse cursor, then dragging with the left button will pan the scene instead.
-* **Right button drag**: Scales the scene. Dragging left/right scales horizontally; dragging up/down scales vertically (although some scenes will have their x/y scales locked together). If there are x/y axes fisible in the scene, then right-dragging over the axis will _only_ affect that axis.
-* **Right button click**: Clicking the right button in most cases will show a context menu with a variety of options depending on the object(s) under the mouse cursor.
-* **Middle button (or wheel) drag**: Dragging the mouse with the wheel pressed down will always pan the scene (this is useful in instances where panning with the left button is prevented by other objects in the scene).
-* **Wheel spin**: Zooms the scene in and out.
-
-Moreover, you can check the `temp` folder of QGrain to get the files of canvas.
-Note: If the size of `temp` folder is larger than 1 GB, it will be cleared when the app is initialized.
 
 ### Control Panel
 
