@@ -108,6 +108,7 @@ venv.bak/
 
 # custom
 /logs
-/temp
+/images
 settings/ui.ini
 /docs/*/*.pdf
+*.ini

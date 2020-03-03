@@ -1,0 +1,7 @@
+recursive-include QGrain i18n/*
+recursive-include QGrain samples/*
+recursive-include QGrain settings/*
+recursive-include QGrain settings/qss/*
+recursive-include QGrain settings/icons/*
+recursive-include QGrain settings/icons/dark/*
+recursive-include QGrain settings/icons/light/*
