@@ -1,4 +1,4 @@
-__all__ = ["FileType", "ValueNotNumberError", "CSVEncodingError", "DataLoader"]
+__all__ = ["FileType", "XLRDError", "ValueNotNumberError", "CSVEncodingError", "DataLoader"]
 
 import csv
 from enum import Enum, unique
