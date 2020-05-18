@@ -75,10 +75,14 @@ class MainWindow(QMainWindow):
     def init_ui(self, is_dark: bool):
         # Menu
         self.file_menu = self.menuBar().addMenu(self.tr("File"))
-        self.load_action = QAction(QIcon(os.path.join(self.icon_folder, "load.png")), self.tr("Load"), self)
-        self.file_menu.addAction(self.load_action)
-        self.save_action = QAction(QIcon(os.path.join(self.icon_folder, "save.png")), self.tr("Save"), self)
-        self.file_menu.addAction(self.save_action)
+        self.load_data_action = QAction(QIcon(os.path.join(self.icon_folder, "load.png")), self.tr("Load Data"), self)
+        self.file_menu.addAction(self.load_data_action)
+        self.save_results_action = QAction(QIcon(os.path.join(self.icon_folder, "save.png")), self.tr("Save Results"), self)
+        self.file_menu.addAction(self.save_results_action)
+        self.load_session_action = QAction(QIcon(os.path.join(self.icon_folder, "load.png")), self.tr("Load Session"), self)
+        self.file_menu.addAction(self.load_session_action)
+        self.save_session_action = QAction(QIcon(os.path.join(self.icon_folder, "save.png")), self.tr("Save Session"), self)
+        self.file_menu.addAction(self.save_session_action)
         self.docks_menu = self.menuBar().addMenu(self.tr("Docks"))
         self.pca_panel_action = QAction(QIcon(os.path.join(self.icon_folder, "pca.png")), self.tr("PCA Panel"), self)
         self.docks_menu.addAction(self.pca_panel_action)
@@ -160,8 +164,9 @@ class MainWindow(QMainWindow):
         self.control_panel.sigGUIResolverFittingStarted.connect(self.gui_resolver.try_fit)
 
         self.control_panel.sigDataSettingsChanged.connect(self.data_manager.on_settings_changed)
-        self.control_panel.sigGUIResolverFittingCanceled.connect(self.on_task_canceled)
+        self.control_panel.sigGUIResolverFittingCanceled.connect(self.on_gui_fitting_task_canceled)
         self.control_panel.sigMultiProcessingFittingStarted.connect(self.multiprocessing_resolver.execute_tasks)
+        self.control_panel.sigMultiProcessingFittingStarted.connect(self.on_multiprocessing_task_started)
         # Connect directly
         self.control_panel.record_button.clicked.connect(self.data_manager.record_current_data)
 
@@ -206,8 +211,10 @@ class MainWindow(QMainWindow):
         self.settings_action.triggered.connect(self.settings_window.show)
         self.about_action.triggered.connect(self.about_window.show)
 
-        self.load_action.triggered.connect(self.data_manager.load_data)
-        self.save_action.triggered.connect(self.data_manager.save_data)
+        self.load_data_action.triggered.connect(self.data_manager.load_data)
+        self.save_results_action.triggered.connect(self.data_manager.save_data)
+        self.load_session_action.triggered.connect(self.data_manager.load_session)
+        self.save_session_action.triggered.connect(self.data_manager.save_session)
         self.sigDataSelected.connect(self.control_panel.on_data_selected)
 
         self.sigSetup.connect(self.control_panel.setup_all)
@@ -295,8 +302,11 @@ class MainWindow(QMainWindow):
     def on_focus_sample_changed(self, index):
         self.raw_data_table.setCurrentCell(index, 0)
 
-    def on_task_canceled(self):
+    def on_gui_fitting_task_canceled(self):
         self.gui_resolver.cancel()
+
+    def on_multiprocessing_task_started(self):
+        self.task_window.show()
 
     def setup_all(self):
         # must call this again to make the layout as expected

@@ -2,6 +2,7 @@ __all__ = ["BackgroundLoader", "BackgroundWriter", "DataManager"]
 
 import logging
 import os
+import pickle
 from typing import Callable, Iterable, List, Tuple
 from uuid import UUID
 
@@ -268,7 +269,14 @@ class DataManager(QObject):
                     break
 
     def save_data(self):
-        filename, type_str = self.file_dialog.getSaveFileName(None, self.tr("Save Recorded Data"), None, "Excel (*.xlsx);;97-2003 Excel (*.xls);;CSV (*.csv)")
+        # NOTE:
+        # if don't assign the initial directory,
+        # there is an about 5s delay while first calling `getOpenFileName` func
+        # if there is a unreachable network disk
+        init_path = QStandardPaths.standardLocations(QStandardPaths.DesktopLocation)[0]
+        filename, type_str = self.file_dialog.getSaveFileName(
+            self.host_widget, self.tr("Save Recorded Data"),
+            init_path, "Excel (*.xlsx);;97-2003 Excel (*.xls);;CSV (*.csv)")
         if filename is None or filename == "":
             self.logger.info("The path is None or empty, ignored.")
             return
@@ -307,3 +315,45 @@ class DataManager(QObject):
     def cleanup_all(self):
         self.loading_thread.terminate()
         self.saving_thread.terminate()
+
+    def save_session(self):
+        # NOTE:
+        # if don't assign the initial directory,
+        # there is an about 5s delay while first calling `getOpenFileName` func
+        # if there is a unreachable network disk
+        init_path = QStandardPaths.standardLocations(QStandardPaths.DesktopLocation)[0]
+        filename, type_str = self.file_dialog.getSaveFileName(
+            self.host_widget, self.tr("Save Session File"),
+            init_path, "Session File (*.dat)")
+        if filename is None or filename == "":
+            self.logger.info("The path is None or empty, ignored.")
+            return
+        if os.path.exists(filename):
+            self.logger.warning("This file has existed and will be replaced. Filename: %s.", filename)
+        self.logger.info("File path to save is [%s].", filename)
+
+        with open(filename, mode="wb") as f:
+            pickle.dump(self.dataset, f)
+            pickle.dump(self.records, f)
+        self.logger.info("Session file has been saved.")
+
+    def load_session(self):
+        # NOTE:
+        # if don't assign the initial directory,
+        # there is an about 5s delay while first calling `getOpenFileName` func
+        # if there is a unreachable network disk
+        init_path = QStandardPaths.standardLocations(QStandardPaths.DesktopLocation)[0]
+        filename, type_str = self.file_dialog.getOpenFileName(
+            self.host_widget, self.tr("Select Session File"),
+            init_path, "Session File (*.dat)")
+        if filename is None or filename == "":
+            self.logger.info("The user did not select a file, ignored.")
+            return
+
+        if os.path.exists(filename):
+            with open(filename, mode="rb") as f:
+                self.dataset = pickle.load(f)
+                self.records = pickle.load(f)
+                self.sigDataLoaded.emit(self.dataset)
+                # TODO: records need to be clear
+                self.sigDataRecorded.emit(self.records)
