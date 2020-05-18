@@ -36,7 +36,7 @@ class MultiProcessingResolver(QObject):
     sigTaskFinished = Signal(list, list)
     sigTaskInitialized = Signal(list)
     logger = logging.getLogger(name="root.resolvers.MultiProcessingResolver")
-    STATE_CHECK_TIME_INTERVAL = 0.1
+    STATE_CHECK_TIME_INTERVAL = 0.05
 
     def __init__(self):
         super().__init__()

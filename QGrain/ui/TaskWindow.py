@@ -1,6 +1,6 @@
 __all__ = ["ProcessState", "TaskWindow"]
 from math import sqrt
-from typing import Iterable, Tuple, Dict
+from typing import Dict, Iterable, Tuple
 
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import (QGridLayout, QLabel, QListWidget, QMainWindow,
@@ -25,12 +25,26 @@ class TaskWindow(QMainWindow):
         self.setCentralWidget(self.central_widget)
         self.main_layout = QGridLayout(self.central_widget)
 
+        self.not_started_label = QLabel(self.tr("Not Started:"))
+        self.not_started_display = QLabel(self.tr("Unknown:"))
+        self.main_layout.addWidget(self.not_started_label, 0, 0)
+        self.main_layout.addWidget(self.not_started_display, 0, 1)
+
+        self.succeeded_label = QLabel(self.tr("Succeeded:"))
+        self.succeeded_display = QLabel(self.tr("Unknown"))
+        self.main_layout.addWidget(self.succeeded_label, 0, 2)
+        self.main_layout.addWidget(self.succeeded_display, 0, 3)
+
+        self.failed_label = QLabel(self.tr("Failed:"))
+        self.failed_display = QLabel(self.tr("Unknown"))
+        self.main_layout.addWidget(self.failed_label, 0, 4)
+        self.main_layout.addWidget(self.failed_display, 0, 5)
+
         self.state_labels_widget = QWidget()
-        self.main_layout.addWidget(self.state_labels_widget, 0, 0)
+        self.main_layout.addWidget(self.state_labels_widget, 1, 0, 1, 6)
         self.state_labels_layout = QGridLayout(self.state_labels_widget)
 
         self.setWindowTitle(self.tr("The States of Fitting Tasks"))
-        # self.setWindowFlags(Qt.Drawer | Qt.WindowStaysOnTopHint)
         self.setWindowFlags(Qt.Drawer)
 
     def change_label_state(self, label: QLabel, state: ProcessState):
@@ -65,17 +79,23 @@ class TaskWindow(QMainWindow):
             self.task_state_labels.update({task.sample.uuid: label})
 
     def on_task_state_updated(self, states: Dict):
-        self.show()
         for sample_id, state in states.items():
             label = self.task_state_labels[sample_id]
             self.change_label_state(label, state)
+
+        task_number = len(states)
+        succeeded_task_number = len([value for value in states.values() if value == ProcessState.Succeeded])
+        failed_task_number = len([value for value in states.values() if value == ProcessState.Failed])
+        not_started_task_number = task_number - succeeded_task_number - failed_task_number
+
+        self.not_started_display.setText(str(not_started_task_number))
+        self.succeeded_display.setText(str(succeeded_task_number))
+        self.failed_display.setText(str(failed_task_number))
 
     def on_task_finished(self, succeeded_results: Iterable[FittingResult], failed_tasks: Iterable[FittingTask]):
         for task in failed_tasks:
             label = self.task_state_labels[task.sample_id]
             self.change_label_state(label, ProcessState.Failed)
-
-
 
 
 
