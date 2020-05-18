@@ -2,6 +2,7 @@ __all__ = ["MultiProcessingResolver"]
 
 import logging
 import time
+from enum import Enum, unique
 from multiprocessing import Pool, cpu_count
 from typing import List
 
@@ -11,6 +12,12 @@ from QGrain.algorithms import DistributionType
 from QGrain.models.SampleDataset import SampleDataset
 from QGrain.resolvers.HeadlessResolver import FittingTask, HeadlessResolver
 
+
+@unique
+class ProcessState(Enum):
+    NotStarted = 0
+    Succeeded = 1
+    Failed = 2
 
 def run_task(task):
     global resolver
@@ -78,18 +85,24 @@ class MultiProcessingResolver(QObject):
             return
         self.init_tasks()
 
-        async_results = [(task.sample.uuid, self.pool.apply_async(run_task, args=(task,))) for task in self.tasks]
+        # setup the thread pool
+        suggested_params = [(DistributionType.GeneralWeibull, 1), (DistributionType.GeneralWeibull, 2),
+                            (DistributionType.GeneralWeibull, 3), (DistributionType.GeneralWeibull, 4)]
+        pool = Pool(cpu_count(), setup_process, suggested_params)
+        async_results = [(task.sample.uuid, pool.apply_async(run_task, args=(task,))) for task in self.tasks]
 
         while True:
             time.sleep(self.STATE_CHECK_TIME_INTERVAL)
-            task_states = []
-            for sample_id, result in async_results:
-                task_states.append((sample_id, result.ready()))
             all_ready = True
-            for sample_id, ready in task_states:
-                if not ready:
+            task_states = {}
+            for sample_id, result in async_results:
+                if result.ready():
+                    flag, task, fitting_result = result.get()
+                    task_states.update({sample_id: ProcessState.Succeeded if flag else ProcessState.Failed})
+                else:
                     all_ready = False
-                    break
+                    task_states.update({sample_id: ProcessState.NotStarted})
+
             self.sigTaskStateUpdated.emit(task_states)
             if all_ready:
                 break
@@ -102,15 +115,13 @@ class MultiProcessingResolver(QObject):
                 succeeded_results.append(fitting_result)
             else:
                 failed_tasks.append(task)
-
+        # cleanup the thread pool
+        pool.terminate()
+        pool.join()
         self.sigTaskFinished.emit(succeeded_results, failed_tasks)
 
-
     def setup_all(self):
-        suggested_params = [(DistributionType.GeneralWeibull, 1), (DistributionType.GeneralWeibull, 2),
-                            (DistributionType.GeneralWeibull, 3), (DistributionType.GeneralWeibull, 4)]
-        self.pool = Pool(cpu_count(), setup_process, suggested_params)
+        pass
 
     def cleanup_all(self):
-        self.pool.terminate()
-        self.pool.join()
+        pass
