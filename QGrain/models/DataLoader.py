@@ -81,6 +81,15 @@ class DataLoader:
                     sample_name = str(sample_name)
                 elif sample_name == "":
                     sample_name = replace_name_empty
+                # check if it's a empty row, i.e. the values all are empty string
+                is_empty_row = True
+                for distribution_value in row_values[layout.distribution_start_column:]:
+                    if distribution_value != "":
+                        is_empty_row = False
+                        break
+                # if it's a empty row, jump this row to process the next one
+                if is_empty_row:
+                    continue
                 distribution = np.array(row_values[layout.distribution_start_column:], dtype=np.float64)
                 names.append(sample_name)
                 distributions.append(distribution)
