@@ -35,6 +35,7 @@ class AlgorithmSetting(QWidget):
         self.main_layout.addWidget(self.global_maxiter_label, 1, 0)
         self.global_maxiter_input = QSpinBox()
         self.global_maxiter_input.setRange(0, 10000)
+        self.global_maxiter_input.setValue(100)
         self.main_layout.addWidget(self.global_maxiter_input, 1, 1)
 
         self.global_success_iter_label = QLabel(self.tr("Global Optimization Success Iteration"))
@@ -42,6 +43,7 @@ class AlgorithmSetting(QWidget):
         self.main_layout.addWidget(self.global_success_iter_label, 2, 0)
         self.global_success_iter_input = QSpinBox()
         self.global_success_iter_input.setRange(0, 100)
+        self.global_success_iter_input.setValue(3)
         self.main_layout.addWidget(self.global_success_iter_input, 2, 1)
 
         self.global_stepsize_label = QLabel(self.tr("Global Optimization Stepsize"))
@@ -49,6 +51,7 @@ class AlgorithmSetting(QWidget):
         self.main_layout.addWidget(self.global_stepsize_label, 3, 0)
         self.global_stepsize_input = QDoubleSpinBox()
         self.global_stepsize_input.setRange(0.0001, 10000)
+        self.global_stepsize_input.setValue(1.0)
         self.main_layout.addWidget(self.global_stepsize_input, 3, 1)
 
         self.minimizer_tolerance_level_label = QLabel(self.tr("Global Minimizer Tolerance Level"))
@@ -56,6 +59,7 @@ class AlgorithmSetting(QWidget):
         self.main_layout.addWidget(self.minimizer_tolerance_level_label, 4, 0)
         self.minimizer_tolerance_level_input = QSpinBox()
         self.minimizer_tolerance_level_input.setRange(1, 1000)
+        self.minimizer_tolerance_level_input.setValue(8)
         self.main_layout.addWidget(self.minimizer_tolerance_level_input, 4, 1)
 
         self.minimizer_maxiter_label = QLabel(self.tr("Global Minimizer Max Iteration"))
@@ -63,6 +67,7 @@ class AlgorithmSetting(QWidget):
         self.main_layout.addWidget(self.minimizer_maxiter_label, 5, 0)
         self.minimizer_maxiter_input = QSpinBox()
         self.minimizer_maxiter_input.setRange(0, 10000)
+        self.minimizer_maxiter_input.setValue(200)
         self.main_layout.addWidget(self.minimizer_maxiter_input, 5, 1)
 
         self.final_tolerance_level_label = QLabel(self.tr("Final Fitting Tolerance Level"))
@@ -70,6 +75,7 @@ class AlgorithmSetting(QWidget):
         self.main_layout.addWidget(self.final_tolerance_level_label, 6, 0)
         self.final_tolerance_level_input = QSpinBox()
         self.final_tolerance_level_input.setRange(1, 1000)
+        self.final_tolerance_level_input.setValue(100)
         self.main_layout.addWidget(self.final_tolerance_level_input, 6, 1)
 
         self.final_maxiter_label = QLabel(self.tr("Final Fitting Max Iteration"))
@@ -77,9 +83,8 @@ class AlgorithmSetting(QWidget):
         self.main_layout.addWidget(self.final_maxiter_label, 7, 0)
         self.final_maxiter_input = QSpinBox()
         self.final_maxiter_input.setRange(100, 10000)
+        self.final_maxiter_input.setValue(1000)
         self.main_layout.addWidget(self.final_maxiter_input, 7, 1)
-
-        self.restore()
 
         self.global_maxiter_input.valueChanged.connect(self.on_settings_changed)
         self.global_success_iter_input.valueChanged.connect(self.on_settings_changed)

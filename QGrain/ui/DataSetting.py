@@ -37,6 +37,7 @@ class DataSetting(QWidget):
         self.main_layout.addWidget(self.class_row_label, 1, 0)
         self.class_row_input = QSpinBox()
         self.class_row_input.setMinimum(0)
+        self.class_row_input.setValue(0)
         self.main_layout.addWidget(self.class_row_input, 1, 1)
 
         self.sample_name_col_label = QLabel(self.tr("Sample Name Column"))
@@ -44,6 +45,7 @@ class DataSetting(QWidget):
         self.main_layout.addWidget(self.sample_name_col_label, 2, 0)
         self.sample_name_col_input = QSpinBox()
         self.sample_name_col_input.setMinimum(0)
+        self.sample_name_col_input.setValue(0)
         self.main_layout.addWidget(self.sample_name_col_input, 2, 1)
 
         self.distribution_start_row_label = QLabel(self.tr("Distribution Start Row"))
@@ -51,6 +53,7 @@ class DataSetting(QWidget):
         self.main_layout.addWidget(self.distribution_start_row_label, 3, 0)
         self.distribution_start_row_input = QSpinBox()
         self.distribution_start_row_input.setMinimum(1)
+        self.distribution_start_row_input.setValue(1)
         self.main_layout.addWidget(self.distribution_start_row_input, 3, 1)
 
         self.distribution_start_col_label = QLabel(self.tr("Distribution Start Column"))
@@ -58,14 +61,13 @@ class DataSetting(QWidget):
         self.main_layout.addWidget(self.distribution_start_col_label, 4, 0)
         self.distribution_start_col_input = QSpinBox()
         self.distribution_start_col_input.setMinimum(1)
+        self.distribution_start_col_input.setValue(1)
         self.main_layout.addWidget(self.distribution_start_col_input, 4, 1)
 
         self.draw_charts_checkbox = QCheckBox(self.tr("Draw Charts"))
         self.draw_charts_checkbox.setChecked(True)
         self.draw_charts_checkbox.setToolTip(self.tr("Whether to draw charts while saving .xlsx file.\nIf the samples are too many, the massive charts will slow the running of Excel heavily."))
         self.main_layout.addWidget(self.draw_charts_checkbox, 5, 0, 1, 2)
-
-        self.restore()
 
         self.class_row_input.valueChanged.connect(self.on_loading_setting_changed)
         self.sample_name_col_input.valueChanged.connect(self.on_loading_setting_changed)
@@ -87,9 +89,9 @@ class DataSetting(QWidget):
             self.sigDataSettingChanged.emit({"layout": layout})
         except DataLayoutError:
             self.logger.exception("The data layout setting is invalid.", stack_info=True)
-            self.msg_box.setWindowTitle(self.tr("Error"))
-            self.msg_box.setText(self.tr("Invalid data layout setting."))
-            self.msg_box.exec_()
+            # self.msg_box.setWindowTitle(self.tr("Error"))
+            # self.msg_box.setText(self.tr("Invalid data layout setting."))
+            # self.msg_box.exec_()
             return
         self.settings.setValue("classes_row", classes_row)
         self.settings.setValue("sample_name_column", sample_name_column)
