@@ -44,7 +44,6 @@ class AppSetting(QWidget):
 
         self.language_combo_box.currentIndexChanged.connect(self.on_language_changed)
         self.theme_combo_box.currentIndexChanged.connect(self.on_theme_changed)
-        self.restore()
 
     def on_language_changed(self, index: int):
         _, lang = self.language_options[index]

@@ -29,4 +29,6 @@ class SettingWindow(QMainWindow):
         self.main_layout.addWidget(self.app_setting, 2, 0, 1, 2)
 
     def setup_all(self):
-        pass
+        self.data_setting.restore()
+        self.algorithm_setting.restore()
+        self.app_setting.restore()
