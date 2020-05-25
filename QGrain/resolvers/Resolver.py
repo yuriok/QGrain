@@ -7,6 +7,7 @@ import numpy as np
 from scipy.optimize import OptimizeResult, basinhopping, minimize
 
 from QGrain.algorithms import AlgorithmData, DistributionType
+from QGrain.models.AlgorithmSettings import AlgorithmSettings
 from QGrain.models.FittingResult import FittingResult
 from QGrain.models.SampleData import SampleData
 
@@ -15,25 +16,13 @@ class Resolver:
     """
     The base class of resolvers.
     """
-    def __init__(self, global_optimization_maxiter=100,
-                 global_optimization_success_iter=3,
-                 global_optimization_stepsize=1.0,
-                 final_tolerance=1e-100,
-                 final_maxiter=1000,
-                 minimizer_tolerance=1e-8,
-                 minimizer_maxiter=500):
+    def __init__(self):
         self.__distribution_type = DistributionType.GeneralWeibull
         self.__component_number = 3
         self.refresh()
 
         # algorithms settings
-        self.__global_optimization_maxiter = global_optimization_maxiter
-        self.__global_optimization_success_iter = global_optimization_success_iter
-        self.__global_optimization_stepsize = global_optimization_stepsize
-        self.__minimizer_tolerance = minimizer_tolerance
-        self.__minimizer_maxiter = minimizer_maxiter
-        self.__final_tolerance = final_tolerance
-        self.__final_maxiter = final_maxiter
+        self.algorthm_settings = AlgorithmSettings()
 
         # the related data of current sample
         self.sample_name = None # type: str
@@ -180,24 +169,10 @@ class Resolver:
         else:
             return True
 
-    def change_settings(self, **kwargs):
-        for key, value in kwargs.items():
-            if key == "global_optimization_maxiter":
-                self.__global_optimization_maxiter = value
-            elif key == "global_optimization_success_iter":
-                self.__global_optimization_success_iter = value
-            elif key == "global_optimization_stepsize":
-                self.__global_optimization_stepsize = value
-            elif key == "minimizer_tolerance":
-                self.__minimizer_tolerance = value
-            elif key == "minimizer_maxiter":
-                self.__minimizer_maxiter = value
-            elif key == "final_tolerance":
-                self.__final_tolerance = value
-            elif key == "final_maxiter":
-                self.__final_maxiter = value
-            else:
-                raise NotImplementedError(key)
+    def change_settings(self, settings: AlgorithmSettings):
+        assert settings is not None
+        assert isinstance(settings, AlgorithmSettings)
+        self.algorthm_settings = settings
 
     def get_fitting_result(self, fitted_params: Iterable[float],
                            fitting_history: List[np.ndarray] = None):
@@ -222,44 +197,45 @@ class Resolver:
             current_values = self.algorithm_data.mixed_func(x_to_fit, *args)
             return Resolver.get_squared_sum_of_residual_errors(current_values, y_to_fit)*100
 
-        minimizer_kwargs = dict(method="SLSQP",
-                                bounds=self.algorithm_data.bounds,
-                                constraints=self.algorithm_data.constrains,
-                                callback=self.local_iteration_callback,
-                                options={"maxiter": self.__minimizer_maxiter,
-                                         "ftol": self.__minimizer_tolerance})
+        global_optimization_minimizer_kwargs = \
+            dict(method="SLSQP",
+                 bounds=self.algorithm_data.bounds,
+                 constraints=self.algorithm_data.constrains,
+                 callback=self.local_iteration_callback,
+                 options={"maxiter": self.algorthm_settings.global_optimization_minimizer_maximum_iteration,
+                          "ftol": 10**-self.algorthm_settings.global_optimization_minimizer_tolerance_level})
         try:
-            global_algorithm_result = \
+            global_optimization_result = \
                 basinhopping(closure, x0=self.initial_guess,
-                             minimizer_kwargs=minimizer_kwargs,
+                             minimizer_kwargs=global_optimization_minimizer_kwargs,
                              callback=self.global_iteration_callback,
-                             niter_success=self.__global_optimization_success_iter,
-                             niter=self.__global_optimization_maxiter,
-                             stepsize=self.__global_optimization_stepsize)
+                             niter_success=self.algorthm_settings.global_optimization_success_iteration,
+                             niter=self.algorthm_settings.global_optimization_maximum_iteration,
+                             stepsize=self.algorthm_settings.global_optimization_step_size)
 
-            if global_algorithm_result.lowest_optimization_result.success or \
-                    global_algorithm_result.lowest_optimization_result.status == 9:
-                self.on_global_fitting_succeeded(global_algorithm_result)
+            if global_optimization_result.lowest_optimization_result.success or \
+                    global_optimization_result.lowest_optimization_result.status == 9:
+                self.on_global_fitting_succeeded(global_optimization_result)
             else:
-                self.on_global_fitting_failed(global_algorithm_result)
+                self.on_global_fitting_failed(global_optimization_result)
                 self.on_fitting_finished()
                 return
-            final_algorithm_result = \
+            final_optimization_result = \
                 minimize(closure, method="SLSQP",
-                         x0=global_algorithm_result.x,
+                         x0=global_optimization_result.x,
                          bounds=self.algorithm_data.bounds,
                          constraints=self.algorithm_data.constrains,
                          callback=self.local_iteration_callback,
-                         options={"maxiter": self.__final_maxiter,
-                                  "ftol": self.__final_tolerance})
+                         options={"maxiter": self.algorthm_settings.final_optimization_minimizer_maximum_iteration,
+                                  "ftol": 10**-self.algorthm_settings.final_optimization_minimizer_tolerance_level})
             # judge if the final fitting succeed
             # see https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.fmin_slsqp.html
-            if final_algorithm_result.success or final_algorithm_result.status == 9:
-                self.on_fitting_succeeded(final_algorithm_result)
+            if final_optimization_result.success or final_optimization_result.status == 9:
+                self.on_fitting_succeeded(final_optimization_result)
                 self.on_fitting_finished()
                 return
             else:
-                self.on_final_fitting_failed(final_algorithm_result)
+                self.on_final_fitting_failed(final_optimization_result)
                 self.on_fitting_finished()
                 return
         except Exception as e:

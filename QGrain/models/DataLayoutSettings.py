@@ -1,11 +1,11 @@
-__all__ = ["DataLayoutError", "DataLayoutSetting"]
+__all__ = ["DataLayoutError", "DataLayoutSettings"]
 
 class DataLayoutError(Exception):
     """Raises while the data layout settings are invalid."""
     pass
 
 
-class DataLayoutSetting:
+class DataLayoutSettings:
     """
     The class to represent the layout setting of raw data file.
     All types of raw data files can be regarded as the table(s) that contains rows and columns.
