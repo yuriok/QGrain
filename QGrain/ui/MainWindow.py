@@ -50,12 +50,6 @@ class MainWindow(QMainWindow):
     gui_logger = logging.getLogger("GUI")
     def __init__(self, is_dark=True):
         super().__init__()
-        if is_dark:
-            self.icon_folder = os.path.join(QGRAIN_ROOT_PATH, "settings", "icons", "dark")
-        else:
-            self.icon_folder = os.path.join(QGRAIN_ROOT_PATH, "settings", "icons", "light")
-        self.init_ui(is_dark)
-        self.status_bar = self.statusBar()
         self.gui_fitting_thread = QThread()
         self.gui_resolver = GUIResolver()
         # disable multi-thread for debug
@@ -64,6 +58,13 @@ class MainWindow(QMainWindow):
         self.multiprocessing_resolver = MultiProcessingResolver()
         self.multiprocessing_resolver.moveToThread(self.multiprocessing_fitting_thread)
         self.data_manager = DataManager(self)
+        if is_dark:
+            self.icon_folder = os.path.join(QGRAIN_ROOT_PATH, "settings", "icons", "dark")
+        else:
+            self.icon_folder = os.path.join(QGRAIN_ROOT_PATH, "settings", "icons", "light")
+        self.init_ui(is_dark)
+        self.status_bar = self.statusBar()
+
         self.connect_all()
         self.msg_box = QMessageBox(self)
         self.msg_box.setWindowFlags(Qt.Drawer)
@@ -148,13 +149,11 @@ class MainWindow(QMainWindow):
 
         self.settings_window = SettingWindow(self)
         self.about_window = AboutWindow(self)
-        self.task_window = TaskWindow(self)
+        self.task_window = TaskWindow(self, self.multiprocessing_resolver)
 
     def connect_all(self):
         self.control_panel.sigDistributionTypeChanged.connect(self.gui_resolver.on_distribution_type_changed)
-        self.control_panel.sigDistributionTypeChanged.connect(self.multiprocessing_resolver.on_distribution_type_changed)
         self.control_panel.sigComponentNumberChanged.connect(self.gui_resolver.on_component_number_changed)
-        self.control_panel.sigComponentNumberChanged.connect(self.multiprocessing_resolver.on_component_number_changed)
         self.control_panel.sigComponentNumberChanged.connect(self.distribution_canvas.on_component_number_changed)
         self.control_panel.sigFocusSampleChanged.connect(self.data_manager.on_focus_sample_changed)
         self.control_panel.sigFocusSampleChanged.connect(self.on_focus_sample_changed)
@@ -162,11 +161,10 @@ class MainWindow(QMainWindow):
         self.control_panel.sigObserveIterationChanged.connect(self.loss_canvas.on_observe_iteration_changed)
         self.control_panel.sigInheritParamsChanged.connect(self.gui_resolver.on_inherit_params_changed)
         self.control_panel.sigGUIResolverFittingStarted.connect(self.gui_resolver.try_fit)
+        self.control_panel.sigMultiProcessingFittingButtonClicked.connect(self.on_multiprocessing_fitting_button_clicked)
 
         self.control_panel.sigDataSettingsChanged.connect(self.data_manager.on_settings_changed)
         self.control_panel.sigGUIResolverFittingCanceled.connect(self.on_gui_fitting_task_canceled)
-        self.control_panel.sigMultiProcessingFittingStarted.connect(self.multiprocessing_resolver.execute_tasks)
-        self.control_panel.sigMultiProcessingFittingStarted.connect(self.on_multiprocessing_task_started)
         # Connect directly
         self.control_panel.record_button.clicked.connect(self.data_manager.record_current_data)
 
@@ -174,7 +172,7 @@ class MainWindow(QMainWindow):
 
         self.data_manager.sigDataLoaded.connect(self.on_data_loaded)
         self.data_manager.sigDataLoaded.connect(self.control_panel.on_data_loaded)
-        self.data_manager.sigDataLoaded.connect(self.multiprocessing_resolver.on_data_loaded)
+        self.data_manager.sigDataLoaded.connect(self.task_window.on_data_loaded)
         self.data_manager.sigDataLoaded.connect(self.pca_panel.on_data_loaded)
         self.data_manager.sigDataLoaded.connect(self.all_distribution_canvas.on_data_loaded)
         self.data_manager.sigTargetDataChanged.connect(self.gui_resolver.on_target_data_changed)
@@ -189,10 +187,12 @@ class MainWindow(QMainWindow):
         self.gui_resolver.sigFittingSucceeded.connect(self.data_manager.on_fitting_suceeded)
         self.gui_resolver.sigFittingFailed.connect(self.control_panel.on_fitting_failed)
 
-        self.multiprocessing_resolver.sigTaskInitialized.connect(self.task_window.on_task_initialized)
-        self.multiprocessing_resolver.sigTaskStateUpdated.connect(self.task_window.on_task_state_updated)
-        self.multiprocessing_resolver.sigTaskFinished.connect(self.task_window.on_task_finished)
-        self.multiprocessing_resolver.sigTaskFinished.connect(self.data_manager.on_multiprocessing_task_finished)
+
+        self.multiprocessing_resolver.task_state_updated.connect(self.task_window.on_task_state_updated)
+
+        self.task_window.task_generated_signal.connect(self.multiprocessing_resolver.on_task_generated)
+        self.task_window.fitting_started_signal.connect(self.multiprocessing_resolver.execute_tasks)
+        self.task_window.fitting_finished_signal.connect(self.data_manager.on_multiprocessing_task_finished)
 
         self.raw_data_table.cellClicked.connect(self.on_data_item_clicked)
         self.recorded_data_table.sigRemoveRecords.connect(self.data_manager.remove_data)
@@ -224,9 +224,8 @@ class MainWindow(QMainWindow):
         self.sigCleanup.connect(self.data_manager.cleanup_all)
         self.sigCleanup.connect(self.multiprocessing_resolver.cleanup_all)
 
-        self.settings_window.data_setting.sigDataSettingChanged.connect(self.data_manager.on_settings_changed)
-        self.settings_window.algorithm_setting.sigAlgorithmSettingChanged.connect(self.gui_resolver.on_algorithm_settings_changed)
-        self.settings_window.algorithm_setting.sigAlgorithmSettingChanged.connect(self.multiprocessing_resolver.on_algorithm_settings_changed)
+        self.settings_window.data_settings.data_settings_changed_signal.connect(self.data_manager.on_settings_changed)
+        self.settings_window.algorithm_settings.setting_changed_signal.connect(self.gui_resolver.on_algorithm_settings_changed)
 
     def reset_dock_layout(self):
         self.pca_panel_dock.show()
@@ -305,8 +304,8 @@ class MainWindow(QMainWindow):
     def on_gui_fitting_task_canceled(self):
         self.gui_resolver.cancel()
 
-    def on_multiprocessing_task_started(self):
-        self.task_window.show()
+    def on_multiprocessing_fitting_button_clicked(self):
+        self.task_window.exec_()
 
     def setup_all(self):
         # must call this again to make the layout as expected
