@@ -7,7 +7,7 @@ from typing import Iterable, Tuple
 import numpy as np
 from xlrd import XLRDError, open_workbook
 
-from QGrain.models.DataLayoutSetting import DataLayoutError, DataLayoutSetting
+from QGrain.models.DataLayoutSettings import DataLayoutError, DataLayoutSettings
 from QGrain.models.SampleDataset import SampleDataset
 
 
@@ -32,7 +32,7 @@ class DataLoader:
     def __init__(self):
         pass
 
-    def try_load_data(self, filename: str, file_type: FileType, layout: DataLayoutSetting) -> SampleDataset:
+    def try_load_data(self, filename: str, file_type: FileType, layout: DataLayoutSettings) -> SampleDataset:
         assert filename is not None
         assert filename != ""
 
@@ -45,7 +45,7 @@ class DataLoader:
             raise NotImplementedError(file_type)
 
     def process_raw_data(self, raw_data: Iterable[Iterable],
-                         assigned_layout: DataLayoutSetting = None,
+                         assigned_layout: DataLayoutSettings = None,
                          replace_name_none="NONE", replace_name_empty="EMPTY") \
             -> Tuple[np.ndarray, Iterable[str], Iterable[np.ndarray]]:
         """
@@ -53,7 +53,7 @@ class DataLoader:
 
         Args:
             raw_data: A 2-d `Iterable` object, e.g. List[List].
-            assigned_layout: A `DataLayoutSetting` object, by default it will use the parameterless `ctor` of `DataLayoutSetting` to create one.
+            assigned_layout: A `DataLayoutSettings` object, by default it will use the parameterless `ctor` of `DataLayoutSettings` to create one.
             replace_name_none: The `str` to replace the `None` value of sample names.
             replace_name_empty: Similar to above.
 
@@ -65,7 +65,7 @@ class DataLoader:
             ValueNotNumberError: If the value of classes or distributions can not be converted to real number.
         """
         if assigned_layout is None:
-            layout = DataLayoutSetting()
+            layout = DataLayoutSettings()
         else:
             layout = assigned_layout
         try:
@@ -100,7 +100,7 @@ class DataLoader:
         except ValueError as e:
             raise ValueNotNumberError("Some value can not be converted to real number, check the data file and layout setting.") from e
 
-    def try_csv(self, filename: str, layout: DataLayoutSetting) -> SampleDataset:
+    def try_csv(self, filename: str, layout: DataLayoutSettings) -> SampleDataset:
         try:
             with open(filename, encoding="utf-8") as f:
                 r = csv.reader(f)
@@ -112,7 +112,7 @@ class DataLoader:
         except UnicodeDecodeError as e:
             raise CSVEncodingError("The encoding of csv file must be utf-8.") from e
 
-    def try_excel(self, filename: str, layout: DataLayoutSetting) -> SampleDataset:
+    def try_excel(self, filename: str, layout: DataLayoutSettings) -> SampleDataset:
         sheet = open_workbook(filename).sheet_by_index(0)
         raw_data = []
         for i in range(sheet.nrows):

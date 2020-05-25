@@ -9,6 +9,7 @@ from scipy.interpolate import interp1d
 from scipy.optimize import OptimizeResult
 
 from QGrain.algorithms import DistributionType
+from QGrain.models.AlgorithmSettings import AlgorithmSettings
 from QGrain.models.FittingResult import FittingResult
 from QGrain.models.SampleData import SampleData
 from QGrain.resolvers.Resolver import Resolver
@@ -50,9 +51,9 @@ class GUIResolver(QObject, Resolver):
         self.inherit_params = value
         self.logger.info("Setting [%s] have been changed to [%s].", "inherit_params", value)
 
-    def on_algorithm_settings_changed(self, settings: dict):
-        self.change_settings(**settings)
-        self.logger.info("Algorithm settings have been changed to [%s].", settings)
+    def on_algorithm_settings_changed(self, settings: AlgorithmSettings):
+        self.change_settings(settings)
+        self.logger.info("Algorithm settings have been changed.")
 
     def on_target_data_changed(self, sample: SampleData):
         self.logger.debug("Target data has been changed to [%s].", sample.name)
