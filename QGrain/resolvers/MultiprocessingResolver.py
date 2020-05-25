@@ -4,12 +4,15 @@ import logging
 import time
 from enum import Enum, unique
 from multiprocessing import Pool, cpu_count
-from typing import List
+from typing import Dict, List
+from uuid import UUID, uuid4
 
-from PySide2.QtCore import QObject, Signal
+import numpy as np
+from PySide2.QtCore import QMutex, QObject, Signal
 
 from QGrain.algorithms import DistributionType
-from QGrain.models.SampleDataset import SampleDataset
+from QGrain.models.AlgorithmSettings import AlgorithmSettings
+from QGrain.models.FittingResult import FittingResult
 from QGrain.resolvers.HeadlessResolver import FittingTask, HeadlessResolver
 
 
@@ -32,93 +35,80 @@ def setup_process(*args):
         resolver.component_number = component_number
 
 class MultiProcessingResolver(QObject):
-    sigTaskStateUpdated = Signal(tuple)
-    sigTaskFinished = Signal(list, list)
-    sigTaskInitialized = Signal(list)
+    task_state_updated = Signal(list, dict, dict)
     logger = logging.getLogger(name="root.resolvers.MultiProcessingResolver")
     STATE_CHECK_TIME_INTERVAL = 0.05
-
     def __init__(self):
         super().__init__()
-        self.component_number = 3
-        self.distribution_type = DistributionType.GeneralWeibull
-        self.algorithm_settings = None
+        self.tasks = [] # type: List[FittingTask]
+        self.states = {} # type: Dict[UUID, ProcessState]
+        self.succeeded_results = {} # type: Dict[UUID, FittingResult]
 
-        self.grain_size_data = None # type: SampleDataset
-        self.tasks = None # type: List[FittingTask]
+        self.__pause_flag = False
+        self.__cancel_flag = False
+        self.__pause_mutex = QMutex()
 
-
-    def on_component_number_changed(self, component_number: int):
-        self.component_number = component_number
-        self.logger.info("Component number has been changed to [%d].", self.component_number)
-
-    def on_distribution_type_changed(self, distribution_type: DistributionType):
-        self.distribution_type = DistributionType(distribution_type)
-        self.logger.info("Distribution type has been changed to [%s].", self.distribution_type)
-
-    def on_algorithm_settings_changed(self, settings: dict):
-        self.algorithm_settings = settings
-        self.logger.info("Algorithm settings have been changed to [%s].", settings)
-
-    def on_data_loaded(self, data: SampleDataset):
-        if data is None:
-            return
-        elif not data.has_data:
-            return
-
-        self.grain_size_data = data
-
-    def init_tasks(self):
-        tasks = []
-        for sample in self.grain_size_data.samples:
-            task = FittingTask(
-                sample,
-                component_number=self.component_number,
-                distribution_type=self.distribution_type,
-                algorithm_settings=self.algorithm_settings)
-            tasks.append(task)
-        self.tasks = tasks
-        self.sigTaskInitialized.emit(tasks)
+    def on_task_generated(self, tasks: List[FittingTask]):
+        assert tasks is not None
+        states = {}
+        for task in tasks:
+            states[task.uuid] = ProcessState.NotStarted
+        self.tasks.extend(tasks)
+        self.states.update(states)
 
     def execute_tasks(self):
-        if self.grain_size_data is None:
-            return
-        self.init_tasks()
-
+        assert self.tasks is not None
+        assert self.states is not None
+        assert self.succeeded_results is not None
         # setup the thread pool
         suggested_params = [(DistributionType.GeneralWeibull, 1), (DistributionType.GeneralWeibull, 2),
                             (DistributionType.GeneralWeibull, 3), (DistributionType.GeneralWeibull, 4)]
         pool = Pool(cpu_count(), setup_process, suggested_params)
-        async_results = [(task.sample.uuid, pool.apply_async(run_task, args=(task,))) for task in self.tasks]
-
-        while True:
-            time.sleep(self.STATE_CHECK_TIME_INTERVAL)
-            all_ready = True
-            task_states = {}
-            for sample_id, result in async_results:
+        async_results = {task.uuid: pool.apply_async(run_task, args=(task,))
+                         for task in self.tasks
+                         if self.states[task.uuid] == ProcessState.NotStarted}
+        def check_states():
+            for task_id, result in async_results.items():
                 if result.ready():
                     flag, task, fitting_result = result.get()
-                    task_states.update({sample_id: ProcessState.Succeeded if flag else ProcessState.Failed})
+                    if flag:
+                        self.states[task_id] = ProcessState.Succeeded
+                        self.succeeded_results[task_id] = fitting_result
+                    else:
+                        self.states[task_id] = ProcessState.Failed
                 else:
-                    all_ready = False
-                    task_states.update({sample_id: ProcessState.NotStarted})
+                    self.states[task_id] = ProcessState.NotStarted
+            self.task_state_updated.emit(self.tasks, self.states, self.succeeded_results)
 
-            self.sigTaskStateUpdated.emit(task_states)
-            if all_ready:
+        while True:
+            self.__pause_mutex.lock()
+            # handle the pause request
+            if self.__pause_flag:
+                self.__pause_flag = False
+                self.__pause_mutex.unlock()
                 break
-
-        succeeded_results = []
-        failed_tasks = []
-        for sample_id, r in async_results:
-            flag, task, fitting_result = r.get()
-            if flag:
-                succeeded_results.append(fitting_result)
             else:
-                failed_tasks.append(task)
-        # cleanup the thread pool
+                self.__pause_mutex.unlock()
+                time.sleep(self.STATE_CHECK_TIME_INTERVAL)
+                # check if all tasks are finished
+                if np.alltrue([state!=ProcessState.NotStarted for state in self.states.values()]):
+                    break
+                else:
+                    check_states()
+        check_states()
         pool.terminate()
         pool.join()
-        self.sigTaskFinished.emit(succeeded_results, failed_tasks)
+
+    def pause_task(self):
+        self.__pause_mutex.lock()
+        self.__pause_flag = True
+        self.__pause_mutex.unlock()
+
+
+    def cleanup(self):
+        self.tasks = []
+        self.states = {}
+        self.succeeded_results = {}
 
     def setup_all(self):
         pass

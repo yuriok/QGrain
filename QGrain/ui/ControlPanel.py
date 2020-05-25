@@ -23,7 +23,7 @@ class ControlPanel(QWidget):
     sigInheritParamsChanged = Signal(bool)
     sigGUIResolverFittingStarted = Signal()
     sigGUIResolverFittingCanceled = Signal()
-    sigMultiProcessingFittingStarted = Signal()
+    sigMultiProcessingFittingButtonClicked = Signal()
     logger = logging.getLogger("root.ui.ControlPanel")
     gui_logger = logging.getLogger("GUI")
 
@@ -337,7 +337,7 @@ class ControlPanel(QWidget):
     def on_multiprocessing_clicked(self):
         if not self.check_data_loaded():
             return
-        self.sigMultiProcessingFittingStarted.emit()
+        self.sigMultiProcessingFittingButtonClicked.emit()
 
     def on_fitting_started(self):
         self.change_enable_states(False)
