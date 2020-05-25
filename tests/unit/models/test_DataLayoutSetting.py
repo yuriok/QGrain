@@ -4,50 +4,50 @@ import unittest
 
 import numpy as np
 
-from QGrain.models.DataLayoutSetting import *
+from QGrain.models.DataLayoutSettings import *
 
 
 class TestDataLayoutSetting(unittest.TestCase):
     def test_valid_ctor(self):
-        layout = DataLayoutSetting()
-        layout = DataLayoutSetting(1, 1, 3, 3)
+        layout = DataLayoutSettings()
+        layout = DataLayoutSettings(1, 1, 3, 3)
 
     def test_invalid_type(self):
         with self.assertRaises(AssertionError):
-            DataLayoutSetting("0", 0, 1, 1)
+            DataLayoutSettings("0", 0, 1, 1)
         with self.assertRaises(AssertionError):
-            DataLayoutSetting(0, "0", 1, 1)
+            DataLayoutSettings(0, "0", 1, 1)
         with self.assertRaises(AssertionError):
-            DataLayoutSetting(0, 0, "1", 1)
+            DataLayoutSettings(0, 0, "1", 1)
         with self.assertRaises(AssertionError):
-            DataLayoutSetting(0, 0, 1, "1")
+            DataLayoutSettings(0, 0, 1, "1")
         with self.assertRaises(AssertionError):
-            DataLayoutSetting(0.0, 0, 1, 1)
+            DataLayoutSettings(0.0, 0, 1, 1)
         with self.assertRaises(AssertionError):
-            DataLayoutSetting(0, 0.0, 1, 1)
+            DataLayoutSettings(0, 0.0, 1, 1)
         with self.assertRaises(AssertionError):
-            DataLayoutSetting(0, 0, 1.0, 1)
+            DataLayoutSettings(0, 0, 1.0, 1)
         with self.assertRaises(AssertionError):
-            DataLayoutSetting(0, 0, 1, 1.0)
+            DataLayoutSettings(0, 0, 1, 1.0)
 
     def test_negative(self):
         with self.assertRaises(DataLayoutError):
-            DataLayoutSetting(-1, 0, 1, 1)
+            DataLayoutSettings(-1, 0, 1, 1)
         with self.assertRaises(DataLayoutError):
-            DataLayoutSetting(0, -1, 1, 1)
+            DataLayoutSettings(0, -1, 1, 1)
         with self.assertRaises(DataLayoutError):
-            DataLayoutSetting(0, 0, -1, 1)
+            DataLayoutSettings(0, 0, -1, 1)
         with self.assertRaises(DataLayoutError):
-            DataLayoutSetting(0, 0, 1, -1)
+            DataLayoutSettings(0, 0, 1, -1)
 
     def test_unexcepted_smaller(self):
         with self.assertRaises(DataLayoutError):
-            DataLayoutSetting(3, 3, 1, 4)
+            DataLayoutSettings(3, 3, 1, 4)
         with self.assertRaises(DataLayoutError):
-            DataLayoutSetting(3, 3, 4, 1)
+            DataLayoutSettings(3, 3, 4, 1)
 
     def test_read_only(self):
-        layout = DataLayoutSetting()
+        layout = DataLayoutSettings()
         layout.classes_row
         layout.sample_name_column
         layout.distribution_start_row
