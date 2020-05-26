@@ -40,6 +40,7 @@ class ControlPanel(QWidget):
 
         self.init_ui()
         self.connect_all()
+        self.change_enable_states(True)
 
         self.msg_box = QMessageBox(self)
         self.msg_box.setWindowFlags(Qt.Drawer)
@@ -293,6 +294,7 @@ class ControlPanel(QWidget):
         self.try_fit_button.setEnabled(enable)
         self.record_button.setEnabled(enable)
         self.multiprocessing_button.setEnabled(enable)
+        self.cancel_run.setEnabled(not enable)
 
     def on_fitting_suceeded(self, result: FittingResult):
         if self.auto_run_flag and result.has_invalid_value:
