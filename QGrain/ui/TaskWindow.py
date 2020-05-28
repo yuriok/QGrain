@@ -47,8 +47,10 @@ class TaskWindow(QDialog):
         self.main_layout.addWidget(self.task_initialization_label, 0, 0)
 
         self.sample_from_label = QLabel(self.tr("From"))
+        self.sample_from_label.setToolTip(self.tr("Select the first sample you want to perform."))
         self.start_sample_combo_box = QComboBox()
         self.sample_to_label = QLabel(self.tr("To"))
+        self.sample_to_label.setToolTip(self.tr("Select the last sample you want to perform."))
         self.end_sample_combo_box = QComboBox()
         self.main_layout.addWidget(self.sample_from_label, 1, 0)
         self.main_layout.addWidget(self.start_sample_combo_box, 1, 1)
@@ -56,15 +58,18 @@ class TaskWindow(QDialog):
         self.main_layout.addWidget(self.end_sample_combo_box, 2, 1)
 
         self.interval_label = QLabel(self.tr("Interval"))
+        self.interval_label.setToolTip(self.tr("Select the interval of each sample you want to perform."))
         self.interval_input = QSpinBox()
         self.interval_input.setRange(0, 9999)
         self.main_layout.addWidget(self.interval_label, 3, 0)
         self.main_layout.addWidget(self.interval_input, 3, 1)
 
         self.minimum_component_number_label = QLabel(self.tr("Minimum Component Number"))
+        self.minimum_component_number_label.setToolTip(self.tr("Select the minimum component number you want to perform."))
         self.minimum_component_number = QSpinBox()
         self.minimum_component_number.setRange(1, 10)
         self.maximum_component_number_label = QLabel(self.tr("Maximum Component Number"))
+        self.maximum_component_number_label.setToolTip(self.tr("Select the maximum component number you want to perform."))
         self.maximum_component_number = QSpinBox()
         self.maximum_component_number.setRange(1, 10)
         self.main_layout.addWidget(self.minimum_component_number_label, 4, 0)
@@ -73,6 +78,7 @@ class TaskWindow(QDialog):
         self.main_layout.addWidget(self.maximum_component_number, 5, 1)
 
         self.distribution_type_label = QLabel(self.tr("Distribution Type"))
+        self.distribution_type_label.setToolTip(self.tr("Select the base distribution function of each component."))
         self.distribution_type_combo_box = QComboBox()
         self.distribution_type_options = {self.tr("Normal"): DistributionType.Normal,
                                           self.tr("Weibull"): DistributionType.Weibull,
@@ -87,6 +93,7 @@ class TaskWindow(QDialog):
         self.main_layout.addWidget(self.algorithm_setting_widget, 7, 0, 1, 2)
 
         self.generate_task_button = QPushButton(self.tr("Generate Tasks"))
+        self.generate_task_button.setToolTip(self.tr("Click to generate the fitting tasks."))
         self.main_layout.addWidget(self.generate_task_button, 8, 0, 1, 2)
 
         self.process_state_label = QLabel(self.tr("Process State:"))
@@ -94,23 +101,28 @@ class TaskWindow(QDialog):
         self.main_layout.addWidget(self.process_state_label, 9, 0)
 
         self.not_started_label = QLabel(self.tr("Not Started"))
+        self.not_started_label.setToolTip(self.tr("The number of not started tasks."))
         self.not_started_display = QLabel("0")
         self.main_layout.addWidget(self.not_started_label, 10, 0)
         self.main_layout.addWidget(self.not_started_display, 10, 1)
 
         self.succeeded_label = QLabel(self.tr("Succeeded"))
+        self.succeeded_label.setToolTip(self.tr("The number of succeeded tasks."))
         self.succeeded_display = QLabel("0")
         self.main_layout.addWidget(self.succeeded_label, 11, 0)
         self.main_layout.addWidget(self.succeeded_display, 11, 1)
 
         self.failed_label = QLabel(self.tr("Failed"))
+        self.failed_label.setToolTip(self.tr("The number of failed tasks."))
         self.failed_display = QLabel("0")
         self.main_layout.addWidget(self.failed_label, 12, 0)
         self.main_layout.addWidget(self.failed_display, 12, 1)
 
         self.time_spent_label = QLabel(self.tr("Time Spent"))
+        self.time_spent_label.setToolTip(self.tr("The spent time of these fitting tasks."))
         self.time_spent_dispaly = QLabel("0:00:00")
         self.time_left_label = QLabel(self.tr("Time Left"))
+        self.time_left_label.setToolTip(self.tr("The left time of these fitting tasks."))
         self.time_left_display = QLabel("99:59:59")
         self.main_layout.addWidget(self.time_spent_label, 13, 0)
         self.main_layout.addWidget(self.time_spent_dispaly, 13, 1)
@@ -123,8 +135,10 @@ class TaskWindow(QDialog):
         self.main_layout.addWidget(self.progress_bar, 15, 0, 1, 2)
 
         self.run_button = QPushButton(self.tr("Run"))
+        self.run_button.setToolTip(self.tr("Click to run / pause these fitting tasks."))
         self.run_button.setEnabled(False)
         self.finish_button = QPushButton(self.tr("Finish"))
+        self.finish_button.setToolTip(self.tr("Click to finish these fitting progress, record the succeeded results."))
         self.finish_button.setEnabled(False)
         self.main_layout.addWidget(self.run_button, 16, 0)
         self.main_layout.addWidget(self.finish_button, 16, 1)
