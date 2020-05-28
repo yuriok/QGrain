@@ -37,7 +37,7 @@ def setup_process(*args):
 class MultiProcessingResolver(QObject):
     task_state_updated = Signal(list, dict, dict)
     logger = logging.getLogger(name="root.resolvers.MultiProcessingResolver")
-    STATE_CHECK_TIME_INTERVAL = 0.05
+    STATE_CHECK_TIME_INTERVAL = 0.20
     def __init__(self):
         super().__init__()
         self.tasks = [] # type: List[FittingTask]
