@@ -23,7 +23,7 @@ class ControlPanel(QWidget):
     sigInheritParamsChanged = Signal(bool)
     sigGUIResolverFittingStarted = Signal()
     sigGUIResolverFittingCanceled = Signal()
-    sigMultiProcessingFittingStarted = Signal()
+    sigMultiProcessingFittingButtonClicked = Signal()
     logger = logging.getLogger("root.ui.ControlPanel")
     gui_logger = logging.getLogger("GUI")
 
@@ -40,6 +40,7 @@ class ControlPanel(QWidget):
 
         self.init_ui()
         self.connect_all()
+        self.change_enable_states(True)
 
         self.msg_box = QMessageBox(self)
         self.msg_box.setWindowFlags(Qt.Drawer)
@@ -293,6 +294,7 @@ class ControlPanel(QWidget):
         self.try_fit_button.setEnabled(enable)
         self.record_button.setEnabled(enable)
         self.multiprocessing_button.setEnabled(enable)
+        self.cancel_run.setEnabled(not enable)
 
     def on_fitting_suceeded(self, result: FittingResult):
         if self.auto_run_flag and result.has_invalid_value:
@@ -308,7 +310,7 @@ class ControlPanel(QWidget):
             self.change_enable_states(True)
 
         if self.auto_run_flag:
-            self.auto_run_timer.start(5)
+            self.auto_run_timer.start(100)
 
     def on_auto_run_timer_timeout(self):
         self.data_index += 1
@@ -319,8 +321,8 @@ class ControlPanel(QWidget):
         self.auto_fit_checkbox.setCheckState(Qt.Checked)
         self.auto_record_checkbox.setCheckState(Qt.Checked)
         # from current sample to fit, to avoid that it need to resart from the first sample every time
-        self.data_index = self.data_index
         self.auto_run_flag = True
+        self.data_index = self.data_index
         self.logger.info("Auto running started from sample [%s].", self.current_name)
 
     def on_cancel_run_clicked(self):
@@ -337,7 +339,7 @@ class ControlPanel(QWidget):
     def on_multiprocessing_clicked(self):
         if not self.check_data_loaded():
             return
-        self.sigMultiProcessingFittingStarted.emit()
+        self.sigMultiProcessingFittingButtonClicked.emit()
 
     def on_fitting_started(self):
         self.change_enable_states(False)
