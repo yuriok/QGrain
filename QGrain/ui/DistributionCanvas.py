@@ -198,6 +198,8 @@ class DistributionCanvas(Canvas):
         filename, format_name = self.file_dialog.getSaveFileName(
             self, self.tr("Select Filename"),
             desktop_path, ";;".join([format_name for format_name, fourcc in self.video_format_options.items()]))
+        if filename is None or filename == "":
+            return
         video = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*self.video_format_options[format_name]), fps, video_size)
         for current_iteration, result_in_process in enumerate(result.history):
             self.chart.setTitle(("{0} "+self.tr("Iteration")+" ({1})").format(

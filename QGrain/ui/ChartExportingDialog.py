@@ -142,6 +142,8 @@ class ChartExportingDialog(QDialog):
             filename, format_description = self.file_dialog.getSaveFileName(
                 self, self.tr("Select Filename"),
                 desktop_path, ";;".join([description for description, name in self.format_options.items()]))
+            if filename is None or filename == "":
+                return
             format_name = self.format_options[format_description]
         else:
             format_name = filename.split(".")[-1].upper()
