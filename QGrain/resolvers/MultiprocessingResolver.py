@@ -86,18 +86,20 @@ class MultiProcessingResolver(QObject):
             if self.__pause_flag:
                 self.__pause_flag = False
                 self.__pause_mutex.unlock()
+                check_states()
+                pool.terminate()
+                pool.join()
                 break
             else:
                 self.__pause_mutex.unlock()
                 time.sleep(self.STATE_CHECK_TIME_INTERVAL)
+                check_states()
                 # check if all tasks are finished
                 if np.alltrue([state!=ProcessState.NotStarted for state in self.states.values()]):
+                    pool.terminate()
+                    pool.join()
                     break
-                else:
-                    check_states()
-        check_states()
-        pool.terminate()
-        pool.join()
+
 
     def pause_task(self):
         self.__pause_mutex.lock()
