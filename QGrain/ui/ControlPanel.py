@@ -310,7 +310,7 @@ class ControlPanel(QWidget):
             self.change_enable_states(True)
 
         if self.auto_run_flag:
-            self.auto_run_timer.start(5)
+            self.auto_run_timer.start(100)
 
     def on_auto_run_timer_timeout(self):
         self.data_index += 1
