@@ -13,7 +13,7 @@ from PySide2.QtWidgets import QApplication, QSplashScreen
 
 from QGrain.ui.MainWindow import GUILogHandler, MainWindow
 
-QGRAIN_VERSION = "0.2.7.2"
+QGRAIN_VERSION = "0.2.8"
 QGRAIN_ROOT_PATH = os.path.dirname(__file__)
 
 
@@ -31,14 +31,14 @@ def create_necessary_folders():
 
 def get_language():
     settings = QSettings(os.path.join(QGRAIN_ROOT_PATH, "settings", "QGrain.ini"), QSettings.Format.IniFormat)
-    settings.beginGroup("app")
+    settings.beginGroup("app_settings")
     lang = settings.value("language", defaultValue="en", type=str)
     settings.endGroup()
     return lang
 
 def get_theme():
     settings = QSettings(os.path.join(QGRAIN_ROOT_PATH, "settings", "QGrain.ini"), QSettings.Format.IniFormat)
-    settings.beginGroup("app")
+    settings.beginGroup("app_settings")
     theme = settings.value("theme", defaultValue="MaterialDark", type=str)
     settings.endGroup()
     return theme

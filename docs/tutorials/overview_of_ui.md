@@ -2,21 +2,21 @@
 
 ## Layout
 
-QGrain consists of several docks, i.e. small child windows. These docks may contains several widgets that collaborate to provide an certain function for users.
+QGrain consists of several docks, i.e. small child windows. These docks may contain several widgets that collaborate to provide a certain function for users.
 
-The major feature of docks is its flexibility, that is, they are dockable, floatable, movable, scalable, divisible, and closable. These features makes you can adjust the layout as you please if you are not satisfied with it. The customized layout will be stored after you closed this app.
+The major feature of docks is its flexibility, that is, they are dockable, floatable, movable, scalable, divisible, and closable. These features make you can adjust the layout as you please if you are not satisfied with it. The customized layout will be stored after you closed this app.
 
-Each dock can dock in main window and become the child window of main winodw. Each child window has its own title bar that
-displays its name. By double clicking its title bar or clicking its *Reset* button, you can float this dock, and it will become an independent window. Also, you can drag the title bar to make
+Each dock can dock in the main window and become the child window of the main winodw. Each child window has its own title bar that
+displays its name. By double-clicking its title bar or clicking its *Reset* button, you can float this dock, and it will become an independent window. Also, you can drag the title bar to make
 it floating.
 
-When you dragging this dock, there is a highlight rectangle to show you the area it will be put in. By this method, you can make the floating dock become docked again. Or, you can move it to another place. If you drag it around another dock, it will split and share the space with that dock. If you drag it on that dock, it will be tabbed, which means there is only one dock can ben displayed at the same time, and you can click the tabs below to switch between them.
+When you dragging this dock, there is a highlight rectangle to show you the area it will be put in. By this method, you can make the floating dock become docked again. Or, you can move it to another place. If you drag it around another dock, it will split and share the space with that dock. If you drag it on that dock, it will be tabbed, which means there is only one dock that can ben displayed at the same time, and you can click the tabs below to switch between them.
 
-If you want to change the sizes of docks, you can drag the separator (i.e. the boundaries of docks) to adjust it. By clicking the *Close* button of dock, you can close the needless dock. If you want to display a dock that has been closed before, you can click the **Docks** menu and select the corresponding option to realize it again.
+If you want to change the sizes of docks, you can drag the separator (i.e. the boundaries of docks) to adjust it. By clicking the *Close* button of the dock, you can close the needless dock. If you want to display a dock that has been closed before, you can click the **Docks** menu and select the corresponding option to realize it again.
 
-By default, QGrain puts the docks which have canvas (i.e. chart) in the top left corner, and all these docks are tabified to reduce the occupancy of space. In order to control this app conveniently, the dock of `Control Panel` is in the bottom left corner alone. On the right, there are the docks to display the raw data and recorded results.
+By default, QGrain puts the docks which have a canvas (i.e. chart) in the top left corner, and all these docks are tabified to reduce the occupancy of space. In order to control this app conveniently, the dock of the `Control Panel` is in the bottom left corner alone. On the right, there are the docks to display the raw data and recorded results.
 
-If you want to reset the layout to default, you can click the `Reset` option in `Docks` menu.
+If you want to reset the layout to default, you can click the `Reset` option in the `Docks` menu.
 
 ![App Appearance With Data Loaded](../figures/app_appearance_with_data_loaded.png)
 

@@ -2,7 +2,8 @@ __all__ = ["BackgroundLoader", "BackgroundWriter", "DataManager"]
 
 import logging
 import os
-from typing import Callable, Iterable, List, Tuple
+import pickle
+from typing import Callable, Dict, Iterable, List, Tuple
 from uuid import UUID
 
 import numpy as np
@@ -10,13 +11,14 @@ from PySide2.QtCore import QObject, QStandardPaths, Qt, QThread, Signal
 from PySide2.QtWidgets import QFileDialog, QMessageBox, QWidget
 
 from QGrain.algorithms import DistributionType
-from QGrain.models.DataLayoutSetting import *
+from QGrain.models.DataLayoutSettings import *
 from QGrain.models.DataLoader import *
 from QGrain.models.DataWriter import *
 from QGrain.models.FittingResult import *
 from QGrain.models.SampleData import *
 from QGrain.models.SampleDataset import *
 from QGrain.resolvers.HeadlessResolver import FittingTask
+from QGrain.resolvers.MultiprocessingResolver import ProcessState
 
 
 class BackgroundLoader(QObject):
@@ -28,7 +30,7 @@ class BackgroundLoader(QObject):
         self.actual_loader = DataLoader()
 
     def on_work_started(self, filename: str, file_type: FileType,
-                        layout: DataLayoutSetting):
+                        layout: DataLayoutSettings):
         try:
             dataset = self.actual_loader.try_load_data(filename, file_type, layout)
             self.sigWorkSucceeded.emit(dataset)
@@ -54,7 +56,7 @@ class BackgroundWriter(QObject):
 
 
 class DataManager(QObject):
-    sigLoadingStarted = Signal(str, FileType, DataLayoutSetting)
+    sigLoadingStarted = Signal(str, FileType, DataLayoutSettings)
     sigSavingStarted = Signal(str, FileType, list, bool)
     sigDataLoaded = Signal(SampleDataset)
     sigTargetDataChanged = Signal(SampleData)
@@ -86,7 +88,7 @@ class DataManager(QObject):
         self.writer.sigWorkSucceeded.connect(self.on_saving_succeeded)
         self.writer.sigWorkFailed.connect(self.on_saving_failed)
         # settings
-        self.data_layout_setting = DataLayoutSetting()
+        self.data_layout_setting = DataLayoutSettings()
         self.draw_charts_flag = True
         self.auto_record_flag = True
 
@@ -227,16 +229,13 @@ class DataManager(QObject):
             self.record_current_data()
             self.sigShowFittingResult.emit(result)
 
-    def on_multiprocessing_task_finished(self, succeeded_results: Iterable[FittingResult], failed_tasks: Iterable[FittingTask]):
+    def on_multiprocessing_task_finished(self, succeeded_results: List[FittingResult]):
         for fitting_result in succeeded_results:
             if fitting_result.has_invalid_value:
                 self.logger.warning("There is invalid value in the fitting result of sample [%s].", fitting_result.name)
                 self.gui_logger.warning(self.tr("There is invalid value in the fitting result of sample [%s]."), fitting_result.name)
         self.records.extend(succeeded_results)
         self.sigDataRecorded.emit(succeeded_results)
-        for failed_task in failed_tasks:
-            self.logger.warning("Fitting task of sample [%s] failed.", failed_task.sample.name)
-            self.gui_logger.warning(self.tr("Fitting task of sample [%s] failed."), failed_task.sample.name)
 
     def on_settings_changed(self, kwargs: dict):
         for key, value in kwargs.items():
@@ -268,7 +267,14 @@ class DataManager(QObject):
                     break
 
     def save_data(self):
-        filename, type_str = self.file_dialog.getSaveFileName(None, self.tr("Save Recorded Data"), None, "Excel (*.xlsx);;97-2003 Excel (*.xls);;CSV (*.csv)")
+        # NOTE:
+        # if don't assign the initial directory,
+        # there is an about 5s delay while first calling `getOpenFileName` func
+        # if there is a unreachable network disk
+        init_path = QStandardPaths.standardLocations(QStandardPaths.DesktopLocation)[0]
+        filename, type_str = self.file_dialog.getSaveFileName(
+            self.host_widget, self.tr("Save Recorded Data"),
+            init_path, "Excel (*.xlsx);;97-2003 Excel (*.xls);;CSV (*.csv)")
         if filename is None or filename == "":
             self.logger.info("The path is None or empty, ignored.")
             return
@@ -307,3 +313,45 @@ class DataManager(QObject):
     def cleanup_all(self):
         self.loading_thread.terminate()
         self.saving_thread.terminate()
+
+    def save_session(self):
+        # NOTE:
+        # if don't assign the initial directory,
+        # there is an about 5s delay while first calling `getOpenFileName` func
+        # if there is a unreachable network disk
+        init_path = QStandardPaths.standardLocations(QStandardPaths.DesktopLocation)[0]
+        filename, type_str = self.file_dialog.getSaveFileName(
+            self.host_widget, self.tr("Save Session File"),
+            init_path, "Session File (*.dat)")
+        if filename is None or filename == "":
+            self.logger.info("The path is None or empty, ignored.")
+            return
+        if os.path.exists(filename):
+            self.logger.warning("This file has existed and will be replaced. Filename: %s.", filename)
+        self.logger.info("File path to save is [%s].", filename)
+
+        with open(filename, mode="wb") as f:
+            pickle.dump(self.dataset, f)
+            pickle.dump(self.records, f)
+        self.logger.info("Session file has been saved.")
+
+    def load_session(self):
+        # NOTE:
+        # if don't assign the initial directory,
+        # there is an about 5s delay while first calling `getOpenFileName` func
+        # if there is a unreachable network disk
+        init_path = QStandardPaths.standardLocations(QStandardPaths.DesktopLocation)[0]
+        filename, type_str = self.file_dialog.getOpenFileName(
+            self.host_widget, self.tr("Select Session File"),
+            init_path, "Session File (*.dat)")
+        if filename is None or filename == "":
+            self.logger.info("The user did not select a file, ignored.")
+            return
+
+        if os.path.exists(filename):
+            with open(filename, mode="rb") as f:
+                self.dataset = pickle.load(f)
+                self.records = pickle.load(f)
+                self.sigDataLoaded.emit(self.dataset)
+                # TODO: records need to be clear
+                self.sigDataRecorded.emit(self.records)

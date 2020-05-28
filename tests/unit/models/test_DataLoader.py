@@ -9,7 +9,7 @@ import numpy as np
 import xlsxwriter
 import xlwt
 
-from QGrain.models.DataLayoutSetting import *
+from QGrain.models.DataLayoutSettings import *
 from QGrain.models.DataLoader import *
 
 
@@ -60,12 +60,12 @@ class TestProcessRawData(unittest.TestCase):
     # it will not raise exceptio,
     # if the distribution start row/column is out of range.
     def test_classes_row_out_of_range(self):
-        layout = DataLayoutSetting(20, 0, 21, 1)
+        layout = DataLayoutSettings(20, 0, 21, 1)
         with self.assertRaises(DataLayoutError):
             classes, names, distributions = self.loader.process_raw_data(self.valid_raw_data, layout)
 
     def test_sample_name_column_out_of_range(self):
-        layout = DataLayoutSetting(0, 20, 1, 21)
+        layout = DataLayoutSettings(0, 20, 1, 21)
         with self.assertRaises(DataLayoutError):
             classes, names, distributions = self.loader.process_raw_data(self.valid_raw_data, layout)
 
@@ -170,44 +170,44 @@ class TestTryCsvAndExcel(unittest.TestCase):
         self.loader = None
 
     def test_csv_valid(self):
-        dataset = self.loader.try_csv(self.valid_csv_path, DataLayoutSetting())
+        dataset = self.loader.try_csv(self.valid_csv_path, DataLayoutSettings())
         self.assertTrue(dataset.has_data)
         self.assertEqual(dataset.data_count, 5)
 
     def test_csv_non_utf8(self):
         with self.assertRaises(CSVEncodingError):
-            dataset = self.loader.try_csv(self.gb2312_csv_path, DataLayoutSetting())
+            dataset = self.loader.try_csv(self.gb2312_csv_path, DataLayoutSettings())
 
     def test_csv_non_excel_dialect(self):
         with self.assertRaises(Exception):
-            dataset = self.loader.try_csv(self.excel_tab_dialect_csv_path, DataLayoutSetting())
+            dataset = self.loader.try_csv(self.excel_tab_dialect_csv_path, DataLayoutSettings())
 
     def test_csv_file_not_exists(self):
         with self.assertRaises(FileNotFoundError):
-            dataset = self.loader.try_csv(uuid4().__str__(), DataLayoutSetting())
+            dataset = self.loader.try_csv(uuid4().__str__(), DataLayoutSettings())
 
     def test_csv_wrong_file_type(self):
         with self.assertRaises(Exception):
-            dataset = self.loader.try_csv(self.valid_xls_file, DataLayoutSetting())
+            dataset = self.loader.try_csv(self.valid_xls_file, DataLayoutSettings())
 
     def test_xls_valid(self):
-        dataset = self.loader.try_excel(self.valid_xls_file, DataLayoutSetting())
+        dataset = self.loader.try_excel(self.valid_xls_file, DataLayoutSettings())
         self.assertTrue(dataset.has_data)
         self.assertEqual(dataset.data_count, 5)
 
     def test_xlsx_valid(self):
-        dataset = self.loader.try_excel(self.valid_xlsx_file, DataLayoutSetting())
+        dataset = self.loader.try_excel(self.valid_xlsx_file, DataLayoutSettings())
         self.assertTrue(dataset.has_data)
         self.assertEqual(dataset.data_count, 5)
 
     def test_try_load(self):
-        dataset = self.loader.try_load_data(self.valid_csv_path, FileType.CSV, DataLayoutSetting())
+        dataset = self.loader.try_load_data(self.valid_csv_path, FileType.CSV, DataLayoutSettings())
         self.assertTrue(dataset.has_data)
         self.assertEqual(dataset.data_count, 5)
-        dataset = self.loader.try_load_data(self.valid_xls_file, FileType.XLS, DataLayoutSetting())
+        dataset = self.loader.try_load_data(self.valid_xls_file, FileType.XLS, DataLayoutSettings())
         self.assertTrue(dataset.has_data)
         self.assertEqual(dataset.data_count, 5)
-        dataset = self.loader.try_load_data(self.valid_xlsx_file, FileType.XLSX, DataLayoutSetting())
+        dataset = self.loader.try_load_data(self.valid_xlsx_file, FileType.XLSX, DataLayoutSettings())
         self.assertTrue(dataset.has_data)
         self.assertEqual(dataset.data_count, 5)
 
