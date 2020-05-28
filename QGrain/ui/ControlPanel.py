@@ -321,8 +321,8 @@ class ControlPanel(QWidget):
         self.auto_fit_checkbox.setCheckState(Qt.Checked)
         self.auto_record_checkbox.setCheckState(Qt.Checked)
         # from current sample to fit, to avoid that it need to resart from the first sample every time
-        self.data_index = self.data_index
         self.auto_run_flag = True
+        self.data_index = self.data_index
         self.logger.info("Auto running started from sample [%s].", self.current_name)
 
     def on_cancel_run_clicked(self):
