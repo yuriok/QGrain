@@ -20,7 +20,7 @@ class ViewDataManager(QObject):
     COMPONENT_SPAN = 1
     TABLE_HEADER_ROWS = 2
     TABLE_ROW_EXPAND_SETP = 50
-    COMPONENT_START_COLUMN = 3
+    COMPONENT_START_COLUMN = 4
     def __init__(self, table:QTableWidget, is_detailed: bool):
         super().__init__()
         self.table = table
@@ -108,8 +108,10 @@ class ViewDataManager(QObject):
         self.table.setSpan(0, 0, self.TABLE_HEADER_ROWS, 1)
         self.write(0, 1, self.tr("Distribution Type"))
         self.table.setSpan(0, 1, self.TABLE_HEADER_ROWS, 1)
-        self.write(0, 2, self.tr("Mean Squared Error"))
+        self.write(0, 2, self.tr("Component Number"))
         self.table.setSpan(0, 2, self.TABLE_HEADER_ROWS, 1)
+        self.write(0, 3, self.tr("Mean Squared Error"))
+        self.table.setSpan(0, 3, self.TABLE_HEADER_ROWS, 1)
         for comp_index in range(max_component_number):
             first_column_index = comp_index*self.actual_component_columns+self.COMPONENT_START_COLUMN
             self.write(0, first_column_index, self.tr("Component {0}").format(comp_index+1))
@@ -147,7 +149,8 @@ class ViewDataManager(QObject):
             row = first_row_index + record_index
             self.write(row, 0, record.name)
             self.write(row, 1, self.get_distribution_name(record.distribution_type))
-            self.write(row, 2, record.mean_squared_error, format_str="{0:0.2E}")
+            self.write(row, 2, record.component_number, format_str="{0:d}")
+            self.write(row, 3, record.mean_squared_error, format_str="{0:0.2E}")
             if self.is_detailed:
                 keys = self.detailed_keys
             else:
