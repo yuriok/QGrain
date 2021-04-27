@@ -25,7 +25,7 @@ class BackgroundWorker(QObject):
             if state == FittingState.Succeeded:
                 self.task_succeeded.emit(result)
             else:
-                self.task_failed.emit("Fitting Failed", task)
+                self.task_failed.emit(f"Fitting Failed, error details:\n{result.__str__()}", task)
         except Exception as e:
             self.task_failed.emit(f"Unknown Exception Raised: {e}", task)
 
