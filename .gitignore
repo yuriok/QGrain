@@ -114,3 +114,4 @@ settings/ui.ini
 *.ini
 *.pro
 *.ts
+workspace.code-workspace
