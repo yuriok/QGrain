@@ -124,7 +124,7 @@ class SSUResolverPanel(QDialog):
         self.result_chart = MixedDistributionChart(show_mode=True, toolbar=False)
         self.chart_layout.addWidget(self.result_chart, 0, 0)
 
-        # result view group
+        # table group
         self.table_group = QGroupBox(self.tr("Table"))
         self.reference_view = ReferenceResultViewer()
         self.result_view = FittingResultViewer(self.reference_view)
@@ -211,7 +211,7 @@ class SSUResolverPanel(QDialog):
             keys = ["mean", "std", "skewness"]
             reference = [{key: comp.logarithmic_moments[key] for key in keys} for comp in query.components]
             task = FittingTask(sample,
-                               self.distribution_type,
+                               query.distribution_type,
                                query.n_components,
                                resolver=resolver,
                                resolver_setting=setting,
