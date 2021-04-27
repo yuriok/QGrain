@@ -9,8 +9,8 @@ from collections import Counter
 
 import numpy as np
 import qtawesome as qta
-from PySide2.QtCore import Qt, Signal
-from PySide2.QtGui import QCursor
+from PySide2.QtCore import Qt
+from PySide2.QtGui import QCursor, QFont
 from PySide2.QtWidgets import (QAbstractItemView, QComboBox, QDialog,
                                QFileDialog, QGridLayout, QLabel, QMenu,
                                QMessageBox, QPushButton, QTableWidget,
@@ -26,39 +26,25 @@ from QGrain.models.ClassicResolverSetting import built_in_distances
 from QGrain.models.FittingResult import FittingResult
 from QGrain.models.GrainSizeSample import GrainSizeSample
 from QGrain.models.FittingTask import FittingTask
-from QGrain.charts.SSUTypicalComponentChart import SSUTypicalComponentChart
-from QGrain.ui.ReferenceResultViewer import ReferenceResultViewer
-from uuid import UUID
 
-class FittingResultViewer(QDialog):
+class ReferenceResultViewer(QDialog):
     PAGE_ROWS = 20
-    logger = logging.getLogger("root.QGrain.ui.FittingResultViewer")
-    result_marked = Signal(FittingResult)
-    def __init__(self, reference_viewer: ReferenceResultViewer, parent=None):
+    logger = logging.getLogger("root.QGrain.ui.ReferenceResultViewer")
+    def __init__(self, parent=None):
         flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
         super().__init__(parent=parent, f=flags)
-        self.setWindowTitle(self.tr("SSU Fitting Result Viewer"))
-        self.__fitting_results = [] # type: list[FittingResult]
-        self.retry_tasks = {} # type: dict[UUID, FittingTask]
-        self.__reference_viewer = reference_viewer
+        self.setWindowTitle(self.tr("SSU Reference Result Viewer"))
+        self.__fitting_results = []
+        self.__reference_map = {}
+        self.retry_tasks = {}
         self.init_ui()
-        self.boxplot_chart = BoxplotChart(parent=self, toolbar=True)
-        self.typical_chart = SSUTypicalComponentChart(parent=self, toolbar=True)
         self.distance_chart = DistanceCurveChart(parent=self, toolbar=True)
         self.mixed_distribution_chart = MixedDistributionChart(parent=self, toolbar=True, use_animation=True)
         self.file_dialog = QFileDialog(parent=self)
-        self.async_worker = AsyncFittingWorker()
-        self.async_worker.background_worker.task_succeeded.connect(self.on_fitting_succeeded)
-        self.async_worker.background_worker.task_failed.connect(self.on_fitting_failed)
         self.update_page_list()
         self.update_page(self.page_index)
         self.msg_box = QMessageBox(self)
         self.msg_box.setWindowFlags(Qt.Drawer)
-
-        self.outlier_msg_box = QMessageBox(self)
-        self.outlier_msg_box.setWindowFlags(Qt.Drawer)
-        self.outlier_msg_box.setStandardButtons(QMessageBox.Discard|QMessageBox.Retry|QMessageBox.Ignore)
-
 
     def init_ui(self):
         self.data_table = QTableWidget(100, 100)
@@ -93,6 +79,8 @@ class FittingResultViewer(QDialog):
         self.menu = QMenu(self.data_table)
         self.mark_action = self.menu.addAction(qta.icon("mdi.marker-check"), self.tr("Mark Selection(s) as Reference"))
         self.mark_action.triggered.connect(self.mark_selections)
+        self.unmark_action = self.menu.addAction(qta.icon("mdi.do-not-disturb"), self.tr("Unmark Selection(s)"))
+        self.unmark_action.triggered.connect(self.unmark_selections)
         self.remove_action = self.menu.addAction(qta.icon("fa.remove"), self.tr("Remove Selection(s)"))
         self.remove_action.triggered.connect(self.remove_selections)
         self.plot_loss_chart_action = self.menu.addAction(qta.icon("mdi.chart-timeline-variant"), self.tr("Plot Loss Chart"))
@@ -101,18 +89,11 @@ class FittingResultViewer(QDialog):
         self.plot_distribution_chart_action.triggered.connect(self.show_distribution)
         self.plot_distribution_animation_action = self.menu.addAction(qta.icon("fa5s.chart-area"), self.tr("Plot Distribution Chart (Animation)"))
         self.plot_distribution_animation_action.triggered.connect(self.show_history_distribution)
-        self.do_outlier_detection_action = self.menu.addAction(qta.icon("fa5s.chart-area"), self.tr("Do Outlier Detection"))
-        self.do_outlier_detection_action.triggered.connect(self.do_outlier_detection)
-        self.analyse_typical_components_action = self.menu.addAction(qta.icon("ei.tags"), self.tr("Analyse Typical Components"))
-        self.analyse_typical_components_action.triggered.connect(self.analyse_typical_components)
-        self.do_summary_action = self.menu.addAction(qta.icon("fa5s.chart-area"), self.tr("Do Summary"))
-        self.do_summary_action.triggered.connect(self.do_summary)
+
         self.load_dump_action = self.menu.addAction(qta.icon("fa.database"), self.tr("Load Binary Dump"))
-        self.load_dump_action.triggered.connect(self.load_dump)
+        self.load_dump_action.triggered.connect(lambda: self.load_dump(mark_ref=True))
         self.save_dump_action = self.menu.addAction(qta.icon("fa.save"), self.tr("Save Binary Dump"))
         self.save_dump_action.triggered.connect(self.save_dump)
-        self.save_excel_action = self.menu.addAction(qta.icon("mdi.microsoft-excel"), self.tr("Save Excel"))
-        self.save_excel_action.triggered.connect(self.save_excel)
         self.data_table.customContextMenuRequested.connect(self.show_menu)
 
     def show_menu(self, pos):
@@ -201,7 +182,7 @@ class FittingResultViewer(QDialog):
         else:
             start, end = page_index * self.PAGE_ROWS, (page_index+1) * self.PAGE_ROWS
         self.data_table.setRowCount(end-start)
-        self.data_table.setColumnCount(7)
+        self.data_table.setColumnCount(8)
         self.data_table.setHorizontalHeaderLabels([
             self.tr("Resolver"),
             self.tr("Distribution Type"),
@@ -209,7 +190,8 @@ class FittingResultViewer(QDialog):
             self.tr("N_iterations"),
             self.tr("Spent Time [s]"),
             self.tr("Final Distance"),
-            self.tr("Has Reference")])
+            self.tr("Has Reference"),
+            self.tr("Is Reference")])
         sample_names = [result.sample.name for result in self.__fitting_results[start: end]]
         self.data_table.setVerticalHeaderLabels(sample_names)
         for row, result in enumerate(self.__fitting_results[start: end]):
@@ -221,6 +203,8 @@ class FittingResultViewer(QDialog):
             write(row, 5, self.distance_func(result.sample.distribution, result.distribution))
             has_ref = result.task.initial_guess is not None or result.task.reference is not None
             write(row, 6, self.tr("Yes") if has_ref else self.tr("No"))
+            is_ref = result.uuid in self.__reference_map
+            write(row, 7, self.tr("Yes") if is_ref else self.tr("No"))
 
         self.data_table.resizeColumnsToContents()
 
@@ -266,15 +250,33 @@ class FittingResultViewer(QDialog):
         if need_update:
             self.update_page(self.page_index)
 
+    def mark_results(self, results: typing.List[FittingResult]):
+        for result in results:
+            self.__reference_map[result.uuid] = result
+
+        self.update_page(self.page_index)
+
+    def unmark_results(self, results: typing.List[FittingResult]):
+        for result in results:
+            if result.uuid in self.__reference_map:
+                self.__reference_map.pop(result.uuid)
+
+        self.update_page(self.page_index)
+
     def mark_selections(self):
-        for index in self.selections:
-            self.result_marked.emit(self.__fitting_results[index])
+        results = [self.__fitting_results[selection] for selection in self.selections]
+        self.mark_results(results)
+
+    def unmark_selections(self):
+        results = [self.__fitting_results[selection] for selection in self.selections]
+        self.unmark_results(results)
 
     def remove_results(self, indexes):
         results = []
         for i in reversed(indexes):
             res = self.__fitting_results.pop(i)
             results.append(res)
+        self.unmark_results(results)
         self.update_page_list()
         self.update_page(self.page_index)
 
@@ -308,14 +310,14 @@ class FittingResultViewer(QDialog):
         self.mixed_distribution_chart.show_result(result)
         self.mixed_distribution_chart.show()
 
-    def load_dump(self):
+    def load_dump(self, mark_ref=False):
         filename, _ = self.file_dialog.getOpenFileName(
             self, self.tr("Select a binary dump file of SSU results"),
             None, self.tr("Binary dump (*.dump)"))
         if filename is None or filename == "":
             return
         with open(filename, "rb") as f:
-            results = pickle.load(f) # type: list[FittingResult]
+            results = pickle.load(f)
             valid = True
             if isinstance(results, list):
                 for result in results:
@@ -326,20 +328,9 @@ class FittingResultViewer(QDialog):
                 valid = False
 
             if valid:
-                if self.n_results != 0 and len(results) != 0:
-                    old_classes = self.__fitting_results[0].classes_φ
-                    new_classes = results[0].classes_φ
-                    classes_inconsistent = False
-                    if len(old_classes) != len(new_classes):
-                        classes_inconsistent = True
-                    else:
-                        classes_error = np.abs(old_classes - new_classes)
-                        if not np.all(np.less_equal(classes_error, 1e-8)):
-                            classes_inconsistent = True
-                    if classes_inconsistent:
-                        self.show_error(self.tr("The results in the dump file has inconsistent grain-size classes with that in your list."))
-                        return
                 self.add_results(results)
+                if mark_ref:
+                    self.mark_results(results)
             else:
                 self.show_error(self.tr("The binary dump file is invalid."))
 
@@ -354,120 +345,42 @@ class FittingResultViewer(QDialog):
         with open(filename, "wb") as f:
             pickle.dump(self.__fitting_results, f)
 
-    def save_excel(self):
-        # TODO: ADD SUPPORT
-        self.show_error("NOT IMPLEMENTED")
+    def find_similar(self, target: GrainSizeSample, ref_results: typing.List[FittingResult]):
+        assert len(ref_results) != 0
+        # sample_moments = logarithmic(sample.classes_φ, sample.distribution)
+        # keys_to_check = ["mean", "std", "skewness", "kurtosis"]
 
-    def on_fitting_succeeded(self, result: FittingResult):
-        result_replace_index = self.retry_tasks[result.task.uuid]
-        self.__fitting_results[result_replace_index] = result
-        self.retry_tasks.pop(result.task.uuid)
-        self.logger.debug(f"Retried task succeeded, sample name={result.task.sample.name}, distribution_type={result.task.distribution_type.name}, n_components={result.task.n_components}")
-        self.update_page(self.page_index)
+        start_time = time.time()
+        from scipy.interpolate import interp1d
+        min_distance = 1e100
+        min_result = None
+        trans_func = interp1d(target.classes_φ, target.distribution, bounds_error=False, fill_value=0.0)
+        for result in ref_results:
+            # TODO: To scale the classes of result to that of sample
+            # use moments to calculate? MOMENTS MAY NOT BE PERFECT, MAY IGNORE THE MINOR DIFFERENCE
+            # result_moments = logarithmic(result.classes_φ, result.distribution)
+            # distance = sum([(sample_moments[key]-result_moments[key])**2 for key in keys_to_check])
+            trans_dist = trans_func(result.classes_φ)
+            distance = self.distance_func(result.distribution, trans_dist)
 
-    def on_fitting_failed(self, task: FittingTask):
-        # necessary to remove it from the dict
-        self.retry_tasks.pop(task.uuid)
-        self.show_error(self.tr("Failed to retry task, sample name={0}.").format(task.sample.name))
-        self.logger.warning(f"Failed to retry task, sample name={task.sample.name}, distribution_type={task.distribution_type.name}, n_components={task.n_components}")
+            if distance < min_distance:
+                min_distance = distance
+                min_result = result
 
-    def retry_results(self, indexes, results):
-        for index, result in zip(indexes, results):
-            query = self.__reference_viewer.query_reference(result.sample)
-            ref_result = None
-            if query is None:
-                nearby_results = self.__fitting_results[index-5: index]+self.__fitting_results[index+1: index+6]
-                ref_result = self.__reference_viewer.find_similar(result.sample, nearby_results)
-            else:
-                ref_result = query
-            keys = ["mean", "std", "skewness"]
-            reference = [{key: comp.logarithmic_moments[key] for key in keys} for comp in ref_result.components]
-            task = FittingTask(result.sample,
-                               ref_result.distribution_type,
-                               ref_result.n_components,
-                               resolver=ref_result.task.resolver,
-                               resolver_setting=ref_result.task.resolver_setting,
-                               reference=reference)
-            self.logger.debug(f"Retry task: sample name={task.sample.name}, distribution_type={task.distribution_type.name}, n_components={task.n_components}")
-            self.retry_tasks[task.uuid] = index
-            self.async_worker.execute_task(task)
+        self.logger.debug(f"It took {time.time()-start_time:0.4f} s to query the reference from {len(ref_results)} results.")
+        return min_result
 
-    def do_outlier_detection(self):
-        if self.n_results == 0:
-            self.show_warning(self.tr("There is not any result in the list."))
-            return
-        elif self.n_results < 10:
-            self.show_warning(self.tr("The results in list are too less."))
-            return
-        distances = []
-        for result in self.__fitting_results:
-            distances.append(result.get_distance(self.distance_name))
-        distances = np.array(distances)
-        self.boxplot_chart.show_dataset([distances], xlabels=[self.distance_name], ylabel=self.tr("Distance"))
-        self.boxplot_chart.show()
+    def query_reference(self, sample: GrainSizeSample):
+        if len(self.__reference_map) == 0:
+            self.logger.debug("No result is marked as reference.")
+            return None
+        return self.find_similar(sample, self.__reference_map.values())
 
-        # calculate the 1/4, 1/2, and 3/4 postion value to judge which result is invalid
-        # 1. the mean squared errors are much higher in the results which are lack of components
-        # 2. with the component number getting higher, the mean squared error will get lower and finally reach the minimum
-        median = np.median(distances)
-        upper_group = distances[np.greater(distances, median)]
-        lower_group = distances[np.less(distances, median)]
-        value_1_4 = np.median(lower_group)
-        value_3_4 = np.median(upper_group)
-        distance_QR = value_3_4 - value_1_4
-        outlier_results = []
-        outlier_indexes = []
-        for i, (result, distance) in enumerate(zip(self.__fitting_results, distances)):
-            if distance > value_3_4 + distance_QR * 1.5:
-            # which error too small is not outlier
-            # if distance > value_3_4 + distance_QR * 1.5 or distance < value_1_4 - distance_QR * 1.5:
-                outlier_results.append(result)
-                outlier_indexes.append(i)
-        self.logger.debug(f"Outlier results: {[result.sample.name for result in outlier_results]}")
-        if len(outlier_results) == 0:
-            self.show_info(self.tr("No fitting result was evaluated as an outlier."))
-        else:
-            self.outlier_msg_box.setText(self.tr("The fitting results of the following samples were evaluated as outliers by Tukey's test:\n    {0}\nHow to deal with them?").format(
-                    ", ".join([result.sample.name for result in outlier_results])))
-            res = self.outlier_msg_box.exec_()
-            if res == QMessageBox.Discard:
-                self.remove_results(outlier_indexes)
-            elif res == QMessageBox.Retry:
-                self.retry_results(outlier_indexes, outlier_results)
-            else:
-                pass
+if __name__ == "__main__":
+    import sys
 
-    def analyse_typical_components(self):
-        if self.n_results == 0:
-            self.show_warning(self.tr("There is not any result in the list."))
-            return
-        elif self.n_results < 10:
-            self.show_warning(self.tr("The results in list are too less."))
-            return
-
-        self.typical_chart.show_typical(self.__fitting_results)
-        self.typical_chart.show()
-
-    def do_summary(self):
-        if self.n_results == 0:
-            self.show_warning(self.tr("There is not any result in the list."))
-            return
-        elif self.n_results < 10:
-            self.show_warning(self.tr("The results in list are too less."))
-            return
-        import matplotlib.pyplot as plt
-        n_components_list = [result.n_components for result in self.__fitting_results]
-        count_dict = Counter(n_components_list)
-        self.logger.debug(f"N_components: {count_dict}")
-        figure = plt.figure(figsize=(6, 4))
-        cmap = plt.get_cmap("tab10")
-        axes = figure.add_subplot(1, 1, 1)
-        for result in self.__fitting_results:
-            for i, comp in enumerate(result.components):
-                plt.plot(result.classes_μm, comp.distribution, c=cmap(i))
-        axes.set_xscale("log")
-        axes.set_xlabel(self.tr("Grain-size [μm]"))
-        axes.set_ylabel(self.tr("Frequency"))
-        figure.tight_layout()
-        figure.show()
-
+    from QGrain.entry import setup_app
+    app = setup_app()
+    main = ReferenceResultViewer()
+    main.show()
+    sys.exit(app.exec_())
