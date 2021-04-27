@@ -263,6 +263,10 @@ class ReferenceResultViewer(QDialog):
 
         self.update_page(self.page_index)
 
+    def add_references(self, results: typing.List[FittingResult]):
+        self.add_results(results)
+        self.mark_results(results)
+
     def mark_selections(self):
         results = [self.__fitting_results[selection] for selection in self.selections]
         self.mark_results(results)
@@ -375,6 +379,7 @@ class ReferenceResultViewer(QDialog):
             self.logger.debug("No result is marked as reference.")
             return None
         return self.find_similar(sample, self.__reference_map.values())
+
 
 if __name__ == "__main__":
     import sys
