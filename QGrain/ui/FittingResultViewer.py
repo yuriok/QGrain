@@ -101,12 +101,12 @@ class FittingResultViewer(QDialog):
         self.plot_distribution_chart_action.triggered.connect(self.show_distribution)
         self.plot_distribution_animation_action = self.menu.addAction(qta.icon("fa5s.chart-area"), self.tr("Plot Distribution Chart (Animation)"))
         self.plot_distribution_animation_action.triggered.connect(self.show_history_distribution)
-        self.do_outlier_detection_action = self.menu.addAction(qta.icon("fa5s.chart-area"), self.tr("Do Outlier Detection"))
-        self.do_outlier_detection_action.triggered.connect(self.do_outlier_detection)
+        self.detect_outliers_action = self.menu.addAction(qta.icon("mdi.magnify"), self.tr("Detect Outliers"))
+        self.detect_outliers_action.triggered.connect(self.detect_outliers)
         self.analyse_typical_components_action = self.menu.addAction(qta.icon("ei.tags"), self.tr("Analyse Typical Components"))
         self.analyse_typical_components_action.triggered.connect(self.analyse_typical_components)
-        self.do_summary_action = self.menu.addAction(qta.icon("fa5s.chart-area"), self.tr("Do Summary"))
-        self.do_summary_action.triggered.connect(self.do_summary)
+        self.do_summary_action = self.menu.addAction(qta.icon("fa.align-center"), self.tr("Align Components"))
+        self.do_summary_action.triggered.connect(self.align_components)
         self.load_dump_action = self.menu.addAction(qta.icon("fa.database"), self.tr("Load Binary Dump"))
         self.load_dump_action.triggered.connect(self.load_dump)
         self.save_dump_action = self.menu.addAction(qta.icon("fa.save"), self.tr("Save Binary Dump"))
@@ -392,7 +392,7 @@ class FittingResultViewer(QDialog):
             self.retry_tasks[task.uuid] = index
             self.async_worker.execute_task(task)
 
-    def do_outlier_detection(self):
+    def detect_outliers(self):
         if self.n_results == 0:
             self.show_warning(self.tr("There is not any result in the list."))
             return
@@ -448,7 +448,7 @@ class FittingResultViewer(QDialog):
         self.typical_chart.show_typical(self.__fitting_results)
         self.typical_chart.show()
 
-    def do_summary(self):
+    def align_components(self):
         if self.n_results == 0:
             self.show_warning(self.tr("There is not any result in the list."))
             return
