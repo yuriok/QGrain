@@ -53,10 +53,10 @@ class ClassicResolver:
         non_zeros = np.argwhere(distribution)
         start, end = non_zeros[0].max(), non_zeros[-1].max()
         weights = np.ones_like(distribution)
-        weights[start: start + 6] += 2.0
-        weights[end - 6: end] += 2.0
+        weights[start: start + 3] += 2.0
+        weights[end - 3: end] += 2.0
         for peak in peaks:
-            weights[peak - 3:peak + 3] += 2.0
+            weights[peak - 2: peak + 2] += 2.0
         return weights
 
     def try_fit(self, task: FittingTask) -> typing.Tuple[FittingState, object]:
@@ -71,12 +71,18 @@ class ClassicResolver:
         distance = get_distance_func_by_name(setting.distance)
         start_time = time.time()
         self.on_fitting_started()
-        # weights = self.get_weights(task.sample.classes_φ, task.sample.distribution)
-
-        def closure(params):
-            params[-task.n_components:] = np.abs(params[-task.n_components:])
-            current_values = distribution.mixed_function(task.sample.classes_φ, *params)
-            return distance(current_values, task.sample.distribution)
+        use_weights = False
+        if use_weights:
+            weights = self.get_weights(task.sample.classes_φ, task.sample.distribution)
+            def closure(params):
+                params[-task.n_components:] = np.abs(params[-task.n_components:])
+                current_values = distribution.mixed_function(task.sample.classes_φ, *params)
+                return distance(current_values*weights, task.sample.distribution*weights)
+        else:
+            def closure(params):
+                params[-task.n_components:] = np.abs(params[-task.n_components:])
+                current_values = distribution.mixed_function(task.sample.classes_φ, *params)
+                return distance(current_values, task.sample.distribution)
 
         def local_callback(mixed_func_args, *addtional):
             history.append(mixed_func_args)
