@@ -1,7 +1,0 @@
-[run]
-omit =
-    */test_*.py
-    */__init__.py
-    QGrain/ui/*.py
-source=
-    QGrain

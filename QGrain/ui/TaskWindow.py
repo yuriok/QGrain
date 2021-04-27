@@ -12,11 +12,8 @@ from PySide2.QtWidgets import (QComboBox, QDialog, QGridLayout, QLabel,
 
 from QGrain.algorithms import DistributionType
 from QGrain.models.FittingResult import FittingResult
-from QGrain.models.SampleDataset import SampleDataset
-from QGrain.resolvers.HeadlessResolver import FittingTask
-from QGrain.resolvers.MultiprocessingResolver import (MultiProcessingResolver,
-                                                      ProcessState)
-from QGrain.ui.AlgorithmSettingWidget import AlgorithmSettingWidget
+from QGrain.models.SampleDataset import GrainSizeDataset
+from QGrain.ui.AlgorithmSettingWidget import ClassicResolverSettingWidget
 
 
 class TaskWindow(QDialog):
@@ -88,7 +85,7 @@ class TaskWindow(QDialog):
         self.main_layout.addWidget(self.distribution_type_label, 6, 0)
         self.main_layout.addWidget(self.distribution_type_combo_box, 6, 1)
 
-        self.algorithm_setting_widget = AlgorithmSettingWidget()
+        self.algorithm_setting_widget = ClassicResolverSettingWidget()
         self.algorithm_setting_widget.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.addWidget(self.algorithm_setting_widget, 7, 0, 1, 2)
 
@@ -191,7 +188,7 @@ class TaskWindow(QDialog):
             max_number, max_number = max_number, max_number
         return list(range(min_number, max_number+1))
 
-    def on_data_loaded(self, data: SampleDataset):
+    def on_data_loaded(self, data: GrainSizeDataset):
         if data is None:
             return
         elif not data.has_data:

@@ -2,16 +2,15 @@ __all__ = ["AboutWindow"]
 
 import os
 
-from PySide2.QtCore import Qt, QUrl
-from PySide2.QtWidgets import (QGridLayout, QMainWindow, QTextBrowser,
-                               QTextEdit, QWidget)
-
-QGRAIN_ROOT_PATH = os.path.dirname(os.path.dirname(__file__))
+from PySide2.QtCore import Qt
+from PySide2.QtWidgets import QGridLayout, QMainWindow, QTextBrowser, QWidget
+from QGrain import QGRAIN_ROOT_PATH
 
 
 class AboutWindow(QMainWindow):
     def __init__(self, parent=None):
-        super().__init__(parent=parent)
+        flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
+        super().__init__(parent=parent, flags=flags)
         self.init_ui()
 
     def init_ui(self):
@@ -22,16 +21,15 @@ class AboutWindow(QMainWindow):
         self.setMinimumSize(600, 400)
         self.text = QTextBrowser()
         self.layout.addWidget(self.text, 0, 0)
-        self.setWindowFlags(Qt.Drawer)
-        with open(os.path.join(QGRAIN_ROOT_PATH, "settings", "about.md"), mode="r") as text:
+        with open(os.path.join(QGRAIN_ROOT_PATH, "about.md"), mode="r") as text:
             self.text.setMarkdown(text.read())
         self.text.setOpenExternalLinks(True)
 
 
 if __name__ == "__main__":
     import sys
-    from PySide2.QtWidgets import QApplication
-    app = QApplication(sys.argv)
-    s = AboutWindow()
-    s.show()
-    app.exec_()
+    from QGrain.entry import setup_app
+    app = setup_app()
+    main = AboutWindow()
+    main.show()
+    sys.exit(app.exec_())
