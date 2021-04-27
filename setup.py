@@ -1,10 +1,11 @@
-from setuptools import setup, find_packages
 import os
+
+from setuptools import find_packages, setup
 
 setup(
     name="QGrain",
-    version="0.2.8",
-    description="QGrain is an esay to use tool that can unmix and analyse the multi-modal grain size distribution.",
+    version="0.3.0",
+    description="QGrain is an esay to use tool that can analyse the grain size distributions of sediments.",
     platforms="all",
     author="Yuming Liu",
     author_email="liuyuming@ieecas.cn",
@@ -13,19 +14,19 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'numpy>=1.18.1',
-        'PySide2>=5.14.1',
-        "scikit-learn>=0.22.1",
-        "scipy>=1.4.1",
-        "shiboken2>=5.14.1",
-        "xlrd>=1.2.0",
-        "XlsxWriter>=1.2.7",
-        "xlwt>=1.3.0",
-        "Pillow>=7.0.0",
-        "opencv-python>=4.2.0.32"
-    ],
+        "numpy",
+        "scipy",
+        "scikit-learn",
+        "torch",
+        "xlrd",
+        "openpyxl",
+        "PySide2",
+        "qtawesome",
+        "matplotlib",
+        "SciencePlots"],
     entry_points = {
-        'console_scripts': ['qgrain=QGrain.main:main'],
+        'console_scripts': [
+            'qgrain=QGrain.qg:qgrain_console'],
     },
     classifiers=[
         "Programming Language :: Python :: 3",
