@@ -3,7 +3,7 @@ import typing
 import numpy as np
 import qtawesome as qta
 from PySide2.QtCore import Qt
-from PySide2.QtWidgets import (QComboBox, QDialog, QGridLayout, QGroupBox,
+from PySide2.QtWidgets import (QComboBox, QDialog, QGridLayout, QGroupBox, QTabWidget,
                                QLabel, QMessageBox, QPushButton, QSpinBox,
                                QSplitter)
 from QGrain.algorithms import DistributionType
@@ -18,6 +18,7 @@ from QGrain.ui.FittingResultViewer import FittingResultViewer
 from QGrain.ui.LoadDatasetDialog import LoadDatasetDialog
 from QGrain.ui.ManualFittingPanel import ManualFittingPanel
 from QGrain.ui.NNResolverSettingWidget import NNResolverSettingWidget
+from QGrain.ui.ReferenceResultViewer import ReferenceResultViewer
 
 
 class SSUResolverPanel(QDialog):
@@ -95,7 +96,7 @@ class SSUResolverPanel(QDialog):
         self.manual_test_button.setEnabled(False)
         self.manual_test_button.clicked.connect(self.on_manual_test_clicked)
         self.load_reference_button = QPushButton(qta.icon("mdi.map-check"), self.tr("Load Reference"))
-        self.load_reference_button.clicked.connect(lambda: self.result_view.load_dump(mark_ref=True))
+        self.load_reference_button.clicked.connect(lambda: self.reference_view.load_dump(mark_ref=True))
         self.control_layout.addWidget(self.manual_test_button, 7, 0)
         self.control_layout.addWidget(self.load_reference_button, 7, 1)
 
@@ -124,10 +125,14 @@ class SSUResolverPanel(QDialog):
         self.chart_layout.addWidget(self.result_chart, 0, 0)
 
         # result view group
-        self.result_group = QGroupBox(self.tr("Result Viewer"))
-        self.result_layout = QGridLayout(self.result_group)
-        self.result_view = FittingResultViewer()
-        self.result_layout.addWidget(self.result_view, 0, 0)
+        self.table_group = QGroupBox(self.tr("Table"))
+        self.reference_view = ReferenceResultViewer()
+        self.result_view = FittingResultViewer(self.reference_view)
+        self.table_tab = QTabWidget()
+        self.table_tab.addTab(self.result_view, qta.icon("fa.cubes"), self.tr("Result"))
+        self.table_tab.addTab(self.reference_view, qta.icon("fa5s.key"), self.tr("Reference"))
+        self.result_layout = QGridLayout(self.table_group)
+        self.result_layout.addWidget(self.table_tab, 0, 0)
 
         # pack all group
         self.splitter1 = QSplitter(Qt.Orientation.Vertical)
@@ -135,7 +140,7 @@ class SSUResolverPanel(QDialog):
         self.splitter1.addWidget(self.chart_group)
         self.splitter2 = QSplitter(Qt.Orientation.Horizontal)
         self.splitter2.addWidget(self.splitter1)
-        self.splitter2.addWidget(self.result_group)
+        self.splitter2.addWidget(self.table_group)
         self.main_layout.addWidget(self.splitter2, 0, 0)
 
     @property
@@ -194,7 +199,7 @@ class SSUResolverPanel(QDialog):
         else:
             setting = self.neural_setting.setting
 
-        query = self.result_view.query_reference(sample) # type: FittingResult
+        query = self.reference_view.query_reference(sample) # type: FittingResult
         if not query_ref or query is None:
             task = FittingTask(sample,
                                self.distribution_type,
@@ -285,6 +290,7 @@ class SSUResolverPanel(QDialog):
 
 if __name__ == "__main__":
     import sys
+
     from QGrain.entry import setup_app
     app = setup_app()
     main = SSUResolverPanel()
