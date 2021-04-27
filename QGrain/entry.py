@@ -17,7 +17,7 @@ def getdirsize(dir):
     return size
 
 def create_necessary_folders():
-    necessary_folders = (os.path.join(QGRAIN_ROOT_PATH, "logs"),)
+    necessary_folders = (os.path.join(os.path.expanduser("~"), "QGrain"), os.path.join(os.path.expanduser("~"), "QGrain", "logs"))
     for folder in necessary_folders:
         if not os.path.exists(folder):
             os.mkdir(folder)
@@ -30,7 +30,7 @@ def setup_language(app: QApplication):
 
 def setup_logging():
     format_str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    file_handler = TimedRotatingFileHandler(os.path.join(QGRAIN_ROOT_PATH, "logs", "qgrain.log"), when="D", backupCount=8, encoding="utf-8")
+    file_handler = TimedRotatingFileHandler(os.path.join(os.path.expanduser("~"), "QGrain", "logs", "qgrain.log"), when="D", backupCount=8, encoding="utf-8")
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(logging.Formatter(format_str))
     logging.basicConfig(level=logging.DEBUG, format=format_str)
