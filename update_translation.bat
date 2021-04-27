@@ -1,1 +1,0 @@
-pyside2-lupdate -noobsolete ./qgrain.pro

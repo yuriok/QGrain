@@ -1,24 +1,58 @@
-SOURCES = ./QGrain/ui/AboutWindow.py \
-        ./QGrain/ui/AlgorithmSettingWidget.py \
-        ./QGrain/ui/AllDistributionCanvas.py \
-        ./QGrain/ui/AppSettingWidget.py \
-        ./QGrain/ui/Canvas.py \
-        ./QGrain/ui/ChartExportingDialog.py \
-        ./QGrain/ui/ControlPanel.py \
-        ./QGrain/ui/DataManager.py \
-        ./QGrain/ui/DataSettingWidget.py \
-        ./QGrain/ui/DistributionCanvas.py \
-        ./QGrain/ui/InfiniteLine.py \
-        ./QGrain/ui/LossCanvas.py \
-        ./QGrain/ui/MainWindow.py \
-        ./QGrain/ui/PCAPanel.py \
-        ./QGrain/ui/RecordedDataTable.py \
-        ./QGrain/ui/SettingWindow.py \
-        ./QGrain/ui/TaskWindow.py \
-        ./QGrain/resolvers/GUIResolver.py \
-        ./QGrain/resolvers/HeadlessResolver.py \
-        ./QGrain/resolvers/MultiprocessingResolver.py \
-        ./QGrain/resolvers/Resolver.py \
-        ./QGrain/main.py
+
+SOURCES=C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\clustering.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\entry.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\use_excel.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\__init__.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\algorithms\AsyncFittingWorker.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\algorithms\ClassicResolver.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\algorithms\distributions.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\algorithms\ema.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\algorithms\HeadlessResolver.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\algorithms\kernels.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\algorithms\moments.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\algorithms\NNResolver.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\algorithms\__init__.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\charts\CumulativeCurveChart.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\charts\DistanceCurveChart.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\charts\EMAResultChart.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\charts\EMASummaryChart.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\charts\FrequencyCurve3DChart.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\charts\FrequencyCurveChart.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\charts\GSMDiagramChart.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\charts\HierarchyChart.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\charts\MixedDistributionChart.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\charts\PCAResultChart.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\charts\SSCDiagramChart.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\charts\__init__.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\artificial.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\ClassicResolverSetting.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\DataLayoutSetting.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\DatasetLoader.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\EMAResult.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\FittingResult.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\FittingTask.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\GrainSizeDataset.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\GrainSizeSample.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\MixedDistributionChartViewModel.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\NNResolverSetting.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\_DataWriter.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\__init__.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\AboutWindow.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\ClassicResolverSettingWidget.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\ConsolePanel.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\EMAResolverPanel.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\FittingResultViewer.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\GrainSizeDatasetViewer.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\HierarchyResolverPanel.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\LoadDatasetDialog.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\ManualFittingPanel.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\NNResolverSettingWidget.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\PCAResolverPanel.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\RandomDatasetGenerator.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\SSUAlgorithmTesterPanel.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\SSUResolverPanel.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\TaskStateDisplay.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\TaskWindow.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\__init__.py
 TRANSLATIONS=en.ts zh_CN.ts
 CODECFORTR=UTF-8

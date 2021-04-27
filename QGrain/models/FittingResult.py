@@ -1,271 +1,192 @@
 __all__ = ["ComponentFittingResult", "FittingResult"]
 
 import copy
-from typing import Callable, Dict, Iterable, List, Tuple
+import typing
 from uuid import UUID, uuid4
 
 import numpy as np
-from scipy.interpolate import interp1d
-from scipy.stats import kendalltau, pearsonr, spearmanr
-
-from QGrain.algorithms import AlgorithmData, DistributionType
-
+from QGrain.algorithms import DistributionType
+from QGrain.algorithms.distributions import BaseDistribution, get_distance_func_by_name
+from QGrain.algorithms.moments import get_moments, invalid_moments
+from QGrain.models.FittingTask import FittingTask
+from QGrain.models.GrainSizeSample import GrainSizeSample
+from QGrain.models.MixedDistributionChartViewModel import MixedDistributionChartViewModel
 
 class ComponentFittingResult:
-    """
-    The class to record the fitting result of each component.
-
-    All its attributes have been packed with read-only properties to avoid the modification by mistake.
-
-    Use `ctor` to initialize the instance and treat it as immutable object.
-    If you have sufficient reasons to modify its attributes, please use the `update` method of it.
-
-    Attributes:
-        real_x: The `numpy.ndarray` which represents the real (raw) values of x (i.e. grain size classes).
-        fitting_space_x: The `numpy.ndarray` which represents the x values (e.g. bin numbers) used in fitting process.
-        params: The paramters which were used to calculate the y array (i.e. distribution) and statistic values of each component.
-        fraction: The fraction of this component.
-        mean, median, mode, etc: The statistic values of this component.
-    """
-    def __init__(self, real_x: np.ndarray, fitting_space_x: np.ndarray,
-                 algorithm_data: AlgorithmData,
-                 params: Iterable[float], fraction: float):
-        assert np.isreal(fraction) and fraction is not None
+    def __init__(self, sample: GrainSizeSample,
+                 distribution: BaseDistribution,
+                 func_args: typing.Iterable[float], fraction: float):
+        assert fraction is not None and np.isreal(fraction)
         # iteration may pass invalid fraction value
         # assert fraction >= 0.0 and fraction <= 1.0
+        self.update(sample, distribution, func_args, fraction)
 
-        self.__real_x = real_x
-        self.__fitting_space_x = fitting_space_x
-        if np.any(np.isnan(params)):
+    def update(self, sample: GrainSizeSample, distribution: BaseDistribution, func_args: typing.Iterable[float], fraction: float):
+        if np.any(np.isnan(func_args)):
             self.__fraction = np.nan
-            self.__component_y = np.full_like(fitting_space_x, fill_value=np.nan)
-            self.__mean = np.nan
-            self.__median = np.nan
-            self.__mode = np.nan
-            self.__variance = np.nan
-            self.__standard_deviation = np.nan
-            self.__skewness = np.nan
-            self.__kurtosis = np.nan
+            self.__distribution = np.full_like(sample.distribution, fill_value=np.nan)
+            self.__geometric_moments = invalid_moments
+            self.__logarithmic_moments = invalid_moments
+            self.__is_valid = False
         else:
-            self.update(algorithm_data, params, fraction)
-
-    def update(self, algorithm_data: AlgorithmData, params: Iterable[float], fraction: float):
-        self.__params = params
-        self.__fraction = fraction
-        self.__component_y = algorithm_data.single_func(self.__fitting_space_x, *params) * fraction
-        x_to_real = interp1d(self.__fitting_space_x, self.__real_x)
-        try:
-            self.__mean = x_to_real(algorithm_data.mean(*params)).max()
-        except ValueError:
-            self.__mean = np.nan
-        try:
-            self.__median = x_to_real(algorithm_data.median(*params)).max()
-        except ValueError:
-            self.__median = np.nan
-        try:
-            self.__mode = x_to_real(algorithm_data.mode(*params)).max()
-        except ValueError:
-            self.__mode = np.nan
-        self.__variance = algorithm_data.variance(*params)
-        self.__standard_deviation = algorithm_data.standard_deviation(*params)
-        self.__skewness = algorithm_data.skewness(*params)
-        self.__kurtosis = algorithm_data.kurtosis(*params)
-
-    @property
-    def params(self) -> Tuple[float]:
-        return self.__params
+            self.__fraction = fraction
+            self.__distribution = distribution.single_function(sample.classes_φ, *func_args)
+            self.__geometric_moments, self.__logarithmic_moments= get_moments(sample.classes_μm, sample.classes_φ, self.__distribution, FW57=False)
+            self.__is_valid = True
 
     @property
     def fraction(self) -> float:
         return self.__fraction
 
     @property
-    def component_y(self) -> np.ndarray:
-        return self.__component_y
+    def distribution(self) -> np.ndarray:
+        return self.__distribution
 
     @property
-    def mean(self) -> float:
-        return self.__mean
+    def geometric_moments(self) -> dict:
+        return self.__geometric_moments
 
     @property
-    def median(self) -> float:
-        return self.__median
+    def logarithmic_moments(self) -> dict:
+        return self.__logarithmic_moments
 
     @property
-    def mode(self) -> float:
-        return self.__mode
-
-    @property
-    def variance(self) -> float:
-        return self.__variance
-
-    @property
-    def standard_deviation(self) -> float:
-        return self.__standard_deviation
-
-    @property
-    def skewness(self) -> float:
-        return self.__skewness
-
-    @property
-    def kurtosis(self) -> float:
-        return self.__kurtosis
-
-    @property
-    def has_nan(self) -> bool:
-        values_to_check = [self.fraction, self.mean,
-                           self.median, self.mode,
-                           self.variance, self.standard_deviation,
-                           self.skewness, self.kurtosis]
-        if np.any(np.isnan(self.component_y)) or np.any(np.isnan(values_to_check)):
-            return True
-        else:
-            return False
-
+    def is_valid(self) -> bool:
+        return self.__is_valid
 
 class FittingResult:
     """
     The class to represent the fitting result of each sample.
     """
-    def __init__(self, name: str, real_x: np.ndarray,
-                 fitting_space_x: np.ndarray, bin_numbers: np.ndarray,
-                 target_y: np.ndarray, algorithm_data: AlgorithmData,
-                 fitted_params: Iterable[float], x_offset: float,
-                 fitting_history: List[np.ndarray] = None):
-        length = len(real_x)
-        assert len(fitting_space_x) == length
-        assert len(bin_numbers) == length
-        assert len(target_y) == length
-
+    def __init__(self, task: FittingTask,
+                 mixed_func_args: typing.Iterable[float],
+                 history: typing.List[np.ndarray] = None,
+                 time_spent = None):
         # add uuid to manage data
         self.__uuid = uuid4()
-        self.__name = name
-        self.__real_x = real_x
-        self.__fitting_space_x = fitting_space_x
-        self.__bin_numbers = bin_numbers
-        self.__x_offset = x_offset
-        self.__target_y = target_y
-        self.__distribution_type = algorithm_data.distribution_type
-        self.__component_number = algorithm_data.component_number
-        self.__param_count = algorithm_data.param_count
-        self.__param_names = algorithm_data.param_names
-        self.__fitting_history = [fitted_params] if fitting_history is None else fitting_history
+        self.__task = task
+        self.__distribution_type = task.distribution_type
+        self.__n_components = task.n_components
+        self.__sample = task.sample
+        self.__mixed_func_args = mixed_func_args
+        self.__history = [mixed_func_args] if history is None else history
         self.__components = [] # type: List[ComponentFittingResult]
-        self.update(fitted_params)
+        self.__time_spent = time_spent
+        self.update(mixed_func_args)
 
+    def update(self, mixed_func_args: typing.Iterable[float]):
+        distribution = BaseDistribution.get_distribution(self.__distribution_type, self.__n_components)
 
-    def update(self, fitted_params: Iterable[float]):
-        algorithm_data = AlgorithmData.get_algorithm_data(self.distribution_type, self.component_number)
-        if np.any(np.isnan(fitted_params)):
-            self.__fitted_y = np.full_like(self.__fitting_space_x, fill_value=np.nan)
-            self.__error_array = np.full_like(self.__fitting_space_x, fill_value=np.nan)
-            self.__mean_squared_error = np.nan
-            self.__pearson_r = (np.nan, np.nan)
-            self.__kendall_tau = (np.nan, np.nan)
-            self.__spearman_r = (np.nan, np.nan)
+        if np.any(np.isnan(mixed_func_args)):
+            self.__distribution = np.full_like(self.__sample.distribution, fill_value=np.nan)
+            self.__is_valid = False
         else:
-            self.__fitted_y = algorithm_data.mixed_func(self.__fitting_space_x - self.__x_offset, *fitted_params)
-            # some test for fitting result
-            self.__error_array = self.__target_y - self.__fitted_y
-            self.__mean_squared_error = np.mean(np.square(self.__error_array))
-            # https://scipy.github.io/devdocs/generated/scipy.stats.pearsonr.html
-            self.__pearson_r = pearsonr(self.__target_y, self.__fitted_y)
-            # https://scipy.github.io/devdocs/generated/scipy.stats.kendalltau.html
-            self.__kendall_tau = kendalltau(self.__target_y, self.__fitted_y)
-            # https://scipy.github.io/devdocs/generated/scipy.stats.spearmanr.html
-            self.__spearman_r = spearmanr(self.__target_y, self.__fitted_y)
-
-        processed_params = algorithm_data.process_params(fitted_params, self.__x_offset)
-        if  len(self.__components) == 0:
-            for params, fraction in processed_params:
-                component_result = ComponentFittingResult(self.real_x, self.fitting_space_x, algorithm_data, params, fraction)
-                self.__components.append(component_result)
-        else:
-            for component, (params, fraction) in zip(self.__components, processed_params):
-                component.update(algorithm_data, params, fraction)
-        # sort by mean values
-        self.__components.sort(key=lambda component: component.mean)
+            self.__distribution = distribution.mixed_function(self.__sample.classes_φ, *mixed_func_args)
+            unpacked_args = distribution.unpack_parameters(mixed_func_args)
+            if len(self.__components) == 0:
+                for func_args, fraction in unpacked_args:
+                    component_result = ComponentFittingResult(self.__sample, distribution, func_args, fraction)
+                    self.__components.append(component_result)
+            else:
+                for component, (func_args, fraction) in zip(self.__components, unpacked_args):
+                    component.update(self.__sample, distribution, func_args, fraction)
+            # sort by mean φ values
+            # reverse is necessary
+            self.__components.sort(key=lambda component: component.logarithmic_moments["mean"], reverse=True)
+            self.__is_valid = True
 
     @property
     def uuid(self) -> UUID:
         return self.__uuid
 
     @property
-    def name(self) -> str:
-        return self.__name
+    def sample(self) -> GrainSizeSample:
+        return self.__sample
 
     @property
-    def real_x(self) -> np.ndarray:
-        return self.__real_x
+    def classes_μm(self) -> np.ndarray:
+        return self.__sample.classes_μm
 
     @property
-    def fitting_space_x(self) -> np.ndarray:
-        return self.__fitting_space_x
+    def classes_φ(self) -> np.ndarray:
+        return self.__sample.classes_φ
 
     @property
-    def bin_numbers(self) -> np.ndarray:
-        return self.__bin_numbers
-
-    @property
-    def target_y(self) -> np.ndarray:
-        return self.__target_y
+    def task(self) -> FittingTask:
+        return self.__task
 
     @property
     def distribution_type(self) -> DistributionType:
         return self.__distribution_type
 
     @property
-    def component_number(self) -> int:
-        return self.__component_number
+    def n_components(self) -> int:
+        return self.__n_components
 
     @property
-    def param_count(self) -> int:
-        return self.__param_count
+    def distribution(self) -> np.ndarray:
+        return self.__distribution
 
     @property
-    def param_names(self) -> Tuple[str]:
-        return self.__param_names
+    def components(self) -> typing.List[ComponentFittingResult]:
+        return self.__components
 
     @property
-    def components(self) -> Iterable[ComponentFittingResult]:
-        return [component for component in self.__components]
+    def is_valid(self) -> bool:
+        return self.__is_valid
 
     @property
-    def fitted_y(self) -> np.ndarray:
-        return self.__fitted_y
-
-    @property
-    def mean_squared_error(self) -> float:
-        return self.__mean_squared_error
-
-    @property
-    def pearson_r(self) -> Tuple[float, float]:
-        return self.__pearson_r
-
-    @property
-    def kendall_tau(self) -> Tuple[float, float]:
-        return self.__kendall_tau
-
-    @property
-    def spearman_r(self) -> Tuple[float, float]:
-        return self.__spearman_r
-
-    @property
-    def has_invalid_value(self) -> bool:
-        if np.any(np.isnan(self.__fitted_y)):
-            return True
-        for component in self.__components:
-            if component.has_nan:
-                return True
-        return False
+    def mixed_func_args(self) -> np.ndarray:
+        return self.__mixed_func_args
 
     @property
     def history(self):
         copy_result = copy.deepcopy(self)
-        for fitted_params in self.__fitting_history:
+        for fitted_params in self.__history:
             copy_result.update(fitted_params)
             yield copy_result
 
+    def get_distance(self, distance: str):
+        distance_func = get_distance_func_by_name(distance)
+        distribution = BaseDistribution.get_distribution(self.__distribution_type, self.__n_components)
+        values = distribution.mixed_function(self.__sample.classes_φ, *self.__mixed_func_args)
+        targets = self.__sample.distribution
+        distance = distance_func(values, targets)
+        return distance
+
+    def get_distance_series(self, distance: str):
+        distance_func = get_distance_func_by_name(distance)
+        distribution = BaseDistribution.get_distribution(self.__distribution_type, self.__n_components)
+        distance_series = []
+        for func_args in self.__history:
+            values = distribution.mixed_function(self.__sample.classes_φ, *func_args)
+            targets = self.__sample.distribution
+            distance = distance_func(values, targets)
+            distance_series.append(distance)
+        return distance_series
+
     @property
-    def iteration_number(self):
-        return len(self.__fitting_history)
+    def last_func_args(self):
+        return self.__history[-1]
+
+    @property
+    def time_spent(self):
+        return self.__time_spent
+
+    @property
+    def n_iterations(self):
+        return len(self.__history)
+
+    @property
+    def view_model(self) -> MixedDistributionChartViewModel:
+        distributions = [comp.distribution for comp in self.components]
+        fractions = [comp.fraction for comp in self.components]
+        return MixedDistributionChartViewModel(
+            self.sample.classes_φ, self.sample.distribution,
+            self.distribution, distributions, fractions,
+            component_prefix="C", title=self.sample.name)
+
+    @property
+    def view_models(self) -> typing.Iterable[MixedDistributionChartViewModel]:
+        for result in self.history:
+            yield result.view_model
