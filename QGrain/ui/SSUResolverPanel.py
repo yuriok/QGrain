@@ -128,6 +128,7 @@ class SSUResolverPanel(QDialog):
         self.table_group = QGroupBox(self.tr("Table"))
         self.reference_view = ReferenceResultViewer()
         self.result_view = FittingResultViewer(self.reference_view)
+        self.result_view.result_marked.connect(lambda result: self.reference_view.add_references([result]))
         self.table_tab = QTabWidget()
         self.table_tab.addTab(self.result_view, qta.icon("fa.cubes"), self.tr("Result"))
         self.table_tab.addTab(self.reference_view, qta.icon("fa5s.key"), self.tr("Reference"))
