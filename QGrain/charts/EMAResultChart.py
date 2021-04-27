@@ -19,7 +19,7 @@ class EMAResultChart(QDialog):
         flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
         super().__init__(parent=parent, f=flags)
         self.setWindowTitle(self.tr("EMA Result Chart"))
-        self.figure = plt.figure()
+        self.figure = plt.figure(figsize=(8, 6))
         self.canvas = FigureCanvas(self.figure)
         self.toolbar = NavigationToolbar(self.canvas, self)
         self.main_layout = QGridLayout(self)
@@ -328,7 +328,7 @@ class EMAResultChart(QDialog):
                 self.fraction_bars.append(bar)
                 self.patches.extend(bar.patches)
                 bottom += result.fractions[:, index]
-            return self.iteration_position_line, self.class_wise_distance_curve, self.sample_wise_distance_curve, *self.end_member_curves, *self.patches
+            return self.iteration_position_line, self.class_wise_distance_curve, self.sample_wise_distance_curve, *(self.end_member_curves + self.patches)
 
         def animate(args):
             iteration, current = args
@@ -343,7 +343,7 @@ class EMAResultChart(QDialog):
                     rect.set_height(height)
                     rect.set_y(y)
                 bottom += current.fractions[:, index]
-            return self.iteration_position_line, self.class_wise_distance_curve, self.sample_wise_distance_curve, *self.end_member_curves, *self.patches
+            return self.iteration_position_line, self.class_wise_distance_curve, self.sample_wise_distance_curve, *(self.end_member_curves + self.patches)
 
         self.animation = FuncAnimation(self.figure, animate, init_func=init, frames=enumerate(result.history) , interval=self.interval, blit=True, repeat=self.repeat, repeat_delay=3.0, save_count=result.n_iterations)
 
