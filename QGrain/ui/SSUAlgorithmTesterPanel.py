@@ -1,3 +1,4 @@
+from QGrain.ui.ReferenceResultViewer import ReferenceResultViewer
 import logging
 import typing
 
@@ -5,7 +6,7 @@ import numpy as np
 import qtawesome as qta
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import (QComboBox, QDialog, QGridLayout, QGroupBox,
-                               QLabel, QPushButton, QSpinBox, QSplitter)
+                               QLabel, QPushButton, QSpinBox, QSplitter, QTabWidget)
 from QGrain.algorithms import DistributionType
 from QGrain.algorithms.AsyncFittingWorker import AsyncFittingWorker
 from QGrain.algorithms.moments import logarithmic
@@ -112,12 +113,16 @@ class SSUAlgorithmTesterPanel(QDialog):
         self.stats_layout.addWidget(self.mean_n_iterations_display, 4, 1)
         self.stats_layout.addWidget(self.mean_distance_label, 5, 0)
         self.stats_layout.addWidget(self.mean_distance_display, 5, 1)
-        # result view group
-        self.result_group = QGroupBox(self.tr("Result Viewer"))
-        self.result_layout = QGridLayout(self.result_group)
-        self.result_view = FittingResultViewer()
-        self.result_layout.addWidget(self.result_view, 0, 0)
-        self.async_worker.background_worker.task_succeeded.connect(self.result_view.add_result)
+        # table group
+        self.table_group = QGroupBox(self.tr("Table"))
+        self.reference_view = ReferenceResultViewer()
+        self.result_view = FittingResultViewer(self.reference_view)
+        self.result_view.result_marked.connect(lambda result: self.reference_view.add_references([result]))
+        self.table_tab = QTabWidget()
+        self.table_tab.addTab(self.result_view, qta.icon("fa.cubes"), self.tr("Result"))
+        self.table_tab.addTab(self.reference_view, qta.icon("fa5s.key"), self.tr("Reference"))
+        self.result_layout = QGridLayout(self.table_group)
+        self.result_layout.addWidget(self.table_tab, 0, 0)
         # pack all group
         self.splitter1 = QSplitter(Qt.Orientation.Horizontal)
         self.splitter1.addWidget(self.control_group)
@@ -127,7 +132,7 @@ class SSUAlgorithmTesterPanel(QDialog):
         self.splitter2.addWidget(self.chart_group)
         self.splitter3 = QSplitter(Qt.Orientation.Horizontal)
         self.splitter3.addWidget(self.splitter2)
-        self.splitter3.addWidget(self.result_group)
+        self.splitter3.addWidget(self.table_group)
         self.main_layout.addWidget(self.splitter3, 0, 0)
 
     @property
@@ -166,18 +171,30 @@ class SSUAlgorithmTesterPanel(QDialog):
             unqualified = (mean_error > tolerance) or (fraction_error > tolerance)
         return unqualified, component_errors
 
-    def generate_task(self):
+    def generate_task(self, query_ref=True):
         artificial_sample = self.generate_setting.get_random_sample()
         resolver = self.resolver_combo_box.currentText()
         if resolver == "classic":
             setting = self.classic_setting.setting
         else:
             setting = self.neural_setting.setting
-        task = FittingTask(artificial_sample.sample_to_fit,
-                           self.distribution_type,
-                           self.n_components,
-                           resolver=resolver,
-                           resolver_setting=setting)
+        sample = artificial_sample.sample_to_fit
+        query = self.reference_view.query_reference(sample) # type: FittingResult
+        if not query_ref or query is None:
+            task = FittingTask(sample,
+                               self.distribution_type,
+                               self.n_components,
+                               resolver=resolver,
+                               resolver_setting=setting)
+        else:
+            keys = ["mean", "std", "skewness"]
+            reference = [{key: comp.logarithmic_moments[key] for key in keys} for comp in query.components]
+            task = FittingTask(sample,
+                               query.distribution_type,
+                               query.n_components,
+                               resolver=resolver,
+                               resolver_setting=setting,
+                               reference=reference)
         return artificial_sample, task
 
     def update_stats(self):
@@ -186,7 +203,7 @@ class SSUAlgorithmTesterPanel(QDialog):
         n_unquelified = len(self.unquelified_task_ids)
         mean_spent_time = np.mean([result.time_spent for uuid, result in self.task_results.items()])
         mean_n_iterations = np.mean([result.n_iterations for uuid, result in self.task_results.items()])
-        mean_distance = np.mean([result.get_distance(self.result_view.distance_func) for uuid, result in self.task_results.items()])
+        mean_distance = np.mean([result.get_distance(self.result_view.distance_name) for uuid, result in self.task_results.items()])
         self.n_tasks_display.setText(str(n_tasks))
         self.n_failed_tasks_display.setText(str(n_failed))
         self.n_unquelified_tasks_display.setText(str(n_unquelified))
@@ -199,7 +216,7 @@ class SSUAlgorithmTesterPanel(QDialog):
         self.update_sample_chart(self.task_table[fitting_result.task.uuid][0])
         self.update_fitting_chart(fitting_result)
         self.task_results[fitting_result.task.uuid] = fitting_result
-
+        self.result_view.add_result(fitting_result)
         if not fitting_result.is_valid:
             self.unquelified_task_ids.append(fitting_result.task.uuid)
         else:
