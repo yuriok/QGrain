@@ -14,7 +14,7 @@ class HierarchyChart(QDialog):
         flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
         super().__init__(parent=parent, f=flags)
         self.setWindowTitle(self.tr("Hierarchy Chart"))
-        self.figure = plt.figure()
+        self.figure = plt.figure(figsize=(8, 4))
         self.axes = self.figure.subplots()
         self.canvas = FigureCanvas(self.figure)
         self.toolbar = NavigationToolbar(self.canvas, self)
