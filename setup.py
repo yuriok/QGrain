@@ -26,7 +26,7 @@ setup(
         "SciencePlots"],
     entry_points = {
         'console_scripts': [
-            'qgrain=QGrain.qg:qgrain_console'],
+            'qgrain=QGrain.entry:qgrain_console'],
     },
     classifiers=[
         "Programming Language :: Python :: 3",
