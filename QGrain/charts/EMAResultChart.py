@@ -19,7 +19,7 @@ class EMAResultChart(QDialog):
         flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
         super().__init__(parent=parent, f=flags)
         self.setWindowTitle(self.tr("EMA Result Chart"))
-        self.figure = plt.figure(figsize=(8, 6))
+        self.figure = plt.figure(figsize=(6, 12))
         self.canvas = FigureCanvas(self.figure)
         self.toolbar = NavigationToolbar(self.canvas, self)
         self.main_layout = QGridLayout(self)
@@ -298,7 +298,6 @@ class EMAResultChart(QDialog):
         self.end_member_axes.set_ylabel(self.ylabel)
         self.end_member_axes.set_title(self.tr("End-members"))
 
-
         if result.n_samples > self.N_DISPLAY_SAMPLES:
             interval = result.n_samples // self.N_DISPLAY_SAMPLES
         else:
@@ -310,7 +309,7 @@ class EMAResultChart(QDialog):
         self.fraction_axes.set_ylabel(self.tr("Fraction"))
         self.fraction_axes.set_title(self.tr("Sample Fractions"))
 
-        self.figure.tight_layout()
+        # self.figure.tight_layout()
         # self.canvas.draw()
         def init():
             self.iteration_position_line = self.distance_history_axes.plot([1, 1], [min_distance, max_distance], c="black")[0]
