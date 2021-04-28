@@ -1,3 +1,5 @@
+import traceback
+
 from PySide2.QtCore import QObject, QThread, Signal, Slot
 from QGrain.algorithms import FittingState
 from QGrain.algorithms.ClassicResolver import ClassicResolver
@@ -27,7 +29,7 @@ class BackgroundWorker(QObject):
             else:
                 self.task_failed.emit(f"Fitting Failed, error details:\n{result.__str__()}", task)
         except Exception as e:
-            self.task_failed.emit(f"Unknown Exception Raised: {e}", task)
+            self.task_failed.emit(f"Unknown Exception Raised: {type(e)}, {e.__str__()}, {traceback.format_exc()}", task)
 
 class AsyncFittingWorker(QObject):
     task_started = Signal(FittingTask)
@@ -57,9 +59,9 @@ if __name__ == "__main__":
 
     from PySide2.QtWidgets import QApplication
     from QGrain.algorithms import DistributionType
-    from QGrain.models.NNResolverSetting import NNResolverSetting
     from QGrain.charts.MixedDistributionChart import MixedDistributionChart
     from QGrain.models.artificial import get_random_sample
+    from QGrain.models.NNResolverSetting import NNResolverSetting
     app = QApplication(sys.argv)
     canvas = MixedDistributionChart()
     canvas.show_demo()
