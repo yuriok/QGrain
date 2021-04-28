@@ -46,7 +46,6 @@ class EMAResolverPanel(QDialog):
         self.load_dialog.dataset_loaded.connect(self.on_dataset_loaded)
         self.file_dialog = QFileDialog(parent=self)
         self.ema_result_chart = EMAResultChart(toolbar=True)
-        self.ema_result_chart.setMinimumSize(600, 600)
         self.ema_summary_chart = EMASummaryChart(toolbar=True)
 
     def init_ui(self):
