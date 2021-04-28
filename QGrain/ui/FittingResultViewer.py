@@ -6,10 +6,11 @@ import pickle
 import time
 import typing
 from collections import Counter
+from uuid import UUID
 
 import numpy as np
 import qtawesome as qta
-from PySide2.QtCore import Qt, Signal
+from PySide2.QtCore import Qt, Signal, QTimer
 from PySide2.QtGui import QCursor
 from PySide2.QtWidgets import (QAbstractItemView, QComboBox, QDialog,
                                QFileDialog, QGridLayout, QLabel, QMenu,
@@ -22,13 +23,14 @@ from QGrain.algorithms.moments import logarithmic
 from QGrain.charts.BoxplotChart import BoxplotChart
 from QGrain.charts.DistanceCurveChart import DistanceCurveChart
 from QGrain.charts.MixedDistributionChart import MixedDistributionChart
+from QGrain.charts.SSUTypicalComponentChart import SSUTypicalComponentChart
 from QGrain.models.ClassicResolverSetting import built_in_distances
 from QGrain.models.FittingResult import FittingResult
-from QGrain.models.GrainSizeSample import GrainSizeSample
 from QGrain.models.FittingTask import FittingTask
-from QGrain.charts.SSUTypicalComponentChart import SSUTypicalComponentChart
+from QGrain.models.GrainSizeSample import GrainSizeSample
 from QGrain.ui.ReferenceResultViewer import ReferenceResultViewer
-from uuid import UUID
+from sklearn.cluster import KMeans
+
 
 class FittingResultViewer(QDialog):
     PAGE_ROWS = 20
@@ -58,7 +60,14 @@ class FittingResultViewer(QDialog):
         self.outlier_msg_box = QMessageBox(self)
         self.outlier_msg_box.setWindowFlags(Qt.Drawer)
         self.outlier_msg_box.setStandardButtons(QMessageBox.Discard|QMessageBox.Retry|QMessageBox.Ignore)
-
+        self.retry_progress_msg_box = QMessageBox()
+        self.retry_progress_msg_box.setWindowFlags(Qt.CustomizeWindowHint|Qt.WindowTitleHint)
+        self.retry_progress_msg_box.addButton(QMessageBox.Ok)
+        self.retry_progress_msg_box.button(QMessageBox.Ok).hide()
+        self.retry_progress_msg_box.setWindowTitle(self.tr("Progress"))
+        self.retry_timer = QTimer(self)
+        self.retry_timer.setSingleShot(True)
+        self.retry_timer.timeout.connect(lambda: self.retry_progress_msg_box.exec_())
 
     def init_ui(self):
         self.data_table = QTableWidget(100, 100)
@@ -91,6 +100,8 @@ class FittingResultViewer(QDialog):
         self.main_layout.addWidget(self.distance_label, 2, 0)
         self.main_layout.addWidget(self.distance_combo_box, 2, 1, 1, 2)
         self.menu = QMenu(self.data_table)
+        self.menu.setShortcutAutoRepeat(True)
+
         self.mark_action = self.menu.addAction(qta.icon("mdi.marker-check"), self.tr("Mark Selection(s) as Reference"))
         self.mark_action.triggered.connect(self.mark_selections)
         self.remove_action = self.menu.addAction(qta.icon("fa.remove"), self.tr("Remove Selection(s)"))
@@ -101,12 +112,26 @@ class FittingResultViewer(QDialog):
         self.plot_distribution_chart_action.triggered.connect(self.show_distribution)
         self.plot_distribution_animation_action = self.menu.addAction(qta.icon("fa5s.chart-area"), self.tr("Plot Distribution Chart (Animation)"))
         self.plot_distribution_animation_action.triggered.connect(self.show_history_distribution)
-        self.detect_outliers_action = self.menu.addAction(qta.icon("mdi.magnify"), self.tr("Detect Outliers"))
-        self.detect_outliers_action.triggered.connect(self.detect_outliers)
+        self.detect_outliers_menu = self.menu.addMenu(qta.icon("mdi.magnify"), self.tr("Detect Outliers"))
+        self.check_final_distances_action = self.detect_outliers_menu.addAction(self.tr("Check Final Distances"))
+        self.check_final_distances_action.triggered.connect(self.check_final_distances)
+        self.check_component_mean_action = self.detect_outliers_menu.addAction(self.tr("Check Component Mean"))
+        self.check_component_mean_action.triggered.connect(lambda: self.check_component_moments("mean"))
+        self.check_component_std_action = self.detect_outliers_menu.addAction(self.tr("Check Component STD"))
+        self.check_component_std_action.triggered.connect(lambda: self.check_component_moments("std"))
+        self.check_component_skewness_action = self.detect_outliers_menu.addAction(self.tr("Check Component Skewness"))
+        self.check_component_skewness_action.triggered.connect(lambda: self.check_component_moments("skewness"))
+        self.check_component_kurtosis_action = self.detect_outliers_menu.addAction(self.tr("Check Component Kurtosis"))
+        self.check_component_kurtosis_action.triggered.connect(lambda: self.check_component_moments("kurtosis"))
+        self.check_component_fractions_action = self.detect_outliers_menu.addAction(self.tr("Check Component Fractions"))
+        self.check_component_fractions_action.triggered.connect(self.check_component_fractions)
+        self.degrade_results_action = self.detect_outliers_menu.addAction(self.tr("Degrade Results"))
+        self.degrade_results_action.triggered.connect(self.degrade_results)
+        self.try_align_components_action = self.detect_outliers_menu.addAction(self.tr("Try Align Components"))
+        self.try_align_components_action.triggered.connect(self.try_align_components)
+
         self.analyse_typical_components_action = self.menu.addAction(qta.icon("ei.tags"), self.tr("Analyse Typical Components"))
         self.analyse_typical_components_action.triggered.connect(self.analyse_typical_components)
-        self.do_summary_action = self.menu.addAction(qta.icon("fa.align-center"), self.tr("Align Components"))
-        self.do_summary_action.triggered.connect(self.align_components)
         self.load_dump_action = self.menu.addAction(qta.icon("fa.database"), self.tr("Load Binary Dump"))
         self.load_dump_action.triggered.connect(self.load_dump)
         self.save_dump_action = self.menu.addAction(qta.icon("fa.save"), self.tr("Save Binary Dump"))
@@ -114,6 +139,9 @@ class FittingResultViewer(QDialog):
         self.save_excel_action = self.menu.addAction(qta.icon("mdi.microsoft-excel"), self.tr("Save Excel"))
         self.save_excel_action.triggered.connect(self.save_excel)
         self.data_table.customContextMenuRequested.connect(self.show_menu)
+        # necessary to add actions of menu to this widget itself,
+        # otherwise, the shortcuts will not be triggered
+        self.addActions(self.menu.actions())
 
     def show_menu(self, pos):
         self.menu.popup(QCursor.pos())
@@ -354,7 +382,7 @@ class FittingResultViewer(QDialog):
         with open(filename, "wb") as f:
             pickle.dump(self.__fitting_results, f)
 
-    def save_excel(self):
+    def save_excel(self, align_components=False):
         # TODO: ADD SUPPORT
         self.show_error("NOT IMPLEMENTED")
 
@@ -362,16 +390,27 @@ class FittingResultViewer(QDialog):
         result_replace_index = self.retry_tasks[result.task.uuid]
         self.__fitting_results[result_replace_index] = result
         self.retry_tasks.pop(result.task.uuid)
+        self.retry_progress_msg_box.setText(self.tr("Tasks to be retried: {0}").format(len(self.retry_tasks)))
+        if len(self.retry_tasks) == 0:
+            self.retry_progress_msg_box.close()
+
         self.logger.debug(f"Retried task succeeded, sample name={result.task.sample.name}, distribution_type={result.task.distribution_type.name}, n_components={result.task.n_components}")
         self.update_page(self.page_index)
 
-    def on_fitting_failed(self, task: FittingTask):
+    def on_fitting_failed(self, failed_info: str, task: FittingTask):
         # necessary to remove it from the dict
         self.retry_tasks.pop(task.uuid)
-        self.show_error(self.tr("Failed to retry task, sample name={0}.").format(task.sample.name))
+        if len(self.retry_tasks) == 0:
+            self.retry_progress_msg_box.close()
+        self.show_error(self.tr("Failed to retry task, sample name={0}.\n{1}").format(task.sample.name, failed_info))
         self.logger.warning(f"Failed to retry task, sample name={task.sample.name}, distribution_type={task.distribution_type.name}, n_components={task.n_components}")
 
     def retry_results(self, indexes, results):
+        assert len(indexes) == len(results)
+        if len(results) == 0:
+            return
+        self.retry_progress_msg_box.setText(self.tr("Tasks to be retried: {0}").format(len(results)))
+        self.retry_timer.start(1)
         for index, result in zip(indexes, results):
             query = self.__reference_viewer.query_reference(result.sample)
             ref_result = None
@@ -392,7 +431,61 @@ class FittingResultViewer(QDialog):
             self.retry_tasks[task.uuid] = index
             self.async_worker.execute_task(task)
 
-    def detect_outliers(self):
+    def degrade_results(self):
+        degrade_results = [] # type: list[FittingResult]
+        degrade_indexes = [] # type: list[int]
+        for i, result in enumerate(self.__fitting_results):
+            for component in result.components:
+                if component.fraction < 1e-3:
+                    degrade_results.append(result)
+                    degrade_indexes.append(i)
+                    break
+        self.logger.debug(f"Results should be degrade (have a redundant component): {[result.sample.name for result in degrade_results]}")
+        if len(degrade_results) == 0:
+            self.show_info(self.tr("No fitting result was evaluated as an outlier."))
+            return
+        self.show_info(self.tr("The results below should be degrade (have a redundant component:\n    {0}").format(
+                ", ".join([result.sample.name for result in degrade_results])))
+
+        self.retry_progress_msg_box.setText(self.tr("Tasks to be retried: {0}").format(len(degrade_results)))
+        self.retry_timer.start(1)
+        for index, result in zip(degrade_indexes, degrade_results):
+            reference = []
+            n_redundant = 0
+            for component in result.components:
+                if component.fraction < 1e-3:
+                    n_redundant += 1
+                else:
+                    reference.append(dict(mean=component.logarithmic_moments["mean"],
+                                          std=component.logarithmic_moments["std"],
+                                          skewness=component.logarithmic_moments["skewness"]))
+            task = FittingTask(result.sample,
+                               result.distribution_type,
+                               result.n_components-n_redundant if result.n_components > n_redundant else 1,
+                               resolver=result.task.resolver,
+                               resolver_setting=result.task.resolver_setting,
+                               reference=reference)
+            self.logger.debug(f"Retry task: sample name={task.sample.name}, distribution_type={task.distribution_type.name}, n_components={task.n_components}")
+            self.retry_tasks[task.uuid] = index
+            self.async_worker.execute_task(task)
+
+    def ask_deal_outliers(self, outlier_results: typing.List[FittingResult],
+                          outlier_indexes: typing.List[int]):
+        assert len(outlier_indexes) == len(outlier_results)
+        if len(outlier_results) == 0:
+            self.show_info(self.tr("No fitting result was evaluated as an outlier."))
+        else:
+            self.outlier_msg_box.setText(self.tr("The fitting results have the component that its fraction is near zero:\n    {0}\nHow to deal with them?").format(
+                    ", ".join([result.sample.name for result in outlier_results])))
+            res = self.outlier_msg_box.exec_()
+            if res == QMessageBox.Discard:
+                self.remove_results(outlier_indexes)
+            elif res == QMessageBox.Retry:
+                self.retry_results(outlier_indexes, outlier_results)
+            else:
+                pass
+
+    def check_final_distances(self):
         if self.n_results == 0:
             self.show_warning(self.tr("There is not any result in the list."))
             return
@@ -423,19 +516,111 @@ class FittingResultViewer(QDialog):
             # if distance > value_3_4 + distance_QR * 1.5 or distance < value_1_4 - distance_QR * 1.5:
                 outlier_results.append(result)
                 outlier_indexes.append(i)
-        self.logger.debug(f"Outlier results: {[result.sample.name for result in outlier_results]}")
-        if len(outlier_results) == 0:
-            self.show_info(self.tr("No fitting result was evaluated as an outlier."))
-        else:
-            self.outlier_msg_box.setText(self.tr("The fitting results of the following samples were evaluated as outliers by Tukey's test:\n    {0}\nHow to deal with them?").format(
-                    ", ".join([result.sample.name for result in outlier_results])))
-            res = self.outlier_msg_box.exec_()
-            if res == QMessageBox.Discard:
-                self.remove_results(outlier_indexes)
-            elif res == QMessageBox.Retry:
-                self.retry_results(outlier_indexes, outlier_results)
-            else:
-                pass
+        self.logger.debug(f"Outlier results with too greater distances: {[result.sample.name for result in outlier_results]}")
+        self.ask_deal_outliers(outlier_results, outlier_indexes)
+
+    def check_component_moments(self, key: str):
+        if self.n_results == 0:
+            self.show_warning(self.tr("There is not any result in the list."))
+            return
+        elif self.n_results < 10:
+            self.show_warning(self.tr("The results in list are too less."))
+            return
+        stacked_moments = []
+        for result in self.__fitting_results:
+            for component in result.components:
+                stacked_moments.append(component.logarithmic_moments[key])
+        stacked_moments = np.array(stacked_moments)
+
+        key_trans = {"mean": self.tr("Mean"), "std": self.tr("STD"), "skewness": self.tr("Skewness"), "kurtosis": self.tr("Kurtosis")}
+        key_label_trans = {"mean": self.tr("Mean [φ]"), "std": self.tr("STD [φ]"), "skewness": self.tr("Skewness"), "kurtosis": self.tr("Kurtosis")}
+        self.boxplot_chart.show_dataset([stacked_moments], xlabels=[key_trans[key]], ylabel=key_label_trans[key])
+        self.boxplot_chart.show()
+
+        # calculate the 1/4, 1/2, and 3/4 postion value to judge which result is invalid
+        # 1. the mean squared errors are much higher in the results which are lack of components
+        # 2. with the component number getting higher, the mean squared error will get lower and finally reach the minimum
+        median = np.median(stacked_moments)
+        upper_group = stacked_moments[np.greater(stacked_moments, median)]
+        lower_group = stacked_moments[np.less(stacked_moments, median)]
+        value_1_4 = np.median(lower_group)
+        value_3_4 = np.median(upper_group)
+        distance_QR = value_3_4 - value_1_4
+        outlier_results = []
+        outlier_indexes = []
+        for i, result in enumerate(self.__fitting_results):
+            for component in result.components:
+                distance = component.logarithmic_moments[key]
+                if distance > value_3_4 + distance_QR * 1.5 or distance < value_1_4 - distance_QR * 1.5:
+                    outlier_results.append(result)
+                    outlier_indexes.append(i)
+                    break
+        self.logger.debug(f"Outlier results with abnormal {key} values of their components: {[result.sample.name for result in outlier_results]}")
+        self.ask_deal_outliers(outlier_results, outlier_indexes)
+
+    def check_component_fractions(self):
+        outlier_results = []
+        outlier_indexes = []
+        for i, result in enumerate(self.__fitting_results):
+            for component in result.components:
+                if component.fraction < 1e-3:
+                    outlier_results.append(result)
+                    outlier_indexes.append(i)
+                    break
+        self.logger.debug(f"Outlier results with the component that its fraction is near zero: {[result.sample.name for result in outlier_results]}")
+        self.ask_deal_outliers(outlier_results, outlier_indexes)
+
+    def try_align_components(self):
+        if self.n_results == 0:
+            self.show_warning(self.tr("There is not any result in the list."))
+            return
+        elif self.n_results < 10:
+            self.show_warning(self.tr("The results in list are too less."))
+            return
+        import matplotlib.pyplot as plt
+        n_components_list = [result.n_components for result in self.__fitting_results]
+        count_dict = Counter(n_components_list)
+        max_n_components = max(count_dict.keys())
+        self.logger.debug(f"N_components: {count_dict}, Max N_components: {max_n_components}")
+        n_components_desc = "\n".join([self.tr("{0} Component(s): {1}").format(n_components, count) for n_components, count in count_dict.items()])
+        self.show_info(self.tr("N_components distribution of Results:\n{0}").format(n_components_desc))
+
+        x = self.__fitting_results[0].classes_μm
+        stacked_components = []
+        for result in self.__fitting_results:
+            for component in result.components:
+                stacked_components.append(component.distribution)
+        stacked_components = np.array(stacked_components)
+
+        cluser = KMeans(n_clusters=max_n_components)
+        flags = cluser.fit_predict(stacked_components)
+
+        figure = plt.figure(figsize=(6, 4))
+        cmap = plt.get_cmap("tab10")
+        axes = figure.add_subplot(1, 1, 1)
+        for flag, distribution in zip(flags, stacked_components):
+            plt.plot(x, distribution, c=cmap(flag), zorder=flag)
+        axes.set_xscale("log")
+        axes.set_xlabel(self.tr("Grain-size [μm]"))
+        axes.set_ylabel(self.tr("Frequency"))
+        figure.tight_layout()
+        figure.show()
+
+        outlier_results = []
+        outlier_indexes = []
+        flag_index = 0
+        for i, result in enumerate(self.__fitting_results):
+            result_flags = set()
+            for component in result.components:
+                if flags[flag_index] in result_flags:
+                    outlier_results.append(result)
+                    outlier_indexes.append(i)
+                    break
+                else:
+                    result_flags.add(flags[flag_index])
+                flag_index += 1
+        self.logger.debug(f"Outlier results that have two components in the same cluster: {[result.sample.name for result in outlier_results]}")
+        self.ask_deal_outliers(outlier_results, outlier_indexes)
 
     def analyse_typical_components(self):
         if self.n_results == 0:
@@ -447,27 +632,3 @@ class FittingResultViewer(QDialog):
 
         self.typical_chart.show_typical(self.__fitting_results)
         self.typical_chart.show()
-
-    def align_components(self):
-        if self.n_results == 0:
-            self.show_warning(self.tr("There is not any result in the list."))
-            return
-        elif self.n_results < 10:
-            self.show_warning(self.tr("The results in list are too less."))
-            return
-        import matplotlib.pyplot as plt
-        n_components_list = [result.n_components for result in self.__fitting_results]
-        count_dict = Counter(n_components_list)
-        self.logger.debug(f"N_components: {count_dict}")
-        figure = plt.figure(figsize=(6, 4))
-        cmap = plt.get_cmap("tab10")
-        axes = figure.add_subplot(1, 1, 1)
-        for result in self.__fitting_results:
-            for i, comp in enumerate(result.components):
-                plt.plot(result.classes_μm, comp.distribution, c=cmap(i))
-        axes.set_xscale("log")
-        axes.set_xlabel(self.tr("Grain-size [μm]"))
-        axes.set_ylabel(self.tr("Frequency"))
-        figure.tight_layout()
-        figure.show()
-
