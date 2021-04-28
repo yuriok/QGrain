@@ -46,6 +46,20 @@ def prepare_styles(wb: openpyxl.Workbook):
         fgColor="b2bbbe")
     wb.add_named_style(normal_dark_style)
 
+    warning_style = NamedStyle(name="warning")
+    warning_style.font = Font(size=12, name="Arial", color="ffffff")
+    warning_style.alignment = Alignment(
+        horizontal='center',
+        vertical='center',
+        text_rotation=0,
+        wrap_text=False,
+        shrink_to_fit=False,
+        indent=0)
+    warning_style.fill = PatternFill(
+        patternType="solid",
+        fgColor="ff9900")
+    wb.add_named_style(warning_style)
+
     header_style = NamedStyle(name="header")
     header_style.font = Font(size=14, bold=True, name="Times New Roman", color="ffffff")
     header_style.alignment = Alignment(

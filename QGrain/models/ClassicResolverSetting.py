@@ -73,3 +73,6 @@ class ClassicResolverSetting:
         self.FLO_tol = FLO_tol
         self.FLO_ftol = FLO_ftol
         self.FLO_max_niter = FLO_max_niter
+
+    def __str__(self) -> str:
+        return self.__dict__.__str__()

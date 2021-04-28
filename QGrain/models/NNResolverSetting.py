@@ -40,3 +40,6 @@ class NNResolverSetting:
         self.ftol = ftol
         self.lr = lr
         self.eps = eps
+
+    def __str__(self) -> str:
+        return self.__dict__.__str__()
