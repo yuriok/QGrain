@@ -154,7 +154,8 @@ class MixedDistributionChart(QDialog):
                 modes = [self.transfer(model.classes_φ[np.unravel_index(np.argmax(distribution), distribution.shape)])  for distribution in model.distributions]
                 colors = [plt.get_cmap()(i) for i in range(model.n_components)]
                 self.vlines = self.axes.vlines(modes, 0.0, round(np.max(model.target)*1.2, 2), colors=colors)
-            self.axes.legend(loc="upper left")
+            if model.n_components < 6:
+                self.axes.legend(loc="upper left")
             self.figure.tight_layout()
             self.canvas.draw()
         else:
