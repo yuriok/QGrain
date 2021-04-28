@@ -16,7 +16,7 @@ class SSUTypicalComponentChart(QDialog):
     def __init__(self, parent=None, toolbar=False):
         flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
         super().__init__(parent=parent, f=flags)
-        self.setWindowTitle(self.tr("Frequency Curve Chart"))
+        self.setWindowTitle(self.tr("SSU Typical Component Chart"))
         self.figure = plt.figure(figsize=(8, 4))
         self.clustering_axes = self.figure.add_subplot(1, 2, 1)
         self.component_axes = self.figure.add_subplot(1, 2, 2)
