@@ -16,7 +16,7 @@ class FrequencyCurve3DChart(QDialog):
         flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
         super().__init__(parent=parent, f=flags)
         self.setWindowTitle(self.tr("Frequency Curve 3D Chart"))
-        self.figure = plt.figure()
+        self.figure = plt.figure(figsize=(6, 4))
         self.axes = Axes3D(self.figure, auto_add_to_figure=False)
         self.figure.add_axes(self.axes)
         self.canvas = FigureCanvas(self.figure)
