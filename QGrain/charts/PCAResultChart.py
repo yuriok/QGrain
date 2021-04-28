@@ -44,6 +44,7 @@ class PCAResultChart(QDialog):
         self.axes.set_xlabel(self.tr("Sample Index"))
         self.axes.set_ylabel(self.tr("Transformed Value"))
         self.axes.set_title(self.tr("Varations of PCs"))
-        self.axes.legend(loc="upper left")
+        if n_components < 10:
+            self.axes.legend(loc="upper left")
         self.figure.tight_layout()
         self.canvas.draw()
