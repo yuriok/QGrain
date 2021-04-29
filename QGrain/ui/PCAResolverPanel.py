@@ -18,8 +18,7 @@ from sklearn.decomposition import PCA
 
 class PCAResolverPanel(QDialog):
     def __init__(self, parent=None):
-        flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
-        super().__init__(parent=parent, f=flags)
+        super().__init__(parent=parent, f=Qt.Window)
         self.setWindowTitle(self.tr("PCA Resolver"))
         self.init_ui()
         self.load_dataset_dialog = LoadDatasetDialog(parent=self)

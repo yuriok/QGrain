@@ -13,8 +13,7 @@ from QGrain.models.ClassicResolverSetting import (ClassicResolverSetting,
 
 class ClassicResolverSettingWidget(QDialog):
     def __init__(self, parent=None, filename=None, group=None):
-        flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
-        super().__init__(parent=parent, f=flags)
+        super().__init__(parent=parent, f=Qt.Window)
         self.setWindowTitle(self.tr("Classic Resolver Setting"))
         if filename is not None:
             self.setting_file = QSettings(filename, QSettings.Format.IniFormat)
