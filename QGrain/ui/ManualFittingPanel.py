@@ -563,8 +563,7 @@ from QGrain.models.FittingTask import FittingTask
 class ManualFittingPanel(QDialog):
     manual_fitting_finished = Signal(FittingResult)
     def __init__(self, parent=None):
-        flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
-        super().__init__(parent=parent, f=flags)
+        super().__init__(parent=parent, f=Qt.Window)
         self.setWindowTitle(self.tr("SSU Manual Fitting Panel"))
         self.control_widgets = []
         self.input_widgets = []

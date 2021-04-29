@@ -19,8 +19,7 @@ from QGrain import QGRAIN_VERSION
 
 class HierarchyResolverPanel(QDialog):
     def __init__(self, parent=None):
-        flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
-        super().__init__(parent=parent, f=flags)
+        super().__init__(parent=parent, f=Qt.Window)
         self.setWindowTitle(self.tr("Hierarchy Resolver"))
         self.init_ui()
         self.frequency_chart = FrequencyCurveChart(parent=self, toolbar=True)

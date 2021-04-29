@@ -49,8 +49,7 @@ Feel free to contact the authors below, if you have some questions.
 
 class AboutWindow(QMainWindow):
     def __init__(self, parent=None):
-        flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
-        super().__init__(parent=parent, flags=flags)
+        super().__init__(parent=parent)
         self.init_ui()
 
     def init_ui(self):

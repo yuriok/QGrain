@@ -31,8 +31,7 @@ class ReferenceResultViewer(QDialog):
     PAGE_ROWS = 20
     logger = logging.getLogger("root.QGrain.ui.ReferenceResultViewer")
     def __init__(self, parent=None):
-        flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
-        super().__init__(parent=parent, f=flags)
+        super().__init__(parent=parent, f=Qt.Window)
         self.setWindowTitle(self.tr("SSU Reference Result Viewer"))
         self.__fitting_results = []
         self.__reference_map = {}
