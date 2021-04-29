@@ -139,7 +139,9 @@ class FittingResultViewer(QDialog):
         self.save_dump_action = self.menu.addAction(qta.icon("fa.save"), self.tr("Save Binary Dump"))
         self.save_dump_action.triggered.connect(self.save_dump)
         self.save_excel_action = self.menu.addAction(qta.icon("mdi.microsoft-excel"), self.tr("Save Excel"))
-        self.save_excel_action.triggered.connect(self.on_save_excel_clicked)
+        self.save_excel_action.triggered.connect(lambda: self.on_save_excel_clicked(align_components=False))
+        self.save_excel_align_action = self.menu.addAction(qta.icon("mdi.microsoft-excel"), self.tr("Save Excel (Force Alignment)"))
+        self.save_excel_align_action.triggered.connect(lambda: self.on_save_excel_clicked(align_components=True))
         self.data_table.customContextMenuRequested.connect(self.show_menu)
         # necessary to add actions of menu to this widget itself,
         # otherwise, the shortcuts will not be triggered
@@ -383,7 +385,6 @@ class FittingResultViewer(QDialog):
             return
         with open(filename, "wb") as f:
             pickle.dump(self.__fitting_results, f)
-
 
     def save_excel(self, filename, align_components=False):
         if self.n_results == 0:
