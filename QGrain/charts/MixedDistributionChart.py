@@ -128,8 +128,12 @@ class MixedDistributionChart(QDialog):
             self.show_result(self.last_result)
 
     def show_model(self, model: MixedDistributionChartViewModel, quick=False):
+        if self.animation is not None:
+            self.animation._stop()
+            self.animation = None
         if not quick:
             self.last_result = None
+
             self.last_model = model
             self.interval_label.setEnabled(False)
             self.interval_input.setEnabled(False)
@@ -170,6 +174,7 @@ class MixedDistributionChart(QDialog):
     def show_result(self, result: FittingResult):
         if self.animation is not None:
             self.animation._stop()
+            self.animation = None
         self.last_model = None
         self.last_result = result
         self.interval_label.setEnabled(True)
