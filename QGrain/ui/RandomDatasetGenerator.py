@@ -155,8 +155,7 @@ class RandomDatasetGenerator(QDialog):
     logger = logging.getLogger("root.ui.RandomGeneratorWidget")
     gui_logger = logging.getLogger("GUI")
     def __init__(self, parent=None):
-        flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
-        super().__init__(parent=parent, f=flags)
+        super().__init__(parent=parent, f=Qt.Window)
         self.setWindowTitle(self.tr("Random Dataset Generator"))
         self.last_n_components = 0
         self.components = [] # typing.List[RandomGeneratorComponentWidget]

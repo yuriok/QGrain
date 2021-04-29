@@ -26,8 +26,7 @@ from QGrain.use_excel import column_to_char, prepare_styles
 
 class EMAResolverPanel(QDialog):
     def __init__(self, parent=None):
-        flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
-        super().__init__(parent=parent, f=flags)
+        super().__init__(parent=parent, f=Qt.Window)
         self.setWindowTitle(self.tr("EMA Resolver"))
         self.SUPPORTED_DISTS = \
             [(DistributionType.Nonparametric, self.tr("Nonparametric")),

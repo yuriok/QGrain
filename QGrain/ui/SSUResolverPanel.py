@@ -23,8 +23,7 @@ from QGrain.ui.ReferenceResultViewer import ReferenceResultViewer
 
 class SSUResolverPanel(QDialog):
     def __init__(self, parent=None):
-        flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
-        super().__init__(parent=parent, f=flags)
+        super().__init__(parent=parent, f=Qt.Window)
         self.setWindowTitle(self.tr("SSU Resolver"))
         self.distribution_types = [(DistributionType.Normal, self.tr("Normal")),
                                    (DistributionType.Weibull, self.tr("Weibull")),

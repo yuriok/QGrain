@@ -36,8 +36,7 @@ def get_type_by_name(filename: str):
 class LoadDatasetDialog(QDialog):
     dataset_loaded = Signal(GrainSizeDataset)
     def __init__(self, parent=None):
-        flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
-        super().__init__(parent=parent, f=flags)
+        super().__init__(parent=parent, f=Qt.Window)
         self.setWindowTitle(self.tr("Dataset Loader"))
         self.initialize_ui()
         self.file_dialog = QFileDialog(parent=self)

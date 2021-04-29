@@ -16,7 +16,7 @@ from PySide2.QtGui import QCloseEvent
 
 class ConsolePanel(QDialog):
     def __init__(self, parent=None):
-        super().__init__(parent=parent)
+        super().__init__(parent=parent, f=Qt.Window)
         self.setWindowTitle(self.tr("Console"))
         self.init_ui()
         self.msg_box = QMessageBox(self)
@@ -24,7 +24,6 @@ class ConsolePanel(QDialog):
         self.msg_box.setText("Close this window will terminate the work of other windows, are you sure to close it?")
         self.msg_box.setStandardButtons(QMessageBox.Close | QMessageBox.Cancel)
         self.msg_box.setDefaultButton(QMessageBox.Cancel)
-
         self.msg_box.setWindowFlags(Qt.Drawer)
 
     def init_ui(self):

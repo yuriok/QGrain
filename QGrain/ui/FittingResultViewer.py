@@ -39,8 +39,7 @@ class FittingResultViewer(QDialog):
     logger = logging.getLogger("root.QGrain.ui.FittingResultViewer")
     result_marked = Signal(FittingResult)
     def __init__(self, reference_viewer: ReferenceResultViewer, parent=None):
-        flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
-        super().__init__(parent=parent, f=flags)
+        super().__init__(parent=parent, f=Qt.Window)
         self.setWindowTitle(self.tr("SSU Fitting Result Viewer"))
         self.__fitting_results = [] # type: list[FittingResult]
         self.retry_tasks = {} # type: dict[UUID, FittingTask]
