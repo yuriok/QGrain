@@ -7,7 +7,7 @@ import qtawesome as qta
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QCursor
 from PySide2.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox,
-                               QDialog, QFileDialog, QGridLayout, QHeaderView, QMenu,
+                               QDialog, QFileDialog, QGridLayout, QMenu,
                                QMessageBox, QPushButton, QTableWidget,
                                QTableWidgetItem)
 from QGrain import QGRAIN_VERSION
@@ -96,6 +96,8 @@ class GrainSizeDatasetViewer(QDialog):
         self.cumulative_append_selected_action.triggered.connect(lambda: self.plot_chart(self.cumulative_curve_chart, self.selections, True))
         self.cumulative_plot_all_action = self.plot_cumulative_curve_menu.addAction(self.tr("Plot All Samples"))
         self.cumulative_plot_all_action.triggered.connect(lambda: self.plot_chart(self.cumulative_curve_chart, self.__dataset.samples, False))
+        self.cumulative_append_all_action = self.plot_cumulative_curve_menu.addAction(self.tr("Append All Samples"))
+        self.cumulative_append_all_action.triggered.connect(lambda: self.plot_chart(self.cumulative_curve_chart, self.__dataset.samples, True))
 
         self.plot_frequency_curve_menu = self.menu.addMenu(qta.icon("mdi.chart-bell-curve"), self.tr("Plot Frequency Curve Chart"))
         self.frequency_plot_selected_action = self.plot_frequency_curve_menu.addAction(self.tr("Plot Selected Samples"))
@@ -104,6 +106,8 @@ class GrainSizeDatasetViewer(QDialog):
         self.frequency_append_selected_action.triggered.connect(lambda: self.plot_chart(self.frequency_curve_chart, self.selections, True))
         self.frequency_plot_all_action = self.plot_frequency_curve_menu.addAction(self.tr("Plot All Samples"))
         self.frequency_plot_all_action.triggered.connect(lambda: self.plot_chart(self.frequency_curve_chart, self.__dataset.samples, False))
+        self.frequency_append_all_action = self.plot_frequency_curve_menu.addAction(self.tr("Append All Samples"))
+        self.frequency_append_all_action.triggered.connect(lambda: self.plot_chart(self.frequency_curve_chart, self.__dataset.samples, True))
 
         self.plot_frequency_curve_3D_menu = self.menu.addMenu(qta.icon("mdi.video-3d"), self.tr("Plot Frequency Curve 3D Chart"))
         self.frequency_3D_plot_selected_action = self.plot_frequency_curve_3D_menu.addAction(self.tr("Plot Selected Samples"))
@@ -112,6 +116,8 @@ class GrainSizeDatasetViewer(QDialog):
         self.frequency_3D_append_selected_action.triggered.connect(lambda: self.plot_chart(self.frequency_curve_3D_chart, self.selections, True))
         self.frequency_3D_plot_all_action = self.plot_frequency_curve_3D_menu.addAction(self.tr("Plot All Samples"))
         self.frequency_3D_plot_all_action.triggered.connect(lambda: self.plot_chart(self.frequency_curve_3D_chart, self.__dataset.samples, False))
+        self.frequency_3D_append_all_action = self.plot_frequency_curve_3D_menu.addAction(self.tr("Append All Samples"))
+        self.frequency_3D_append_all_action.triggered.connect(lambda: self.plot_chart(self.frequency_curve_3D_chart, self.__dataset.samples, True))
 
         self.folk54_GSM_diagram_menu = self.menu.addMenu(qta.icon("mdi.triangle-outline"), self.tr("Plot GSM Diagram (Folk, 1954)"))
         self.folk54_GSM_plot_selected_action = self.folk54_GSM_diagram_menu.addAction(self.tr("Plot Selected Samples"))
@@ -120,6 +126,8 @@ class GrainSizeDatasetViewer(QDialog):
         self.folk54_GSM_append_selected_action.triggered.connect(lambda: self.plot_chart(self.folk54_GSM_diagram_chart, self.selections, True))
         self.folk54_GSM_plot_all_action = self.folk54_GSM_diagram_menu.addAction(self.tr("Plot All Samples"))
         self.folk54_GSM_plot_all_action.triggered.connect(lambda: self.plot_chart(self.folk54_GSM_diagram_chart, self.__dataset.samples, False))
+        self.folk54_GSM_append_all_action = self.folk54_GSM_diagram_menu.addAction(self.tr("Append All Samples"))
+        self.folk54_GSM_append_all_action.triggered.connect(lambda: self.plot_chart(self.folk54_GSM_diagram_chart, self.__dataset.samples, True))
 
         self.folk54_SSC_diagram_menu = self.menu.addMenu(qta.icon("mdi.triangle-outline"), self.tr("Plot SSC Diagram (Folk, 1954)"))
         self.folk54_SSC_plot_selected_action = self.folk54_SSC_diagram_menu.addAction(self.tr("Plot Selected Samples"))
@@ -128,6 +136,8 @@ class GrainSizeDatasetViewer(QDialog):
         self.folk54_SSC_append_selected_action.triggered.connect(lambda: self.plot_chart(self.folk54_SSC_diagram_chart, self.selections, True))
         self.folk54_SSC_plot_all_action = self.folk54_SSC_diagram_menu.addAction(self.tr("Plot All Samples"))
         self.folk54_SSC_plot_all_action.triggered.connect(lambda: self.plot_chart(self.folk54_SSC_diagram_chart, self.__dataset.samples, False))
+        self.folk54_SSC_append_all_action = self.folk54_SSC_diagram_menu.addAction(self.tr("Append All Samples"))
+        self.folk54_SSC_append_all_action.triggered.connect(lambda: self.plot_chart(self.folk54_SSC_diagram_chart, self.__dataset.samples, True))
 
         self.BP12_GSM_diagram_menu = self.menu.addMenu(qta.icon("mdi.triangle-outline"), self.tr("Plot GSM Diagram (Blott && Pye, 2012)"))
         self.BP12_GSM_plot_selected_action = self.BP12_GSM_diagram_menu.addAction(self.tr("Plot Selected Samples"))
@@ -136,6 +146,8 @@ class GrainSizeDatasetViewer(QDialog):
         self.BP12_GSM_append_selected_action.triggered.connect(lambda: self.plot_chart(self.BP12_GSM_diagram_chart, self.selections, True))
         self.BP12_GSM_plot_all_action = self.BP12_GSM_diagram_menu.addAction(self.tr("Plot All Samples"))
         self.BP12_GSM_plot_all_action.triggered.connect(lambda: self.plot_chart(self.BP12_GSM_diagram_chart, self.__dataset.samples, False))
+        self.BP12_GSM_append_all_action = self.BP12_GSM_diagram_menu.addAction(self.tr("Append All Samples"))
+        self.BP12_GSM_append_all_action.triggered.connect(lambda: self.plot_chart(self.BP12_GSM_diagram_chart, self.__dataset.samples, True))
 
         self.BP12_SSC_diagram_menu = self.menu.addMenu(qta.icon("mdi.triangle-outline"), self.tr("Plot SSC Diagram (Blott && Pye, 2012)"))
         self.BP12_SSC_plot_selected_action = self.BP12_SSC_diagram_menu.addAction(self.tr("Plot Selected Samples"))
@@ -144,7 +156,8 @@ class GrainSizeDatasetViewer(QDialog):
         self.BP12_SSC_append_selected_action.triggered.connect(lambda: self.plot_chart(self.BP12_SSC_diagram_chart, self.selections, True))
         self.BP12_SSC_plot_all_action = self.BP12_SSC_diagram_menu.addAction(self.tr("Plot All Samples"))
         self.BP12_SSC_plot_all_action.triggered.connect(lambda: self.plot_chart(self.BP12_SSC_diagram_chart, self.__dataset.samples, False))
-
+        self.BP12_SSC_append_all_action = self.BP12_SSC_diagram_menu.addAction(self.tr("Append All Samples"))
+        self.BP12_SSC_append_all_action.triggered.connect(lambda: self.plot_chart(self.BP12_SSC_diagram_chart, self.__dataset.samples, True))
 
         self.save_action = self.menu.addAction(qta.icon("mdi.microsoft-excel"), self.tr("Save Summary"))
         self.save_action.triggered.connect(self.on_save_clicked)
