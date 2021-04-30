@@ -7,16 +7,18 @@ import qtawesome as qta
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QCursor
 from PySide2.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox,
-                               QDialog, QFileDialog, QGridLayout, QMenu,
+                               QDialog, QFileDialog, QGridLayout, QHeaderView, QMenu,
                                QMessageBox, QPushButton, QTableWidget,
                                QTableWidgetItem)
 from QGrain import QGRAIN_VERSION
 from QGrain.algorithms.moments import get_moments
 from QGrain.charts.CumulativeCurveChart import CumulativeCurveChart
+from QGrain.charts.diagrams import (BP12GSMDiagramChart,
+                                    BP12SSCDiagramChart,
+                                    Folk54GSMDiagramChart,
+                                    Folk54SSCDiagramChart)
 from QGrain.charts.FrequencyCurve3DChart import FrequencyCurve3DChart
 from QGrain.charts.FrequencyCurveChart import FrequencyCurveChart
-from QGrain.charts.GSMDiagramChart import GSMDiagramChart
-from QGrain.charts.SSCDiagramChart import SSCDiagramChart
 from QGrain.models.GrainSizeDataset import GrainSizeDataset
 from QGrain.ui.LoadDatasetDialog import LoadDatasetDialog
 from QGrain.use_excel import column_to_char, prepare_styles
@@ -35,8 +37,10 @@ class GrainSizeDatasetViewer(QDialog):
         self.frequency_curve_chart = FrequencyCurveChart(parent=self, toolbar=True)
         self.frequency_curve_3D_chart = FrequencyCurve3DChart(parent=self, toolbar=True)
         self.cumulative_curve_chart = CumulativeCurveChart(parent=self, toolbar=True)
-        self.GSM_diagram_chart = GSMDiagramChart(parent=self, toolbar=True)
-        self.SSC_diagram_chart = SSCDiagramChart(parent=self, toolbar=True)
+        self.folk54_GSM_diagram_chart = Folk54GSMDiagramChart(parent=self, toolbar=True)
+        self.folk54_SSC_diagram_chart = Folk54SSCDiagramChart(parent=self, toolbar=True)
+        self.BP12_GSM_diagram_chart = BP12GSMDiagramChart(parent=self, toolbar=True)
+        self.BP12_SSC_diagram_chart = BP12SSCDiagramChart(parent=self, toolbar=True)
         self.load_dataset_dialog = LoadDatasetDialog(parent=self)
         self.load_dataset_dialog.dataset_loaded.connect(self.on_data_loaded)
         self.file_dialog = QFileDialog(parent=self)
@@ -68,11 +72,11 @@ class GrainSizeDatasetViewer(QDialog):
 
         self.geometric_checkbox = QCheckBox(self.tr("Geometric"))
         self.geometric_checkbox.setChecked(True)
-        self.geometric_checkbox.stateChanged.connect(lambda: self.update_page(self.page_index))
+        self.geometric_checkbox.stateChanged.connect(self.on_is_geometric_changed)
         self.main_layout.addWidget(self.geometric_checkbox, 2, 0)
         self.FW57_checkbox = QCheckBox(self.tr("Folk and Ward (1957) method"))
         self.FW57_checkbox.setChecked(False)
-        self.FW57_checkbox.stateChanged.connect(lambda: self.update_page(self.page_index))
+        self.FW57_checkbox.stateChanged.connect(self.on_use_FW57_changed)
         self.main_layout.addWidget(self.FW57_checkbox, 2, 1)
         self.proportion_combo_box = QComboBox()
         self.supported_proportions = [("GSM_proportion", self.tr("Gravel, Sand, Mud")),
@@ -109,21 +113,38 @@ class GrainSizeDatasetViewer(QDialog):
         self.frequency_3D_plot_all_action = self.plot_frequency_curve_3D_menu.addAction(self.tr("Plot All Samples"))
         self.frequency_3D_plot_all_action.triggered.connect(lambda: self.plot_chart(self.frequency_curve_3D_chart, self.__dataset.samples, False))
 
-        self.plot_GSM_diagram_menu = self.menu.addMenu(qta.icon("mdi.triangle-outline"), self.tr("Plot Gravel-Sand-Mud Diagram"))
-        self.GSM_plot_selected_action = self.plot_GSM_diagram_menu.addAction(self.tr("Plot Selected Samples"))
-        self.GSM_plot_selected_action.triggered.connect(lambda: self.plot_chart(self.GSM_diagram_chart, self.selections, False))
-        self.GSM_append_selected_action = self.plot_GSM_diagram_menu.addAction(self.tr("Append Selected Samples"))
-        self.GSM_append_selected_action.triggered.connect(lambda: self.plot_chart(self.GSM_diagram_chart, self.selections, True))
-        self.GSM_plot_all_action = self.plot_GSM_diagram_menu.addAction(self.tr("Plot All Samples"))
-        self.GSM_plot_all_action.triggered.connect(lambda: self.plot_chart(self.GSM_diagram_chart, self.__dataset.samples, False))
+        self.folk54_GSM_diagram_menu = self.menu.addMenu(qta.icon("mdi.triangle-outline"), self.tr("Plot GSM Diagram (Folk, 1954)"))
+        self.folk54_GSM_plot_selected_action = self.folk54_GSM_diagram_menu.addAction(self.tr("Plot Selected Samples"))
+        self.folk54_GSM_plot_selected_action.triggered.connect(lambda: self.plot_chart(self.folk54_GSM_diagram_chart, self.selections, False))
+        self.folk54_GSM_append_selected_action = self.folk54_GSM_diagram_menu.addAction(self.tr("Append Selected Samples"))
+        self.folk54_GSM_append_selected_action.triggered.connect(lambda: self.plot_chart(self.folk54_GSM_diagram_chart, self.selections, True))
+        self.folk54_GSM_plot_all_action = self.folk54_GSM_diagram_menu.addAction(self.tr("Plot All Samples"))
+        self.folk54_GSM_plot_all_action.triggered.connect(lambda: self.plot_chart(self.folk54_GSM_diagram_chart, self.__dataset.samples, False))
 
-        self.plot_SSC_diagram_menu = self.menu.addMenu(qta.icon("mdi.triangle-outline"), self.tr("Plot Sand-Silt-Clay Diagram"))
-        self.SSC_plot_selected_action = self.plot_SSC_diagram_menu.addAction(self.tr("Plot Selected Samples"))
-        self.SSC_plot_selected_action.triggered.connect(lambda: self.plot_chart(self.SSC_diagram_chart, self.selections, False))
-        self.SSC_append_selected_action = self.plot_SSC_diagram_menu.addAction(self.tr("Append Selected Samples"))
-        self.SSC_append_selected_action.triggered.connect(lambda: self.plot_chart(self.SSC_diagram_chart, self.selections, True))
-        self.SSC_plot_all_action = self.plot_SSC_diagram_menu.addAction(self.tr("Plot All Samples"))
-        self.SSC_plot_all_action.triggered.connect(lambda: self.plot_chart(self.SSC_diagram_chart, self.__dataset.samples, False))
+        self.folk54_SSC_diagram_menu = self.menu.addMenu(qta.icon("mdi.triangle-outline"), self.tr("Plot SSC Diagram (Folk, 1954)"))
+        self.folk54_SSC_plot_selected_action = self.folk54_SSC_diagram_menu.addAction(self.tr("Plot Selected Samples"))
+        self.folk54_SSC_plot_selected_action.triggered.connect(lambda: self.plot_chart(self.folk54_SSC_diagram_chart, self.selections, False))
+        self.folk54_SSC_append_selected_action = self.folk54_SSC_diagram_menu.addAction(self.tr("Append Selected Samples"))
+        self.folk54_SSC_append_selected_action.triggered.connect(lambda: self.plot_chart(self.folk54_SSC_diagram_chart, self.selections, True))
+        self.folk54_SSC_plot_all_action = self.folk54_SSC_diagram_menu.addAction(self.tr("Plot All Samples"))
+        self.folk54_SSC_plot_all_action.triggered.connect(lambda: self.plot_chart(self.folk54_SSC_diagram_chart, self.__dataset.samples, False))
+
+        self.BP12_GSM_diagram_menu = self.menu.addMenu(qta.icon("mdi.triangle-outline"), self.tr("Plot GSM Diagram (Blott && Pye, 2012)"))
+        self.BP12_GSM_plot_selected_action = self.BP12_GSM_diagram_menu.addAction(self.tr("Plot Selected Samples"))
+        self.BP12_GSM_plot_selected_action.triggered.connect(lambda: self.plot_chart(self.BP12_GSM_diagram_chart, self.selections, False))
+        self.BP12_GSM_append_selected_action = self.BP12_GSM_diagram_menu.addAction(self.tr("Append Selected Samples"))
+        self.BP12_GSM_append_selected_action.triggered.connect(lambda: self.plot_chart(self.BP12_GSM_diagram_chart, self.selections, True))
+        self.BP12_GSM_plot_all_action = self.BP12_GSM_diagram_menu.addAction(self.tr("Plot All Samples"))
+        self.BP12_GSM_plot_all_action.triggered.connect(lambda: self.plot_chart(self.BP12_GSM_diagram_chart, self.__dataset.samples, False))
+
+        self.BP12_SSC_diagram_menu = self.menu.addMenu(qta.icon("mdi.triangle-outline"), self.tr("Plot SSC Diagram (Blott && Pye, 2012)"))
+        self.BP12_SSC_plot_selected_action = self.BP12_SSC_diagram_menu.addAction(self.tr("Plot Selected Samples"))
+        self.BP12_SSC_plot_selected_action.triggered.connect(lambda: self.plot_chart(self.BP12_SSC_diagram_chart, self.selections, False))
+        self.BP12_SSC_append_selected_action = self.BP12_SSC_diagram_menu.addAction(self.tr("Append Selected Samples"))
+        self.BP12_SSC_append_selected_action.triggered.connect(lambda: self.plot_chart(self.BP12_SSC_diagram_chart, self.selections, True))
+        self.BP12_SSC_plot_all_action = self.BP12_SSC_diagram_menu.addAction(self.tr("Plot All Samples"))
+        self.BP12_SSC_plot_all_action.triggered.connect(lambda: self.plot_chart(self.BP12_SSC_diagram_chart, self.__dataset.samples, False))
+
 
         self.save_action = self.menu.addAction(qta.icon("mdi.microsoft-excel"), self.tr("Save Summary"))
         self.save_action.triggered.connect(self.on_save_clicked)
@@ -162,9 +183,23 @@ class GrainSizeDatasetViewer(QDialog):
     def is_geometric(self) -> bool:
         return self.geometric_checkbox.isChecked()
 
+    def on_is_geometric_changed(self, state):
+        if state == Qt.Checked:
+            self.geometric_checkbox.setText(self.tr("Geometric"))
+        else:
+            self.geometric_checkbox.setText(self.tr("Logarithmic"))
+        self.update_page(self.page_index)
+
     @property
     def use_FW57(self) -> bool:
         return self.FW57_checkbox.isChecked()
+
+    def on_use_FW57_changed(self, state):
+        if state == Qt.Checked:
+            self.FW57_checkbox.setText(self.tr("Folk and Ward (1957) method"))
+        else:
+            self.FW57_checkbox.setText(self.tr("Method of moments"))
+        self.update_page(self.page_index)
 
     @property
     def proportion(self) -> str:
@@ -218,7 +253,10 @@ class GrainSizeDatasetViewer(QDialog):
                         self.tr("Skew. Desc."),
                         self.tr("Kurtosis"),
                         self.tr("Kurt. Desc."),
-                        f"({proportion_desciption}) {self.tr('Proportion')} [%]"]
+                        f"({proportion_desciption})\n{self.tr('Proportion')} [%]",
+                        self.tr("Textural Group\n(Folk, 1954)"),
+                        self.tr("Textural Group\nSymbol (Blott & Pye, 2012)"),
+                        self.tr("Textural Group\n(Blott & Pye, 2012)")]
         moment_keys = ["mean",
                        "mean_description",
                        "median",
@@ -229,7 +267,10 @@ class GrainSizeDatasetViewer(QDialog):
                        "skewness_description",
                        "kurtosis",
                        "kurtosis_description",
-                        proportion_key]
+                        proportion_key,
+                       "textural_group_Folk54",
+                       "textural_group_BP12_symbol",
+                       "textural_group_BP12"]
         self.data_table.setRowCount(end-start)
         self.data_table.setColumnCount(len(moment_names))
         self.data_table.setHorizontalHeaderLabels(moment_names)
@@ -291,10 +332,15 @@ class GrainSizeDatasetViewer(QDialog):
             This Excel file was generated by QGrain ({0}).
 
             It contanins one sheet:
-            1. It is the summary of the samples in the dataset.
+            1. The sheet puts the statistic parameters and the textural group of the samples.
 
-            The statistical formulas are referred to Blott & Pye (2001)'s work.
-                GRADISTAT: a grain size distribution and statistics package for the analysis of unconsolidated sediments (10.1002/esp.261)
+            The statistic formulas are referred to Blott & Pye (2001)'s work.
+            The classification of textural groups is referred to Folk (1957) and Blott & Pye (2012)'s scheme.
+
+            References:
+                1.Blott, S. J. & Pye, K. Particle size scales and classification of sediment types based on particle size distributions: Review and recommended procedures. Sedimentology 59, 2071–2096 (2012).
+                2.Blott, S. J. & Pye, K. GRADISTAT: a grain size distribution and statistics package for the analysis of unconsolidated sediments. Earth Surf. Process. Landforms 26, 1237–1248 (2001).
+                3.Folk, R. L. The Distinction between Grain Size and Mineral Composition in Sedimentary-Rock Nomenclature. The Journal of Geology 62, 344–359 (1954).
 
             """.format(QGRAIN_VERSION)
 
@@ -319,7 +365,10 @@ class GrainSizeDatasetViewer(QDialog):
                         self.tr("Skew. Desc."),
                         self.tr("Kurtosis"),
                         self.tr("Kurt. Desc."),
-                        f"({proportion_desciption}) {self.tr('Proportion')} [%]"]
+                        f"({proportion_desciption})\n{self.tr('Proportion')} [%]",
+                        self.tr("Textural Group\n(Folk, 1954)"),
+                        self.tr("Textural Group\nSymbol (Blott & Pye, 2012)"),
+                        self.tr("Textural Group\n(Blott & Pye, 2012)")]
         moment_keys = ["mean",
                        "mean_description",
                        "median",
@@ -330,12 +379,18 @@ class GrainSizeDatasetViewer(QDialog):
                        "skewness_description",
                        "kurtosis",
                        "kurtosis_description",
-                        proportion_key]
+                        proportion_key,
+                       "textural_group_Folk54",
+                       "textural_group_BP12_symbol",
+                       "textural_group_BP12"]
         write(0, 0, self.tr("Sample Name"), style="header")
         ws.column_dimensions[column_to_char(0)].width = 16
         for col, moment_name in enumerate(moment_names, 1):
             write(0, col, moment_name, style="header")
-            ws.column_dimensions[column_to_char(col)].width = 16
+            if col in (2, 4, 6, 8, 10, 11, 12, 14):
+                ws.column_dimensions[column_to_char(col)].width = 30
+            else:
+                ws.column_dimensions[column_to_char(col)].width = 16
         ws.column_dimensions[column_to_char(len(moment_names))].width = 40
         for row, sample in enumerate(self.__dataset.samples, 1):
             if row % 2 == 0:
@@ -377,7 +432,6 @@ class GrainSizeDatasetViewer(QDialog):
 
 if __name__ == "__main__":
     import sys
-
     from QGrain.entry import setup_app
     app = setup_app()
     main = GrainSizeDatasetViewer()
