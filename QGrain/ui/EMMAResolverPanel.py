@@ -1,4 +1,4 @@
-__all__ = ["EMAResolverPanel"]
+__all__ = ["EMMAResolverPanel"]
 
 import os
 import pickle
@@ -13,10 +13,10 @@ from PySide2.QtWidgets import (QComboBox, QDialog, QFileDialog, QGridLayout,
                                QProgressBar, QPushButton, QSpinBox)
 from QGrain import QGRAIN_VERSION
 from QGrain.algorithms import DistributionType
-from QGrain.algorithms.ema import EMAResolver
-from QGrain.charts.EMAResultChart import EMAResultChart
-from QGrain.charts.EMASummaryChart import EMASummaryChart
-from QGrain.models.EMAResult import EMAResult
+from QGrain.algorithms.emma import EMMAResolver
+from QGrain.charts.EMMAResultChart import EMMAResultChart
+from QGrain.charts.EMMASummaryChart import EMMASummaryChart
+from QGrain.models.EMMAResult import EMMAResult
 from QGrain.models.GrainSizeDataset import GrainSizeDataset
 from QGrain.models.NNResolverSetting import NNResolverSetting
 from QGrain.ui.LoadDatasetDialog import LoadDatasetDialog
@@ -24,10 +24,10 @@ from QGrain.ui.NNResolverSettingWidget import NNResolverSettingWidget
 from QGrain.use_excel import column_to_char, prepare_styles
 
 
-class EMAResolverPanel(QDialog):
+class EMMAResolverPanel(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent=parent, f=Qt.Window)
-        self.setWindowTitle(self.tr("EMA Resolver"))
+        self.setWindowTitle(self.tr("EMMA Resolver"))
         self.SUPPORTED_DISTS = \
             [(DistributionType.Nonparametric, self.tr("Nonparametric")),
              (DistributionType.Normal, self.tr("Normal")),
@@ -38,14 +38,14 @@ class EMAResolverPanel(QDialog):
         self.msg_box = QMessageBox(self)
         self.msg_box.setWindowFlags(Qt.Drawer)
         self.__dataset = None # type: GrainSizeDataset
-        self.__result_list = [] # type: list[EMAResult]
+        self.__result_list = [] # type: list[EMMAResult]
         self.neural_setting = NNResolverSettingWidget(parent=self)
         self.neural_setting.setting = NNResolverSetting(min_niter=100, max_niter=200, tol=1e-5, ftol=1e-8, lr=1e-1)
         self.load_dialog = LoadDatasetDialog(parent=self)
         self.load_dialog.dataset_loaded.connect(self.on_dataset_loaded)
         self.file_dialog = QFileDialog(parent=self)
-        self.ema_result_chart = EMAResultChart(toolbar=True)
-        self.ema_summary_chart = EMASummaryChart(toolbar=True)
+        self.emma_result_chart = EMMAResultChart(toolbar=True)
+        self.emma_summary_chart = EMMASummaryChart(toolbar=True)
 
     def init_ui(self):
         self.setAttribute(Qt.WA_StyledBackground, True)
@@ -86,7 +86,7 @@ class EMAResolverPanel(QDialog):
         self.perform_button.setEnabled(False)
         self.control_layout.addWidget(self.perform_button, 6, 0, 1, 2)
         self.progress_bar = QProgressBar()
-        self.progress_bar.setFormat(self.tr("EMA Progress"))
+        self.progress_bar.setFormat(self.tr("EMMA Progress"))
         self.control_layout.addWidget(self.progress_bar, 7, 0, 1, 2)
 
         self.result_group = QGroupBox(self.tr("Result"))
@@ -173,13 +173,13 @@ class EMAResolverPanel(QDialog):
             return
 
         self.perform_button.setEnabled(False)
-        resolver = EMAResolver()
+        resolver = EMMAResolver()
         resolver_setting = self.neural_setting.setting
         results = []
         n_members_list = self.n_members_list
         self.progress_bar.setRange(0, len(n_members_list))
         self.progress_bar.setValue(0)
-        self.progress_bar.setFormat(self.tr("Performing EMA [%v/%m]"))
+        self.progress_bar.setFormat(self.tr("Performing EMMA [%v/%m]"))
         QCoreApplication.processEvents()
         for i, n_members in enumerate(n_members_list):
             result = resolver.try_fit(self.__dataset, self.distribution_type, n_members, resolver_setting)
@@ -191,8 +191,8 @@ class EMAResolverPanel(QDialog):
         self.progress_bar.setFormat(self.tr("Finished"))
         self.perform_button.setEnabled(True)
         if len(results) > 1:
-            self.ema_summary_chart.show_distances(results)
-            self.ema_summary_chart.show()
+            self.emma_summary_chart.show_distances(results)
+            self.emma_summary_chart.show()
 
     def get_distribution_name(self, distribution_type: DistributionType):
         if distribution_type == DistributionType.Nonparametric:
@@ -206,10 +206,10 @@ class EMAResolverPanel(QDialog):
         else:
             raise NotImplementedError(distribution_type)
 
-    def get_result_name(self, result: EMAResult):
+    def get_result_name(self, result: EMMAResult):
         return f"[{self.get_distribution_name(result.distribution_type)}]-[{result.n_members} EM(s)]"
 
-    def add_results(self, results: typing.List[EMAResult]):
+    def add_results(self, results: typing.List[EMMAResult]):
         if self.n_results == 0:
             self.remove_result_button.setEnabled(True)
             self.show_result_button.setEnabled(True)
@@ -236,11 +236,11 @@ class EMAResolverPanel(QDialog):
         if result is None:
             return
         else:
-            self.ema_result_chart.show_result(result)
-            self.ema_result_chart.show()
+            self.emma_result_chart.show_result(result)
+            self.emma_result_chart.show()
 
     def on_load_dump_clicked(self):
-        filename, _  = self.file_dialog.getOpenFileName(self, self.tr("Select the dump file of the EMA result(s)"),
+        filename, _  = self.file_dialog.getOpenFileName(self, self.tr("Select the dump file of the EMMA result(s)"),
                                          None, f"{self.tr('Binary Dump')} (*.dump)")
         if filename is None or filename == "":
             return
@@ -249,18 +249,18 @@ class EMAResolverPanel(QDialog):
             invalid = False
             if isinstance(results, list):
                 for result in results:
-                    if not isinstance(result, EMAResult):
+                    if not isinstance(result, EMMAResult):
                         invalid = True
                         break
             else:
                 invalid = True
             if invalid:
-                self.show_error(self.tr("The dump file does not contain any EMA result."))
+                self.show_error(self.tr("The dump file does not contain any EMMA result."))
                 return
             else:
                 self.add_results(results)
 
-    def save_result_excel(self, filename: str, result: EMAResult):
+    def save_result_excel(self, filename: str, result: EMMAResult):
         # get the mode size of each end-members
         modes = [(i, result.dataset.classes_μm[np.unravel_index(np.argmax(result.end_members[i]), result.end_members[i].shape)]) for i in range(result.n_members)]
         # sort them by mode size
@@ -275,13 +275,13 @@ class EMAResolverPanel(QDialog):
             This Excel file was generated by QGrain ({0}).
 
             It contanins three sheets:
-            1. The first sheet is the dataset which was used to perform the EMA algorithm.
+            1. The first sheet is the dataset which was used to perform the EMMA algorithm.
             2. The second sheet is used to put the distributions of all end-members.
             3. The third sheet is the end-member fractions of all samples.
 
-            This EMA algorithm was implemented by QGrian, using the famous machine learning framework, PyTorch.
+            This EMMA algorithm was implemented by QGrian, using the famous machine learning framework, PyTorch.
 
-            EMA algorithm details
+            EMMA algorithm details
                 N_samples: {1},
                 Distribution Type: {2},
                 N_members: {3},
@@ -374,11 +374,11 @@ class EMAResolverPanel(QDialog):
 
     def on_save_clicked(self):
         if self.n_results == 0:
-            self.show_warning(self.tr("There is not an EMA result in the list."))
+            self.show_warning(self.tr("There is not an EMMA result in the list."))
             return
 
         filename, _ = self.file_dialog.getSaveFileName(
-            self, self.tr("Choose a filename to save the EMA result(s) in list"),
+            self, self.tr("Choose a filename to save the EMMA result(s) in list"),
             None, f"{self.tr('Binary Dump')} (*.dump);;{self.tr('Microsoft Excel')} (*.xlsx)")
         if filename is None or filename == "":
             return
@@ -403,6 +403,6 @@ if __name__ == "__main__":
 
     from QGrain.entry import setup_app
     app = setup_app()
-    main = EMAResolverPanel()
+    main = EMMAResolverPanel()
     main.show()
     sys.exit(app.exec_())

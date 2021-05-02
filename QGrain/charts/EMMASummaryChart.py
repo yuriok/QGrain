@@ -5,14 +5,14 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import QComboBox, QDialog, QGridLayout, QLabel
-from QGrain.models.EMAResult import EMAResult
+from QGrain.models.EMMAResult import EMMAResult
 
 
-class EMASummaryChart(QDialog):
+class EMMASummaryChart(QDialog):
     def __init__(self, parent=None, toolbar=False):
         flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
         super().__init__(parent=parent, f=flags)
-        self.setWindowTitle(self.tr("EMA Summary Chart"))
+        self.setWindowTitle(self.tr("EMMA Summary Chart"))
         self.figure = plt.figure(figsize=(4, 3))
         self.axes = self.figure.subplots()
         self.canvas = FigureCanvas(self.figure)
@@ -42,7 +42,7 @@ class EMASummaryChart(QDialog):
     def update_chart(self):
         self.show_distances(self.results)
 
-    def show_distances(self, results: typing.List[EMAResult], title=""):
+    def show_distances(self, results: typing.List[EMMAResult], title=""):
         self.results = results
 
         n_members_list = [result.n_members for result in results]

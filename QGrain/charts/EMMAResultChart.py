@@ -10,15 +10,15 @@ from PySide2.QtWidgets import (QCheckBox, QComboBox, QDialog, QFileDialog,
                                QGridLayout, QLabel, QMessageBox,
                                QProgressDialog, QPushButton, QSpinBox)
 from QGrain.algorithms.moments import convert_μm_to_φ, convert_φ_to_μm
-from QGrain.models.EMAResult import EMAResult
+from QGrain.models.EMMAResult import EMMAResult
 
 
-class EMAResultChart(QDialog):
+class EMMAResultChart(QDialog):
     N_DISPLAY_SAMPLES = 200
     def __init__(self, parent=None, toolbar=False):
         flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
         super().__init__(parent=parent, f=flags)
-        self.setWindowTitle(self.tr("EMA Result Chart"))
+        self.setWindowTitle(self.tr("EMMA Result Chart"))
         self.figure = plt.figure(figsize=(6, 12))
         self.canvas = FigureCanvas(self.figure)
         self.toolbar = NavigationToolbar(self.canvas, self)
@@ -140,7 +140,7 @@ class EMAResultChart(QDialog):
         self.save_button.setEnabled(enabled)
         self.update_chart()
 
-    def show_final_result(self, result: EMAResult):
+    def show_final_result(self, result: EMMAResult):
         self.last_result = result
         self.figure.clear()
         if self.animation is not None:
@@ -229,7 +229,7 @@ class EMAResultChart(QDialog):
         self.figure.tight_layout()
         self.canvas.draw()
 
-    def show_history_animation(self, result: EMAResult):
+    def show_history_animation(self, result: EMMAResult):
         self.last_result = result
         self.figure.clear()
         if self.animation is not None:
@@ -346,7 +346,7 @@ class EMAResultChart(QDialog):
 
         self.animation = FuncAnimation(self.figure, animate, init_func=init, frames=enumerate(result.history) , interval=self.interval, blit=True, repeat=self.repeat, repeat_delay=3.0, save_count=result.n_iterations)
 
-    def show_result(self, result: EMAResult):
+    def show_result(self, result: EMMAResult):
         if self.animated_checkbox.isChecked():
             self.show_history_animation(result)
         else:
@@ -359,7 +359,7 @@ class EMAResultChart(QDialog):
                 self.msg_box.setText(self.tr("ImageMagick is not installed, please download and install it from its offical website (https://imagemagick.org/index.php)."))
                 self.msg_box.exec_()
             else:
-                filename, _  = self.file_dialog.getSaveFileName(self, self.tr("Save the animation of EMA result"),
+                filename, _  = self.file_dialog.getSaveFileName(self, self.tr("Save the animation of EMMA result"),
                                             None, self.tr("Graphics Interchange Format (*.gif)"))
                 if filename is None or filename == "":
                     return
