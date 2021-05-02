@@ -5,7 +5,7 @@ import qtawesome as qta
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import QDialog, QGridLayout, QMessageBox, QPushButton
 from QGrain.ui.AboutWindow import AboutWindow
-from QGrain.ui.EMAResolverPanel import EMAResolverPanel
+from QGrain.ui.EMMAResolverPanel import EMMAResolverPanel
 from QGrain.ui.GrainSizeDatasetViewer import GrainSizeDatasetViewer
 from QGrain.ui.PCAResolverPanel import PCAResolverPanel
 from QGrain.ui.RandomDatasetGenerator import RandomDatasetGenerator
@@ -31,7 +31,7 @@ class ConsolePanel(QDialog):
         self.dataset_viewer = GrainSizeDatasetViewer(parent=self)
         self.pca_resolver = PCAResolverPanel(parent=self)
         self.hierarchy_resolver = HierarchyResolverPanel(parent=self)
-        self.ema_resolver = EMAResolverPanel(parent=self)
+        self.emma_resolver = EMMAResolverPanel(parent=self)
         self.ssu_resolver = SSUResolverPanel(parent=self)
         self.ssu_algorithm_tester = SSUAlgorithmTesterPanel(parent=self)
         self.abount_window = AboutWindow(parent=self)
@@ -45,8 +45,8 @@ class ConsolePanel(QDialog):
         self.pca_resolver_button.clicked.connect(lambda: self.pca_resolver.show())
         self.hierarchy_resolver_button = QPushButton(qta.icon("fa.sitemap"), self.tr("Hierarchy Clustering Resolver"))
         self.hierarchy_resolver_button.clicked.connect(lambda: self.hierarchy_resolver.show())
-        self.ema_resolver_button = QPushButton(qta.icon("fa.cubes"), self.tr("EMA Resolver"))
-        self.ema_resolver_button.clicked.connect(lambda: self.ema_resolver.show())
+        self.emma_resolver_button = QPushButton(qta.icon("fa.cubes"), self.tr("EMMA Resolver"))
+        self.emma_resolver_button.clicked.connect(lambda: self.emma_resolver.show())
         self.ssu_resolver_button = QPushButton(qta.icon("fa.puzzle-piece"), self.tr("SSU Resolver"))
         self.ssu_resolver_button.clicked.connect(lambda: self.ssu_resolver.show())
         self.ssu_algorithm_tester_button = QPushButton(qta.icon("fa.flask"), self.tr("SSU Algorithm Tester"))
@@ -59,7 +59,7 @@ class ConsolePanel(QDialog):
         self.main_layout.addWidget(self.dataset_viewer_button, 1, 0)
         self.main_layout.addWidget(self.pca_resolver_button, 2, 0)
         self.main_layout.addWidget(self.hierarchy_resolver_button, 3, 0)
-        self.main_layout.addWidget(self.ema_resolver_button, 4, 0)
+        self.main_layout.addWidget(self.emma_resolver_button, 4, 0)
         self.main_layout.addWidget(self.ssu_resolver_button, 5, 0)
         self.main_layout.addWidget(self.ssu_algorithm_tester_button, 6, 0)
         # self.main_layout.addWidget(self.setting_button, 7, 0)

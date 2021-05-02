@@ -8,7 +8,7 @@ from QGrain.algorithms.distributions import get_distance_func_by_name
 import copy
 
 
-class EMAResult:
+class EMMAResult:
     def __init__(self, dataset: GrainSizeDataset,
                  distribution_type: DistributionType,
                  n_members: int,

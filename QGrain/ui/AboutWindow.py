@@ -16,15 +16,15 @@ QGrain is an easy-to-use software which integrates most analysis tools to deal w
 
   Calculate samples' mean, std, skewness, kurtosis, etc. The statistics formulas were referred to Blott & Pye (2001)'s work.
 
-* End-member analysis (EMA)
+* End-member modelling analysis (EMMA)
 
-  EMA is a widely used algorithm to extract the end-members of a whole dataset.
+  EMMA is a widely used algorithm to extract the end-members of a whole dataset.
   Here, QGrain provides a new implement which is based the basic Neural Network.
 
 * Single Sample Unmix (SSU)
 
   SSU also is used to extract the end-members (i.e. components) of samples.
-  Different from EMA, it only deals with one sample at each computation.
+  Different from EMMA, it only deals with one sample at each computation.
 
 * Principal Component Analysis (PCA)
 

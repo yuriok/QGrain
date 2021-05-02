@@ -7,7 +7,7 @@ import torch
 from QGrain.algorithms import DistributionType
 from QGrain.algorithms.kernels import (KERNEL_MAP, NonparametricKernel,
                                        get_distance_func_by_name)
-from QGrain.models.EMAResult import EMAResult
+from QGrain.models.EMMAResult import EMMAResult
 from QGrain.models.GrainSizeDataset import GrainSizeDataset
 from QGrain.models.NNResolverSetting import NNResolverSetting
 from torch.nn import Module, Parameter, Softmax
@@ -59,7 +59,7 @@ class Fraction(Module):
         with torch.no_grad():
             return self.forward()
 
-class EMAMoudle(Module):
+class EMMAMoudle(Module):
     def __init__(self, n_samples, classes_φ, n_members, distribution_type=DistributionType.Weibull):
         super().__init__()
         self.fraction = Fraction(n_samples, n_members)
@@ -87,7 +87,7 @@ class EMAMoudle(Module):
         with torch.no_grad():
             return self.forward()
 
-class EMAResolver:
+class EMMAResolver:
     def __init__(self):
         pass
 
@@ -103,21 +103,21 @@ class EMAResolver:
         start = time.time()
         X = torch.from_numpy(dataset.X.astype(np.float32)).to(setting.device)
         classes_φ = torch.from_numpy(dataset.classes_φ.astype(np.float32)).to(setting.device)
-        ema = EMAMoudle(dataset.n_samples, classes_φ, n_members, distribution_type=distribution_type).to(setting.device)
+        emma = EMMAMoudle(dataset.n_samples, classes_φ, n_members, distribution_type=distribution_type).to(setting.device)
         distance_func = get_distance_func_by_name(setting.distance)
-        optimizer = Adam(ema.parameters(), lr=setting.lr, eps=setting.eps)
+        optimizer = Adam(emma.parameters(), lr=setting.lr, eps=setting.eps)
         loss_series = []
         history = []
         iteration = 0
         while True:
             # train
-            X_hat = ema()
+            X_hat = emma()
             loss = distance_func(X_hat, X)
             loss_series.append(loss.item())
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            history.append((ema.fractions.cpu().numpy(), ema.end_members.cpu().numpy()))
+            history.append((emma.fractions.cpu().numpy(), emma.end_members.cpu().numpy()))
             iteration += 1
             if iteration < setting.min_niter:
                 continue
@@ -130,12 +130,12 @@ class EMAResolver:
             if iteration > setting.max_niter:
                 break
         time_spent = time.time() - start
-        result = EMAResult(dataset,
+        result = EMMAResult(dataset,
                            distribution_type,
                            n_members,
                            setting,
-                           ema.fractions.cpu().numpy(),
-                           ema.end_members.cpu().numpy(),
+                           emma.fractions.cpu().numpy(),
+                           emma.end_members.cpu().numpy(),
                            time_spent,
                            history)
         return result
