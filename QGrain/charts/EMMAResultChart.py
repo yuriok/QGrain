@@ -173,9 +173,9 @@ class EMMAResultChart(QDialog):
         distance_history_axes = self.figure.add_subplot(3, 1, 1)
         distance_history_axes.plot(iteration_indexes, result.get_distance_series(self.distance))
         distance_history_axes.set_xlim(iteration_indexes[0], iteration_indexes[-1])
-        distance_history_axes.set_xlabel(self.tr("Iteration Index"))
+        distance_history_axes.set_xlabel(self.tr("Iteration index"))
         distance_history_axes.set_ylabel(self.tr("Distance"))
-        distance_history_axes.set_title(self.tr("Distance History"))
+        distance_history_axes.set_title(self.tr("Distance history"))
 
         class_wise_distance_axes = self.figure.add_subplot(3, 2, 3)
         if self.xlog:
@@ -185,15 +185,15 @@ class EMMAResultChart(QDialog):
         class_wise_distance_axes.set_ylim(min_class_wise_distance, max_class_wise_distance)
         class_wise_distance_axes.set_xlabel(self.xlabel)
         class_wise_distance_axes.set_ylabel(self.tr("Distance"))
-        class_wise_distance_axes.set_title(self.tr("Class-wise Distances"))
+        class_wise_distance_axes.set_title(self.tr("Class-wise distances"))
 
         sample_wise_distance_axes = self.figure.add_subplot(3, 2, 4)
         sample_wise_distance_axes.plot(sample_indexes, result.get_sample_wise_distance_series(self.distance))
         sample_wise_distance_axes.set_xlim(sample_indexes[0], sample_indexes[-1])
         sample_wise_distance_axes.set_ylim(min_sample_wise_distance, max_sample_wise_distance)
-        sample_wise_distance_axes.set_xlabel(self.tr("Sample Index"))
+        sample_wise_distance_axes.set_xlabel(self.tr("Sample index"))
         sample_wise_distance_axes.set_ylabel(self.tr("Distance"))
-        sample_wise_distance_axes.set_title(self.tr("Sample-wise Distances"))
+        sample_wise_distance_axes.set_title(self.tr("Sample-wise distances"))
 
         # get the mode size of each end-members
         modes = [(i, result.dataset.classes_μm[np.unravel_index(np.argmax(result.end_members[i]), result.end_members[i].shape)]) for i in range(result.n_members)]
@@ -216,16 +216,16 @@ class EMMAResultChart(QDialog):
             interval = result.n_samples // self.N_DISPLAY_SAMPLES
         else:
             interval = 1
-        fraction_axes = self.figure.add_subplot(3, 2, 6)
+        proportion_axes = self.figure.add_subplot(3, 2, 6)
         bottom = np.zeros(result.n_samples)
         for i_em, (index, _) in enumerate(modes):
-            fraction_axes.bar(sample_indexes[::interval], result.fractions[:, index][::interval], bottom=bottom[::interval], width=interval, color=plt.get_cmap()(i_em))
+            proportion_axes.bar(sample_indexes[::interval], result.fractions[:, index][::interval], bottom=bottom[::interval], width=interval, color=plt.get_cmap()(i_em))
             bottom += result.fractions[:, index]
-        fraction_axes.set_xlim(sample_indexes[0], sample_indexes[-1])
-        fraction_axes.set_ylim(0.0, 1.0)
-        fraction_axes.set_xlabel(self.tr("Sample Index"))
-        fraction_axes.set_ylabel(self.tr("Fraction"))
-        fraction_axes.set_title(self.tr("Sample Fractions"))
+        proportion_axes.set_xlim(sample_indexes[0], sample_indexes[-1])
+        proportion_axes.set_ylim(0.0, 1.0)
+        proportion_axes.set_xlabel(self.tr("Sample index"))
+        proportion_axes.set_ylabel(self.tr("Proportion"))
+        proportion_axes.set_title(self.tr("EM abundances of samples"))
         self.figure.tight_layout()
         self.canvas.draw()
 
@@ -265,9 +265,9 @@ class EMMAResultChart(QDialog):
         self.distance_history_axes = self.figure.add_subplot(3, 1, 1)
         self.distance_history_axes.plot(iteration_indexes, distance_series)
         self.distance_history_axes.set_xlim(iteration_indexes[0], iteration_indexes[-1])
-        self.distance_history_axes.set_xlabel(self.tr("Iteration Index"))
+        self.distance_history_axes.set_xlabel(self.tr("Iteration index"))
         self.distance_history_axes.set_ylabel(self.tr("Distance"))
-        self.distance_history_axes.set_title(self.tr("Distance History"))
+        self.distance_history_axes.set_title(self.tr("Distance history"))
 
         self.class_wise_distance_axes = self.figure.add_subplot(3, 2, 3)
         if self.xlog:
@@ -276,14 +276,14 @@ class EMMAResultChart(QDialog):
         self.class_wise_distance_axes.set_ylim(min_class_wise_distance, max_class_wise_distance)
         self.class_wise_distance_axes.set_xlabel(self.xlabel)
         self.class_wise_distance_axes.set_ylabel(self.tr("Distance"))
-        self.class_wise_distance_axes.set_title(self.tr("Class-wise Distances"))
+        self.class_wise_distance_axes.set_title(self.tr("Class-wise distances"))
 
         self.sample_wise_distance_axes = self.figure.add_subplot(3, 2, 4)
         self.sample_wise_distance_axes.set_xlim(sample_indexes[0], sample_indexes[-1])
         self.sample_wise_distance_axes.set_ylim(min_sample_wise_distance, max_sample_wise_distance)
-        self.sample_wise_distance_axes.set_xlabel(self.tr("Sample Index"))
+        self.sample_wise_distance_axes.set_xlabel(self.tr("Sample index"))
         self.sample_wise_distance_axes.set_ylabel(self.tr("Distance"))
-        self.sample_wise_distance_axes.set_title(self.tr("Sample-wise Distances"))
+        self.sample_wise_distance_axes.set_title(self.tr("Sample-wise distances"))
 
         # get the mode size of each end-members
         self.modes = [(i, result.dataset.classes_μm[np.unravel_index(np.argmax(result.end_members[i]), result.end_members[i].shape)]) for i in range(result.n_members)]
@@ -302,12 +302,12 @@ class EMMAResultChart(QDialog):
             interval = result.n_samples // self.N_DISPLAY_SAMPLES
         else:
             interval = 1
-        self.fraction_axes = self.figure.add_subplot(3, 2, 6)
-        self.fraction_axes.set_xlim(sample_indexes[0]-0.5, sample_indexes[-1]-0.5)
-        self.fraction_axes.set_ylim(0.0, 1.0)
-        self.fraction_axes.set_xlabel(self.tr("Sample Index"))
-        self.fraction_axes.set_ylabel(self.tr("Fraction"))
-        self.fraction_axes.set_title(self.tr("Sample Fractions"))
+        self.proportion_axes = self.figure.add_subplot(3, 2, 6)
+        self.proportion_axes.set_xlim(sample_indexes[0]-0.5, sample_indexes[-1]-0.5)
+        self.proportion_axes.set_ylim(0.0, 1.0)
+        self.proportion_axes.set_xlabel(self.tr("Sample index"))
+        self.proportion_axes.set_ylabel(self.tr("Proportion"))
+        self.proportion_axes.set_title(self.tr("EM abundances of samples"))
 
         # self.figure.tight_layout()
         # self.canvas.draw()
@@ -323,7 +323,7 @@ class EMMAResultChart(QDialog):
             self.fraction_bars = []
             self.patches = []
             for i_em, (index, _) in enumerate(self.modes):
-                bar = self.fraction_axes.bar(sample_indexes[::interval], result.fractions[:, index][::interval], bottom=bottom[::interval], width=interval, color=plt.get_cmap()(i_em))
+                bar = self.proportion_axes.bar(sample_indexes[::interval], result.fractions[:, index][::interval], bottom=bottom[::interval], width=interval, color=plt.get_cmap()(i_em))
                 self.fraction_bars.append(bar)
                 self.patches.extend(bar.patches)
                 bottom += result.fractions[:, index]
