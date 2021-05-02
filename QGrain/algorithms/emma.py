@@ -39,7 +39,7 @@ class EndMember(Module):
         with torch.no_grad():
             return self.forward()
 
-class Fraction(Module):
+class ProportionModule(Module):
     def __init__(self, n_samples: int, n_members: int):
         super().__init__()
         self.samples = []
@@ -51,36 +51,36 @@ class Fraction(Module):
 
     def forward(self):
         # n_samples x n_members
-        fractions = torch.cat([self.softmax(sample).view(1, -1) for sample in self.samples], dim=0)
-        return fractions
+        proportions = torch.cat([self.softmax(sample).view(1, -1) for sample in self.samples], dim=0)
+        return proportions
 
     @property
-    def fractions(self):
+    def proportions(self):
         with torch.no_grad():
             return self.forward()
 
 class EMMAMoudle(Module):
     def __init__(self, n_samples, classes_φ, n_members, distribution_type=DistributionType.Weibull):
         super().__init__()
-        self.fraction = Fraction(n_samples, n_members)
-        self.end_member = EndMember(distribution_type, n_members, classes_φ)
+        self.proportion_module = ProportionModule(n_samples, n_members)
+        self.end_member_module = EndMember(distribution_type, n_members, classes_φ)
 
     def forward(self):
         # n_samples x n_members
-        fractions = self.fraction()
+        proportions = self.proportion_module()
         # n_members x n_classes
-        end_members = self.end_member()
+        end_members = self.end_member_module()
         # n_samples x n_classes
-        X_hat = fractions @ end_members
+        X_hat = proportions @ end_members
         return X_hat
 
     @property
-    def fractions(self):
-        return self.fraction.fractions
+    def proportions(self):
+        return self.proportion_module.proportions
 
     @property
     def end_members(self):
-        return self.end_member.end_members
+        return self.end_member_module.end_members
 
     @property
     def X_hat(self):
@@ -117,7 +117,7 @@ class EMMAResolver:
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            history.append((emma.fractions.cpu().numpy(), emma.end_members.cpu().numpy()))
+            history.append((emma.proportions.cpu().numpy(), emma.end_members.cpu().numpy()))
             iteration += 1
             if iteration < setting.min_niter:
                 continue
@@ -134,7 +134,7 @@ class EMMAResolver:
                            distribution_type,
                            n_members,
                            setting,
-                           emma.fractions.cpu().numpy(),
+                           emma.proportions.cpu().numpy(),
                            emma.end_members.cpu().numpy(),
                            time_spent,
                            history)
