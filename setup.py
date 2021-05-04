@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 setup(
     name="QGrain",
     version="0.3.0",
-    description="QGrain is an esay to use tool that can analyse the grain size distributions of sediments.",
+    description="QGrain is an esay to use tool that can analyse the grain-size distributions of sediments.",
     platforms="all",
     author="Yuming Liu",
     author_email="liuyuming@ieecas.cn",
