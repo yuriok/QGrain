@@ -506,7 +506,7 @@ class FittingResultViewer(QDialog):
         ws.merge_cells(start_row=1, start_column=1, end_row=2, end_column=1)
         ws.column_dimensions[column_to_char(0)].width = 16
         headers = []
-        sub_headers = [self.tr("Fraction"),
+        sub_headers = [self.tr("Proportion"),
                        self.tr("Mean"),
                        self.tr("STD"),
                        self.tr("Skewness"),
