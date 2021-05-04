@@ -2,6 +2,7 @@ from enum import Enum, unique
 
 @unique
 class DistributionType(Enum):
+    Customized = "Customized"
     Nonparametric = "NonParametric"
     Normal = "Normal"
     Weibull = "Weibull"

@@ -14,6 +14,7 @@ from PySide2.QtWidgets import (QComboBox, QDialog, QFileDialog, QGridLayout,
 from QGrain import QGRAIN_VERSION
 from QGrain.algorithms import DistributionType
 from QGrain.algorithms.emma import EMMAResolver
+from QGrain.algorithms.moments import convert_μm_to_φ
 from QGrain.charts.EMMAResultChart import EMMAResultChart
 from QGrain.charts.EMMASummaryChart import EMMASummaryChart
 from QGrain.models.EMMAResult import EMMAResult
@@ -84,10 +85,14 @@ class EMMAResolverPanel(QDialog):
         self.perform_button = QPushButton(qta.icon("fa.play-circle"), self.tr("Perform"))
         self.perform_button.clicked.connect(self.on_perform_clicked)
         self.perform_button.setEnabled(False)
+        self.perform_with_customized_ems_button = QPushButton(qta.icon("fa.play-circle"), self.tr("Perform With Customized EMs"))
+        self.perform_with_customized_ems_button.clicked.connect(self.on_perform_with_customized_ems)
+        self.perform_with_customized_ems_button.setEnabled(False)
         self.control_layout.addWidget(self.perform_button, 6, 0, 1, 2)
+        self.control_layout.addWidget(self.perform_with_customized_ems_button, 7, 0, 1, 2)
         self.progress_bar = QProgressBar()
         self.progress_bar.setFormat(self.tr("EMMA Progress"))
-        self.control_layout.addWidget(self.progress_bar, 7, 0, 1, 2)
+        self.control_layout.addWidget(self.progress_bar, 8, 0, 1, 2)
 
         self.result_group = QGroupBox(self.tr("Result"))
         self.result_layout = QGridLayout(self.result_group)
@@ -128,6 +133,7 @@ class EMMAResolverPanel(QDialog):
         self.__dataset = dataset
         self.n_samples_display.setText(str(self.__dataset.n_samples))
         self.perform_button.setEnabled(True)
+        self.perform_with_customized_ems_button.setEnabled(True)
 
     def on_load_clicked(self):
         self.load_dialog.show()
@@ -173,6 +179,7 @@ class EMMAResolverPanel(QDialog):
             return
 
         self.perform_button.setEnabled(False)
+        self.perform_with_customized_ems_button.setEnabled(False)
         resolver = EMMAResolver()
         resolver_setting = self.neural_setting.setting
         results = []
@@ -190,9 +197,64 @@ class EMMAResolverPanel(QDialog):
         self.add_results(results)
         self.progress_bar.setFormat(self.tr("Finished"))
         self.perform_button.setEnabled(True)
+        self.perform_with_customized_ems_button.setEnabled(False)
         if len(results) > 1:
             self.emma_summary_chart.show_distances(results)
             self.emma_summary_chart.show()
+
+    def on_perform_with_customized_ems(self):
+        if self.__dataset is None:
+            self.show_error(self.tr("Dataset has not been loaded."))
+            return
+
+        filename, _ = self.file_dialog.getOpenFileName(
+            self, self.tr("Choose a excel file which contains the customized EMs at the first sheet"),
+            None, f"{self.tr('Microsoft Excel')} (*.xlsx)")
+        if filename is None or filename == "":
+            return
+        # TODO: DO MORE COMPLETE VALIDATION FOR THE LOADED EM
+        try:
+            wb = openpyxl.load_workbook(filename, read_only=True, data_only=True)
+            ws = wb[wb.sheetnames[0]]
+            raw_data = [[value for value in row] for row in ws.values]
+            classes_μm = np.array(raw_data[0][1:], dtype=np.float64)
+            classes_φ = convert_μm_to_φ(classes_μm)
+            em_distributions = [np.array(row[1:], dtype=np.float64) for row in raw_data[1:]]
+        except Exception as e:
+            self.show_error(self.tr("Error raised while loading the customized EMs.\n    {0}").format(e.__str__()))
+            return
+
+        if len(em_distributions) > 10:
+            self.show_error(self.tr("There are more than 10 customized EMs in the first sheet, please check."))
+            return
+        for distribution in em_distributions:
+            if len(classes_μm) != len(distribution):
+                self.show_error(self.tr("Some distributions of customized EMs have different length with the grain-size classes."))
+                return
+            if abs(np.sum(distribution) - 1.0) > 0.05:
+                self.show_error(self.tr("The sum of some distributions of customized EMs are not equal to 1."))
+                return
+
+        self.perform_button.setEnabled(False)
+        self.perform_with_customized_ems_button.setEnabled(False)
+        resolver = EMMAResolver()
+        resolver_setting = self.neural_setting.setting
+
+        self.progress_bar.setRange(0, 1)
+        self.progress_bar.setValue(0)
+        self.progress_bar.setFormat(self.tr("Performing EMMA [%v/%m]"))
+        QCoreApplication.processEvents()
+        try:
+            result = resolver.try_fit_with_fixed_ems(self.__dataset, classes_φ, em_distributions, resolver_setting)
+            self.progress_bar.setValue(1)
+            self.add_results([result])
+            self.progress_bar.setFormat(self.tr("Finished"))
+        except Exception as e:
+            self.show_error(self.tr("Error raised while fitting.\n    {0}").format(e.__str__()))
+            self.progress_bar.setFormat(self.tr("Failed"))
+        QCoreApplication.processEvents()
+        self.perform_button.setEnabled(True)
+        self.perform_with_customized_ems_button.setEnabled(True)
 
     def get_distribution_name(self, distribution_type: DistributionType):
         if distribution_type == DistributionType.Nonparametric:
@@ -203,6 +265,8 @@ class EMMAResolverPanel(QDialog):
             return self.tr("Weibull")
         elif distribution_type == DistributionType.SkewNormal:
             return self.tr("Skew Normal")
+        elif distribution_type == DistributionType.Customized:
+            return self.tr("Customized")
         else:
             raise NotImplementedError(distribution_type)
 
