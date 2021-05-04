@@ -348,7 +348,7 @@ class GrainSizeDatasetViewer(QDialog):
             1. The sheet puts the statistic parameters and the textural group of the samples.
 
             The statistic formulas are referred to Blott & Pye (2001)'s work.
-            The classification of textural groups is referred to Folk (1957) and Blott & Pye (2012)'s scheme.
+            The classification of textural groups is referred to Folk (1957)'s and Blott & Pye (2012)'s scheme.
 
             References:
                 1.Blott, S. J. & Pye, K. Particle size scales and classification of sediment types based on particle size distributions: Review and recommended procedures. Sedimentology 59, 2071–2096 (2012).
