@@ -212,7 +212,6 @@ class EMMAResolverPanel(QDialog):
             None, f"{self.tr('Microsoft Excel')} (*.xlsx)")
         if filename is None or filename == "":
             return
-        # TODO: DO MORE COMPLETE VALIDATION FOR THE LOADED EM
         try:
             wb = openpyxl.load_workbook(filename, read_only=True, data_only=True)
             ws = wb[wb.sheetnames[0]]
@@ -223,13 +222,25 @@ class EMMAResolverPanel(QDialog):
         except Exception as e:
             self.show_error(self.tr("Error raised while loading the customized EMs.\n    {0}").format(e.__str__()))
             return
-
+        if len(classes_μm) < 10:
+            self.show_error(self.tr("The length of grain-size classes is too less."))
+            return
+        for i in range(len(classes_μm)-1):
+            if classes_μm[i+1] <= classes_μm[i]:
+                self.show_error(self.tr("The grain-size classes is not incremental."))
+                return
+        if np.any(np.isnan(classes_μm)):
+            self.show_error(self.tr("There is at least one nan value in grain-size classes."))
+            return
         if len(em_distributions) > 10:
             self.show_error(self.tr("There are more than 10 customized EMs in the first sheet, please check."))
             return
         for distribution in em_distributions:
             if len(classes_μm) != len(distribution):
                 self.show_error(self.tr("Some distributions of customized EMs have different length with the grain-size classes."))
+                return
+            if np.any(np.isnan(distribution)):
+                self.show_error(self.tr("There is at least one nan value in the frequceny distributions of EMs."))
                 return
             if abs(np.sum(distribution) - 1.0) > 0.05:
                 self.show_error(self.tr("The sum of some distributions of customized EMs are not equal to 1."))
