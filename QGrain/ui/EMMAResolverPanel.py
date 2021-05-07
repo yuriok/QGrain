@@ -197,7 +197,7 @@ class EMMAResolverPanel(QDialog):
         self.add_results(results)
         self.progress_bar.setFormat(self.tr("Finished"))
         self.perform_button.setEnabled(True)
-        self.perform_with_customized_ems_button.setEnabled(False)
+        self.perform_with_customized_ems_button.setEnabled(True)
         if len(results) > 1:
             self.emma_summary_chart.show_distances(results)
             self.emma_summary_chart.show()
