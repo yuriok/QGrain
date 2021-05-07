@@ -8,7 +8,8 @@ def get_modes(classes_μm, classes_φ, frequency, geometric=True):
     peaks, _ = find_peaks(frequency)
     position = classes_μm[peaks] if geometric else classes_φ[peaks]
     values = frequency[peaks]
-    return tuple(position), tuple(values)
+    not_trace = np.greater(values, 0.01)
+    return tuple(position[not_trace]), tuple(values[not_trace])
 
 def get_cumulative_frequency(frequency, expand=False):
     cumulative_frequency = []
