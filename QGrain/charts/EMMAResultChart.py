@@ -6,8 +6,8 @@ from matplotlib.animation import FuncAnimation, ImageMagickWriter
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PySide2.QtCore import QCoreApplication, Qt
-from PySide2.QtWidgets import (QCheckBox, QComboBox, QDialog, QFileDialog,
-                               QGridLayout, QLabel, QMessageBox,
+from PySide2.QtWidgets import (QCheckBox, QComboBox, QDialog, QFileDialog, QGroupBox,
+                               QGridLayout, QLabel, QMessageBox, QSizePolicy,
                                QProgressDialog, QPushButton, QSpinBox)
 from QGrain.algorithms.moments import convert_μm_to_φ, convert_φ_to_μm
 from QGrain.models.EMMAResult import EMMAResult
@@ -23,20 +23,24 @@ class EMMAResultChart(QDialog):
         self.canvas = FigureCanvas(self.figure)
         self.toolbar = NavigationToolbar(self.canvas, self)
         self.main_layout = QGridLayout(self)
-        self.main_layout.addWidget(self.toolbar, 0, 0, 1, 2)
-        self.main_layout.addWidget(self.canvas, 1, 0, 1, 2)
+        self.main_layout.addWidget(self.toolbar, 0, 0)
+        self.main_layout.addWidget(self.canvas, 1, 0)
         if not toolbar:
             self.toolbar.hide()
         self.supported_scales = [("log-linear", self.tr("Log-linear")),
                                  ("log", self.tr("Log")),
                                  ("phi", self.tr("φ")),
                                  ("linear", self.tr("Linear"))]
+        self.control_group = QGroupBox(self.tr("Control"))
+        self.control_group.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Fixed)
+        self.control_layout = QGridLayout(self.control_group)
+        self.main_layout.addWidget(self.control_group, 2, 0)
         self.scale_label = QLabel(self.tr("Scale"))
         self.scale_combo_box = QComboBox()
         self.scale_combo_box.addItems([name for key, name in self.supported_scales])
         self.scale_combo_box.currentIndexChanged.connect(self.update_chart)
-        self.main_layout.addWidget(self.scale_label, 2, 0)
-        self.main_layout.addWidget(self.scale_combo_box, 2, 1)
+        self.control_layout.addWidget(self.scale_label, 0, 0)
+        self.control_layout.addWidget(self.scale_combo_box, 0, 1)
 
         self.supported_distances = ("1-norm", "2-norm", "3-norm", "4-norm", "MSE", "log10MSE", "cosine", "angular")
         self.distance_label = QLabel(self.tr("Distance"))
@@ -44,27 +48,26 @@ class EMMAResultChart(QDialog):
         self.distance_combo_box.addItems(self.supported_distances)
         self.distance_combo_box.setCurrentText("log10MSE")
         self.distance_combo_box.currentIndexChanged.connect(self.update_chart)
-        self.main_layout.addWidget(self.distance_label, 3, 0)
-        self.main_layout.addWidget(self.distance_combo_box, 3, 1)
+        self.control_layout.addWidget(self.distance_label, 1, 0)
+        self.control_layout.addWidget(self.distance_combo_box, 1, 1)
         self.animated_checkbox = QCheckBox(self.tr("Animated"))
         self.animated_checkbox.setChecked(False)
         self.animated_checkbox.stateChanged.connect(self.on_animated_changed)
-
-        self.main_layout.addWidget(self.animated_checkbox, 4, 0)
+        self.control_layout.addWidget(self.animated_checkbox, 2, 0)
         self.interval_label = QLabel(self.tr("Interval [ms]"))
         self.interval_input = QSpinBox()
         self.interval_input.setRange(0, 10000)
         self.interval_input.setValue(30)
         self.interval_input.valueChanged.connect(self.update_chart)
-        self.main_layout.addWidget(self.interval_label, 5, 0)
-        self.main_layout.addWidget(self.interval_input, 5, 1)
+        self.control_layout.addWidget(self.interval_label, 3, 0)
+        self.control_layout.addWidget(self.interval_input, 3, 1)
         self.repeat_check_box = QCheckBox(self.tr("Repeat"))
         self.repeat_check_box.setChecked(False)
         self.repeat_check_box.stateChanged.connect(self.update_chart)
         self.save_button = QPushButton(self.tr("Save"))
         self.save_button.clicked.connect(self.save_animation)
-        self.main_layout.addWidget(self.repeat_check_box, 6, 0)
-        self.main_layout.addWidget(self.save_button, 6, 1)
+        self.control_layout.addWidget(self.repeat_check_box, 4, 0)
+        self.control_layout.addWidget(self.save_button, 4, 1)
 
         self.animation = None
         self.last_result = None
