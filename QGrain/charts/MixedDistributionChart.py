@@ -249,8 +249,9 @@ class MixedDistributionChart(QDialog):
 if __name__ == "__main__":
     import sys
     from QGrain.entry import setup_app
-    app = setup_app()
+    app, splash = setup_app()
     canvas = MixedDistributionChart(toolbar=True)
     canvas.show()
     canvas.show_demo()
+    splash.finish(canvas)
     sys.exit(app.exec_())

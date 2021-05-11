@@ -260,9 +260,10 @@ if __name__ == "__main__":
     test_dataset = GrainSizeDataset()
     test_dataset.add_batch(dataset.classes_μm, sample_names, sample_distributions)
 
-    app = setup_app()
+    app, splash = setup_app()
     main = EMMAResultChart(toolbar=True)
     main.show()
+    splash.finish(main)
 
     emma = EMMAResolver()
     resolver_setting = NNResolverSetting(device="cuda", max_niter=500, lr=1e-3)

@@ -759,7 +759,7 @@ class BP12SSCDiagramChart(DiagramChart):
 if __name__ == "__main__":
     import sys
     from QGrain.entry import setup_app
-    app = setup_app()
+    app, splash = setup_app()
     chart = BP12SSCDiagramChart(toolbar=True)
 
     silt = np.random.random(100)
@@ -772,4 +772,5 @@ if __name__ == "__main__":
     chart.axes.scatter(x, y, c="black", s=4)
 
     chart.show()
+    splash.finish(chart)
     sys.exit(app.exec_())

@@ -4,6 +4,7 @@ import sys
 from logging.handlers import TimedRotatingFileHandler
 
 from PySide2.QtCore import QTranslator
+from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtWidgets import QApplication
 
 from QGrain import QGRAIN_ROOT_PATH, QGRAIN_VERSION
@@ -25,7 +26,7 @@ def create_necessary_folders():
 def setup_language(app: QApplication):
     lang = "en"
     trans = QTranslator(app)
-    trans.load(os.path.join(QGRAIN_ROOT_PATH, "i18n", lang))
+    trans.load(os.path.join(QGRAIN_ROOT_PATH, "assets", lang))
     app.installTranslator(trans)
 
 def setup_logging():
@@ -39,13 +40,20 @@ def setup_logging():
 
 def setup_app():
     import matplotlib.pyplot as plt
-    import qtawesome as qta
-    from PySide2.QtWidgets import QApplication, QStyleFactory
-
-    create_necessary_folders()
+    # import qtawesome as qta
+    from PySide2.QtCore import Qt
+    from PySide2.QtWidgets import QApplication, QStyleFactory, QSplashScreen
+    from PySide2.QtGui import QColor
 
     app = QApplication(sys.argv)
-    app.setWindowIcon(qta.icon("fa5s.rocket"))
+    splash = QSplashScreen()
+    pixmap = QPixmap(os.path.join(QGRAIN_ROOT_PATH, "assets", "icon.png"))
+    pixmap.setDevicePixelRatio(1.0)
+    splash.setPixmap(pixmap)
+    splash.show()
+    # splash.showMessage("Starting QGrain App", Qt.AlignCenter, color=QColor(0x000000))
+    create_necessary_folders()
+    app.setWindowIcon(QIcon(os.path.join(QGRAIN_ROOT_PATH, "assets", "icon.png")))
     app.setApplicationDisplayName(f"QGrain ({QGRAIN_VERSION})")
     app.setApplicationVersion(QGRAIN_VERSION)
     app.setStyle(QStyleFactory.create("Fusion"))
@@ -64,12 +72,13 @@ def setup_app():
     setup_language(app)
     setup_logging()
 
-    return app
+    return app, splash
 
 def qgrain_console():
-    app = setup_app()
+    app, splash = setup_app()
     main = ConsolePanel()
     main.show()
+    splash.finish(main)
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
