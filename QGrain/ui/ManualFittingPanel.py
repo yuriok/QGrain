@@ -744,9 +744,10 @@ if __name__ == "__main__":
     from QGrain.entry import setup_app
     from QGrain.models.artificial import get_random_sample
 
-    app = setup_app()
+    app, splash = setup_app()
     main = ManualFittingPanel()
     main.show()
+    splash.finish(main)
     sample = get_random_sample().sample_to_fit
     task = FittingTask(sample, DistributionType.Normal, 3)
     main.setup_task(task)

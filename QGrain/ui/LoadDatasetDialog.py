@@ -253,7 +253,8 @@ class LoadDatasetDialog(QDialog):
 if __name__ == "__main__":
     import sys
     from QGrain.entry import setup_app
-    app = setup_app()
+    app, splash = setup_app()
     main = LoadDatasetDialog()
     main.show()
+    splash.finish(main)
     sys.exit(app.exec_())

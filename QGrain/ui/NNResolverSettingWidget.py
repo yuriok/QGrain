@@ -148,9 +148,10 @@ class NNResolverSettingWidget(QDialog):
 if __name__ == "__main__":
     import sys
     from QGrain.entry import setup_app
-    app = setup_app()
+    app, splash = setup_app()
     main = NNResolverSettingWidget()
     main.show()
+    splash.finish(main)
     setting = main.setting
     setting.device = "cuda"
     setting.tol = 1e-9

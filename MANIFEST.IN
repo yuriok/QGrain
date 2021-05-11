@@ -1,2 +1,2 @@
-recursive-include QGrain i18n/*
+recursive-include QGrain assets/*
 recursive-include QGrain samples/*
