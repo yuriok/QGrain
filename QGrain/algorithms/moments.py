@@ -599,6 +599,6 @@ def get_moments(classes_μm: np.ndarray, classes_φ: np.ndarray, frequency: np.n
     geometric_moments["textural_group_BP12_symbol"] = BP12_symbol
     geometric_moments["textural_group_BP12"] = BP12_description
     logarithmic_moments["textural_group_BP12_symbol"] = BP12_symbol
-    logarithmic_moments["textural_group_Folk54"] = BP12_description
+    logarithmic_moments["textural_group_BP12"] = BP12_description
 
     return geometric_moments, logarithmic_moments
