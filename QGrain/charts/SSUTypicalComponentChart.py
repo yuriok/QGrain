@@ -21,7 +21,7 @@ class SSUTypicalComponentChart(QDialog):
         flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
         super().__init__(parent=parent, f=flags)
         self.setWindowTitle(self.tr("SSU Typical Component Chart"))
-        self.figure = plt.figure(figsize=(8, 4))
+        self.figure = plt.figure(figsize=(6, 3))
         self.clustering_axes = self.figure.add_subplot(1, 2, 1)
         self.component_axes = self.figure.add_subplot(1, 2, 2)
         self.canvas = FigureCanvas(self.figure)
