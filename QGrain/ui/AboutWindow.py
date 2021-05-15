@@ -8,7 +8,7 @@ from PySide2.QtWidgets import QGridLayout, QMainWindow, QTextBrowser, QWidget
 about_md = """
 # QGrain
 
-QGrain is an easy-to-use software which integrates most analysis tools to deal with grain size distributions.
+QGrain is an easy-to-use software which integrates most analysis tools to deal with grain-size distributions.
 
 ## Tools
 

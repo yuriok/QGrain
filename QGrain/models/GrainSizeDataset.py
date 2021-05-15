@@ -15,7 +15,7 @@ from QGrain.models.GrainSizeSample import GrainSizeSample
 
 
 class ClassesNotIncrementalError(Exception):
-    """Raises while the array of grain size classes is not incremental.
+    """Raises while the array of grain-size classes is not incremental.
 
     It's just an ASSUMPTION for the convenience of coding.
     """
@@ -23,7 +23,7 @@ class ClassesNotIncrementalError(Exception):
 
 
 class ClassesNotMatchError(Exception):
-    """Raises while the grain size classes of a new batch of sample data are not equal to the existing classes."""
+    """Raises while the grain-size classes of a new batch of sample data are not equal to the existing classes."""
     pass
 
 
@@ -89,7 +89,7 @@ class GrainSizeDataset:
     @staticmethod
     def is_incremental(nums: np.ndarray) -> bool:
         """Returns `True` while the array is incremental.
-        This method is used to validate the array of grain size classes."""
+        This method is used to validate the array of grain-size classes."""
         for i in range(1, len(nums)):
             if nums[i] <= nums[i-1]:
                 return False
@@ -101,12 +101,12 @@ class GrainSizeDataset:
         assert type(classes) == np.ndarray
         assert classes.dtype == np.float64
         if len(classes) == 0:
-            raise ArrayEmptyError("Grain size classes is an empty array.")
+            raise ArrayEmptyError("Grain-size classes is an empty array.")
         if np.any(np.isnan(classes)):
-            raise NaNError("There is NaN value in grain size classes.")
+            raise NaNError("There is NaN value in grain-size classes.")
         # may raise when users select a wrong data file
         if not GrainSizeDataset.is_incremental(classes):
-            raise ClassesNotIncrementalError("Grain size classes is not incremental.")
+            raise ClassesNotIncrementalError("Grain-size classes is not incremental.")
 
     @staticmethod
     def validate_sample_name(sample_name: str):
