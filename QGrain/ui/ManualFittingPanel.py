@@ -482,7 +482,7 @@ class ManualFittingCanvas(Canvas):
         # set title
         self.chart.setTitle(self.tr("Distribution Canvas"))
         # set labels
-        self.axis_x.setTitleText(self.tr("Grain size [φ]"))
+        self.axis_x.setTitleText(self.tr("Grain-size [φ]"))
         self.axis_y.setTitleText(self.tr("Frequency"))
 
         self.default_component_prefix = "C"

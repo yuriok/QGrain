@@ -106,13 +106,13 @@ class SSUTypicalComponentChart(QDialog):
     @property
     def xlabel(self) -> str:
         if self.scale == "log-linear":
-            return self.tr("Grain size [μm]")
+            return self.tr("Grain-size [μm]")
         elif self.scale == "log":
-            return self.tr("Ln(grain size in μm)")
+            return self.tr("Ln(grain-size in μm)")
         elif self.scale == "phi":
-            return self.tr("Grain size [φ]")
+            return self.tr("Grain-size [φ]")
         elif self.scale == "linear":
-            return self.tr("Grain size [μm]")
+            return self.tr("Grain-size [μm]")
 
     @property
     def ylabel(self) -> str:

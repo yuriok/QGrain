@@ -32,7 +32,7 @@ class CSVEncodingError(Exception):
 
 class DatasetLoader:
     """
-    The class to load the grain size distributions from the loacl files.
+    The class to load the grain-size distributions from the loacl files.
     """
     def __init__(self, error_callback, step_callback):
         self.error_callback = error_callback
