@@ -9,9 +9,9 @@ class DataLayoutSetting:
     """
     The class to represent the layout setting of raw data file.
     All types of raw data files can be regarded as the table(s) that contains rows and columns.
-    For the grain size distribution files, it should be the following format:
-        * The first valid row should be the headers (i.e. the classes of grain size).
-        * The following valid rows should be the distributions of samples under the grain size classes.
+    For the grain-size distribution files, it should be the following format:
+        * The first valid row should be the headers (i.e. the classes of grain-size).
+        * The following valid rows should be the distributions of samples under the grain-size classes.
         * The first valid column shoud be the name (i.e. id) of samples.
     To make it more flexible, we use this setting to control the data loader.
     """

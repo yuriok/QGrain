@@ -1,6 +1,6 @@
 # QGrain
 
-QGrain is an easy-to-use software which integrates most analysis tools to deal with grain size distributions.
+QGrain is an easy-to-use software which integrates most analysis tools to deal with grain-size distributions.
 
 ## Tools
 

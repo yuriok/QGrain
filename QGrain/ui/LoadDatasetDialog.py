@@ -193,9 +193,9 @@ class LoadDatasetDialog(QDialog):
         except Exception as e:
             self.show_error(f"Can not convert the row of classes to a numerical array, it may contains invalid values (e.g. text or empty cell).\n    {e.__str__()}")
             return
-        self.show_info(f"Grain size classes in μm: [{','.join([f'{x: 0.4f}' for x in classes_μm[:3]])}, ...,{','.join([f'{x: 0.4f}' for x in classes_μm[-3:]])}].")
+        self.show_info(f"Grain-size classes in μm: [{','.join([f'{x: 0.4f}' for x in classes_μm[:3]])}, ...,{','.join([f'{x: 0.4f}' for x in classes_μm[-3:]])}].")
         GrainSizeDataset.validate_classes_μm(classes_μm)
-        self.show_success("Validation of grain size classes passed.")
+        self.show_success("Validation of grain-size classes passed.")
         QCoreApplication.processEvents()
 
         names = []

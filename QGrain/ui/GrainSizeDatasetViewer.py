@@ -352,7 +352,7 @@ class GrainSizeDatasetViewer(QDialog):
 
             References:
                 1.Blott, S. J. & Pye, K. Particle size scales and classification of sediment types based on particle size distributions: Review and recommended procedures. Sedimentology 59, 2071–2096 (2012).
-                2.Blott, S. J. & Pye, K. GRADISTAT: a grain size distribution and statistics package for the analysis of unconsolidated sediments. Earth Surf. Process. Landforms 26, 1237–1248 (2001).
+                2.Blott, S. J. & Pye, K. GRADISTAT: a grain-size distribution and statistics package for the analysis of unconsolidated sediments. Earth Surf. Process. Landforms 26, 1237–1248 (2001).
                 3.Folk, R. L. The Distinction between Grain Size and Mineral Composition in Sedimentary-Rock Nomenclature. The Journal of Geology 62, 344–359 (1954).
 
             """.format(QGRAIN_VERSION)
