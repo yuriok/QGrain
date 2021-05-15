@@ -35,7 +35,7 @@ class SSUTypicalComponentChart(QDialog):
                                  ("log", self.tr("Log")),
                                  ("phi", self.tr("φ")),
                                  ("linear", self.tr("Linear"))]
-        self.AXIS_LIST = [self.tr("Mean [φ]"), self.tr("STD [φ]"),
+        self.AXIS_LIST = [self.tr("Mean [φ]"), self.tr("Standard deviation [φ]"),
                           self.tr("Skewness"), self.tr("Kurtosis")]
         self.x_axis_label = QLabel(self.tr("X Axis"))
         self.x_axis_combo_box = QComboBox()
@@ -156,10 +156,10 @@ class SSUTypicalComponentChart(QDialog):
             key = np.equal(flags, flag)
             if flag == -1:
                 c = "#7a7374"
-                label = self.tr("Not Clustered")
+                label = self.tr("Not clustered")
             else:
                 c = cmap(flag)
-                label = self.tr("Cluster{0}").format(flag+1)
+                label = self.tr("EM{0}").format(flag+1)
             self.clustering_axes.plot(self.data_to_clustering[key][:, self.x_axis_combo_box.currentIndex()],
                                       self.data_to_clustering[key][:, self.y_axis_combo_box.currentIndex()],
                                       c="#ffffff00", marker=".", ms=8, mfc=c, mew=0.0,
@@ -169,7 +169,7 @@ class SSUTypicalComponentChart(QDialog):
             self.clustering_axes.legend(loc="upper left")
         self.clustering_axes.set_xlabel(self.x_axis_combo_box.currentText())
         self.clustering_axes.set_ylabel(self.y_axis_combo_box.currentText())
-        self.clustering_axes.set_title(self.tr("Clustering of Components"))
+        self.clustering_axes.set_title(self.tr("Clustering of end-members"))
 
         self.component_axes.clear()
         if self.xlog:
@@ -187,11 +187,11 @@ class SSUTypicalComponentChart(QDialog):
             if flag != -1:
                 typical = np.mean(self.stacked_components[key], axis=0)
                 self.component_axes.plot(x, typical, c="black", zorder=1e10, ls="--", linewidth=1)
-
-        self.component_axes.set_title(self.tr("Typical Components"))
+        self.component_axes.set_title(self.tr("Typical end-members"))
         self.component_axes.set_xlabel(self.xlabel)
         self.component_axes.set_ylabel(self.ylabel)
         self.component_axes.set_xlim(x[0], x[-1])
+        self.component_axes.set_ylim(0, None)
 
         self.figure.tight_layout()
         self.canvas.draw()
