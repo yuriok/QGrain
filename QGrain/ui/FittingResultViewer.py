@@ -446,8 +446,8 @@ class FittingResultViewer(QDialog):
             1. The first sheet is the sample distributions of SSU results.
             2. The second sheet is used to put the infomation of fitting.
             3. The third sheet is the statistic parameters calculated by statistic moment method.
-            4. The fouth sheet is the unmixed component distributions of each sample.
-            5. Other sheets are the unmixed component distributions which were discretely stored.
+            4. The fouth sheet is the distributions of unmixed components and their sum of each sample.
+            5. Other sheets are the unmixed end-member distributions which were discretely stored.
 
             The SSU algorithm is implemented by QGrain.
 
@@ -563,17 +563,21 @@ class FittingResultViewer(QDialog):
             else:
                 style = "normal_light"
             write(row, 0, result.sample.name, style=style)
-            ws.merge_cells(start_row=row+1, start_column=1, end_row=row+result.n_components, end_column=1)
+            ws.merge_cells(start_row=row+1, start_column=1, end_row=row+result.n_components+1, end_column=1)
             for component_i, component in enumerate(result.components, 1):
                 write(row, 1, self.tr("C{0}").format(component_i), style=style)
-                for col, value in enumerate(component.distribution, 2):
+                for col, value in enumerate(component.distribution*component.fraction, 2):
                     write(row, col, value, style=style)
                 row += 1
+            write(row, 1, self.tr("Sum"), style=style)
+            for col, value in enumerate(result.distribution, 2):
+                write(row, col, value, style=style)
+            row += 1
 
         ws_dict = {}
         flag_set = set(flags)
         for flag in flag_set:
-            ws = wb.create_sheet(self.tr("Unmixed C{0}").format(flag+1))
+            ws = wb.create_sheet(self.tr("Unmixed EM{0}").format(flag+1))
             write(0, 0, self.tr("Sample Name"), style="header")
             ws.column_dimensions[column_to_char(0)].width = 16
             for col, value in enumerate(classes_μm, 1):
@@ -592,7 +596,6 @@ class FittingResultViewer(QDialog):
                 flag = flags[flag_index]
                 ws = ws_dict[flag]
                 write(row, 0, result.sample.name, style=style)
-                write(row, 1, self.tr("C{0}").format(component_i), style=style)
                 for col, value in enumerate(component.distribution, 1):
                     write(row, col, value, style=style)
                 flag_index += 1
