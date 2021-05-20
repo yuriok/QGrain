@@ -89,7 +89,7 @@ class FrequencyCurve3DChart(QDialog):
         x = self.transfer(record_samples[0].classes_φ)
         y = np.linspace(1, len(Z), len(Z))
         X, Y = np.meshgrid(x, y)
-        self.axes.plot_surface(X, Y, Z, rstride=1, cstride=10, cmap="binary")
+        self.axes.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap="binary")
         self.axes.set_xlim(x[0], x[-1])
         self.axes.set_xlabel(self.xlabel)
         self.axes.set_ylabel(self.tr("Sample index"))
@@ -98,5 +98,5 @@ class FrequencyCurve3DChart(QDialog):
         if self.scale == "linear":
             self.axes.view_init(elev=15.0, azim=45)
         else:
-            self.axes.view_init(elev=15.0, azim=-135)
+            self.axes.view_init(elev=45.0, azim=-120)
         self.canvas.draw()
