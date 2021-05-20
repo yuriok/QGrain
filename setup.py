@@ -5,11 +5,11 @@ from setuptools import find_packages, setup
 setup(
     name="QGrain",
     version="0.3.2",
-    description="QGrain is an esay to use tool that can analyse the grain-size distributions of sediments.",
+    description="An easy-to-use software for the comprehensive analysis of grain-size distributions",
     platforms="all",
     author="Yuming Liu",
     author_email="liuyuming@ieecas.cn",
-    url="https://github.com/QGrain-Organization/QGrain",
+    url="https://github.com/yuriok/QGrain",
     license="MIT",
     packages=find_packages(),
     include_package_data=True,
@@ -26,7 +26,7 @@ setup(
         "SciencePlots"],
     entry_points = {
         'console_scripts': [
-            'qgrain=QGrain.entry:qgrain_console'],
+            'QGrain=QGrain.entry:qgrain_console'],
     },
     classifiers=[
         "Programming Language :: Python :: 3",
