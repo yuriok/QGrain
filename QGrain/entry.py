@@ -26,7 +26,7 @@ def create_necessary_folders():
             os.mkdir(folder)
 
 def setup_language(app: QApplication):
-    lang = "en"
+    lang = "lang"
     trans = QTranslator(app)
     trans.load(os.path.join(QGRAIN_ROOT_PATH, "assets", lang))
     app.installTranslator(trans)
