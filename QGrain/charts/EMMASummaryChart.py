@@ -50,7 +50,7 @@ class EMMASummaryChart(QDialog):
 
         self.axes.clear()
         self.axes.plot(n_members_list, distances, c="black", linewidth=2.5, marker=".", ms=8, mfc="black", mew=0.0)
-        self.axes.set_xlabel(self.tr("N_members"))
+        self.axes.set_xlabel(self.tr("$N_{iterations}$"))
         self.axes.set_ylabel(self.tr("Distance"))
         self.axes.set_title(title)
         self.figure.tight_layout()
