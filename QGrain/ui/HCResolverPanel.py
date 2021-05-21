@@ -1,4 +1,4 @@
-__all__ = ["HierarchyResolverPanel"]
+__all__ = ["HCResolverPanel"]
 
 import typing
 
@@ -8,7 +8,7 @@ import qtawesome as qta
 from PySide2.QtCore import Qt, QCoreApplication
 from PySide2.QtWidgets import (QDialog, QFileDialog, QGridLayout, QLabel, QComboBox,QApplication,
                                QMessageBox, QPushButton, QSpinBox)
-from QGrain.charts.HierarchyChart import HierarchyChart
+from QGrain.charts.HierarchicalChart import HierarchicalChart
 from QGrain.models.GrainSizeDataset import GrainSizeDataset
 from QGrain.ui.LoadDatasetDialog import LoadDatasetDialog
 from QGrain.use_excel import column_to_char, prepare_styles
@@ -17,10 +17,10 @@ from scipy.cluster.hierarchy import fcluster, fclusterdata, linkage
 from QGrain.charts.FrequencyCurveChart import FrequencyCurveChart
 from QGrain import QGRAIN_VERSION
 
-class HierarchyResolverPanel(QDialog):
+class HCResolverPanel(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent=parent, f=Qt.Window)
-        self.setWindowTitle(self.tr("Hierarchy Resolver"))
+        self.setWindowTitle(self.tr("HC Resolver"))
         self.init_ui()
         self.frequency_chart = FrequencyCurveChart(parent=self, toolbar=True)
         self.load_dataset_dialog = LoadDatasetDialog(parent=self)
@@ -34,7 +34,7 @@ class HierarchyResolverPanel(QDialog):
 
     def init_ui(self):
         self.main_layout = QGridLayout(self)
-        self.chart = HierarchyChart(toolbar=True)
+        self.chart = HierarchicalChart(toolbar=True)
         self.main_layout.addWidget(self.chart, 0, 0, 1, 4)
 
         self.load_dataset_button = QPushButton(qta.icon("fa5s.database"), self.tr("Load Dataset"))
@@ -362,7 +362,7 @@ if __name__ == "__main__":
 
     from QGrain.entry import setup_app
     app, splash = setup_app()
-    main = HierarchyResolverPanel()
+    main = HCResolverPanel()
     main.show()
     splash.finish(main)
     sys.exit(app.exec_())
