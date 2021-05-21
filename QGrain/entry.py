@@ -6,7 +6,7 @@ from logging.handlers import TimedRotatingFileHandler
 import matplotlib.pyplot as plt
 import qtawesome as qta
 from PySide2.QtCore import QCoreApplication, Qt, QTranslator
-from PySide2.QtGui import QColor, QPixmap
+from PySide2.QtGui import QColor, QIcon, QPixmap
 from PySide2.QtWidgets import QApplication, QSplashScreen, QStyleFactory
 
 from QGrain import QGRAIN_ROOT_PATH, QGRAIN_VERSION
@@ -50,7 +50,7 @@ def setup_app():
     splash.show()
 
     create_necessary_folders()
-    app.setWindowIcon(qta.icon("fa5s.rocket"))
+    app.setWindowIcon(QIcon(pixmap))
     app.setApplicationDisplayName(f"QGrain ({QGRAIN_VERSION})")
     app.setApplicationVersion(QGRAIN_VERSION)
     app.setStyle(QStyleFactory.create("Fusion"))
