@@ -9,11 +9,11 @@ from PySide2.QtWidgets import QDialog, QGridLayout
 from scipy.cluster.hierarchy import dendrogram
 
 
-class HierarchyChart(QDialog):
+class HierarchicalChart(QDialog):
     def __init__(self, parent=None, toolbar=False):
         flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
         super().__init__(parent=parent, f=flags)
-        self.setWindowTitle(self.tr("Hierarchy Chart"))
+        self.setWindowTitle(self.tr("Hierarchical Chart"))
         self.figure = plt.figure(figsize=(8, 4))
         self.axes = self.figure.subplots()
         self.canvas = FigureCanvas(self.figure)
@@ -34,8 +34,8 @@ class HierarchyChart(QDialog):
                          p=p, truncate_mode='lastp',
                          show_contracted=True,
                          ax=self.axes)
-        self.axes.set_title(f"{self.tr('Hierarchy Clustering Chart')} (p={p})")
-        self.axes.set_xlabel(self.tr("Sample Count/Index"))
+        self.axes.set_title(f"{self.tr('Hierarchical clustering chart')} (p={p})")
+        self.axes.set_xlabel(self.tr("Sample count/index"))
         self.axes.set_ylabel(self.tr("Distance"))
         self.figure.tight_layout()
         self.canvas.draw()
