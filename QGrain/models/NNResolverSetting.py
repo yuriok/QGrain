@@ -12,7 +12,7 @@ def check_distance(distance):
 class NNResolverSetting:
     def __init__(self,
                  device="cpu",
-                 distance="angular",
+                 distance="log10MSE",
                  min_niter=100,
                  max_niter=10000,
                  tol=1e-8,
