@@ -2,7 +2,7 @@
 import os
 import sys
 
-PRO_FILENAME = r"./qgrain.pro"
+PRO_FILENAME = r"./QGrain.pro"
 
 PRO_TEMPLATE = \
 """
@@ -23,4 +23,4 @@ def update_qt_pro():
 
 if __name__ == "__main__":
     update_qt_pro()
-    os.system("pyside2-lupdate -noobsolete ./qgrain.pro")
+    os.system("pyside2-lupdate -noobsolete ./QGrain.pro")

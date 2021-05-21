@@ -105,13 +105,3 @@ venv.bak/
 
 # vscode
 .vscode
-
-# custom
-/logs
-/images
-settings/ui.ini
-/docs/*/*.pdf
-*.ini
-*.pro
-*.ts
-workspace.code-workspace
