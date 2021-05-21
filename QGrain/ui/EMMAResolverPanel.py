@@ -51,7 +51,7 @@ class EMMAResolverPanel(QDialog):
     def init_ui(self):
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.main_layout = QGridLayout(self)
-        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        # self.main_layout.setContentsMargins(0, 0, 0, 0)
         # control group
         self.control_group = QGroupBox(self.tr("Control"))
         self.control_layout = QGridLayout(self.control_group)

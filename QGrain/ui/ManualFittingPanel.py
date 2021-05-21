@@ -309,7 +309,7 @@ class Canvas(QWidget):
         super().__init__(parent=parent)
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.main_layout = QGridLayout(self)
-        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        # self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.chart = QtCharts.QChart()
         self.chart_view = QtCharts.QChartView()
         self.chart_view.setChart(self.chart)
