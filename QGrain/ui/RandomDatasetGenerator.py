@@ -175,7 +175,7 @@ class RandomDatasetGenerator(QDialog):
     def init_ui(self):
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.main_layout = QGridLayout(self)
-        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        # self.main_layout.setContentsMargins(0, 0, 0, 0)
 
         self.sampling_group = QGroupBox(self.tr("Sampling"))
         # self.control_group.setFixedSize(400, 160)

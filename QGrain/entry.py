@@ -3,10 +3,11 @@ import os
 import sys
 from logging.handlers import TimedRotatingFileHandler
 
+import matplotlib.pyplot as plt
 import qtawesome as qta
-from PySide2.QtCore import QTranslator
-from PySide2.QtGui import QIcon, QPixmap
-from PySide2.QtWidgets import QApplication
+from PySide2.QtCore import QCoreApplication, Qt, QTranslator
+from PySide2.QtGui import QColor, QPixmap
+from PySide2.QtWidgets import QApplication, QSplashScreen, QStyleFactory
 
 from QGrain import QGRAIN_ROOT_PATH, QGRAIN_VERSION
 from QGrain.ui.ConsolePanel import ConsolePanel
@@ -40,12 +41,6 @@ def setup_logging():
     logging.getLogger().addHandler(file_handler)
 
 def setup_app():
-    import matplotlib.pyplot as plt
-    # import qtawesome as qta
-    from PySide2.QtCore import Qt, QCoreApplication
-    from PySide2.QtGui import QColor
-    from PySide2.QtWidgets import QApplication, QSplashScreen, QStyleFactory
-
     QCoreApplication.setAttribute(Qt.AA_DisableHighDpiScaling)
     app = QApplication(sys.argv)
     splash = QSplashScreen()
@@ -53,7 +48,7 @@ def setup_app():
     pixmap.setDevicePixelRatio(1.0)
     splash.setPixmap(pixmap)
     splash.show()
-    # splash.showMessage("Starting QGrain App", Qt.AlignCenter, color=QColor(0x000000))
+
     create_necessary_folders()
     app.setWindowIcon(qta.icon("fa5s.rocket"))
     app.setApplicationDisplayName(f"QGrain ({QGRAIN_VERSION})")
@@ -63,6 +58,7 @@ def setup_app():
                       color:#000000;background-color:#c4cbcf;alternate-background-color:#b2bbbe;
                       selection-color:#ffffff;selection-background-color:#555f69}""")
 
+    plt.style.use(["science", "no-latex"])
     plt.set_cmap("tab10")
     plt.rcParams["axes.facecolor"] = "#c4cbcf"
     plt.rcParams["figure.facecolor"] = "#c4cbcf"
