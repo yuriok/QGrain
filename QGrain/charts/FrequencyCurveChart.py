@@ -95,7 +95,7 @@ class FrequencyCurveChart(QDialog):
                     if self.xlog:
                         self.axes.set_xscale("log")
                     if title is None:
-                        self.axes.set_title(self.tr("Frequency Curves of Samples"))
+                        self.axes.set_title(self.tr("Frequency curves of samples"))
                     else:
                         self.axes.set_title(title)
                     self.axes.set_xlabel(self.xlabel)

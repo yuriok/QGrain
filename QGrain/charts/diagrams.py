@@ -78,7 +78,7 @@ class DiagramChart(QDialog):
 class Folk54GSMDiagramChart(DiagramChart):
     def __init__(self, parent=None, toolbar=False):
         super().__init__(parent=parent, toolbar=toolbar)
-        self.setWindowTitle(self.tr("Gravel-sand-mud diagram (Folk, 1954)"))
+        self.setWindowTitle(self.tr("GSM Diagram (Folk, 1954)"))
 
     @property
     def title(self):
@@ -174,7 +174,7 @@ class Folk54GSMDiagramChart(DiagramChart):
 class Folk54SSCDiagramChart(DiagramChart):
     def __init__(self, parent=None, toolbar=False):
         super().__init__(parent=parent, toolbar=toolbar)
-        self.setWindowTitle(self.tr("Sand-silt-clay diagram (Folk, 1954)"))
+        self.setWindowTitle(self.tr("SSC Diagram (Folk, 1954)"))
 
     @property
     def title(self):
@@ -253,7 +253,7 @@ class Folk54SSCDiagramChart(DiagramChart):
 class BP12GSMDiagramChart(DiagramChart):
     def __init__(self, parent=None, toolbar=False):
         super().__init__(parent=parent, toolbar=toolbar)
-        self.setWindowTitle(self.tr("Gravel-sand-mud diagram (Blott & Pye, 2012)"))
+        self.setWindowTitle(self.tr("GSM Diagram (Blott & Pye, 2012)"))
 
     @property
     def title(self):
@@ -504,7 +504,7 @@ class BP12GSMDiagramChart(DiagramChart):
 class BP12SSCDiagramChart(DiagramChart):
     def __init__(self, parent=None, toolbar=False):
         super().__init__(parent=parent, toolbar=toolbar)
-        self.setWindowTitle(self.tr("Sand-silt-clay diagram (Blott & Pye, 2012)"))
+        self.setWindowTitle(self.tr("SSC Diagram (Blott & Pye, 2012)"))
 
     @property
     def title(self):
