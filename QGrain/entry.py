@@ -42,10 +42,11 @@ def setup_logging():
 def setup_app():
     import matplotlib.pyplot as plt
     # import qtawesome as qta
-    from PySide2.QtCore import Qt
+    from PySide2.QtCore import Qt, QCoreApplication
     from PySide2.QtGui import QColor
     from PySide2.QtWidgets import QApplication, QSplashScreen, QStyleFactory
 
+    QCoreApplication.setAttribute(Qt.AA_DisableHighDpiScaling)
     app = QApplication(sys.argv)
     splash = QSplashScreen()
     pixmap = QPixmap(os.path.join(QGRAIN_ROOT_PATH, "assets", "icon.png"))
