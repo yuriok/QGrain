@@ -4,7 +4,7 @@ __all__ = ["ConsolePanel"]
 import qtawesome as qta
 from PySide2.QtCore import QSize, Qt
 from PySide2.QtWidgets import QDialog, QGridLayout, QMessageBox, QSizePolicy, QToolButton, QToolButton
-from QGrain.ui.AboutWindow import AboutWindow
+from QGrain.ui.AboutPanel import AboutPanel
 from QGrain.ui.EMMAResolverPanel import EMMAResolverPanel
 from QGrain.ui.GrainSizeDatasetViewer import GrainSizeDatasetViewer
 from QGrain.ui.PCAResolverPanel import PCAResolverPanel
@@ -34,7 +34,7 @@ class ConsolePanel(QDialog):
         self.emma_resolver = EMMAResolverPanel(parent=self)
         self.ssu_resolver = SSUResolverPanel(parent=self)
         self.ssu_tester = SSUAlgorithmTesterPanel(parent=self)
-        self.abount_window = AboutWindow(parent=self)
+        self.abount_window = AboutPanel(parent=self)
 
         self.main_layout = QGridLayout(self)
         self.main_layout.setRowMinimumHeight(0, 120)
