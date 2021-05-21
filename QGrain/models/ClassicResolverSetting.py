@@ -24,7 +24,7 @@ def check_minimizer(minimizer):
 
 class ClassicResolverSetting:
     def __init__(self,
-                 distance: str="angular",
+                 distance: str="log10MSE",
                  minimizer: str="SLSQP",
                  try_GO: bool=False,
                  GO_max_niter: int=100,
