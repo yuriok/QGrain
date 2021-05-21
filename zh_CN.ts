@@ -408,6 +408,11 @@
         <source>(vm) - Very slightly muddy</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="QGrain/charts/diagrams.py" line="256"/>
+        <source>GSM Diagram (Blott &amp; Pye, 2012)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>BP12SSCDiagramChart</name>
@@ -801,6 +806,11 @@
         <source>(vc)  - Very slightly clayey</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="QGrain/charts/diagrams.py" line="507"/>
+        <source>SSC Diagram (Blott &amp; Pye, 2012)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>BoxplotChart</name>
@@ -1028,11 +1038,6 @@
         <source>Scale</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="QGrain/charts/CumulativeCurveChart.py" line="73"/>
-        <source>Cumulative Frequency</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message encoding="UTF-8">
         <location filename="QGrain/charts/CumulativeCurveChart.py" line="69"/>
         <source>Grain-size [μm]</source>
@@ -1049,26 +1054,31 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="QGrain/charts/CumulativeCurveChart.py" line="73"/>
+        <source>Cumulative frequency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="QGrain/charts/CumulativeCurveChart.py" line="95"/>
-        <source>Cumulative Curves of Samples</source>
+        <source>Cumulative curves of samples</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>DistanceCurveChart</name>
     <message>
+        <location filename="QGrain/charts/DistanceCurveChart.py" line="29"/>
+        <source>Distance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="QGrain/charts/DistanceCurveChart.py" line="14"/>
-        <source>Distance Curve Chart</source>
+        <source>Distance History</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistanceCurveChart.py" line="28"/>
-        <source>Iteration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/charts/DistanceCurveChart.py" line="29"/>
-        <source>Distance</source>
+        <source>Iteration index</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1451,11 +1461,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="313"/>
-        <source>EM abundances of samples</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="361"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
@@ -1480,6 +1485,11 @@
         <source>Saving Animation [{0} Frames]</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="313"/>
+        <source>EM abundances</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>EMMASummaryChart</name>
@@ -1495,7 +1505,7 @@
     </message>
     <message>
         <location filename="QGrain/charts/EMMASummaryChart.py" line="53"/>
-        <source>N_members</source>
+        <source>$N_{iterations}$</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2080,6 +2090,11 @@ Gravel</source>
         <source>9:1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="QGrain/charts/diagrams.py" line="81"/>
+        <source>GSM Diagram (Folk, 1954)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Folk54SSCDiagramChart</name>
@@ -2173,14 +2188,14 @@ Gravel</source>
         <source>2:1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="QGrain/charts/diagrams.py" line="177"/>
+        <source>SSC Diagram (Folk, 1954)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>FrequencyCurve3DChart</name>
-    <message>
-        <location filename="QGrain/charts/FrequencyCurve3DChart.py" line="18"/>
-        <source>Frequency Curve 3D Chart</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <location filename="QGrain/charts/FrequencyCurve3DChart.py" line="29"/>
         <source>Log</source>
@@ -2226,6 +2241,11 @@ Gravel</source>
         <source>Grain-size [μm]</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="QGrain/charts/FrequencyCurve3DChart.py" line="18"/>
+        <source>Frequency 3D Chart</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>FrequencyCurveChart</name>
@@ -2264,11 +2284,6 @@ Gravel</source>
         <source>Frequency</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="QGrain/charts/FrequencyCurveChart.py" line="98"/>
-        <source>Frequency Curves of Samples</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message encoding="UTF-8">
         <location filename="QGrain/charts/FrequencyCurveChart.py" line="70"/>
         <source>Grain-size [μm]</source>
@@ -2282,6 +2297,11 @@ Gravel</source>
     <message encoding="UTF-8">
         <location filename="QGrain/charts/FrequencyCurveChart.py" line="67"/>
         <source>Grain-size [φ]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/charts/FrequencyCurveChart.py" line="98"/>
+        <source>Frequency curves of samples</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2702,11 +2722,6 @@ Symbol (Blott &amp; Pye, 2012)</source>
 <context>
     <name>HierarchicalChart</name>
     <message>
-        <location filename="QGrain/charts/HierarchicalChart.py" line="16"/>
-        <source>Hierarchical Chart</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="QGrain/charts/HierarchicalChart.py" line="38"/>
         <source>Sample count/index</source>
         <translation type="unfinished"></translation>
@@ -2714,6 +2729,11 @@ Symbol (Blott &amp; Pye, 2012)</source>
     <message>
         <location filename="QGrain/charts/HierarchicalChart.py" line="39"/>
         <source>Distance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/charts/HierarchicalChart.py" line="16"/>
+        <source>Hierarchical Clustering Chart</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3147,18 +3167,18 @@ Symbol (Blott &amp; Pye, 2012)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="QGrain/charts/PCAResultChart.py" line="46"/>
+        <source>Varations of PCs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="QGrain/charts/PCAResultChart.py" line="44"/>
-        <source>Sample Index</source>
+        <source>Sample index</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="QGrain/charts/PCAResultChart.py" line="45"/>
-        <source>Transformed Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/charts/PCAResultChart.py" line="46"/>
-        <source>Varations of PCs</source>
+        <source>Transformed value</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3712,11 +3732,6 @@ Symbol (Blott &amp; Pye, 2012)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="70"/>
-        <source>Component Number</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="QGrain/ui/SSUResolverPanel.py" line="79"/>
         <source>N&lt;sub&gt;samples&lt;/sub&gt;</source>
         <translation type="unfinished"></translation>
@@ -3804,6 +3819,11 @@ Symbol (Blott &amp; Pye, 2012)</source>
     <message>
         <location filename="QGrain/ui/SSUResolverPanel.py" line="133"/>
         <source>Reference</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="70"/>
+        <source>N&lt;sub&gt;components&lt;/sub&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
