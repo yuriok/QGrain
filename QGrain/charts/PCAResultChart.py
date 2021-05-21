@@ -41,8 +41,8 @@ class PCAResultChart(QDialog):
 
         for i in range(n_components):
             self.axes.plot(sample_indexes, transformed[:, i], label=f"PC{i+1} ({pca.explained_variance_ratio_[i]:0.2%})")
-        self.axes.set_xlabel(self.tr("Sample Index"))
-        self.axes.set_ylabel(self.tr("Transformed Value"))
+        self.axes.set_xlabel(self.tr("Sample index"))
+        self.axes.set_ylabel(self.tr("Transformed value"))
         self.axes.set_title(self.tr("Varations of PCs"))
         if n_components < 10:
             self.axes.legend(loc="upper left")

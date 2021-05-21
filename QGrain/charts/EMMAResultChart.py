@@ -228,7 +228,7 @@ class EMMAResultChart(QDialog):
         proportion_axes.set_ylim(0.0, 1.0)
         proportion_axes.set_xlabel(self.tr("Sample index"))
         proportion_axes.set_ylabel(self.tr("Proportion"))
-        proportion_axes.set_title(self.tr("EM abundances of samples"))
+        proportion_axes.set_title(self.tr("EM abundances"))
         self.figure.tight_layout()
         self.canvas.draw()
 
@@ -310,7 +310,7 @@ class EMMAResultChart(QDialog):
         self.proportion_axes.set_ylim(0.0, 1.0)
         self.proportion_axes.set_xlabel(self.tr("Sample index"))
         self.proportion_axes.set_ylabel(self.tr("Proportion"))
-        self.proportion_axes.set_title(self.tr("EM abundances of samples"))
+        self.proportion_axes.set_title(self.tr("EM abundances"))
 
         # self.figure.tight_layout()
         # self.canvas.draw()

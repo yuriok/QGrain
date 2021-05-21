@@ -67,7 +67,7 @@ class SSUResolverPanel(QDialog):
         self.distribution_label = QLabel(self.tr("Distribution Type"))
         self.distribution_combo_box = QComboBox()
         self.distribution_combo_box.addItems([name for _, name in self.distribution_types])
-        self.component_number_label = QLabel(self.tr("Component Number"))
+        self.component_number_label = QLabel(self.tr("N<sub>components</sub>"))
         self.n_components_input = QSpinBox()
         self.n_components_input.setRange(1, 10)
         self.n_components_input.setValue(3)

@@ -68,7 +68,7 @@ class CumulativeCurveChart(QDialog):
 
     @property
     def ylabel(self) -> str:
-        return self.tr("Cumulative Frequency")
+        return self.tr("Cumulative frequency")
 
     @property
     def xlog(self) -> bool:
@@ -92,7 +92,7 @@ class CumulativeCurveChart(QDialog):
                 if not append:
                     if self.xlog:
                         self.axes.set_xscale("log")
-                    self.axes.set_title(self.tr("Cumulative Curves of Samples"))
+                    self.axes.set_title(self.tr("Cumulative curves of samples"))
                     self.axes.set_xlabel(self.xlabel)
                     self.axes.set_ylabel(self.ylabel)
                     self.axes.set_xlim(x[0], x[-1])
