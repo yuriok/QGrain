@@ -73,8 +73,8 @@ class RandomGeneratorComponentWidget(QWidget):
         self.main_layout.addWidget(self.shape_label, 1, 1)
         self.main_layout.addWidget(self.shape_mean_input, 1, 2)
         self.main_layout.addWidget(self.shape_std_input, 1, 3)
-        # loc
-        self.loc_label = QLabel(self.tr("Loc"))
+        # location
+        self.loc_label = QLabel(self.tr("Location"))
         self.loc_label.setAlignment(Qt.AlignHCenter|Qt.AlignVCenter)
         self.loc_mean_input = QDoubleSpinBox()
         self.loc_mean_input.setRange(*self.LOC_MEAN_RANGE)
@@ -156,7 +156,7 @@ class RandomDatasetGenerator(QDialog):
     gui_logger = logging.getLogger("GUI")
     def __init__(self, parent=None):
         super().__init__(parent=parent, f=Qt.Window)
-        self.setWindowTitle(self.tr("Random Dataset Generator"))
+        self.setWindowTitle(self.tr("Dataset Generator"))
         self.last_n_components = 0
         self.components = [] # typing.List[RandomGeneratorComponentWidget]
         self.component_series = []
@@ -180,12 +180,12 @@ class RandomDatasetGenerator(QDialog):
         self.sampling_group = QGroupBox(self.tr("Sampling"))
         # self.control_group.setFixedSize(400, 160)
         self.control_layout = QGridLayout(self.sampling_group)
-        self.minimum_size_label = QLabel(self.tr("Minimum Size (μm)"))
+        self.minimum_size_label = QLabel(self.tr("Minimum Size [μm]"))
         self.minimum_size_input = QDoubleSpinBox()
         self.minimum_size_input.setDecimals(2)
         self.minimum_size_input.setRange(1e-4, 1e6)
         self.minimum_size_input.setValue(0.0200)
-        self.maximum_size_label = QLabel(self.tr("Maximum Size (μm)"))
+        self.maximum_size_label = QLabel(self.tr("Maximum Size [μm]"))
         self.maximum_size_input = QDoubleSpinBox()
         self.maximum_size_input.setDecimals(2)
         self.maximum_size_input.setRange(1e-4, 1e6)
@@ -194,7 +194,7 @@ class RandomDatasetGenerator(QDialog):
         self.control_layout.addWidget(self.minimum_size_input, 0, 1)
         self.control_layout.addWidget(self.maximum_size_label, 0, 2)
         self.control_layout.addWidget(self.maximum_size_input, 0, 3)
-        self.n_classes_label = QLabel(self.tr("N Classes"))
+        self.n_classes_label = QLabel(self.tr("N<sub>classes</sub>"))
         self.n_classes_input = QSpinBox()
         self.n_classes_input.setRange(10, 1e4)
         self.n_classes_input.setValue(101)
@@ -206,7 +206,7 @@ class RandomDatasetGenerator(QDialog):
         self.control_layout.addWidget(self.n_classes_input, 1, 1)
         self.control_layout.addWidget(self.precision_label, 1, 2)
         self.control_layout.addWidget(self.precision_input, 1, 3)
-        self.component_number_label = QLabel(self.tr("N Components"))
+        self.component_number_label = QLabel(self.tr("N<sub>components</sub>"))
         self.component_number_input = QSpinBox()
         self.component_number_input.setRange(1, 10)
         self.component_number_input.valueChanged.connect(self.on_n_components_changed)
@@ -220,7 +220,7 @@ class RandomDatasetGenerator(QDialog):
         self.save_group = QGroupBox(self.tr("Save"))
         # self.save_group.setFixedHeight(160)
         self.save_layout = QGridLayout(self.save_group)
-        self.n_samples_label = QLabel(self.tr("Sample Number"))
+        self.n_samples_label = QLabel(self.tr("N<sub>samples</sub>"))
         self.n_samples_input = QSpinBox()
         self.n_samples_input.setRange(100, 100000)
         self.save_layout.addWidget(self.n_samples_label, 0, 0)
@@ -348,8 +348,8 @@ class RandomDatasetGenerator(QDialog):
 
             Artificial dataset
                 Using skew normal distribution as the base distribution of each component (i.e. end-member).
-                Skew normal distribution has three parameters, shape, loc and scale.
-                Where shape controls the skewness, loc and scale are simliar to that of the Normal distribution.
+                Skew normal distribution has three parameters, shape, location and scale.
+                Where shape controls the skewness, location and scale are simliar to that of the Normal distribution.
                 When shape = 0, it becomes Normal distribution.
                 The weight parameter controls the fraction of the component, where fraction_i = weight_i / sum(weight_i).
                 By assigning the mean and std of each parameter, random parameters was generate by the `scipy.stats.truncnorm.rvs` function of Scipy.
@@ -360,7 +360,7 @@ class RandomDatasetGenerator(QDialog):
                 N_classes: {3},
                 Precision: {4},
                 Noise: {5},
-                N_samples: {6},
+                N_samples: {6}
 
             """.format(QGRAIN_VERSION,
                        self.minimum_size_input.value(),
@@ -379,12 +379,12 @@ class RandomDatasetGenerator(QDialog):
             write(row, 0, line, style="description")
         ws.column_dimensions[column_to_char(0)].width = 200
 
-        ws = wb.create_sheet(self.tr("Random settings"))
+        ws = wb.create_sheet(self.tr("Random Settings"))
         write(0, 0, self.tr("Parameter"), style="header")
         ws.merge_cells(start_row=1, start_column=1, end_row=2, end_column=1)
         write(0, 1, self.tr("Shape"), style="header")
         ws.merge_cells(start_row=1, start_column=2, end_row=1, end_column=3)
-        write(0, 3, self.tr("Loc"), style="header")
+        write(0, 3, self.tr("Location"), style="header")
         ws.merge_cells(start_row=1, start_column=4, end_row=1, end_column=5)
         write(0, 5, self.tr("Scale"), style="header")
         ws.merge_cells(start_row=1, start_column=6, end_row=1, end_column=7)
@@ -410,7 +410,7 @@ class RandomDatasetGenerator(QDialog):
 
         ws = wb.create_sheet(self.tr("Dataset"))
         write(0, 0, self.tr("Sample Name"), style="header")
-        ws.column_dimensions[column_to_char(0)].width = 16
+        ws.column_dimensions[column_to_char(0)].width = 24
         for col, value in enumerate(dataset.classes_μm, 1):
             write(0, col, value, style="header")
             ws.column_dimensions[column_to_char(col)].width = 10
@@ -432,15 +432,16 @@ class RandomDatasetGenerator(QDialog):
 
         ws = wb.create_sheet(self.tr("Parameters"))
         write(0, 0, self.tr("Sample Name"), style="header")
-        ws.column_dimensions[column_to_char(0)].width = 16
+        ws.merge_cells(start_row=1, start_column=1, end_row=2, end_column=1)
+        ws.column_dimensions[column_to_char(0)].width = 24
         for i in range(dataset.n_components):
             write(0, 4*i+1, self.tr("Component{0}").format(i+1), style="header")
             ws.merge_cells(start_row=1, start_column=4*i+2, end_row=1, end_column=4*i+5)
-            for j, header_name in enumerate([self.tr("Shape"), self.tr("Loc"), self.tr("Scale"), self.tr("Weight")]):
+            for j, header_name in enumerate([self.tr("Shape"), self.tr("Location"), self.tr("Scale"), self.tr("Weight")]):
                 write(1, 4*i+1+j, header_name, style="header")
                 ws.column_dimensions[column_to_char(4*i+1+j)].width = 16
-        for row, sample in enumerate(samples, 1):
-            if row % 2 == 0:
+        for row, sample in enumerate(samples, 2):
+            if row % 2 == 1:
                 style = "normal_dark"
             else:
                 style = "normal_light"
@@ -460,7 +461,7 @@ class RandomDatasetGenerator(QDialog):
         for i in range(dataset.n_components):
             ws = wb.create_sheet(self.tr("Component{0}").format(i+1))
             write(0, 0, self.tr("Sample Name"), style="header")
-            ws.column_dimensions[column_to_char(0)].width = 16
+            ws.column_dimensions[column_to_char(0)].width = 24
             for col, value in enumerate(dataset.classes_μm, 1):
                 write(0, col, value, style="header")
                 ws.column_dimensions[column_to_char(col)].width = 10
