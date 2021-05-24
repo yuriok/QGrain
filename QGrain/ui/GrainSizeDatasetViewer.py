@@ -11,7 +11,7 @@ from PySide2.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox,
                                QMessageBox, QPushButton, QTableWidget,
                                QTableWidgetItem)
 from QGrain import QGRAIN_VERSION
-from QGrain.algorithms.moments import get_moments
+from QGrain.statistic import get_all_statistic
 from QGrain.charts.CumulativeCurveChart import CumulativeCurveChart
 from QGrain.charts.diagrams import (BP12GSMDiagramChart,
                                     BP12SSCDiagramChart,
@@ -74,9 +74,9 @@ class GrainSizeDatasetViewer(QDialog):
         self.geometric_checkbox.setChecked(True)
         self.geometric_checkbox.stateChanged.connect(self.on_is_geometric_changed)
         self.main_layout.addWidget(self.geometric_checkbox, 2, 0)
-        self.FW57_checkbox = QCheckBox(self.tr("Folk and Ward (1957) method"))
+        self.FW57_checkbox = QCheckBox(self.tr("Method of statistic moments"))
         self.FW57_checkbox.setChecked(False)
-        self.FW57_checkbox.stateChanged.connect(self.on_use_FW57_changed)
+        self.FW57_checkbox.stateChanged.connect(self.on_is_FW57_changed)
         self.main_layout.addWidget(self.FW57_checkbox, 2, 1)
         self.proportion_combo_box = QComboBox()
         self.supported_proportions = [("GSM_proportion", self.tr("Gravel, Sand, Mud")),
@@ -204,14 +204,14 @@ class GrainSizeDatasetViewer(QDialog):
         self.update_page(self.page_index)
 
     @property
-    def use_FW57(self) -> bool:
+    def is_FW57(self) -> bool:
         return self.FW57_checkbox.isChecked()
 
-    def on_use_FW57_changed(self, state):
+    def on_is_FW57_changed(self, state):
         if state == Qt.Checked:
             self.FW57_checkbox.setText(self.tr("Folk and Ward (1957) method"))
         else:
-            self.FW57_checkbox.setText(self.tr("Method of moments"))
+            self.FW57_checkbox.setText(self.tr("Method of statistic moments"))
         self.update_page(self.page_index)
 
     @property
@@ -256,51 +256,58 @@ class GrainSizeDatasetViewer(QDialog):
         else:
             start, end = page_index * self.PAGE_ROWS, (page_index+1) * self.PAGE_ROWS
         proportion_key, proportion_desciption = self.proportion
-        moment_names = [f"{self.tr('Mean')}[{self.unit}]",
-                        self.tr("Mean Desc."),
-                        f"{self.tr('Median')} [{self.unit}]",
-                        f"{self.tr('Modes')} [{self.unit}]",
-                        self.tr("STD (Sorting)"),
-                        self.tr("Sorting Desc."),
-                        self.tr("Skewness"),
-                        self.tr("Skew. Desc."),
-                        self.tr("Kurtosis"),
-                        self.tr("Kurt. Desc."),
-                        f"({proportion_desciption})\n{self.tr('Proportion')} [%]",
-                        self.tr("Textural Group\n(Folk, 1954)"),
-                        self.tr("Textural Group\nSymbol (Blott & Pye, 2012)"),
-                        self.tr("Textural Group\n(Blott & Pye, 2012)")]
-        moment_keys = ["mean",
-                       "mean_description",
-                       "median",
-                       "modes",
-                       "std",
-                       "std_description",
-                       "skewness",
-                       "skewness_description",
-                       "kurtosis",
-                       "kurtosis_description",
-                        proportion_key,
-                       "textural_group_Folk54",
-                       "textural_group_BP12_symbol",
-                       "textural_group_BP12"]
+        col_names = [f"{self.tr('Mean')}[{self.unit}]",
+                     self.tr("Mean Desc."),
+                     f"{self.tr('Median')} [{self.unit}]",
+                     f"{self.tr('Modes')} [{self.unit}]",
+                     self.tr("STD (Sorting)"),
+                     self.tr("Sorting Desc."),
+                     self.tr("Skewness"),
+                     self.tr("Skew. Desc."),
+                     self.tr("Kurtosis"),
+                     self.tr("Kurt. Desc."),
+                     f"({proportion_desciption})\n{self.tr('Proportion')} [%]",
+                     self.tr("Group\n(Folk, 1954)"),
+                     self.tr("Group\nSymbol (Blott & Pye, 2012)"),
+                     self.tr("Group\n(Blott & Pye, 2012)")]
+        col_keys = [(True, "mean"),
+                    (True, "mean_description"),
+                    (True, "median"),
+                    (True, "modes"),
+                    (True, "std"),
+                    (True, "std_description"),
+                    (True, "skewness"),
+                    (True, "skewness_description"),
+                    (True, "kurtosis"),
+                    (True, "kurtosis_description"),
+                    (False, proportion_key),
+                    (False, "group_Folk54"),
+                    (False, "group_BP12_symbol"),
+                    (False, "group_BP12")]
         self.data_table.setRowCount(end-start)
-        self.data_table.setColumnCount(len(moment_names))
-        self.data_table.setHorizontalHeaderLabels(moment_names)
+        self.data_table.setColumnCount(len(col_names))
+        self.data_table.setHorizontalHeaderLabels(col_names)
         self.data_table.setVerticalHeaderLabels([sample.name for sample in self.__dataset.samples[start: end]])
         for row, sample in enumerate(self.__dataset.samples[start: end]):
-            geometric_moments, logarithmic_moments = get_moments(sample.classes_μm, sample.classes_φ, sample.distribution, FW57=self.use_FW57)
+            statistic = get_all_statistic(sample.classes_μm, sample.classes_φ, sample.distribution)
             if self.is_geometric:
-                moments = geometric_moments
-            else:
-                moments = logarithmic_moments
-            for col, key in enumerate(moment_keys):
-                if key == "modes":
-                    write(row, col, ", ".join([f"{m:0.2f}" for m in moments[key]]))
-                elif key[-11:] == "_proportion":
-                    write(row, col, ", ".join([f"{p*100:0.2f}" for p in moments[key]]))
+                if self.is_FW57:
+                    sub_key = "geometric_FW57"
                 else:
-                    write(row, col, moments[key])
+                    sub_key = "geometric"
+            else:
+                if self.is_FW57:
+                    sub_key = "logarithmic_FW57"
+                else:
+                    sub_key = "logarithmic"
+            for col, (in_sub, key) in enumerate(col_keys):
+                value = statistic[sub_key][key] if in_sub else statistic[key]
+                if key == "modes":
+                    write(row, col, ", ".join([f"{m:0.2f}" for m in value]))
+                elif key[-11:] == "_proportion":
+                    write(row, col, ", ".join([f"{p*100:0.2f}" for p in value]))
+                else:
+                    write(row, col, value)
 
         self.data_table.resizeColumnsToContents()
 
@@ -345,10 +352,10 @@ class GrainSizeDatasetViewer(QDialog):
             This Excel file was generated by QGrain ({0}).
 
             It contanins one sheet:
-            1. The sheet puts the statistic parameters and the textural group of the samples.
+            1. The sheet puts the statistic parameters and the classification groups of the samples.
 
             The statistic formulas are referred to Blott & Pye (2001)'s work.
-            The classification of textural groups is referred to Folk (1957)'s and Blott & Pye (2012)'s scheme.
+            The classification of GSDs is referred to Folk (1957)'s and Blott & Pye (2012)'s scheme.
 
             References:
                 1.Blott, S. J. & Pye, K. Particle size scales and classification of sediment types based on particle size distributions: Review and recommended procedures. Sedimentology 59, 2071–2096 (2012).
@@ -366,63 +373,70 @@ class GrainSizeDatasetViewer(QDialog):
             write(row, 0, line, style="description")
         ws.column_dimensions[column_to_char(0)].width = 200
 
-        ws = wb.create_sheet(self.tr("Moments"))
+        ws = wb.create_sheet(self.tr("Parameters and Groups"))
         proportion_key, proportion_desciption = self.proportion
-        moment_names = [f"{self.tr('Mean')}[{self.unit}]",
-                        self.tr("Mean Desc."),
-                        f"{self.tr('Median')} [{self.unit}]",
-                        f"{self.tr('Modes')} [{self.unit}]",
-                        self.tr("STD (Sorting)"),
-                        self.tr("Sorting Desc."),
-                        self.tr("Skewness"),
-                        self.tr("Skew. Desc."),
-                        self.tr("Kurtosis"),
-                        self.tr("Kurt. Desc."),
-                        f"({proportion_desciption})\n{self.tr('Proportion')} [%]",
-                        self.tr("Textural Group\n(Folk, 1954)"),
-                        self.tr("Textural Group\nSymbol (Blott & Pye, 2012)"),
-                        self.tr("Textural Group\n(Blott & Pye, 2012)")]
-        moment_keys = ["mean",
-                       "mean_description",
-                       "median",
-                       "modes",
-                       "std",
-                       "std_description",
-                       "skewness",
-                       "skewness_description",
-                       "kurtosis",
-                       "kurtosis_description",
-                        proportion_key,
-                       "textural_group_Folk54",
-                       "textural_group_BP12_symbol",
-                       "textural_group_BP12"]
+        col_names = [f"{self.tr('Mean')}[{self.unit}]",
+                     self.tr("Mean Desc."),
+                     f"{self.tr('Median')} [{self.unit}]",
+                     f"{self.tr('Modes')} [{self.unit}]",
+                     self.tr("STD (Sorting)"),
+                     self.tr("Sorting Desc."),
+                     self.tr("Skewness"),
+                     self.tr("Skew. Desc."),
+                     self.tr("Kurtosis"),
+                     self.tr("Kurt. Desc."),
+                     f"({proportion_desciption})\n{self.tr('Proportion')} [%]",
+                     self.tr("Group\n(Folk, 1954)"),
+                     self.tr("Group\nSymbol (Blott & Pye, 2012)"),
+                     self.tr("Group\n(Blott & Pye, 2012)")]
+        col_keys = [(True, "mean"),
+                    (True, "mean_description"),
+                    (True, "median"),
+                    (True, "modes"),
+                    (True, "std"),
+                    (True, "std_description"),
+                    (True, "skewness"),
+                    (True, "skewness_description"),
+                    (True, "kurtosis"),
+                    (True, "kurtosis_description"),
+                    (False, proportion_key),
+                    (False, "group_Folk54"),
+                    (False, "group_BP12_symbol"),
+                    (False, "group_BP12")]
         write(0, 0, self.tr("Sample Name"), style="header")
         ws.column_dimensions[column_to_char(0)].width = 16
-        for col, moment_name in enumerate(moment_names, 1):
+        for col, moment_name in enumerate(col_names, 1):
             write(0, col, moment_name, style="header")
             if col in (2, 4, 6, 8, 10, 11, 12, 14):
                 ws.column_dimensions[column_to_char(col)].width = 30
             else:
                 ws.column_dimensions[column_to_char(col)].width = 16
-        ws.column_dimensions[column_to_char(len(moment_names))].width = 40
+        ws.column_dimensions[column_to_char(len(col_names))].width = 40
         for row, sample in enumerate(self.__dataset.samples, 1):
             if row % 2 == 0:
                 style = "normal_dark"
             else:
                 style = "normal_light"
             write(row, 0, sample.name, style=style)
-            geometric_moments, logarithmic_moments = get_moments(sample.classes_μm, sample.classes_φ, sample.distribution, FW57=self.use_FW57)
+            statistic = get_all_statistic(sample.classes_μm, sample.classes_φ, sample.distribution)
             if self.is_geometric:
-                moments = geometric_moments
-            else:
-                moments = logarithmic_moments
-            for col, key in enumerate(moment_keys, 1):
-                if key == "modes":
-                    write(row, col, ", ".join([f"{m:0.4f}" for m in moments[key]]), style=style)
-                elif key[-11:] == "_proportion":
-                    write(row, col, ", ".join([f"{p*100:0.4f}" for p in moments[key]]), style=style)
+                if self.is_FW57:
+                    sub_key = "geometric_FW57"
                 else:
-                    write(row, col, moments[key], style=style)
+                    sub_key = "geometric"
+            else:
+                if self.is_FW57:
+                    sub_key = "logarithmic_FW57"
+                else:
+                    sub_key = "logarithmic"
+            for col, (in_sub, key) in enumerate(col_keys, 1):
+                value = statistic[sub_key][key] if in_sub else statistic[key]
+                if key == "modes":
+                    write(row, col, ", ".join([f"{m:0.4f}" for m in value]), style=style)
+                elif key[-11:] == "_proportion":
+                    write(row, col, ", ".join([f"{p*100:0.4f}" for p in value]), style=style)
+                else:
+                    write(row, col, value, style=style)
 
         wb.save(filename)
         wb.close()

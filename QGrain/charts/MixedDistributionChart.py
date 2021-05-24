@@ -7,7 +7,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PySide2.QtCore import Qt, QCoreApplication
 from PySide2.QtWidgets import QDialog, QGridLayout, QLabel, QComboBox, QCheckBox, QPushButton, QSpinBox, QMessageBox, QFileDialog, QProgressDialog
-from QGrain.algorithms.moments import convert_μm_to_φ, convert_φ_to_μm
+from QGrain.statistic import convert_φ_to_μm
 from QGrain.models.MixedDistributionChartViewModel import MixedDistributionChartViewModel, get_demo_view_model
 from QGrain.models.FittingResult import FittingResult
 import os

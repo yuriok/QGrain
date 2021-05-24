@@ -7,10 +7,12 @@ from uuid import UUID, uuid4
 import numpy as np
 from QGrain.algorithms import DistributionType
 from QGrain.algorithms.distributions import BaseDistribution, get_distance_func_by_name
-from QGrain.algorithms.moments import get_moments, invalid_moments
+from QGrain.statistic import logarithmic, geometric
 from QGrain.models.FittingTask import FittingTask
 from QGrain.models.GrainSizeSample import GrainSizeSample
 from QGrain.models.MixedDistributionChartViewModel import MixedDistributionChartViewModel
+
+INVALID_STATISTIC = dict(mean=np.nan, std=np.nan, skewness=np.nan, kurtosis=np.nan)
 
 class ComponentFittingResult:
     def __init__(self, sample: GrainSizeSample,
@@ -25,13 +27,14 @@ class ComponentFittingResult:
         if np.any(np.isnan(func_args)):
             self.__fraction = np.nan
             self.__distribution = np.full_like(sample.distribution, fill_value=np.nan)
-            self.__geometric_moments = invalid_moments
-            self.__logarithmic_moments = invalid_moments
+            self.__geometric_moments = INVALID_STATISTIC
+            self.__logarithmic_moments = INVALID_STATISTIC
             self.__is_valid = False
         else:
             self.__fraction = fraction
             self.__distribution = distribution.single_function(sample.classes_φ, *func_args)
-            self.__geometric_moments, self.__logarithmic_moments= get_moments(sample.classes_μm, sample.classes_φ, self.__distribution, FW57=False)
+            self.__geometric_moments = geometric(sample.classes_μm, self.__distribution)
+            self.__logarithmic_moments= logarithmic(sample.classes_φ, self.__distribution)
             self.__is_valid = True
 
     @property
@@ -70,7 +73,7 @@ class FittingResult:
         self.__sample = task.sample
         self.__mixed_func_args = mixed_func_args
         self.__history = [mixed_func_args] if history is None else history
-        self.__components = [] # type: List[ComponentFittingResult]
+        self.__components = [] # type: typing.List[ComponentFittingResult]
         self.__time_spent = time_spent
         self.update(mixed_func_args)
 

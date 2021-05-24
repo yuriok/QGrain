@@ -9,7 +9,7 @@ from PySide2.QtCore import QCoreApplication, Qt
 from PySide2.QtWidgets import (QCheckBox, QComboBox, QDialog, QFileDialog, QGroupBox,
                                QGridLayout, QLabel, QMessageBox, QSizePolicy,
                                QProgressDialog, QPushButton, QSpinBox)
-from QGrain.algorithms.moments import convert_μm_to_φ, convert_φ_to_μm
+from QGrain.statistic import convert_φ_to_μm
 from QGrain.models.EMMAResult import EMMAResult
 
 
