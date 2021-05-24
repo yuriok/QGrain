@@ -6,7 +6,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import QDialog, QGridLayout, QComboBox, QLabel
-from QGrain.algorithms.moments import convert_μm_to_φ, convert_φ_to_μm
+from QGrain.statistic import convert_φ_to_μm
 from QGrain.models.GrainSizeSample import GrainSizeSample
 
 

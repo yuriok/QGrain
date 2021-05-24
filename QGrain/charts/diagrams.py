@@ -6,7 +6,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import QDialog, QGridLayout
-from QGrain.algorithms.moments import get_GSM_proportion, get_SSC_proportion
+from QGrain.statistic import get_GSM_proportion, get_SSC_proportion
 from QGrain.models.GrainSizeSample import GrainSizeSample
 
 

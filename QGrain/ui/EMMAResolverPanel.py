@@ -14,7 +14,7 @@ from PySide2.QtWidgets import (QComboBox, QDialog, QFileDialog, QGridLayout,
 from QGrain import QGRAIN_VERSION
 from QGrain.algorithms import DistributionType
 from QGrain.algorithms.emma import EMMAResolver
-from QGrain.algorithms.moments import convert_μm_to_φ
+from QGrain.statistic import convert_μm_to_φ
 from QGrain.charts.EMMAResultChart import EMMAResultChart
 from QGrain.charts.EMMASummaryChart import EMMASummaryChart
 from QGrain.models.EMMAResult import EMMAResult

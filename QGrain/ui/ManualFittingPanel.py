@@ -30,7 +30,7 @@ from QGrain.algorithms.distributions import (BaseDistribution,
                                              NormalDistribution,
                                              SkewNormalDistribution,
                                              WeibullDistribution)
-from QGrain.algorithms.moments import logarithmic
+from QGrain.statistic import logarithmic
 from QGrain.models.FittingResult import FittingResult
 from QGrain.models.FittingTask import FittingTask
 from QGrain.models.GrainSizeSample import GrainSizeSample

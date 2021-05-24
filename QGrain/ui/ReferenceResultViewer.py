@@ -18,7 +18,7 @@ from PySide2.QtWidgets import (QAbstractItemView, QComboBox, QDialog,
 from QGrain.algorithms import DistributionType
 from QGrain.algorithms.AsyncFittingWorker import AsyncFittingWorker
 from QGrain.algorithms.distributions import get_distance_func_by_name
-from QGrain.algorithms.moments import logarithmic
+from QGrain.statistic import logarithmic
 from QGrain.charts.BoxplotChart import BoxplotChart
 from QGrain.charts.DistanceCurveChart import DistanceCurveChart
 from QGrain.charts.MixedDistributionChart import MixedDistributionChart

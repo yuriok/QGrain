@@ -8,7 +8,7 @@ from PySide2.QtWidgets import (QComboBox, QDialog, QGridLayout, QGroupBox, QTabW
                                QSplitter)
 from QGrain.algorithms import DistributionType
 from QGrain.algorithms.AsyncFittingWorker import AsyncFittingWorker
-from QGrain.algorithms.moments import logarithmic
+from QGrain.statistic import logarithmic
 from QGrain.charts.MixedDistributionChart import MixedDistributionChart
 from QGrain.models.FittingResult import FittingResult
 from QGrain.models.FittingTask import FittingTask
