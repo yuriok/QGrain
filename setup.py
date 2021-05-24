@@ -16,13 +16,13 @@ setup(
     install_requires=[
         "numpy",
         "scipy",
+        "matplotlib",
+        "PySide2",
+        "qtawesome",
         "scikit-learn",
         "torch",
         "xlrd",
         "openpyxl",
-        "PySide2",
-        "qtawesome",
-        "matplotlib",
         "SciencePlots"],
     entry_points = {
         'console_scripts': [
