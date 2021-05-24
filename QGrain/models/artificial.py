@@ -1,7 +1,7 @@
 import typing
 
 import numpy as np
-from QGrain.algorithms.moments import convert_μm_to_φ, convert_φ_to_μm
+from QGrain.statistic import convert_μm_to_φ, convert_φ_to_μm
 from QGrain.models.GrainSizeSample import GrainSizeSample
 from QGrain.models.MixedDistributionChartViewModel import MixedDistributionChartViewModel
 from scipy.stats import skewnorm, truncnorm

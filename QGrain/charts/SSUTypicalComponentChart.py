@@ -9,7 +9,7 @@ from PySide2.QtCore import QCoreApplication, Qt
 from PySide2.QtWidgets import (QComboBox, QDialog, QDoubleSpinBox, QFileDialog, QGridLayout,
                                QLabel, QMessageBox, QPushButton, QSpinBox)
 from QGrain import QGRAIN_VERSION
-from QGrain.algorithms.moments import convert_μm_to_φ, convert_φ_to_μm
+from QGrain.statistic import convert_φ_to_μm
 from QGrain.models.FittingResult import FittingResult
 from QGrain.models.GrainSizeSample import GrainSizeSample
 from QGrain.use_excel import column_to_char, prepare_styles
