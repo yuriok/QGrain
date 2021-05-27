@@ -236,12 +236,15 @@ class MixedDistributionChart(QDialog):
                 canceled = False
                 def save_callback(i, n):
                     if progress.wasCanceled():
+                        nonlocal canceled
                         canceled = True
                         raise StopIteration()
                     progress.setValue((i+1)/n*100)
                     QCoreApplication.processEvents()
                 self.show_result(self.last_result)
+                # plt.rcParams["savefig.dpi"] = 120.0
                 self.animation.save(filename, writer="imagemagick", fps=30, progress_callback=save_callback)
+                # plt.rcParams["savefig.dpi"] = 300.0
                 if not canceled:
                     progress.setValue(100)
 
