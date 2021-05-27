@@ -2,15 +2,16 @@ import typing
 
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.animation import FuncAnimation, ImageMagickWriter
+from matplotlib.animation import FFMpegWriter, FuncAnimation, ImageMagickWriter
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PySide2.QtCore import QCoreApplication, Qt
-from PySide2.QtWidgets import (QCheckBox, QComboBox, QDialog, QFileDialog, QGroupBox,
-                               QGridLayout, QLabel, QMessageBox, QSizePolicy,
-                               QProgressDialog, QPushButton, QSpinBox)
-from QGrain.statistic import convert_φ_to_μm
+from PySide2.QtWidgets import (QCheckBox, QComboBox, QDialog, QFileDialog,
+                               QGridLayout, QGroupBox, QLabel, QMessageBox,
+                               QProgressDialog, QPushButton, QSizePolicy,
+                               QSpinBox)
 from QGrain.models.EMMAResult import EMMAResult
+from QGrain.statistic import convert_φ_to_μm
 
 
 class EMMAResultChart(QDialog):
@@ -357,29 +358,36 @@ class EMMAResultChart(QDialog):
 
     def save_animation(self):
         if self.last_result is not None:
-            if not ImageMagickWriter.isAvailable():
-                self.msg_box.setWindowTitle(self.tr("Error"))
-                self.msg_box.setText(self.tr("ImageMagick is not installed, please download and install it from its offical website (https://imagemagick.org/index.php)."))
-                self.msg_box.exec_()
-            else:
-                filename, _  = self.file_dialog.getSaveFileName(self, self.tr("Save the animation of EMMA result"),
-                                            None, self.tr("Graphics Interchange Format (*.gif)"))
-                if filename is None or filename == "":
-                    return
-                progress = QProgressDialog(self)
-                progress.setRange(0, 100)
-                progress.setLabelText(self.tr("Saving Animation [{0} Frames]").format(self.last_result.n_iterations))
-                canceled = False
-                def save_callback(i, n):
-                    if progress.wasCanceled():
-                        nonlocal canceled
-                        canceled = True
-                        raise StopIteration()
-                    progress.setValue((i+1)/n*100)
-                    QCoreApplication.processEvents()
-                self.show_history_animation(self.last_result)
-                # plt.rcParams["savefig.dpi"] = 120.0
-                self.animation.save(filename, writer="imagemagick", fps=30, progress_callback=save_callback)
-                # plt.rcParams["savefig.dpi"] = 300.0
-                if not canceled:
-                    progress.setValue(100)
+            filename, format_str  = self.file_dialog.getSaveFileName(self, self.tr("Save the animation of this EMMA result"), None, self.tr("MPEG-4 Video File (*.mp4);;Graphics Interchange Format (*.gif)"))
+            if filename is None or filename == "":
+                return
+            progress = QProgressDialog(self)
+            progress.setRange(0, 100)
+            progress.setLabelText(self.tr("Saving Animation [{0} Frames]").format(self.last_result.n_iterations))
+            canceled = False
+            def save_callback(i, n):
+                if progress.wasCanceled():
+                    nonlocal canceled
+                    canceled = True
+                    raise StopIteration()
+                progress.setValue((i+1)/n*100)
+                QCoreApplication.processEvents()
+            self.show_history_animation(self.last_result)
+            # plt.rcParams["savefig.dpi"] = 120.0
+            if "*.gif" in format_str:
+                if not ImageMagickWriter.isAvailable():
+                    self.msg_box.setWindowTitle(self.tr("Error"))
+                    self.msg_box.setText(self.tr("ImageMagick is not installed, please download and install it from its offical website (https://imagemagick.org/index.php)."))
+                    self.msg_box.exec_()
+                else:
+                    self.animation.save(filename, writer="imagemagick", fps=30, progress_callback=save_callback)
+            elif "*.mp4" in format_str:
+                if not FFMpegWriter.isAvailable():
+                    self.msg_box.setWindowTitle(self.tr("Error"))
+                    self.msg_box.setText(self.tr("FFMpeg is not installed, please download and install it from its offical website (https://ffmpeg.org/)."))
+                    self.msg_box.exec_()
+                else:
+                    self.animation.save(filename, writer="ffmpeg", fps=30, progress_callback=save_callback)
+            # plt.rcParams["savefig.dpi"] = 300.0
+            if not canceled:
+                progress.setValue(100)
