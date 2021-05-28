@@ -20,7 +20,7 @@ class EMMAResultChart(QDialog):
         flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
         super().__init__(parent=parent, f=flags)
         self.setWindowTitle(self.tr("EMMA Result Chart"))
-        self.figure = plt.figure(figsize=(6, 12))
+        self.figure = plt.figure(figsize=(6, 8))
         self.canvas = FigureCanvas(self.figure)
         self.toolbar = NavigationToolbar(self.canvas, self)
         self.main_layout = QGridLayout(self)
@@ -35,7 +35,7 @@ class EMMAResultChart(QDialog):
         self.control_group = QGroupBox(self.tr("Control"))
         self.control_group.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Fixed)
         self.control_layout = QGridLayout(self.control_group)
-        self.main_layout.addWidget(self.control_group, 2, 0)
+        self.main_layout.addWidget(self.control_group, 0, 1, 2, 1)
         self.scale_label = QLabel(self.tr("Scale"))
         self.scale_combo_box = QComboBox()
         self.scale_combo_box.addItems([name for key, name in self.supported_scales])
