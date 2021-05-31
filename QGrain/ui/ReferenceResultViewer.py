@@ -1,29 +1,23 @@
-__all__ = ["FittingResultViewer"]
+__all__ = ["ReferenceResultViewer"]
 
-import copy
 import logging
 import pickle
 import time
 import typing
-from collections import Counter
 
-import numpy as np
 import qtawesome as qta
 from PySide2.QtCore import Qt
-from PySide2.QtGui import QCursor, QFont
+from PySide2.QtGui import QCursor
 from PySide2.QtWidgets import (QAbstractItemView, QComboBox, QDialog,
                                QFileDialog, QGridLayout, QLabel, QMenu,
                                QMessageBox, QPushButton, QTableWidget,
                                QTableWidgetItem)
-from QGrain.algorithms import DistributionType
-from QGrain.algorithms.AsyncFittingWorker import AsyncFittingWorker
+from QGrain import DistributionType
 from QGrain.distributions import get_distance_func_by_name
-from QGrain.statistic import logarithmic
-from QGrain.charts.BoxplotChart import BoxplotChart
 from QGrain.charts.DistanceCurveChart import DistanceCurveChart
 from QGrain.charts.MixedDistributionChart import MixedDistributionChart
 from QGrain.models.ClassicResolverSetting import built_in_distances
-from QGrain.ssu import SSUResult, SSUTask
+from QGrain.ssu import SSUResult
 from QGrain.models.GrainSizeSample import GrainSizeSample
 
 class ReferenceResultViewer(QDialog):

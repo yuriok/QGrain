@@ -3,15 +3,13 @@ import typing
 import numpy as np
 import qtawesome as qta
 from PySide2.QtCore import Qt
-from PySide2.QtWidgets import (QComboBox, QDialog, QGridLayout, QGroupBox, QTabWidget,
+from PySide2.QtWidgets import (QComboBox, QDialog, QGridLayout, QGroupBox,
                                QLabel, QMessageBox, QPushButton, QSpinBox,
-                               QSplitter)
-from QGrain.algorithms import DistributionType
-from QGrain.algorithms.AsyncFittingWorker import AsyncFittingWorker
-from QGrain.statistic import logarithmic
+                               QSplitter, QTabWidget)
+from QGrain import DistributionType
 from QGrain.charts.MixedDistributionChart import MixedDistributionChart
-from QGrain.ssu import SSUResult, SSUTask
 from QGrain.models.GrainSizeDataset import GrainSizeDataset
+from QGrain.ssu import AsyncWorker, SSUResult, SSUTask
 from QGrain.ui.ClassicResolverSettingWidget import ClassicResolverSettingWidget
 from QGrain.ui.FittingResultViewer import FittingResultViewer
 from QGrain.ui.LoadDatasetDialog import LoadDatasetDialog
@@ -33,7 +31,7 @@ class SSUResolverPanel(QDialog):
         self.neural_setting = NNResolverSettingWidget(parent=self)
         self.manual_panel = ManualFittingPanel(parent=self)
         self.manual_panel.manual_fitting_finished.connect(self.on_fitting_succeeded)
-        self.async_worker = AsyncFittingWorker()
+        self.async_worker = AsyncWorker()
         self.async_worker.background_worker.task_succeeded.connect(self.on_fitting_succeeded)
         self.async_worker.background_worker.task_failed.connect(self.on_fitting_failed)
         self.msg_box = QMessageBox(self)

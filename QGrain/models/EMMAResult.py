@@ -1,7 +1,7 @@
 import typing
 
 import numpy as np
-from QGrain.algorithms import DistributionType
+from QGrain import DistributionType
 from QGrain.models.GrainSizeDataset import GrainSizeDataset
 from QGrain.models.NNResolverSetting import NNResolverSetting
 from QGrain.distributions import get_distance_func_by_name

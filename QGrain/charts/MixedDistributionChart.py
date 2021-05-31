@@ -10,8 +10,7 @@ from PySide2.QtCore import QCoreApplication, Qt
 from PySide2.QtWidgets import (QCheckBox, QComboBox, QDialog, QFileDialog,
                                QGridLayout, QLabel, QMessageBox,
                                QProgressDialog, QPushButton, QSpinBox)
-from QGrain.ssu import SSUResult
-from QGrain.models.MixedDistributionChartViewModel import MixedDistributionChartViewModel, get_demo_view_model
+from QGrain.ssu import SSUResult, SSUViewModel, get_demo_view_model
 from QGrain.statistic import convert_φ_to_μm
 
 
@@ -130,7 +129,7 @@ class MixedDistributionChart(QDialog):
         if self.last_result is not None:
             self.show_result(self.last_result)
 
-    def show_model(self, model: MixedDistributionChartViewModel, quick=False):
+    def show_model(self, model: SSUViewModel, quick=False):
         if self.animation is not None:
             self.animation._stop()
             self.animation = None

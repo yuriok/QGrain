@@ -5,9 +5,8 @@ import typing
 
 import numpy as np
 import torch
-from QGrain.algorithms import DistributionType
-from QGrain.algorithms.kernels import (KERNEL_MAP, NonparametricKernel,
-                                       get_distance_func_by_name)
+from QGrain import DistributionType
+from QGrain.kernels import KERNEL_MAP, NonparametricKernel, get_distance_func_by_name
 from QGrain.models.EMMAResult import EMMAResult
 from QGrain.models.GrainSizeDataset import GrainSizeDataset
 from QGrain.models.NNResolverSetting import NNResolverSetting

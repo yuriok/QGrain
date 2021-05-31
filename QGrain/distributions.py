@@ -14,7 +14,7 @@ from abc import ABC, abstractproperty, abstractstaticmethod
 from threading import Lock
 
 import numpy as np
-from QGrain.algorithms import DistributionType
+from QGrain import DistributionType
 from scipy.optimize import minimize
 from scipy.stats import norm, skewnorm, weibull_min
 
