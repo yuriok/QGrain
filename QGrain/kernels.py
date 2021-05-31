@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-from QGrain.algorithms import DistributionType
+from QGrain import DistributionType
 from QGrain.distributions import BaseDistribution
 from torch.nn import Module, Parameter, ReLU, Softmax
 

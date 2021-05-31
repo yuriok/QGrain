@@ -3,11 +3,14 @@ __all__ = ["NNResolverSettingWidget"]
 
 import pickle
 
+import numpy as np
 import torch
 from PySide2.QtCore import QSettings, Qt
-from PySide2.QtWidgets import QCheckBox, QComboBox, QDoubleSpinBox, QGridLayout, QLabel, QSpinBox, QDialog
-from QGrain.models.NNResolverSetting import NNResolverSetting, built_in_distances
-import numpy as np
+from PySide2.QtWidgets import (QCheckBox, QComboBox, QDialog, QDoubleSpinBox,
+                               QGridLayout, QLabel, QSpinBox)
+from QGrain.models.NNResolverSetting import (NNResolverSetting,
+                                             built_in_distances)
+
 
 class NNResolverSettingWidget(QDialog):
     def __init__(self, parent=None, filename=None, group=None):
@@ -147,6 +150,7 @@ class NNResolverSettingWidget(QDialog):
 
 if __name__ == "__main__":
     import sys
+
     from QGrain.entry import setup_app
     app, splash = setup_app()
     main = NNResolverSettingWidget()

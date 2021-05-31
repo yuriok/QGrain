@@ -1,5 +1,4 @@
 __all__ = ["ReadFileType",
-
            "get_type_by_name",
            "XLRDError",
            "ValueNotNumberError",

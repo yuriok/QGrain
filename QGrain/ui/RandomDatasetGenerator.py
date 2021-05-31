@@ -10,10 +10,10 @@ from PySide2.QtWidgets import (QDialog, QDoubleSpinBox, QFileDialog,
                                QGridLayout, QGroupBox, QLabel, QProgressBar,
                                QPushButton, QSizePolicy, QSpinBox, QWidget)
 from QGrain import QGRAIN_VERSION
-from QGrain.charts.MixedDistributionChart import MixedDistributionChart
 from QGrain.artificial import (LACUSTRINE, LOESS, ArtificialComponent,
-                                      ArtificialDataset, ArtificialSample,
-                                      RandomSetting, get_random_dataset)
+                               ArtificialDataset, ArtificialSample,
+                               RandomSetting, get_random_dataset)
+from QGrain.charts.MixedDistributionChart import MixedDistributionChart
 from QGrain.use_excel import column_to_char, prepare_styles
 
 

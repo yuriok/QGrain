@@ -3,12 +3,11 @@ __all__ = ["ArtificialComponent", "ArtificialSample", "ArtificialDataset"]
 import typing
 
 import numpy as np
-from QGrain.artificial._param import *
+from QGrain.artificial import *
+from QGrain.ssu import SSUViewModel
 from QGrain.models.GrainSizeSample import GrainSizeSample
-from QGrain.models.MixedDistributionChartViewModel import MixedDistributionChartViewModel
 from QGrain.statistic import convert_μm_to_φ, convert_φ_to_μm
 from scipy.stats import skewnorm
-
 
 class ArtificialComponent:
     def __init__(self, classes_μm: np.ndarray, classes_φ: np.ndarray,
@@ -101,7 +100,7 @@ class ArtificialSample:
         distributions = [component.distribution for component in self.components]
         fractions = [component.fraction for component in self.components]
 
-        model = MixedDistributionChartViewModel(self.classes_φ, self.distribution,
+        model = SSUViewModel(self.classes_φ, self.distribution,
                                         self.distribution, distributions, fractions,
                                         title=self.name, component_prefix="AC")
         return model
