@@ -742,7 +742,7 @@ if __name__ == "__main__":
     import sys
 
     from QGrain.entry import setup_app
-    from QGrain.models.artificial import get_random_sample
+    from QGrain.artificial import get_random_sample
 
     app, splash = setup_app()
     main = ManualFittingPanel()

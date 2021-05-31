@@ -11,7 +11,7 @@ from QGrain.algorithms import DistributionType
 from QGrain.algorithms.AsyncFittingWorker import AsyncFittingWorker
 from QGrain.statistic import logarithmic
 from QGrain.charts.MixedDistributionChart import MixedDistributionChart
-from QGrain.models.artificial import ArtificialSample
+from QGrain.artificial import ArtificialSample
 from QGrain.models.FittingResult import FittingResult
 from QGrain.models.FittingTask import FittingTask
 from QGrain.ui.ClassicResolverSettingWidget import ClassicResolverSettingWidget

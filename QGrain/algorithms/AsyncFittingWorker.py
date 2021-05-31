@@ -60,7 +60,7 @@ if __name__ == "__main__":
     from PySide2.QtWidgets import QApplication
     from QGrain.algorithms import DistributionType
     from QGrain.charts.MixedDistributionChart import MixedDistributionChart
-    from QGrain.models.artificial import get_random_sample
+    from QGrain.artificial import get_random_sample
     from QGrain.models.NNResolverSetting import NNResolverSetting
     app = QApplication(sys.argv)
     canvas = MixedDistributionChart()
