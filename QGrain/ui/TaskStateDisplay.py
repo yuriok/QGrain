@@ -6,7 +6,7 @@ from PySide2.QtGui import (QBrush, QColor, QPainter, QPaintEvent, QPen,
 from PySide2.QtWidgets import (QGridLayout, QLabel, QScrollArea, QSizePolicy,
                                QWidget)
 from QGrain.algorithms import FittingState
-from QGrain.models.FittingTask import FittingTask
+from QGrain.ssu import SSUTask
 
 
 class TaskStateBubble(QWidget):
@@ -125,7 +125,7 @@ class TaskStateDisplay(QWidget):
 
         self.setMinimumWidth(600)
 
-    def set_tasks(self, tasks: typing.List[FittingTask]):
+    def set_tasks(self, tasks: typing.List[SSUTask]):
         self.task_list = tasks
         self.bubble_panel.set_tasks([task.sample.name for task in tasks])
 

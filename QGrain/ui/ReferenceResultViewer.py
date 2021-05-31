@@ -23,9 +23,8 @@ from QGrain.charts.BoxplotChart import BoxplotChart
 from QGrain.charts.DistanceCurveChart import DistanceCurveChart
 from QGrain.charts.MixedDistributionChart import MixedDistributionChart
 from QGrain.models.ClassicResolverSetting import built_in_distances
-from QGrain.models.FittingResult import FittingResult
+from QGrain.ssu import SSUResult, SSUTask
 from QGrain.models.GrainSizeSample import GrainSizeSample
-from QGrain.models.FittingTask import FittingTask
 
 class ReferenceResultViewer(QDialog):
     PAGE_ROWS = 20
@@ -225,7 +224,7 @@ class ReferenceResultViewer(QDialog):
         else:
             raise NotImplementedError(distribution_type)
 
-    def add_result(self, result: FittingResult):
+    def add_result(self, result: SSUResult):
         if self.n_results == 0 or \
             (self.page_index == self.n_pages - 1 and \
             divmod(self.n_results, self.PAGE_ROWS)[-1] != 0):
@@ -237,7 +236,7 @@ class ReferenceResultViewer(QDialog):
         if need_update:
             self.update_page(self.page_index)
 
-    def add_results(self, results: typing.List[FittingResult]):
+    def add_results(self, results: typing.List[SSUResult]):
         if self.n_results == 0 or \
             (self.page_index == self.n_pages - 1 and \
             divmod(self.n_results, self.PAGE_ROWS)[-1] != 0):
@@ -249,20 +248,20 @@ class ReferenceResultViewer(QDialog):
         if need_update:
             self.update_page(self.page_index)
 
-    def mark_results(self, results: typing.List[FittingResult]):
+    def mark_results(self, results: typing.List[SSUResult]):
         for result in results:
             self.__reference_map[result.uuid] = result
 
         self.update_page(self.page_index)
 
-    def unmark_results(self, results: typing.List[FittingResult]):
+    def unmark_results(self, results: typing.List[SSUResult]):
         for result in results:
             if result.uuid in self.__reference_map:
                 self.__reference_map.pop(result.uuid)
 
         self.update_page(self.page_index)
 
-    def add_references(self, results: typing.List[FittingResult]):
+    def add_references(self, results: typing.List[SSUResult]):
         self.add_results(results)
         self.mark_results(results)
 
@@ -324,7 +323,7 @@ class ReferenceResultViewer(QDialog):
             valid = True
             if isinstance(results, list):
                 for result in results:
-                    if not isinstance(result, FittingResult):
+                    if not isinstance(result, SSUResult):
                         valid = False
                         break
             else:
@@ -348,7 +347,7 @@ class ReferenceResultViewer(QDialog):
         with open(filename, "wb") as f:
             pickle.dump(self.__fitting_results, f)
 
-    def find_similar(self, target: GrainSizeSample, ref_results: typing.List[FittingResult]):
+    def find_similar(self, target: GrainSizeSample, ref_results: typing.List[SSUResult]):
         assert len(ref_results) != 0
         # sample_moments = logarithmic(sample.classes_φ, sample.distribution)
         # keys_to_check = ["mean", "std", "skewness", "kurtosis"]

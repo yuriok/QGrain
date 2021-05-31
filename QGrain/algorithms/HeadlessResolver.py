@@ -6,8 +6,8 @@ from multiprocessing.managers import DictProxy, ListProxy, Value
 
 from QGrain.algorithms.BaseDistribution import BaseDistribution
 from QGrain.algorithms.DistributionType import DistributionType
-from QGrain.models.FittingResult import FittingResult
-from QGrain.models.FittingTask import FittingTask
+from QGrain.models.FittingResult import SSUResult
+from QGrain.models.FittingTask import SSUTask
 from QGrain.models.ProcessedSampleData import ProcessedSampleData
 from QGrain.resolvers.BaseResolver import BaseResolver, FittingState
 from scipy.optimize import OptimizeResult
@@ -65,10 +65,10 @@ class HeadlessResolver(BaseResolver):
     def global_iteration_callback(self, fitted_params: typing.Iterable[float], function_value: float, accept: bool):
         pass
 
-    def on_fitting_succeeded(self, algorithm_result: OptimizeResult, fitting_result: FittingResult):
+    def on_fitting_succeeded(self, algorithm_result: OptimizeResult, fitting_result: SSUResult):
         self.task_state[self.__current_task.uuid] = FittingState.Succeeded
 
-    def execute_task(self, task: FittingTask):
+    def execute_task(self, task: SSUTask):
         self.__current_task = task
         self.change_settings(task.algorithm_settings)
         self._distribution = BaseDistribution.get_distribution(task.distribution_type, task.component_number)
@@ -128,7 +128,7 @@ if __name__ == "__main__":
     def add_task():
         artificial_sample = generator.get_random_sample()
         sample_data = GrainSizeSample("Generated Sample", artificial_sample.classes_μm, artificial_sample.classes_φ, artificial_sample.distribution)
-        task = FittingTask(sample_data, DistributionType.Normal, 3)
+        task = SSUTask(sample_data, DistributionType.Normal, 3)
         task_queue.put(task)
         global task_count
         task_count += 1
