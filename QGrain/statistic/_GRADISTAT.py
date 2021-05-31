@@ -922,7 +922,7 @@ def get_all_statistic(classes_μm: np.ndarray,
     return result
 
 if __name__ == "__main__":
-    from QGrain.models.artificial import get_random_sample
+    from QGrain.artificial import get_random_sample
     sample = get_random_sample()
     all_statistic = get_all_statistic(sample.classes_μm, sample.classes_φ, sample.distribution)
     print(all_statistic)

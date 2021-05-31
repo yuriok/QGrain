@@ -249,7 +249,7 @@ if __name__ == "__main__":
     from QGrain.algorithms import DistributionType
     from QGrain.charts.EMMAResultChart import EMMAResultChart
     from QGrain.entry import setup_app
-    from QGrain.models.artificial import get_random_dataset, get_random_sample
+    from QGrain.artificial import get_random_dataset, get_random_sample
     from QGrain.models.GrainSizeDataset import GrainSizeDataset
     from QGrain.models.NNResolverSetting import NNResolverSetting
     sample = get_random_sample(n_classes=51)
