@@ -26,7 +26,7 @@ from PySide2.QtWidgets import (QAction, QDialog, QDoubleSpinBox, QFileDialog,
                                QStyleOptionGraphicsItem, QWidget)
 from QGrain.algorithms import DistributionType
 from QGrain.algorithms.AsyncFittingWorker import AsyncFittingWorker
-from QGrain.algorithms.distributions import (BaseDistribution,
+from QGrain.distributions import (BaseDistribution,
                                              NormalDistribution,
                                              SkewNormalDistribution,
                                              WeibullDistribution)
@@ -551,7 +551,7 @@ from PySide2.QtWidgets import (QDialog, QDoubleSpinBox, QGridLayout, QGroupBox,
                                QSplitter)
 from QGrain.algorithms import DistributionType
 from QGrain.algorithms.AsyncFittingWorker import AsyncFittingWorker
-from QGrain.algorithms.distributions import (BaseDistribution,
+from QGrain.distributions import (BaseDistribution,
                                              NormalDistribution,
                                              SkewNormalDistribution,
                                              WeibullDistribution)

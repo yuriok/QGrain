@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 
 import numpy as np
 from QGrain.algorithms import DistributionType
-from QGrain.algorithms.distributions import BaseDistribution, get_distance_func_by_name
+from QGrain.distributions import BaseDistribution, get_distance_func_by_name
 from QGrain.statistic import logarithmic, geometric
 from QGrain.ssu import SSUTask
 from QGrain.models.GrainSizeSample import GrainSizeSample

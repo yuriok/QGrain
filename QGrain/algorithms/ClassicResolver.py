@@ -5,7 +5,7 @@ import typing
 
 import numpy as np
 from QGrain.algorithms import FittingState
-from QGrain.algorithms.distributions import BaseDistribution, get_distance_func_by_name
+from QGrain.distributions import BaseDistribution, get_distance_func_by_name
 from QGrain.models.ClassicResolverSetting import ClassicResolverSetting
 from QGrain.ssu import SSUResult, SSUTask
 from scipy.optimize import OptimizeResult, basinhopping, minimize
