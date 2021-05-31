@@ -1,4 +1,3 @@
-from QGrain.ui.ReferenceResultViewer import ReferenceResultViewer
 import logging
 import typing
 
@@ -6,17 +5,18 @@ import numpy as np
 import qtawesome as qta
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import (QComboBox, QDialog, QGridLayout, QGroupBox,
-                               QLabel, QPushButton, QSpinBox, QSplitter, QTabWidget)
-from QGrain.algorithms import DistributionType
-from QGrain.algorithms.AsyncFittingWorker import AsyncFittingWorker
-from QGrain.statistic import logarithmic
-from QGrain.charts.MixedDistributionChart import MixedDistributionChart
+                               QLabel, QPushButton, QSpinBox, QSplitter,
+                               QTabWidget)
+from QGrain import DistributionType
 from QGrain.artificial import ArtificialSample
-from QGrain.ssu import SSUResult, SSUTask
+from QGrain.charts.MixedDistributionChart import MixedDistributionChart
+from QGrain.ssu import AsyncWorker, SSUResult, SSUTask
+from QGrain.statistic import logarithmic
 from QGrain.ui.ClassicResolverSettingWidget import ClassicResolverSettingWidget
 from QGrain.ui.FittingResultViewer import FittingResultViewer
 from QGrain.ui.NNResolverSettingWidget import NNResolverSettingWidget
 from QGrain.ui.RandomDatasetGenerator import RandomDatasetGenerator
+from QGrain.ui.ReferenceResultViewer import ReferenceResultViewer
 
 
 class SSUAlgorithmTesterPanel(QDialog):
@@ -29,7 +29,7 @@ class SSUAlgorithmTesterPanel(QDialog):
         self.generate_setting = RandomDatasetGenerator(parent=self)
         self.classic_setting = ClassicResolverSettingWidget(parent=self)
         self.neural_setting = NNResolverSettingWidget(parent=self)
-        self.async_worker = AsyncFittingWorker()
+        self.async_worker = AsyncWorker()
         self.async_worker.background_worker.task_succeeded.connect(self.on_fitting_succeeded)
         self.async_worker.background_worker.task_failed.connect(self.on_fitting_failed)
         self.task_table = {}
@@ -275,6 +275,7 @@ class SSUAlgorithmTesterPanel(QDialog):
 
 if __name__ == "__main__":
     import sys
+
     from QGrain.entry import setup_app
     app, splash = setup_app()
     main = SSUAlgorithmTesterPanel()

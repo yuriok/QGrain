@@ -9,29 +9,28 @@ from collections import Counter
 from uuid import UUID
 
 import numpy as np
+import openpyxl
 import qtawesome as qta
-from PySide2.QtCore import QCoreApplication, Qt, Signal, QTimer
+from PySide2.QtCore import QCoreApplication, Qt, QTimer, Signal
 from PySide2.QtGui import QCursor
 from PySide2.QtWidgets import (QAbstractItemView, QComboBox, QDialog,
                                QFileDialog, QGridLayout, QLabel, QMenu,
                                QMessageBox, QPushButton, QTableWidget,
                                QTableWidgetItem)
-from QGrain.algorithms import DistributionType
-from QGrain.algorithms.AsyncFittingWorker import AsyncFittingWorker
-from QGrain.distributions import get_distance_func_by_name
-from QGrain.statistic import logarithmic
+from QGrain import QGRAIN_VERSION, DistributionType
 from QGrain.charts.BoxplotChart import BoxplotChart
 from QGrain.charts.DistanceCurveChart import DistanceCurveChart
 from QGrain.charts.MixedDistributionChart import MixedDistributionChart
 from QGrain.charts.SSUTypicalComponentChart import SSUTypicalComponentChart
+from QGrain.distributions import get_distance_func_by_name
 from QGrain.models.ClassicResolverSetting import built_in_distances
-from QGrain.ssu import SSUResult, SSUTask
 from QGrain.models.GrainSizeSample import GrainSizeSample
+from QGrain.ssu import AsyncWorker, SSUResult, SSUTask
+from QGrain.statistic import logarithmic
 from QGrain.ui.ReferenceResultViewer import ReferenceResultViewer
+from QGrain.use_excel import column_to_char, prepare_styles
 from sklearn.cluster import KMeans
-import openpyxl
-from QGrain.use_excel import prepare_styles, column_to_char
-from QGrain import QGRAIN_VERSION
+
 
 class FittingResultViewer(QDialog):
     PAGE_ROWS = 20
@@ -49,7 +48,7 @@ class FittingResultViewer(QDialog):
         self.distance_chart = DistanceCurveChart(parent=self, toolbar=True)
         self.mixed_distribution_chart = MixedDistributionChart(parent=self, toolbar=True, use_animation=True)
         self.file_dialog = QFileDialog(parent=self)
-        self.async_worker = AsyncFittingWorker()
+        self.async_worker = AsyncWorker()
         self.async_worker.background_worker.task_succeeded.connect(self.on_fitting_succeeded)
         self.async_worker.background_worker.task_failed.connect(self.on_fitting_failed)
         self.update_page_list()
