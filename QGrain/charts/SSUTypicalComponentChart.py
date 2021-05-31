@@ -10,7 +10,7 @@ from PySide2.QtWidgets import (QComboBox, QDialog, QDoubleSpinBox, QFileDialog, 
                                QLabel, QMessageBox, QPushButton, QSpinBox)
 from QGrain import QGRAIN_VERSION
 from QGrain.statistic import convert_φ_to_μm
-from QGrain.models.FittingResult import FittingResult
+from QGrain.ssu import SSUResult
 from QGrain.models.GrainSizeSample import GrainSizeSample
 from QGrain.use_excel import column_to_char, prepare_styles
 from sklearn.cluster import OPTICS
@@ -79,7 +79,7 @@ class SSUTypicalComponentChart(QDialog):
         self.main_layout.addWidget(self.update_chart_button, 5, 0, 1, 2)
         self.main_layout.addWidget(self.save_typical_button, 5, 2, 1, 2)
 
-        self.last_results = None # type: list[FittingResult]
+        self.last_results = None # type: list[SSUResult]
         self.data_to_clustering = None
         self.stacked_components = None
         self.msg_box = QMessageBox(self)

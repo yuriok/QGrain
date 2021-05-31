@@ -5,8 +5,7 @@ import torch
 from QGrain.algorithms import FittingState
 from QGrain.algorithms import DistributionType
 from QGrain.algorithms.kernels import get_distance_func_by_name, get_initial_guess, KERNEL_MAP, N_PARAMS_MAP
-from QGrain.models.FittingResult import FittingResult
-from QGrain.models.FittingTask import FittingTask
+from QGrain.ssu import SSUResult, SSUTask
 from QGrain.models.NNResolverSetting import NNResolverSetting
 from torch.nn import Module, Parameter, ReLU, Softmax
 
@@ -60,7 +59,7 @@ class NNResolver:
     def __init__(self):
         pass
 
-    def try_fit(self, task: FittingTask):
+    def try_fit(self, task: SSUTask):
         assert task.resolver == "neural"
         if task.resolver_setting is None:
             setting = NNResolverSetting()
@@ -108,5 +107,5 @@ class NNResolver:
         time_spent = time.time() - start
         finished_params = model.params
         history.append(finished_params)
-        result = FittingResult(task, finished_params, history=history, time_spent=time_spent)
+        result = SSUResult(task, finished_params, history=history, time_spent=time_spent)
         return FittingState.Succeeded, result

@@ -556,12 +556,11 @@ from QGrain.algorithms.distributions import (BaseDistribution,
                                              SkewNormalDistribution,
                                              WeibullDistribution)
 from QGrain.charts.MixedDistributionChart import MixedDistributionChart
-from QGrain.models.FittingResult import FittingResult
-from QGrain.models.FittingTask import FittingTask
+from QGrain.ssu import SSUResult, SSUTask
 
 
 class ManualFittingPanel(QDialog):
-    manual_fitting_finished = Signal(FittingResult)
+    manual_fitting_finished = Signal(SSUResult)
     def __init__(self, parent=None):
         super().__init__(parent=parent, f=Qt.Window)
         self.setWindowTitle(self.tr("SSU Manual Fitting Panel"))
@@ -694,10 +693,10 @@ class ManualFittingPanel(QDialog):
             self.confirm_button.setEnabled(False)
             self.hide()
 
-    def on_task_failed(self, info: str, task: FittingTask):
+    def on_task_failed(self, info: str, task: SSUTask):
         self.show_error(info)
 
-    def on_task_succeeded(self, result: FittingResult):
+    def on_task_succeeded(self, result: SSUResult):
         self.chart.show_model(result.view_model)
         self.last_result = result
         self.confirm_button.setEnabled(True)
@@ -724,17 +723,17 @@ class ManualFittingPanel(QDialog):
                 return
         # print(reference)
         initial_guess = BaseDistribution.get_initial_guess(self.last_task.distribution_type, reference, fractions=fractions)
-        result = FittingResult(self.last_task, initial_guess)
+        result = SSUResult(self.last_task, initial_guess)
         self.chart.show_model(result.view_model, quick=True)
 
-    def setup_task(self, task: FittingTask):
+    def setup_task(self, task: SSUTask):
         self.last_task = task
         self.try_button.setEnabled(True)
         if self.n_components != task.n_components:
             self.change_n_components(task.n_components)
         reference, fractions = self.expected
         initial_guess = BaseDistribution.get_initial_guess(task.distribution_type, reference, fractions=fractions)
-        result = FittingResult(task, initial_guess)
+        result = SSUResult(task, initial_guess)
         self.chart.show_model(result.view_model, quick=False)
 
 
@@ -749,6 +748,6 @@ if __name__ == "__main__":
     main.show()
     splash.finish(main)
     sample = get_random_sample().sample_to_fit
-    task = FittingTask(sample, DistributionType.Normal, 3)
+    task = SSUTask(sample, DistributionType.Normal, 3)
     main.setup_task(task)
     sys.exit(app.exec_())

@@ -7,8 +7,7 @@ import numpy as np
 from QGrain.algorithms import FittingState
 from QGrain.algorithms.distributions import BaseDistribution, get_distance_func_by_name
 from QGrain.models.ClassicResolverSetting import ClassicResolverSetting
-from QGrain.models.FittingResult import FittingResult
-from QGrain.models.FittingTask import FittingTask
+from QGrain.ssu import SSUResult, SSUTask
 from scipy.optimize import OptimizeResult, basinhopping, minimize
 
 
@@ -44,7 +43,7 @@ class ClassicResolver:
     def global_iteration_callback(self, fitted_params: typing.Iterable[float], function_value: float, accept: bool):
         pass
 
-    def on_fitting_succeeded(self, algorithm_result: OptimizeResult, fitting_result: FittingResult):
+    def on_fitting_succeeded(self, algorithm_result: OptimizeResult, fitting_result: SSUResult):
         pass
 
     def get_weights(self, classes_φ, distribution):
@@ -59,7 +58,7 @@ class ClassicResolver:
             weights[peak - 2: peak + 2] += 2.0
         return weights
 
-    def try_fit(self, task: FittingTask) -> typing.Tuple[FittingState, object]:
+    def try_fit(self, task: SSUTask) -> typing.Tuple[FittingState, object]:
         assert task.resolver == "classic"
         history = []
         distribution = BaseDistribution.get_distribution(task.distribution_type, task.n_components)
@@ -152,7 +151,7 @@ class ClassicResolver:
             finish_time = time.time()
             self.on_fitting_finished()
             time_spent = finish_time - start_time
-            fitting_result = FittingResult(task, FLO_result.x, history=history, time_spent=time_spent)
+            fitting_result = SSUResult(task, FLO_result.x, history=history, time_spent=time_spent)
             self.on_fitting_succeeded(FLO_result, fitting_result)
             return FittingState.Succeeded, fitting_result
         else:
