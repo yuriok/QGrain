@@ -12,7 +12,7 @@ import xlwt
 
 from QGrain.algorithms import DistributionType
 from QGrain.models.DataLoader import ReadFileType
-from QGrain.models.FittingResult import FittingResult
+from QGrain.ssu import SSUResult
 
 QGRAIN_ROOT_PATH = os.path.dirname(os.path.dirname(__file__))
 
@@ -53,7 +53,7 @@ class DataWriter:
             raise NotImplementedError(distribution_type)
 
     def try_save_data(self, filename: str, file_type: ReadFileType,
-                      results: List[FittingResult], draw_charts: bool):
+                      results: List[SSUResult], draw_charts: bool):
         if filename is None or filename == "":
             raise ValueError(filename)
 
@@ -67,7 +67,7 @@ class DataWriter:
             raise NotImplementedError(file_type)
 
     # If type is csv, it will use built-in csv module to handle this request.
-    def try_save_as_csv(self, filename: str, results: List[FittingResult]):
+    def try_save_as_csv(self, filename: str, results: List[SSUResult]):
         # use `newline=""` to avoid redundant newlines
         with open(filename, "w", newline="", encoding="utf-8") as f:
             w = csv.writer(f)
@@ -113,7 +113,7 @@ class DataWriter:
                             row.append("")
                 w.writerow(row)
 
-    def try_save_as_excel(self, filename: str, results: List[FittingResult],
+    def try_save_as_excel(self, filename: str, results: List[SSUResult],
                           is_xlsx: bool, draw_charts: bool):
         # the local func to check the value validation
         # must block unaccepted values before calling the `write` func of worksheet

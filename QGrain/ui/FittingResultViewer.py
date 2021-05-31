@@ -25,8 +25,7 @@ from QGrain.charts.DistanceCurveChart import DistanceCurveChart
 from QGrain.charts.MixedDistributionChart import MixedDistributionChart
 from QGrain.charts.SSUTypicalComponentChart import SSUTypicalComponentChart
 from QGrain.models.ClassicResolverSetting import built_in_distances
-from QGrain.models.FittingResult import FittingResult
-from QGrain.models.FittingTask import FittingTask
+from QGrain.ssu import SSUResult, SSUTask
 from QGrain.models.GrainSizeSample import GrainSizeSample
 from QGrain.ui.ReferenceResultViewer import ReferenceResultViewer
 from sklearn.cluster import KMeans
@@ -37,12 +36,12 @@ from QGrain import QGRAIN_VERSION
 class FittingResultViewer(QDialog):
     PAGE_ROWS = 20
     logger = logging.getLogger("root.QGrain.ui.FittingResultViewer")
-    result_marked = Signal(FittingResult)
+    result_marked = Signal(SSUResult)
     def __init__(self, reference_viewer: ReferenceResultViewer, parent=None):
         super().__init__(parent=parent, f=Qt.Window)
         self.setWindowTitle(self.tr("SSU Fitting Result Viewer"))
-        self.__fitting_results = [] # type: list[FittingResult]
-        self.retry_tasks = {} # type: dict[UUID, FittingTask]
+        self.__fitting_results = [] # type: list[SSUResult]
+        self.retry_tasks = {} # type: dict[UUID, SSUTask]
         self.__reference_viewer = reference_viewer
         self.init_ui()
         self.boxplot_chart = BoxplotChart(parent=self, toolbar=True)
@@ -273,7 +272,7 @@ class FittingResultViewer(QDialog):
         else:
             raise NotImplementedError(distribution_type)
 
-    def add_result(self, result: FittingResult):
+    def add_result(self, result: SSUResult):
         if self.n_results == 0 or \
             (self.page_index == self.n_pages - 1 and \
             divmod(self.n_results, self.PAGE_ROWS)[-1] != 0):
@@ -285,7 +284,7 @@ class FittingResultViewer(QDialog):
         if need_update:
             self.update_page(self.page_index)
 
-    def add_results(self, results: typing.List[FittingResult]):
+    def add_results(self, results: typing.List[SSUResult]):
         if self.n_results == 0 or \
             (self.page_index == self.n_pages - 1 and \
             divmod(self.n_results, self.PAGE_ROWS)[-1] != 0):
@@ -346,11 +345,11 @@ class FittingResultViewer(QDialog):
         if filename is None or filename == "":
             return
         with open(filename, "rb") as f:
-            results = pickle.load(f) # type: list[FittingResult]
+            results = pickle.load(f) # type: list[SSUResult]
             valid = True
             if isinstance(results, list):
                 for result in results:
-                    if not isinstance(result, FittingResult):
+                    if not isinstance(result, SSUResult):
                         valid = False
                         break
             else:
@@ -618,7 +617,7 @@ class FittingResultViewer(QDialog):
         except Exception as e:
             self.show_error(self.tr("Error raised while save SSU results to Excel file.\n    {0}").format(e.__str__()))
 
-    def on_fitting_succeeded(self, result: FittingResult):
+    def on_fitting_succeeded(self, result: SSUResult):
         result_replace_index = self.retry_tasks[result.task.uuid]
         self.__fitting_results[result_replace_index] = result
         self.retry_tasks.pop(result.task.uuid)
@@ -629,7 +628,7 @@ class FittingResultViewer(QDialog):
         self.logger.debug(f"Retried task succeeded, sample name={result.task.sample.name}, distribution_type={result.task.distribution_type.name}, n_components={result.task.n_components}")
         self.update_page(self.page_index)
 
-    def on_fitting_failed(self, failed_info: str, task: FittingTask):
+    def on_fitting_failed(self, failed_info: str, task: SSUTask):
         # necessary to remove it from the dict
         self.retry_tasks.pop(task.uuid)
         if len(self.retry_tasks) == 0:
@@ -653,7 +652,7 @@ class FittingResultViewer(QDialog):
                 ref_result = query
             keys = ["mean", "std", "skewness"]
             reference = [{key: comp.logarithmic_moments[key] for key in keys} for comp in ref_result.components]
-            task = FittingTask(result.sample,
+            task = SSUTask(result.sample,
                                ref_result.distribution_type,
                                ref_result.n_components,
                                resolver=ref_result.task.resolver,
@@ -664,7 +663,7 @@ class FittingResultViewer(QDialog):
             self.async_worker.execute_task(task)
 
     def degrade_results(self):
-        degrade_results = [] # type: list[FittingResult]
+        degrade_results = [] # type: list[SSUResult]
         degrade_indexes = [] # type: list[int]
         for i, result in enumerate(self.__fitting_results):
             for component in result.components:
@@ -691,7 +690,7 @@ class FittingResultViewer(QDialog):
                     reference.append(dict(mean=component.logarithmic_moments["mean"],
                                           std=component.logarithmic_moments["std"],
                                           skewness=component.logarithmic_moments["skewness"]))
-            task = FittingTask(result.sample,
+            task = SSUTask(result.sample,
                                result.distribution_type,
                                result.n_components-n_redundant if result.n_components > n_redundant else 1,
                                resolver=result.task.resolver,
@@ -701,7 +700,7 @@ class FittingResultViewer(QDialog):
             self.retry_tasks[task.uuid] = index
             self.async_worker.execute_task(task)
 
-    def ask_deal_outliers(self, outlier_results: typing.List[FittingResult],
+    def ask_deal_outliers(self, outlier_results: typing.List[SSUResult],
                           outlier_indexes: typing.List[int]):
         assert len(outlier_indexes) == len(outlier_results)
         if len(outlier_results) == 0:

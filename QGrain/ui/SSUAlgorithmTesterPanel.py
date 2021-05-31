@@ -12,8 +12,7 @@ from QGrain.algorithms.AsyncFittingWorker import AsyncFittingWorker
 from QGrain.statistic import logarithmic
 from QGrain.charts.MixedDistributionChart import MixedDistributionChart
 from QGrain.artificial import ArtificialSample
-from QGrain.models.FittingResult import FittingResult
-from QGrain.models.FittingTask import FittingTask
+from QGrain.ssu import SSUResult, SSUTask
 from QGrain.ui.ClassicResolverSettingWidget import ClassicResolverSettingWidget
 from QGrain.ui.FittingResultViewer import FittingResultViewer
 from QGrain.ui.NNResolverSettingWidget import NNResolverSettingWidget
@@ -155,10 +154,10 @@ class SSUAlgorithmTesterPanel(QDialog):
     def update_sample_chart(self, artificial_sample: ArtificialSample):
         self.sample_chart.show_model(artificial_sample.view_model)
 
-    def update_fitting_chart(self, fitting_result: FittingResult):
+    def update_fitting_chart(self, fitting_result: SSUResult):
         self.result_chart.show_model(fitting_result.view_model)
 
-    def evaluate_result(self, artificial_sample: ArtificialSample, fitting_result: FittingResult, tolerance: float=0.1):
+    def evaluate_result(self, artificial_sample: ArtificialSample, fitting_result: SSUResult, tolerance: float=0.1):
         component_errors = []
         unqualified = False
         for target, result in zip(artificial_sample.components, fitting_result.components):
@@ -178,9 +177,9 @@ class SSUAlgorithmTesterPanel(QDialog):
         else:
             setting = self.neural_setting.setting
         sample = artificial_sample.sample_to_fit
-        query = self.reference_view.query_reference(sample) # type: FittingResult
+        query = self.reference_view.query_reference(sample) # type: SSUResult
         if not query_ref or query is None:
-            task = FittingTask(sample,
+            task = SSUTask(sample,
                                self.distribution_type,
                                self.n_components,
                                resolver=resolver,
@@ -188,7 +187,7 @@ class SSUAlgorithmTesterPanel(QDialog):
         else:
             keys = ["mean", "std", "skewness"]
             reference = [{key: comp.logarithmic_moments[key] for key in keys} for comp in query.components]
-            task = FittingTask(sample,
+            task = SSUTask(sample,
                                query.distribution_type,
                                query.n_components,
                                resolver=resolver,
@@ -210,7 +209,7 @@ class SSUAlgorithmTesterPanel(QDialog):
         self.mean_n_iterations_display.setText(f"{mean_n_iterations:0.2f}")
         self.mean_distance_display.setText(f"{mean_distance:0.4f}")
 
-    def on_fitting_succeeded(self, fitting_result: FittingResult):
+    def on_fitting_succeeded(self, fitting_result: SSUResult):
         # update chart
         self.update_sample_chart(self.task_table[fitting_result.task.uuid][0])
         self.update_fitting_chart(fitting_result)
@@ -231,7 +230,7 @@ class SSUAlgorithmTesterPanel(QDialog):
         self.continuous_test_button.setEnabled(True)
         self.clear_stats_button.setEnabled(True)
 
-    def on_fitting_failed(self, failed_info: str, task: FittingTask):
+    def on_fitting_failed(self, failed_info: str, task: SSUTask):
         self.failed_task_ids.append(task.uuid)
         self.update_stats()
         if self.__continuous_flag:

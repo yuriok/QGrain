@@ -10,8 +10,7 @@ from QGrain.algorithms import DistributionType
 from QGrain.algorithms.AsyncFittingWorker import AsyncFittingWorker
 from QGrain.statistic import logarithmic
 from QGrain.charts.MixedDistributionChart import MixedDistributionChart
-from QGrain.models.FittingResult import FittingResult
-from QGrain.models.FittingTask import FittingTask
+from QGrain.ssu import SSUResult, SSUTask
 from QGrain.models.GrainSizeDataset import GrainSizeDataset
 from QGrain.ui.ClassicResolverSettingWidget import ClassicResolverSettingWidget
 from QGrain.ui.FittingResultViewer import FittingResultViewer
@@ -199,9 +198,9 @@ class SSUResolverPanel(QDialog):
         else:
             setting = self.neural_setting.setting
 
-        query = self.reference_view.query_reference(sample) # type: FittingResult
+        query = self.reference_view.query_reference(sample) # type: SSUResult
         if not query_ref or query is None:
-            task = FittingTask(sample,
+            task = SSUTask(sample,
                                self.distribution_type,
                                self.n_components,
                                resolver=resolver,
@@ -209,7 +208,7 @@ class SSUResolverPanel(QDialog):
         else:
             keys = ["mean", "std", "skewness"]
             reference = [{key: comp.logarithmic_moments[key] for key in keys} for comp in query.components]
-            task = FittingTask(sample,
+            task = SSUTask(sample,
                                query.distribution_type,
                                query.n_components,
                                resolver=resolver,
@@ -217,7 +216,7 @@ class SSUResolverPanel(QDialog):
                                reference=reference)
         return task
 
-    def on_fitting_succeeded(self, fitting_result: FittingResult):
+    def on_fitting_succeeded(self, fitting_result: SSUResult):
         # update chart
         self.result_chart.show_model(fitting_result.view_model)
         self.result_view.add_result(fitting_result)
@@ -235,7 +234,7 @@ class SSUResolverPanel(QDialog):
         self.test_previous_button.setEnabled(True)
         self.test_next_button.setEnabled(True)
 
-    def on_fitting_failed(self, failed_info: str, task: FittingTask):
+    def on_fitting_failed(self, failed_info: str, task: SSUTask):
         self.failed_task_ids.append(task.uuid)
         if self.__continuous_flag:
             self.on_continuous_test_clicked()

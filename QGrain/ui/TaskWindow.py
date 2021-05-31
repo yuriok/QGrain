@@ -11,7 +11,7 @@ from PySide2.QtWidgets import (QComboBox, QDialog, QGridLayout, QLabel,
                                QSpinBox, QTableWidget, QWidget)
 
 from QGrain.algorithms import DistributionType
-from QGrain.models.FittingResult import FittingResult
+from QGrain.ssu import SSUResult
 from QGrain.models.SampleDataset import GrainSizeDataset
 from QGrain.ui.AlgorithmSettingWidget import ClassicResolverSettingWidget
 
@@ -228,7 +228,7 @@ class TaskWindow(QDialog):
 
     def on_task_state_updated(self, tasks: List[FittingTask],
                               states: Dict[UUID, ProcessState],
-                              succeeded_results: Dict[UUID, FittingResult]):
+                              succeeded_results: Dict[UUID, SSUResult]):
         assert tasks is not None
         assert states is not None
         assert succeeded_results is not None

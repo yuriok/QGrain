@@ -4,18 +4,17 @@ from PySide2.QtCore import QObject, QThread, Signal, Slot
 from QGrain.algorithms import FittingState
 from QGrain.algorithms.ClassicResolver import ClassicResolver
 from QGrain.algorithms.NNResolver import NNResolver
-from QGrain.models.FittingResult import FittingResult
-from QGrain.models.FittingTask import FittingTask
+from QGrain.ssu import SSUResult, SSUTask
 
 
 class BackgroundWorker(QObject):
-    task_succeeded = Signal(FittingResult)
-    task_failed = Signal(str, FittingTask)
+    task_succeeded = Signal(SSUResult)
+    task_failed = Signal(str, SSUTask)
 
     def __init__(self):
         super().__init__()
 
-    def on_task_started(self, task: FittingTask):
+    def on_task_started(self, task: SSUTask):
         if task.resolver == "classic":
             resolver = ClassicResolver()
         elif task.resolver == "neural":
@@ -32,7 +31,7 @@ class BackgroundWorker(QObject):
             self.task_failed.emit(f"Unknown Exception Raised: {type(e)}, {e.__str__()}, {traceback.format_exc()}", task)
 
 class AsyncFittingWorker(QObject):
-    task_started = Signal(FittingTask)
+    task_started = Signal(SSUTask)
 
     def __init__(self):
         super().__init__()
@@ -44,14 +43,14 @@ class AsyncFittingWorker(QObject):
         self.background_worker.task_succeeded.connect(self.on_task_succeeded)
         self.working_thread.start()
 
-    def on_task_succeeded(self, fitting_result: FittingResult):
+    def on_task_succeeded(self, fitting_result: SSUResult):
         pass
 
     def on_task_failed(self, failed_info, task):
         pass
 
     @Slot()
-    def execute_task(self, task: FittingTask):
+    def execute_task(self, task: SSUTask):
         self.task_started.emit(task)
 
 if __name__ == "__main__":
@@ -59,15 +58,15 @@ if __name__ == "__main__":
 
     from PySide2.QtWidgets import QApplication
     from QGrain.algorithms import DistributionType
-    from QGrain.charts.MixedDistributionChart import MixedDistributionChart
     from QGrain.artificial import get_random_sample
+    from QGrain.charts.MixedDistributionChart import MixedDistributionChart
     from QGrain.models.NNResolverSetting import NNResolverSetting
     app = QApplication(sys.argv)
     canvas = MixedDistributionChart()
     canvas.show_demo()
 
     worker = AsyncFittingWorker()
-    def show(result: FittingResult):
+    def show(result: SSUResult):
         print(result.sample.name)
         print(result.n_iterations)
         # canvas.show_models(result.view_models, repeat=False)
@@ -83,7 +82,7 @@ if __name__ == "__main__":
     timer.setSingleShot(True)
     def do_test():
         sample = get_random_sample()
-        task = FittingTask(sample.sample_to_fit, DistributionType.Normal, 3,
+        task = SSUTask(sample.sample_to_fit, DistributionType.Normal, 3,
                            resolver_setting=NNResolverSetting(min_niter=1000, max_niter=3000),
                            reference=reference, resolver="neural")
         worker.execute_task(task)

@@ -1,16 +1,35 @@
-__all__ = ["ComponentFittingResult", "FittingResult"]
+__all__ = ["SSUTask", "ComponentResult", "SSUResult"]
 
 import copy
 import typing
-from uuid import UUID, uuid4
+from uuid import uuid4, UUID
 
 import numpy as np
 from QGrain.algorithms import DistributionType
-from QGrain.algorithms.distributions import BaseDistribution, get_distance_func_by_name
-from QGrain.statistic import logarithmic, geometric
-from QGrain.ssu import SSUTask
+from QGrain.algorithms.distributions import (BaseDistribution,
+                                             get_distance_func_by_name)
+from QGrain.models.FittingTask import SSUTask
 from QGrain.models.GrainSizeSample import GrainSizeSample
 from QGrain.models.MixedDistributionChartViewModel import MixedDistributionChartViewModel
+from QGrain.statistic import geometric, logarithmic
+
+
+class SSUTask:
+    def __init__(self, sample: GrainSizeSample,
+                 distribution_type: DistributionType,
+                 n_components: int,
+                 resolver="classic",
+                 resolver_setting=None,
+                 initial_guess=None,
+                 reference=None):
+        self.uuid = uuid4()
+        self.sample = sample
+        self.distribution_type = distribution_type
+        self.n_components = n_components
+        self.resolver = resolver
+        self.resolver_setting = resolver_setting
+        self.initial_guess = initial_guess
+        self.reference = reference
 
 INVALID_STATISTIC = dict(mean=np.nan, std=np.nan, skewness=np.nan, kurtosis=np.nan)
 
@@ -193,3 +212,4 @@ class SSUResult:
     def view_models(self) -> typing.Iterable[MixedDistributionChartViewModel]:
         for result in self.history:
             yield result.view_model
+

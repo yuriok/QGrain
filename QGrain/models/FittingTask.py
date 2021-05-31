@@ -1,4 +1,4 @@
-__all__ = ["FittingTask"]
+__all__ = ["SSUTask"]
 
 from uuid import uuid4
 
@@ -6,7 +6,7 @@ from QGrain.algorithms import DistributionType
 from QGrain.models.GrainSizeSample import GrainSizeSample
 
 
-class FittingTask:
+class SSUTask:
     def __init__(self, sample: GrainSizeSample,
                  distribution_type: DistributionType,
                  n_components: int,
