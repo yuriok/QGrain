@@ -41,7 +41,7 @@ class EMMAResolverPanel(QDialog):
         self.__dataset = None # type: GrainSizeDataset
         self.__result_list = [] # type: list[EMMAResult]
         self.neural_setting = NNResolverSettingWidget(parent=self)
-        self.neural_setting.setting = NNResolverSetting(min_niter=100, max_niter=200, tol=1e-5, ftol=1e-8, lr=1e-1)
+        self.neural_setting.setting = NNResolverSetting(min_niter=800, max_niter=1200, tol=1e-6, ftol=1e-8, lr=5e-2)
         self.load_dialog = LoadDatasetDialog(parent=self)
         self.load_dialog.dataset_loaded.connect(self.on_dataset_loaded)
         self.file_dialog = QFileDialog(parent=self)
