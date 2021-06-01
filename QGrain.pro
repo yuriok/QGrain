@@ -1,17 +1,16 @@
 
-SOURCES=C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\entry.py\
+SOURCES=C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\distributions.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\emma.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\entry.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\kernels.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ssu.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\use_excel.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\__init__.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\__main__.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\algorithms\AsyncFittingWorker.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\algorithms\ClassicResolver.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\algorithms\distributions.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\algorithms\emma.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\algorithms\HeadlessResolver.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\algorithms\kernels.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\algorithms\moments.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\algorithms\NNResolver.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\algorithms\__init__.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\artificial\_param.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\artificial\_sample.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\artificial\_setting.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\artificial\__init__.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\charts\BoxplotChart.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\charts\CumulativeCurveChart.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\charts\diagrams.py\
@@ -25,19 +24,17 @@ SOURCES=C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\entry.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\charts\PCAResultChart.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\charts\SSUTypicalComponentChart.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\charts\__init__.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\artificial.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\ClassicResolverSetting.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\DataLayoutSetting.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\DatasetLoader.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\EMMAResult.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\FittingResult.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\FittingTask.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\GrainSizeDataset.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\GrainSizeSample.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\MixedDistributionChartViewModel.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\NNResolverSetting.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\_DataWriter.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\models\__init__.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\statistic\_base.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\statistic\_GRADISTAT.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\statistic\__init__.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\AboutPanel.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\AppSettingPanel.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\ClassicResolverSettingWidget.py\
@@ -54,8 +51,8 @@ SOURCES=C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\entry.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\ReferenceResultViewer.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\SSUAlgorithmTesterPanel.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\SSUResolverPanel.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\TaskStateDisplay.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\TaskWindow.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\__init__.py
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\__init__.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\__TaskStateDisplay.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\__TaskWindow.py
 TRANSLATIONS=en.ts zh_CN.ts
 CODECFORTR=UTF-8
