@@ -1341,153 +1341,158 @@
 <context>
     <name>EMMAResultChart</name>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="21"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="22"/>
         <source>EMMA Result Chart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="30"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="31"/>
         <source>Log-linear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="31"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="32"/>
         <source>Log</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="QGrain/charts/EMMAResultChart.py" line="32"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="33"/>
         <source>φ</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="33"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="34"/>
         <source>Linear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="34"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="35"/>
         <source>Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="38"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="39"/>
         <source>Scale</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="288"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="289"/>
         <source>Distance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="53"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="54"/>
         <source>Animated</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="57"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="58"/>
         <source>Interval [ms]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="64"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="65"/>
         <source>Repeat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="67"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="68"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="QGrain/charts/EMMAResultChart.py" line="108"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="109"/>
         <source>Grain-size [μm]</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="QGrain/charts/EMMAResultChart.py" line="103"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="104"/>
         <source>Ln(grain-size in μm)</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="QGrain/charts/EMMAResultChart.py" line="105"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="106"/>
         <source>Grain-size [φ]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="112"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="113"/>
         <source>Frequency</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="271"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="272"/>
         <source>Iteration index</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="273"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="274"/>
         <source>Distance history</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="282"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="283"/>
         <source>Class-wise distances</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="311"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="312"/>
         <source>Sample index</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="289"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="290"/>
         <source>Sample-wise distances</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="323"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="324"/>
         <source>EM{0}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="302"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="303"/>
         <source>End-members</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="312"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="313"/>
         <source>Proportion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="361"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="386"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="362"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="380"/>
         <source>ImageMagick is not installed, please download and install it from its offical website (https://imagemagick.org/index.php).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="365"/>
-        <source>Save the animation of EMMA result</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="366"/>
-        <source>Graphics Interchange Format (*.gif)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="371"/>
         <source>Saving Animation [{0} Frames]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="313"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="314"/>
         <source>EM abundances</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="361"/>
+        <source>Save the animation of this EMMA result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="361"/>
+        <source>MPEG-4 Video File (*.mp4);;Graphics Interchange Format (*.gif)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="387"/>
+        <source>FFMpeg is not installed, please download and install it from its offical website (https://ffmpeg.org/).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1512,444 +1517,444 @@
 <context>
     <name>FittingResultViewer</name>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="43"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="41"/>
         <source>SSU Fitting Result Viewer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="82"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="80"/>
         <source>Previous</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="83"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="81"/>
         <source>Click to back to the previous page.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="207"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="205"/>
         <source>Page {0}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="88"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="86"/>
         <source>Next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="89"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="87"/>
         <source>Click to jump to the next page.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="731"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="729"/>
         <source>Distance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="96"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="94"/>
         <source>It&apos;s the function to calculate the difference (on the contrary, similarity) between two samples.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="106"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="104"/>
         <source>Mark Selection(s) as Reference</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="108"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="106"/>
         <source>Remove Selection(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="110"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="108"/>
         <source>Plot Loss Chart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="112"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="110"/>
         <source>Plot Distribution Chart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="114"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="112"/>
         <source>Plot Distribution Chart (Animation)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="136"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="134"/>
         <source>Load Binary Dump</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="138"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="136"/>
         <source>Save Binary Dump</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="140"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="138"/>
         <source>Save Excel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="158"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="156"/>
         <source>Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="161"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="159"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="164"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="162"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="486"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="484"/>
         <source>Resolver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="484"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="482"/>
         <source>Distribution Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="485"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="483"/>
         <source>N_components</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="491"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="489"/>
         <source>N_iterations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="490"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="488"/>
         <source>Spent Time [s]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="242"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="240"/>
         <source>Final Distance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="243"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="241"/>
         <source>Has Reference</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="254"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="252"/>
         <source>Yes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="254"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="252"/>
         <source>No</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="269"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="267"/>
         <source>Normal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="271"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="269"/>
         <source>Weibull</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="273"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="271"/>
         <source>Skew Normal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="344"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="342"/>
         <source>Select a binary dump file of SSU results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="382"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="380"/>
         <source>Binary dump (*.dump)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="375"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="373"/>
         <source>The binary dump file is invalid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="859"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="857"/>
         <source>There is not any result in the list.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="381"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="379"/>
         <source>Save the SSU results to binary dump file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="68"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="66"/>
         <source>Progress</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="116"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="114"/>
         <source>Detect Outliers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="117"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="115"/>
         <source>Check Final Distances</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="119"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="117"/>
         <source>Check Component Mean</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="121"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="119"/>
         <source>Check Component STD</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="123"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="121"/>
         <source>Check Component Skewness</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="125"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="123"/>
         <source>Check Component Kurtosis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="127"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="125"/>
         <source>Check Component Fractions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="129"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="127"/>
         <source>Degrade Results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="131"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="129"/>
         <source>Try Align Components</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="134"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="132"/>
         <source>Analyse Typical Components</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="142"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="140"/>
         <source>Save Excel (Force Alignment)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="371"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="369"/>
         <source>The results in the dump file has inconsistent grain-size classes with that in your list.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="817"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="815"/>
         <source>{0} Component(s): {1}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="818"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="816"/>
         <source>N_components distribution of Results:
 {0}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="441"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="439"/>
         <source>README</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="465"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="463"/>
         <source>Sample Distributions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="581"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="579"/>
         <source>Sample Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="481"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="479"/>
         <source>Information of Fitting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="487"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="485"/>
         <source>Resolver Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="488"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="486"/>
         <source>Initial Guess</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="489"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="487"/>
         <source>Reference</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="493"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="491"/>
         <source>Final Distance [log10MSE]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="508"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="506"/>
         <source>Default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="510"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="508"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="515"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="513"/>
         <source>Statistic Moments</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="520"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="518"/>
         <source>Proportion</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="QGrain/ui/FittingResultViewer.py" line="768"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="766"/>
         <source>Mean [φ]</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="QGrain/ui/FittingResultViewer.py" line="522"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="520"/>
         <source>Mean [μm]</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="QGrain/ui/FittingResultViewer.py" line="768"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="766"/>
         <source>STD [φ]</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="QGrain/ui/FittingResultViewer.py" line="524"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="522"/>
         <source>STD [μm]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="768"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="766"/>
         <source>Skewness</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="769"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="767"/>
         <source>Kurtosis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="568"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="566"/>
         <source>C{0}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="552"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="550"/>
         <source>Unmixed Components</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="572"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="570"/>
         <source>Sum</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="580"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="578"/>
         <source>Unmixed EM{0}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="608"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="606"/>
         <source>There is not any SSU result.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="611"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="609"/>
         <source>Choose a filename to save SSU Results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="617"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="615"/>
         <source>SSU results have been saved to:
     {0}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="619"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="617"/>
         <source>Error raised while save SSU results to Excel file.
     {0}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="682"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="680"/>
         <source>Tasks to be retried: {0}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="637"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="635"/>
         <source>Failed to retry task, sample name={0}.
 {1}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="708"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="706"/>
         <source>No fitting result was evaluated as an outlier.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="679"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="677"/>
         <source>The results below should be degrade (have a redundant component:
     {0}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="710"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="708"/>
         <source>The fitting results have the component that its fraction is near zero:
     {0}
 How to deal with them?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="862"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="860"/>
         <source>The results in list are too less.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="767"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="765"/>
         <source>Mean</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="767"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="765"/>
         <source>STD</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="QGrain/ui/FittingResultViewer.py" line="836"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="834"/>
         <source>Grain-size [μm]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/FittingResultViewer.py" line="837"/>
+        <location filename="QGrain/ui/FittingResultViewer.py" line="835"/>
         <source>Frequency</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2403,38 +2408,33 @@ Gravel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="372"/>
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="379"/>
         <source>Mean Desc.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="377"/>
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="384"/>
         <source>Skewness</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="378"/>
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="385"/>
         <source>Skew. Desc.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="379"/>
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="386"/>
         <source>Kurtosis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="380"/>
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="387"/>
         <source>Kurt. Desc.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="435"/>
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="449"/>
         <source>Select Filename</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="369"/>
-        <source>Moments</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2453,29 +2453,29 @@ Gravel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="432"/>
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="446"/>
         <source>Dataset has not been loaded.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="399"/>
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="406"/>
         <source>Sample Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="442"/>
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="456"/>
         <source>The summary of this dataset has been saved to:
     {0}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="444"/>
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="458"/>
         <source>Error raised while save summary to Excel file.
     {0}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="343"/>
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="350"/>
         <source>README</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2510,36 +2510,41 @@ Gravel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="214"/>
-        <source>Method of moments</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="375"/>
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="382"/>
         <source>STD (Sorting)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="376"/>
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="383"/>
         <source>Sorting Desc.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="382"/>
-        <source>Textural Group
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="214"/>
+        <source>Method of statistic moments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="389"/>
+        <source>Group
 (Folk, 1954)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="383"/>
-        <source>Textural Group
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="390"/>
+        <source>Group
 Symbol (Blott &amp; Pye, 2012)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="385"/>
-        <source>Textural Group
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="392"/>
+        <source>Group
 (Blott &amp; Pye, 2012)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="376"/>
+        <source>Parameters and Groups</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2808,57 +2813,57 @@ Symbol (Blott &amp; Pye, 2012)</source>
 <context>
     <name>ManualFittingPanel</name>
     <message>
-        <location filename="QGrain/ui/ManualFittingPanel.py" line="567"/>
+        <location filename="QGrain/ui/ManualFittingPanel.py" line="22"/>
         <source>SSU Manual Fitting Panel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ManualFittingPanel.py" line="584"/>
+        <location filename="QGrain/ui/ManualFittingPanel.py" line="39"/>
         <source>Chart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ManualFittingPanel.py" line="589"/>
+        <location filename="QGrain/ui/ManualFittingPanel.py" line="44"/>
         <source>Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ManualFittingPanel.py" line="591"/>
+        <location filename="QGrain/ui/ManualFittingPanel.py" line="46"/>
         <source>Try</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ManualFittingPanel.py" line="594"/>
+        <location filename="QGrain/ui/ManualFittingPanel.py" line="49"/>
         <source>Confirm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ManualFittingPanel.py" line="616"/>
+        <location filename="QGrain/ui/ManualFittingPanel.py" line="71"/>
         <source>Mean</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ManualFittingPanel.py" line="616"/>
+        <location filename="QGrain/ui/ManualFittingPanel.py" line="71"/>
         <source>STD</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ManualFittingPanel.py" line="617"/>
+        <location filename="QGrain/ui/ManualFittingPanel.py" line="72"/>
         <source>Weight</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ManualFittingPanel.py" line="675"/>
+        <location filename="QGrain/ui/ManualFittingPanel.py" line="130"/>
         <source>Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ManualFittingPanel.py" line="678"/>
+        <location filename="QGrain/ui/ManualFittingPanel.py" line="133"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ManualFittingPanel.py" line="681"/>
+        <location filename="QGrain/ui/ManualFittingPanel.py" line="136"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2866,195 +2871,200 @@ Symbol (Blott &amp; Pye, 2012)</source>
 <context>
     <name>MixedDistributionChart</name>
     <message>
-        <location filename="QGrain/charts/MixedDistributionChart.py" line="19"/>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="21"/>
         <source>Mixed Distribution Chart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/MixedDistributionChart.py" line="29"/>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="31"/>
         <source>Log-linear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/MixedDistributionChart.py" line="30"/>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="32"/>
         <source>Log</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="QGrain/charts/MixedDistributionChart.py" line="31"/>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="33"/>
         <source>φ</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/MixedDistributionChart.py" line="32"/>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="34"/>
         <source>Linear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/MixedDistributionChart.py" line="34"/>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="36"/>
         <source>Scale</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/MixedDistributionChart.py" line="40"/>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="42"/>
         <source>Interval [ms]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/MixedDistributionChart.py" line="47"/>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="49"/>
         <source>Repeat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/MixedDistributionChart.py" line="50"/>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="52"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/MixedDistributionChart.py" line="101"/>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="103"/>
         <source>Frequency</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/MixedDistributionChart.py" line="150"/>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="152"/>
         <source>Target</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/MixedDistributionChart.py" line="155"/>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="157"/>
         <source>Mixed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/MixedDistributionChart.py" line="225"/>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="251"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/MixedDistributionChart.py" line="226"/>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="245"/>
         <source>ImageMagick is not installed, please download and install it from its offical website (https://imagemagick.org/index.php).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/charts/MixedDistributionChart.py" line="229"/>
-        <source>Select Filename</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/charts/MixedDistributionChart.py" line="230"/>
-        <source>Graphics Interchange Format (*.gif)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/charts/MixedDistributionChart.py" line="235"/>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="231"/>
         <source>Saving Animation [{0} Frames]</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="QGrain/charts/MixedDistributionChart.py" line="97"/>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="99"/>
         <source>Grain-size [μm]</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="QGrain/charts/MixedDistributionChart.py" line="92"/>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="94"/>
         <source>Ln(grain-size in μm)</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="QGrain/charts/MixedDistributionChart.py" line="94"/>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="96"/>
         <source>Grain-size [φ]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="226"/>
+        <source>Save the animation of this SSU result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="226"/>
+        <source>MPEG-4 Video File (*.mp4);;Graphics Interchange Format (*.gif)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/charts/MixedDistributionChart.py" line="252"/>
+        <source>FFMpeg is not installed, please download and install it from its offical website (https://ffmpeg.org/).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>NNResolverSettingWidget</name>
     <message>
-        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="14"/>
+        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="17"/>
         <source>NN Resolver Setting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="26"/>
+        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="29"/>
         <source>Device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="27"/>
+        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="30"/>
         <source>The neural netowrk framwork, pytorch, also can use the GPU of Nvidia to do calculations.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="35"/>
+        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="38"/>
         <source>Distance (Loss) Function</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="44"/>
+        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="47"/>
         <source>Minimum N&lt;sub&gt;iteration&lt;/sub&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="45"/>
+        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="48"/>
         <source>Minimum number of iterations to perform</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="52"/>
+        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="55"/>
         <source>Maximum N&lt;sub&gt;iteration&lt;/sub&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="53"/>
+        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="56"/>
         <source>Maximum number of iterations to perform</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="98"/>
+        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="101"/>
         <source>-lg(loss&lt;sub&gt;tolerance&lt;/sub&gt;)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="61"/>
+        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="64"/>
         <source>Controls the tolerance of the loss function for termination.</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="68"/>
+        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="71"/>
         <source>-lg(δ&lt;sub&gt;loss&lt;/sub&gt;)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="69"/>
+        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="72"/>
         <source>Controls the precision goal for the value of loss function in the stopping criterion.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="76"/>
+        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="79"/>
         <source>Learning Rate (x10&lt;sup&gt;-3&lt;/sup&gt;)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="77"/>
+        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="80"/>
         <source>The learning rate of the neural network to update its weights from gradient.</source>
         <translation type="unfinished"></translation>
     </message>
     <message encoding="UTF-8">
-        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="85"/>
+        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="88"/>
         <source>-lg(δ&lt;sub&gt;eps&lt;/sub&gt;)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="86"/>
+        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="89"/>
         <source>Controls the step size used for numerical approximation of the jacobian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="96"/>
+        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="99"/>
         <source>-loss&lt;sub&gt;tolerance&lt;/sub&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="36"/>
+        <location filename="QGrain/ui/NNResolverSettingWidget.py" line="39"/>
         <source>It&apos;s the function to calculate the difference (on the contrary, similarity) between two samples.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3185,38 +3195,13 @@ Symbol (Blott &amp; Pye, 2012)</source>
 <context>
     <name>RandomDatasetGenerator</name>
     <message>
-        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="159"/>
-        <source>Random Dataset Generator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="QGrain/ui/RandomDatasetGenerator.py" line="180"/>
         <source>Sampling</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message encoding="UTF-8">
-        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="183"/>
-        <source>Minimum Size (μm)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message encoding="UTF-8">
-        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="188"/>
-        <source>Maximum Size (μm)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="197"/>
-        <source>N Classes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="QGrain/ui/RandomDatasetGenerator.py" line="201"/>
         <source>Data Precision</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="209"/>
-        <source>N Components</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3227,11 +3212,6 @@ Symbol (Blott &amp; Pye, 2012)</source>
     <message>
         <location filename="QGrain/ui/RandomDatasetGenerator.py" line="220"/>
         <source>Save</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="223"/>
-        <source>Sample Number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3265,12 +3245,12 @@ Symbol (Blott &amp; Pye, 2012)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="485"/>
+        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="486"/>
         <source>Task finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="512"/>
+        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="513"/>
         <source>Artificial Sample</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3285,32 +3265,22 @@ Symbol (Blott &amp; Pye, 2012)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="382"/>
-        <source>Random settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="QGrain/ui/RandomDatasetGenerator.py" line="383"/>
         <source>Parameter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="439"/>
+        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="440"/>
         <source>Shape</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="439"/>
-        <source>Loc</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="439"/>
+        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="440"/>
         <source>Scale</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="439"/>
+        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="440"/>
         <source>Weight</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3325,7 +3295,7 @@ Symbol (Blott &amp; Pye, 2012)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="461"/>
+        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="462"/>
         <source>Component{0}</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3335,7 +3305,7 @@ Symbol (Blott &amp; Pye, 2012)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="462"/>
+        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="463"/>
         <source>Sample Name</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3344,17 +3314,52 @@ Symbol (Blott &amp; Pye, 2012)</source>
         <source>Parameters</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="159"/>
+        <source>Dataset Generator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="183"/>
+        <source>Minimum Size [μm]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="188"/>
+        <source>Maximum Size [μm]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="197"/>
+        <source>N&lt;sub&gt;classes&lt;/sub&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="209"/>
+        <source>N&lt;sub&gt;components&lt;/sub&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="223"/>
+        <source>N&lt;sub&gt;samples&lt;/sub&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="382"/>
+        <source>Random Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="440"/>
+        <source>Location</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RandomGeneratorComponentWidget</name>
     <message>
         <location filename="QGrain/ui/RandomDatasetGenerator.py" line="63"/>
         <source>Shape</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="77"/>
-        <source>Loc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3367,191 +3372,196 @@ Symbol (Blott &amp; Pye, 2012)</source>
         <source>Weight</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="QGrain/ui/RandomDatasetGenerator.py" line="77"/>
+        <source>Location</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ReferenceResultViewer</name>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="35"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="28"/>
         <source>SSU Reference Result Viewer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="57"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="50"/>
         <source>Previous</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="58"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="51"/>
         <source>Click to back to the previous page.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="156"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="149"/>
         <source>Page {0}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="63"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="56"/>
         <source>Next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="64"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="57"/>
         <source>Click to jump to the next page.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="70"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="63"/>
         <source>Distance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="71"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="64"/>
         <source>It&apos;s the function to calculate the difference (on the contrary, similarity) between two samples.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="79"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="72"/>
         <source>Mark Selection(s) as Reference</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="81"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="74"/>
         <source>Unmark Selection(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="83"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="76"/>
         <source>Remove Selection(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="85"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="78"/>
         <source>Plot Loss Chart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="87"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="80"/>
         <source>Plot Distribution Chart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="89"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="82"/>
         <source>Plot Distribution Chart (Animation)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="92"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="85"/>
         <source>Load Binary Dump</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="94"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="87"/>
         <source>Save Binary Dump</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="107"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="100"/>
         <source>Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="110"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="103"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="113"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="106"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="186"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="179"/>
         <source>Resolver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="187"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="180"/>
         <source>Distribution Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="188"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="181"/>
         <source>N_components</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="189"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="182"/>
         <source>N_iterations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="190"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="183"/>
         <source>Spent Time [s]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="191"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="184"/>
         <source>Final Distance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="192"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="185"/>
         <source>Has Reference</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="193"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="186"/>
         <source>Is Reference</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="206"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="199"/>
         <source>Yes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="206"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="199"/>
         <source>No</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="221"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="214"/>
         <source>Normal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="223"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="216"/>
         <source>Weibull</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="225"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="218"/>
         <source>Skew Normal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="318"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="311"/>
         <source>Select a binary dump file of SSU results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="345"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="338"/>
         <source>Binary dump (*.dump)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="338"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="331"/>
         <source>The binary dump file is invalid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="342"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="335"/>
         <source>There is not any result in the list.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ReferenceResultViewer.py" line="344"/>
+        <location filename="QGrain/ui/ReferenceResultViewer.py" line="337"/>
         <source>Save the SSU results to binary dump file</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3559,127 +3569,127 @@ Symbol (Blott &amp; Pye, 2012)</source>
 <context>
     <name>SSUAlgorithmTesterPanel</name>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="26"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="25"/>
         <source>Algorithm Tester</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="27"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="26"/>
         <source>Normal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="28"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="27"/>
         <source>Weibull</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="29"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="28"/>
         <source>Skew Normal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="48"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="47"/>
         <source>Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="50"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="49"/>
         <source>Resolver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="55"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="54"/>
         <source>Configure Sample Generating</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="57"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="56"/>
         <source>Configure Fitting Algorithm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="61"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="60"/>
         <source>Distribution Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="64"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="63"/>
         <source>Component Number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="72"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="71"/>
         <source>Single Test</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="270"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="269"/>
         <source>Continuous Test</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="82"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="81"/>
         <source>Chart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="91"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="90"/>
         <source>Total Tasks:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="93"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="92"/>
         <source>Failed Tasks:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="95"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="94"/>
         <source>Unqualified Tasks:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="103"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="102"/>
         <source>Mean Spent Time [s]:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="105"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="104"/>
         <source>Mean N&lt;sub&gt;iterations&lt;/sub&gt;:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="107"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="106"/>
         <source>Mean distance:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="272"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="271"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="78"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="77"/>
         <source>Clear Statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="89"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="88"/>
         <source>Statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="116"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="115"/>
         <source>Table</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="121"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="120"/>
         <source>Result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="122"/>
+        <location filename="QGrain/ui/SSUAlgorithmTesterPanel.py" line="121"/>
         <source>Reference</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3687,142 +3697,142 @@ Symbol (Blott &amp; Pye, 2012)</source>
 <context>
     <name>SSUResolverPanel</name>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="27"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="24"/>
         <source>SSU Resolver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="28"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="25"/>
         <source>Normal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="29"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="26"/>
         <source>Weibull</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="30"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="27"/>
         <source>Skew Normal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="54"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="51"/>
         <source>Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="56"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="53"/>
         <source>Resolver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="61"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="58"/>
         <source>Load Dataset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="63"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="60"/>
         <source>Configure Fitting Algorithm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="67"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="64"/>
         <source>Distribution Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="79"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="76"/>
         <source>N&lt;sub&gt;samples&lt;/sub&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="90"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="87"/>
         <source>Unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="83"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="80"/>
         <source>Sample Index</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="94"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="91"/>
         <source>Manual Test</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="97"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="94"/>
         <source>Load Reference</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="102"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="99"/>
         <source>Single Test</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="271"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="268"/>
         <source>Continuous Test</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="121"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="118"/>
         <source>Chart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="161"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="158"/>
         <source>Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="164"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="161"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="167"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="164"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="273"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="270"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="89"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="86"/>
         <source>Sample Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="111"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="108"/>
         <source>Test Previous</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="114"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="111"/>
         <source>Test Next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="127"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="124"/>
         <source>Table</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="132"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="129"/>
         <source>Result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="133"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="130"/>
         <source>Reference</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResolverPanel.py" line="70"/>
+        <location filename="QGrain/ui/SSUResolverPanel.py" line="67"/>
         <source>N&lt;sub&gt;components&lt;/sub&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4023,227 +4033,6 @@ Symbol (Blott &amp; Pye, 2012)</source>
         <location filename="QGrain/charts/SSUTypicalComponentChart.py" line="325"/>
         <source>Error raised while saving it to Excel file.
     {0}</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TaskStateBubble</name>
-    <message>
-        <location filename="QGrain/ui/TaskStateDisplay.py" line="35"/>
-        <source>Not Started</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskStateDisplay.py" line="37"/>
-        <source>Fitting</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskStateDisplay.py" line="39"/>
-        <source>Failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskStateDisplay.py" line="41"/>
-        <source>Succeeded</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TaskWindow</name>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="42"/>
-        <source>Task Initialization:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="46"/>
-        <source>From</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="47"/>
-        <source>Select the first sample you want to perform.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="49"/>
-        <source>To</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="50"/>
-        <source>Select the last sample you want to perform.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="57"/>
-        <source>Interval</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="58"/>
-        <source>Select the interval of each sample you want to perform.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="64"/>
-        <source>Minimum Component Number</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="65"/>
-        <source>Select the minimum component number you want to perform.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="68"/>
-        <source>Maximum Component Number</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="69"/>
-        <source>Select the maximum component number you want to perform.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="77"/>
-        <source>Distribution Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="78"/>
-        <source>Select the base distribution function of each component.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="80"/>
-        <source>Normal</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="81"/>
-        <source>Weibull</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="82"/>
-        <source>Gen. Weibull</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="92"/>
-        <source>Generate Tasks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="93"/>
-        <source>Click to generate the fitting tasks.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="96"/>
-        <source>Process State:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="100"/>
-        <source>Not Started</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="101"/>
-        <source>The number of not started tasks.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="106"/>
-        <source>Succeeded</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="107"/>
-        <source>The number of succeeded tasks.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="112"/>
-        <source>Failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="113"/>
-        <source>The number of failed tasks.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="118"/>
-        <source>Time Spent</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="119"/>
-        <source>The spent time of these fitting tasks.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="121"/>
-        <source>Time Left</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="122"/>
-        <source>The left time of these fitting tasks.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="313"/>
-        <source>Run</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="135"/>
-        <source>Click to run / pause these fitting tasks.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="137"/>
-        <source>Finish</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="138"/>
-        <source>Click to finish these fitting progress, record the succeeded results.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="147"/>
-        <source>The States of Fitting Tasks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="151"/>
-        <source>Warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="152"/>
-        <source>Are you sure to cancel the tasks?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="159"/>
-        <source>Info</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="160"/>
-        <source>Storage the left and failed tasks for the next processing?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/TaskWindow.py" line="285"/>
-        <source>Pause</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
