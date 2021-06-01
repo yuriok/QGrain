@@ -40,7 +40,7 @@ class NNResolverSettingWidget(QDialog):
         self.distance_label.setToolTip(self.tr("It's the function to calculate the difference (on the contrary, similarity) between two samples."))
         self.distance_combo_box = QComboBox()
         self.distance_combo_box.addItems(built_in_distances)
-        self.distance_combo_box.setCurrentText("log10MSE")
+        # self.distance_combo_box.setCurrentText("log10MSE")
         self.distance_combo_box.currentTextChanged.connect(self.on_distance_changed)
         self.main_layout.addWidget(self.distance_label, 1, 0)
         self.main_layout.addWidget(self.distance_combo_box, 1, 1)
