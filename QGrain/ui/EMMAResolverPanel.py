@@ -17,7 +17,7 @@ from QGrain.emma import EMMAResolver
 from QGrain.statistic import convert_μm_to_φ
 from QGrain.charts.EMMAResultChart import EMMAResultChart
 from QGrain.charts.EMMASummaryChart import EMMASummaryChart
-from QGrain.models.EMMAResult import EMMAResult
+from QGrain.emma import EMMAResult
 from QGrain.models.GrainSizeDataset import GrainSizeDataset
 from QGrain.models.NNResolverSetting import NNResolverSetting
 from QGrain.ui.LoadDatasetDialog import LoadDatasetDialog
