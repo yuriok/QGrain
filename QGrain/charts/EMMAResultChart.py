@@ -10,7 +10,7 @@ from PySide2.QtWidgets import (QCheckBox, QComboBox, QDialog, QFileDialog,
                                QGridLayout, QGroupBox, QLabel, QMessageBox,
                                QProgressDialog, QPushButton, QSizePolicy,
                                QSpinBox)
-from QGrain.models.EMMAResult import EMMAResult
+from QGrain.emma import EMMAResult
 from QGrain.statistic import convert_φ_to_μm
 
 
