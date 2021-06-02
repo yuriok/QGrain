@@ -5,7 +5,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import QComboBox, QDialog, QGridLayout, QLabel
-from QGrain.models.EMMAResult import EMMAResult
+from QGrain.emma import EMMAResult
 
 
 class EMMASummaryChart(QDialog):
