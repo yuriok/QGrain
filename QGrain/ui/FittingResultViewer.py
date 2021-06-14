@@ -11,11 +11,11 @@ from uuid import UUID
 import numpy as np
 import openpyxl
 import qtawesome as qta
-from PySide2.QtCore import QCoreApplication, Qt, QTimer, Signal
+from PySide2.QtCore import QCoreApplication, QPoint, Qt, QTimer, Signal
 from PySide2.QtGui import QCursor
-from PySide2.QtWidgets import (QAbstractItemView, QComboBox, QDialog,
-                               QFileDialog, QGridLayout, QLabel, QMenu,
-                               QMessageBox, QPushButton, QTableWidget,
+from PySide2.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox,
+                               QDialog, QFileDialog, QGridLayout, QLabel,
+                               QMenu, QMessageBox, QPushButton, QTableWidget,
                                QTableWidgetItem)
 from QGrain import QGRAIN_VERSION, DistributionType
 from QGrain.charts.BoxplotChart import BoxplotChart
@@ -59,6 +59,7 @@ class FittingResultViewer(QDialog):
         self.outlier_msg_box = QMessageBox(self)
         self.outlier_msg_box.setWindowFlags(Qt.Drawer)
         self.outlier_msg_box.setStandardButtons(QMessageBox.Discard|QMessageBox.Retry|QMessageBox.Ignore)
+        self.outlier_msg_box.setDefaultButton(QMessageBox.Ignore)
         self.retry_progress_msg_box = QMessageBox()
         self.retry_progress_msg_box.setWindowFlags(Qt.CustomizeWindowHint|Qt.WindowTitleHint)
         self.retry_progress_msg_box.addButton(QMessageBox.Ok)
@@ -100,7 +101,6 @@ class FittingResultViewer(QDialog):
         self.main_layout.addWidget(self.distance_combo_box, 2, 1, 1, 2)
         self.menu = QMenu(self.data_table)
         self.menu.setShortcutAutoRepeat(True)
-
         self.mark_action = self.menu.addAction(qta.icon("mdi.marker-check"), self.tr("Mark Selection(s) as Reference"))
         self.mark_action.triggered.connect(self.mark_selections)
         self.remove_action = self.menu.addAction(qta.icon("fa.remove"), self.tr("Remove Selection(s)"))
@@ -144,7 +144,7 @@ class FittingResultViewer(QDialog):
         # otherwise, the shortcuts will not be triggered
         self.addActions(self.menu.actions())
 
-    def show_menu(self, pos):
+    def show_menu(self, pos: QPoint):
         self.menu.popup(QCursor.pos())
 
     def show_message(self, title: str, message: str):
@@ -705,8 +705,12 @@ class FittingResultViewer(QDialog):
         if len(outlier_results) == 0:
             self.show_info(self.tr("No fitting result was evaluated as an outlier."))
         else:
-            self.outlier_msg_box.setText(self.tr("The fitting results have the component that its fraction is near zero:\n    {0}\nHow to deal with them?").format(
-                    ", ".join([result.sample.name for result in outlier_results])))
+            if len(outlier_results) > 100:
+                self.outlier_msg_box.setText(self.tr("The fitting results have the component that its fraction is near zero:\n    {0}...(total {1} outliers)\nHow to deal with them?").format(
+                        ", ".join([result.sample.name for result in outlier_results[:100]]), len(outlier_results)))
+            else:
+                self.outlier_msg_box.setText(self.tr("The fitting results have the component that its fraction is near zero:\n    {0}\nHow to deal with them?").format(
+                        ", ".join([result.sample.name for result in outlier_results])))
             res = self.outlier_msg_box.exec_()
             if res == QMessageBox.Discard:
                 self.remove_results(outlier_indexes)
