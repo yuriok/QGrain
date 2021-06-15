@@ -111,6 +111,8 @@ class FittingResultViewer(QDialog):
         self.plot_distribution_chart_action.triggered.connect(self.show_distribution)
         self.plot_distribution_animation_action = self.menu.addAction(qta.icon("fa5s.chart-area"), self.tr("Plot Distribution Chart (Animation)"))
         self.plot_distribution_animation_action.triggered.connect(self.show_history_distribution)
+        self.detect_invalid_action = self.menu.addAction(qta.icon("ei.error"), self.tr("Detect Invalid"))
+        self.detect_invalid_action.triggered.connect(self.detect_invalid)
         self.detect_outliers_menu = self.menu.addMenu(qta.icon("mdi.magnify"), self.tr("Detect Outliers"))
         self.check_final_distances_action = self.detect_outliers_menu.addAction(self.tr("Check Final Distances"))
         self.check_final_distances_action.triggered.connect(self.check_final_distances)
@@ -718,6 +720,19 @@ class FittingResultViewer(QDialog):
                 self.retry_results(outlier_indexes, outlier_results)
             else:
                 pass
+
+    def detect_invalid(self):
+        if self.n_results == 0:
+            self.show_warning(self.tr("There is not any result in the list."))
+            return
+        outlier_results = []
+        outlier_indexes = []
+        for i, result in enumerate(self.__fitting_results):
+            if not result.is_valid:
+                outlier_results.append(result)
+                outlier_indexes.append(i)
+        self.logger.debug(f"Outlier results with the nan or inf value(s): {[result.sample.name for result in outlier_results]}")
+        self.ask_deal_outliers(outlier_results, outlier_indexes)
 
     def check_final_distances(self):
         if self.n_results == 0:
