@@ -210,6 +210,13 @@ class SSUTypicalComponentChart(QDialog):
         stacked_components = []
         for result in results:
             for component in result.components:
+                has_nan = False
+                for key in keys_to_clustering:
+                    if np.isnan(component.logarithmic_moments[key]) or np.isinf(component.logarithmic_moments[key]):
+                        has_nan = True
+                        break
+                if has_nan:
+                    continue
                 data_to_clustering.append([component.logarithmic_moments[key] for key in keys_to_clustering])
                 stacked_components.append(component.distribution)
         # convert to numpy array
