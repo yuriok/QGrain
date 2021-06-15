@@ -763,7 +763,10 @@ class FittingResultViewer(QDialog):
         stacked_moments = []
         for result in self.__fitting_results:
             for component in result.components:
-                stacked_moments.append(component.logarithmic_moments[key])
+                if np.isnan(component.logarithmic_moments[key]) or np.isinf(component.logarithmic_moments[key]):
+                    pass
+                else:
+                    stacked_moments.append(component.logarithmic_moments[key])
         stacked_moments = np.array(stacked_moments)
 
         key_trans = {"mean": self.tr("Mean"), "std": self.tr("STD"), "skewness": self.tr("Skewness"), "kurtosis": self.tr("Kurtosis")}
