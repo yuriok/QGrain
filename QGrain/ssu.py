@@ -79,7 +79,19 @@ class ComponentResult:
             self.__distribution = distribution.single_function(sample.classes_φ, *func_args)
             self.__geometric_moments = geometric(sample.classes_μm, self.__distribution)
             self.__logarithmic_moments= logarithmic(sample.classes_φ, self.__distribution)
-            self.__is_valid = True
+
+            values_to_check = [self.__fraction]
+            values_to_check.extend(self.__distribution)
+            keys = ["mean", "std", "skewness", "kurtosis"]
+            for key in keys:
+                values_to_check.append(self.__geometric_moments[key])
+                values_to_check.append(self.__logarithmic_moments[key])
+            values_to_check = np.array(values_to_check)
+            # if any value is nan of inf, this result is invalid
+            if np.any(np.isnan(values_to_check) | np.isinf(values_to_check)):
+                self.__is_valid = False
+            else:
+                self.__is_valid = True
 
     @property
     def fraction(self) -> float:
@@ -158,7 +170,14 @@ class SSUResult:
             # sort by mean φ values
             # reverse is necessary
             self.__components.sort(key=lambda component: component.logarithmic_moments["mean"], reverse=True)
+
             self.__is_valid = True
+            if np.any(np.isnan(self.__distribution) | np.isinf(self.__distribution)):
+                self.__is_valid = False
+            for component in self.__components:
+                if not component.is_valid:
+                    self.__is_valid = False
+                    break
 
     @property
     def uuid(self) -> UUID:
