@@ -776,38 +776,51 @@ class FittingResultViewer(QDialog):
         elif self.n_results < 10:
             self.show_warning(self.tr("The results in list are too less."))
             return
-        stacked_moments = []
+        max_n_components = 0
         for result in self.__fitting_results:
-            for component in result.components:
+            if result.n_components > max_n_components:
+                max_n_components = result.n_components
+        moments = []
+        for i in range(max_n_components):
+            moments.append([])
+
+        for result in self.__fitting_results:
+            for i, component in enumerate(result.components):
                 if np.isnan(component.logarithmic_moments[key]) or np.isinf(component.logarithmic_moments[key]):
                     pass
                 else:
-                    stacked_moments.append(component.logarithmic_moments[key])
-        stacked_moments = np.array(stacked_moments)
+                    moments[i].append(component.logarithmic_moments[key])
 
-        key_trans = {"mean": self.tr("Mean"), "std": self.tr("STD"), "skewness": self.tr("Skewness"), "kurtosis": self.tr("Kurtosis")}
+        # key_trans = {"mean": self.tr("Mean"), "std": self.tr("STD"), "skewness": self.tr("Skewness"), "kurtosis": self.tr("Kurtosis")}
         key_label_trans = {"mean": self.tr("Mean [φ]"), "std": self.tr("STD [φ]"), "skewness": self.tr("Skewness"), "kurtosis": self.tr("Kurtosis")}
-        self.boxplot_chart.show_dataset([stacked_moments], xlabels=[key_trans[key]], ylabel=key_label_trans[key])
+        self.boxplot_chart.show_dataset(moments, xlabels=[f"C{i+1}" for i in range(max_n_components)], ylabel=key_label_trans[key])
         self.boxplot_chart.show()
 
-        # calculate the 1/4, 1/2, and 3/4 postion value to judge which result is invalid
-        # 1. the mean squared errors are much higher in the results which are lack of components
-        # 2. with the component number getting higher, the mean squared error will get lower and finally reach the minimum
-        median = np.median(stacked_moments)
-        upper_group = stacked_moments[np.greater(stacked_moments, median)]
-        lower_group = stacked_moments[np.less(stacked_moments, median)]
-        value_1_4 = np.median(lower_group)
-        value_3_4 = np.median(upper_group)
-        distance_QR = value_3_4 - value_1_4
+        outlier_dict = {}
+
+        for i in range(max_n_components):
+            stacked_moments = np.array(moments[i])
+            # calculate the 1/4, 1/2, and 3/4 postion value to judge which result is invalid
+            # 1. the mean squared errors are much higher in the results which are lack of components
+            # 2. with the component number getting higher, the mean squared error will get lower and finally reach the minimum
+            median = np.median(stacked_moments)
+            upper_group = stacked_moments[np.greater(stacked_moments, median)]
+            lower_group = stacked_moments[np.less(stacked_moments, median)]
+            value_1_4 = np.median(lower_group)
+            value_3_4 = np.median(upper_group)
+            distance_QR = value_3_4 - value_1_4
+
+            for j, result in enumerate(self.__fitting_results):
+                if result.n_components > i:
+                    distance = result.components[i].logarithmic_moments[key]
+                    if distance > value_3_4 + distance_QR * 1.5 or distance < value_1_4 - distance_QR * 1.5:
+                        outlier_dict[j] = result
+
         outlier_results = []
         outlier_indexes = []
-        for i, result in enumerate(self.__fitting_results):
-            for component in result.components:
-                distance = component.logarithmic_moments[key]
-                if distance > value_3_4 + distance_QR * 1.5 or distance < value_1_4 - distance_QR * 1.5:
-                    outlier_results.append(result)
-                    outlier_indexes.append(i)
-                    break
+        for index, result in sorted(outlier_dict.items(), key=lambda x:x[0]):
+            outlier_indexes.append(index)
+            outlier_results.append(result)
         self.logger.debug(f"Outlier results with abnormal {key} values of their components: {[result.sample.name for result in outlier_results]}")
         self.ask_deal_outliers(outlier_results, outlier_indexes)
 
