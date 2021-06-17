@@ -111,9 +111,10 @@ class FittingResultViewer(QDialog):
         self.plot_distribution_chart_action.triggered.connect(self.show_distribution)
         self.plot_distribution_animation_action = self.menu.addAction(qta.icon("fa5s.chart-area"), self.tr("Plot Distribution Chart (Animation)"))
         self.plot_distribution_animation_action.triggered.connect(self.show_history_distribution)
-        self.detect_invalid_action = self.menu.addAction(qta.icon("ei.error"), self.tr("Detect Invalid"))
-        self.detect_invalid_action.triggered.connect(self.detect_invalid)
+
         self.detect_outliers_menu = self.menu.addMenu(qta.icon("mdi.magnify"), self.tr("Detect Outliers"))
+        self.check_nan_and_inf_action = self.detect_outliers_menu.addAction(self.tr("Check NaN and Inf"))
+        self.check_nan_and_inf_action.triggered.connect(self.check_nan_and_inf)
         self.check_final_distances_action = self.detect_outliers_menu.addAction(self.tr("Check Final Distances"))
         self.check_final_distances_action.triggered.connect(self.check_final_distances)
         self.check_component_mean_action = self.detect_outliers_menu.addAction(self.tr("Check Component Mean"))
@@ -721,7 +722,7 @@ class FittingResultViewer(QDialog):
             else:
                 pass
 
-    def detect_invalid(self):
+    def check_nan_and_inf(self):
         if self.n_results == 0:
             self.show_warning(self.tr("There is not any result in the list."))
             return
