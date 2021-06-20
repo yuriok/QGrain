@@ -88,8 +88,7 @@ class SSUTypicalComponentChart(QDialog):
         self.last_results = None # type: list[SSUResult]
         self.data_to_clustering = None
         self.stacked_components = None
-        self.msg_box = QMessageBox(self)
-        self.msg_box.setWindowFlags(Qt.Drawer)
+        self.normal_msg = QMessageBox(self)
         self.file_dialog = QFileDialog(parent=self)
 
     @property
@@ -132,9 +131,9 @@ class SSUTypicalComponentChart(QDialog):
             return False
 
     def show_message(self, title: str, message: str):
-        self.msg_box.setWindowTitle(title)
-        self.msg_box.setText(message)
-        self.msg_box.exec_()
+        self.normal_msg.setWindowTitle(title)
+        self.normal_msg.setText(message)
+        self.normal_msg.exec_()
 
     def show_info(self, message: str):
         self.show_message(self.tr("Info"), message)

@@ -44,8 +44,7 @@ class GrainSizeDatasetViewer(QDialog):
         self.load_dataset_dialog = LoadDatasetDialog(parent=self)
         self.load_dataset_dialog.dataset_loaded.connect(self.on_data_loaded)
         self.file_dialog = QFileDialog(parent=self)
-        self.msg_box = QMessageBox(self)
-        self.msg_box.setWindowFlags(Qt.Drawer)
+        self.normal_msg = QMessageBox(self)
 
     def init_ui(self):
         self.setWindowTitle(self.tr("Dataset Viewer"))
@@ -167,9 +166,9 @@ class GrainSizeDatasetViewer(QDialog):
         self.menu.popup(QCursor.pos())
 
     def show_message(self, title: str, message: str):
-        self.msg_box.setWindowTitle(title)
-        self.msg_box.setText(message)
-        self.msg_box.exec_()
+        self.normal_msg.setWindowTitle(title)
+        self.normal_msg.setText(message)
+        self.normal_msg.exec_()
 
     def show_info(self, message: str):
         self.show_message(self.tr("Info"), message)

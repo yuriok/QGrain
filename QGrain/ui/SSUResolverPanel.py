@@ -34,8 +34,7 @@ class SSUResolverPanel(QDialog):
         self.async_worker = AsyncWorker()
         self.async_worker.background_worker.task_succeeded.connect(self.on_fitting_succeeded)
         self.async_worker.background_worker.task_failed.connect(self.on_fitting_failed)
-        self.msg_box = QMessageBox(self)
-        self.msg_box.setWindowFlags(Qt.Drawer)
+        self.normal_msg = QMessageBox(self)
         self.dataset = None
         self.task_table = {}
         self.task_results = {}
@@ -150,9 +149,9 @@ class SSUResolverPanel(QDialog):
         return self.n_components_input.value()
 
     def show_message(self, title: str, message: str):
-        self.msg_box.setWindowTitle(title)
-        self.msg_box.setText(message)
-        self.msg_box.exec_()
+        self.normal_msg.setWindowTitle(title)
+        self.normal_msg.setText(message)
+        self.normal_msg.exec_()
 
     def show_info(self, message: str):
         self.show_message(self.tr("Info"), message)

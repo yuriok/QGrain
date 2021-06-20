@@ -36,8 +36,7 @@ class EMMAResolverPanel(QDialog):
              (DistributionType.SkewNormal, self.tr("Skew Normal"))]
 
         self.init_ui()
-        self.msg_box = QMessageBox(self)
-        self.msg_box.setWindowFlags(Qt.Drawer)
+        self.normal_msg = QMessageBox(self)
         self.__dataset = None # type: GrainSizeDataset
         self.__result_list = [] # type: list[EMMAResult]
         self.neural_setting = NNResolverSettingWidget(parent=self)
@@ -116,9 +115,9 @@ class EMMAResolverPanel(QDialog):
         self.result_layout.addWidget(self.save_button, 2, 1)
 
     def show_message(self, title: str, message: str):
-        self.msg_box.setWindowTitle(title)
-        self.msg_box.setText(message)
-        self.msg_box.exec_()
+        self.normal_msg.setWindowTitle(title)
+        self.normal_msg.setText(message)
+        self.normal_msg.exec_()
 
     def show_info(self, message: str):
         self.show_message(self.tr("Info"), message)
