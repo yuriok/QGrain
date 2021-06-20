@@ -20,12 +20,11 @@ class ConsolePanel(QDialog):
         super().__init__(parent=parent, f=Qt.Window)
         self.setWindowTitle(self.tr("Console"))
         self.init_ui()
-        self.msg_box = QMessageBox(self)
-        self.msg_box.setWindowTitle(self.tr("Warning"))
-        self.msg_box.setText(self.tr("Close this window will terminate the work of other windows, are you sure to close it?"))
-        self.msg_box.setStandardButtons(QMessageBox.Close | QMessageBox.Cancel)
-        self.msg_box.setDefaultButton(QMessageBox.Cancel)
-        self.msg_box.setWindowFlags(Qt.Drawer)
+        self.normal_msg = QMessageBox(self)
+        self.normal_msg.setWindowTitle(self.tr("Warning"))
+        self.normal_msg.setText(self.tr("Close this window will terminate the work of other windows, are you sure to close it?"))
+        self.normal_msg.setStandardButtons(QMessageBox.Close | QMessageBox.Cancel)
+        self.normal_msg.setDefaultButton(QMessageBox.Cancel)
 
     def init_ui(self):
         self.dataset_generator = RandomDatasetGenerator(parent=self)
@@ -120,7 +119,7 @@ class ConsolePanel(QDialog):
         self.main_layout.addWidget(self.about_button, 1, 3)
 
     def closeEvent(self, event: QCloseEvent):
-        res = self.msg_box.exec_()
+        res = self.normal_msg.exec_()
         if res == QMessageBox.Close:
             event.accept()
         else:
