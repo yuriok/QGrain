@@ -73,8 +73,7 @@ class EMMAResultChart(QDialog):
         self.animation = None
         self.last_result = None
 
-        self.msg_box = QMessageBox(parent=self)
-        self.msg_box.setWindowFlags(Qt.Drawer)
+        self.normal_msg = QMessageBox(parent=self)
         self.file_dialog = QFileDialog(parent=self)
         self.on_animated_changed()
 
@@ -376,16 +375,16 @@ class EMMAResultChart(QDialog):
             # plt.rcParams["savefig.dpi"] = 120.0
             if "*.gif" in format_str:
                 if not ImageMagickWriter.isAvailable():
-                    self.msg_box.setWindowTitle(self.tr("Error"))
-                    self.msg_box.setText(self.tr("ImageMagick is not installed, please download and install it from its offical website (https://imagemagick.org/index.php)."))
-                    self.msg_box.exec_()
+                    self.normal_msg.setWindowTitle(self.tr("Error"))
+                    self.normal_msg.setText(self.tr("ImageMagick is not installed, please download and install it from its offical website (https://imagemagick.org/index.php)."))
+                    self.normal_msg.exec_()
                 else:
                     self.animation.save(filename, writer="imagemagick", fps=30, progress_callback=save_callback)
             elif "*.mp4" in format_str:
                 if not FFMpegWriter.isAvailable():
-                    self.msg_box.setWindowTitle(self.tr("Error"))
-                    self.msg_box.setText(self.tr("FFMpeg is not installed, please download and install it from its offical website (https://ffmpeg.org/)."))
-                    self.msg_box.exec_()
+                    self.normal_msg.setWindowTitle(self.tr("Error"))
+                    self.normal_msg.setText(self.tr("FFMpeg is not installed, please download and install it from its offical website (https://ffmpeg.org/)."))
+                    self.normal_msg.exec_()
                 else:
                     self.animation.save(filename, writer="ffmpeg", fps=30, progress_callback=save_callback)
             # plt.rcParams["savefig.dpi"] = 300.0

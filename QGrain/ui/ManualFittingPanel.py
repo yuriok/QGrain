@@ -27,8 +27,7 @@ class ManualFittingPanel(QDialog):
         self.async_worker = AsyncWorker()
         self.async_worker.background_worker.task_succeeded.connect(self.on_task_succeeded)
         self.initialize_ui()
-        self.msg_box = QMessageBox(self)
-        self.msg_box.setWindowFlags(Qt.Drawer)
+        self.normal_msg = QMessageBox(self)
         self.chart_timer = QTimer()
         self.chart_timer.timeout.connect(self.update_chart)
         self.chart_timer.setSingleShot(True)
@@ -122,9 +121,9 @@ class ManualFittingPanel(QDialog):
         return reference, fractions
 
     def show_message(self, title: str, message: str):
-        self.msg_box.setWindowTitle(title)
-        self.msg_box.setText(message)
-        self.msg_box.exec_()
+        self.normal_msg.setWindowTitle(title)
+        self.normal_msg.setText(message)
+        self.normal_msg.exec_()
 
     def show_info(self, message: str):
         self.show_message(self.tr("Info"), message)
