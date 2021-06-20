@@ -53,21 +53,23 @@ class FittingResultViewer(QDialog):
         self.async_worker.background_worker.task_failed.connect(self.on_fitting_failed)
         self.update_page_list()
         self.update_page(self.page_index)
-        self.msg_box = QMessageBox(self)
-        self.msg_box.setWindowFlags(Qt.Drawer)
 
-        self.outlier_msg_box = QMessageBox(self)
-        self.outlier_msg_box.setWindowFlags(Qt.Drawer)
-        self.outlier_msg_box.setStandardButtons(QMessageBox.Discard|QMessageBox.Retry|QMessageBox.Ignore)
-        self.outlier_msg_box.setDefaultButton(QMessageBox.Ignore)
-        self.retry_progress_msg_box = QMessageBox()
-        self.retry_progress_msg_box.setWindowFlags(Qt.CustomizeWindowHint|Qt.WindowTitleHint)
-        self.retry_progress_msg_box.addButton(QMessageBox.Ok)
-        self.retry_progress_msg_box.button(QMessageBox.Ok).hide()
-        self.retry_progress_msg_box.setWindowTitle(self.tr("Progress"))
+        self.normal_msg = QMessageBox(self)
+        self.remove_warning_msg = QMessageBox(self)
+        self.remove_warning_msg.setStandardButtons(QMessageBox.No|QMessageBox.Yes)
+        self.remove_warning_msg.setDefaultButton(QMessageBox.No)
+        self.remove_warning_msg.setWindowTitle(self.tr("Warning"))
+        self.remove_warning_msg.setText(self.tr("Are you sure to remove all SSU results?"))
+        self.outlier_msg = QMessageBox(self)
+        self.outlier_msg.setStandardButtons(QMessageBox.Discard|QMessageBox.Retry|QMessageBox.Ignore)
+        self.outlier_msg.setDefaultButton(QMessageBox.Ignore)
+        self.retry_progress_msg = QMessageBox()
+        self.retry_progress_msg.addButton(QMessageBox.Ok)
+        self.retry_progress_msg.button(QMessageBox.Ok).hide()
+        self.retry_progress_msg.setWindowTitle(self.tr("Progress"))
         self.retry_timer = QTimer(self)
         self.retry_timer.setSingleShot(True)
-        self.retry_timer.timeout.connect(lambda: self.retry_progress_msg_box.exec_())
+        self.retry_timer.timeout.connect(lambda: self.retry_progress_msg.exec_())
 
     def init_ui(self):
         self.data_table = QTableWidget(100, 100)
@@ -103,8 +105,10 @@ class FittingResultViewer(QDialog):
         self.menu.setShortcutAutoRepeat(True)
         self.mark_action = self.menu.addAction(qta.icon("mdi.marker-check"), self.tr("Mark Selection(s) as Reference"))
         self.mark_action.triggered.connect(self.mark_selections)
-        self.remove_action = self.menu.addAction(qta.icon("fa.remove"), self.tr("Remove Selection(s)"))
-        self.remove_action.triggered.connect(self.remove_selections)
+        self.remove_selection_action = self.menu.addAction(qta.icon("fa.remove"), self.tr("Remove Selection(s)"))
+        self.remove_selection_action.triggered.connect(self.remove_selections)
+        self.remove_all_action = self.menu.addAction(qta.icon("fa.remove"), self.tr("Remove All"))
+        self.remove_all_action.triggered.connect(self.remove_all_results)
         self.plot_loss_chart_action = self.menu.addAction(qta.icon("mdi.chart-timeline-variant"), self.tr("Plot Loss Chart"))
         self.plot_loss_chart_action.triggered.connect(self.show_distance)
         self.plot_distribution_chart_action = self.menu.addAction(qta.icon("fa5s.chart-area"), self.tr("Plot Distribution Chart"))
@@ -151,9 +155,9 @@ class FittingResultViewer(QDialog):
         self.menu.popup(QCursor.pos())
 
     def show_message(self, title: str, message: str):
-        self.msg_box.setWindowTitle(title)
-        self.msg_box.setText(message)
-        self.msg_box.exec_()
+        self.normal_msg.setWindowTitle(title)
+        self.normal_msg.setText(message)
+        self.normal_msg.exec_()
 
     def show_info(self, message: str):
         self.show_message(self.tr("Info"), message)
@@ -313,6 +317,13 @@ class FittingResultViewer(QDialog):
     def remove_selections(self):
         indexes = self.selections
         self.remove_results(indexes)
+
+    def remove_all_results(self):
+        res = self.remove_warning_msg.exec_()
+        if res == QMessageBox.Yes:
+            self.__fitting_results.clear()
+            self.update_page_list()
+            self.update_page(0)
 
     def show_distance(self):
         results = [self.__fitting_results[i] for i in self.selections]
@@ -623,9 +634,9 @@ class FittingResultViewer(QDialog):
         result_replace_index = self.retry_tasks[result.task.uuid]
         self.__fitting_results[result_replace_index] = result
         self.retry_tasks.pop(result.task.uuid)
-        self.retry_progress_msg_box.setText(self.tr("Tasks to be retried: {0}").format(len(self.retry_tasks)))
+        self.retry_progress_msg.setText(self.tr("Tasks to be retried: {0}").format(len(self.retry_tasks)))
         if len(self.retry_tasks) == 0:
-            self.retry_progress_msg_box.close()
+            self.retry_progress_msg.close()
 
         self.logger.debug(f"Retried task succeeded, sample name={result.task.sample.name}, distribution_type={result.task.distribution_type.name}, n_components={result.task.n_components}")
         self.update_page(self.page_index)
@@ -634,7 +645,7 @@ class FittingResultViewer(QDialog):
         # necessary to remove it from the dict
         self.retry_tasks.pop(task.uuid)
         if len(self.retry_tasks) == 0:
-            self.retry_progress_msg_box.close()
+            self.retry_progress_msg.close()
         self.show_error(self.tr("Failed to retry task, sample name={0}.\n{1}").format(task.sample.name, failed_info))
         self.logger.warning(f"Failed to retry task, sample name={task.sample.name}, distribution_type={task.distribution_type.name}, n_components={task.n_components}")
 
@@ -642,7 +653,7 @@ class FittingResultViewer(QDialog):
         assert len(indexes) == len(results)
         if len(results) == 0:
             return
-        self.retry_progress_msg_box.setText(self.tr("Tasks to be retried: {0}").format(len(results)))
+        self.retry_progress_msg.setText(self.tr("Tasks to be retried: {0}").format(len(results)))
         self.retry_timer.start(1)
         for index, result in zip(indexes, results):
             query = self.__reference_viewer.query_reference(result.sample)
@@ -680,7 +691,7 @@ class FittingResultViewer(QDialog):
         self.show_info(self.tr("The results below should be degrade (have a redundant component:\n    {0}").format(
                 ", ".join([result.sample.name for result in degrade_results])))
 
-        self.retry_progress_msg_box.setText(self.tr("Tasks to be retried: {0}").format(len(degrade_results)))
+        self.retry_progress_msg.setText(self.tr("Tasks to be retried: {0}").format(len(degrade_results)))
         self.retry_timer.start(1)
         for index, result in zip(degrade_indexes, degrade_results):
             reference = []
@@ -709,12 +720,12 @@ class FittingResultViewer(QDialog):
             self.show_info(self.tr("No fitting result was evaluated as an outlier."))
         else:
             if len(outlier_results) > 100:
-                self.outlier_msg_box.setText(self.tr("The fitting results have the component that its fraction is near zero:\n    {0}...(total {1} outliers)\nHow to deal with them?").format(
+                self.outlier_msg.setText(self.tr("The fitting results have the component that its fraction is near zero:\n    {0}...(total {1} outliers)\nHow to deal with them?").format(
                         ", ".join([result.sample.name for result in outlier_results[:100]]), len(outlier_results)))
             else:
-                self.outlier_msg_box.setText(self.tr("The fitting results have the component that its fraction is near zero:\n    {0}\nHow to deal with them?").format(
+                self.outlier_msg.setText(self.tr("The fitting results have the component that its fraction is near zero:\n    {0}\nHow to deal with them?").format(
                         ", ".join([result.sample.name for result in outlier_results])))
-            res = self.outlier_msg_box.exec_()
+            res = self.outlier_msg.exec_()
             if res == QMessageBox.Discard:
                 self.remove_results(outlier_indexes)
             elif res == QMessageBox.Retry:

@@ -35,8 +35,14 @@ class ReferenceResultViewer(QDialog):
         self.file_dialog = QFileDialog(parent=self)
         self.update_page_list()
         self.update_page(self.page_index)
-        self.msg_box = QMessageBox(self)
-        self.msg_box.setWindowFlags(Qt.Drawer)
+
+        self.remove_warning_msg = QMessageBox(self)
+        self.remove_warning_msg.setStandardButtons(QMessageBox.No|QMessageBox.Yes)
+        self.remove_warning_msg.setDefaultButton(QMessageBox.No)
+        self.remove_warning_msg.setWindowTitle(self.tr("Warning"))
+        self.remove_warning_msg.setText(self.tr("Are you sure to remove all SSU results?"))
+
+        self.normal_msg = QMessageBox(self)
 
     def init_ui(self):
         self.data_table = QTableWidget(100, 100)
@@ -75,6 +81,8 @@ class ReferenceResultViewer(QDialog):
         self.unmark_action.triggered.connect(self.unmark_selections)
         self.remove_action = self.menu.addAction(qta.icon("fa.remove"), self.tr("Remove Selection(s)"))
         self.remove_action.triggered.connect(self.remove_selections)
+        self.remove_all_action = self.menu.addAction(qta.icon("fa.remove"), self.tr("Remove All"))
+        self.remove_all_action.triggered.connect(self.remove_all_results)
         self.plot_loss_chart_action = self.menu.addAction(qta.icon("mdi.chart-timeline-variant"), self.tr("Plot Loss Chart"))
         self.plot_loss_chart_action.triggered.connect(self.show_distance)
         self.plot_distribution_chart_action = self.menu.addAction(qta.icon("fa5s.chart-area"), self.tr("Plot Distribution Chart"))
@@ -92,9 +100,9 @@ class ReferenceResultViewer(QDialog):
         self.menu.popup(QCursor.pos())
 
     def show_message(self, title: str, message: str):
-        self.msg_box.setWindowTitle(title)
-        self.msg_box.setText(message)
-        self.msg_box.exec_()
+        self.normal_msg.setWindowTitle(title)
+        self.normal_msg.setText(message)
+        self.normal_msg.exec_()
 
     def show_info(self, message: str):
         self.show_message(self.tr("Info"), message)
@@ -279,6 +287,13 @@ class ReferenceResultViewer(QDialog):
     def remove_selections(self):
         indexes = self.selections
         self.remove_results(indexes)
+
+    def remove_all_results(self):
+        res = self.remove_warning_msg.exec_()
+        if res == QMessageBox.Yes:
+            self.__fitting_results.clear()
+            self.update_page_list()
+            self.update_page(0)
 
     def show_distance(self):
         results = [self.__fitting_results[i] for i in self.selections]
