@@ -45,7 +45,7 @@ def setup_app():
     app = QApplication(sys.argv)
     splash = QSplashScreen()
     pixmap = QPixmap(os.path.join(QGRAIN_ROOT_PATH, "assets", "icon.png"))
-    pixmap.setDevicePixelRatio(4)
+    pixmap.setDevicePixelRatio(1.0)
     splash.setPixmap(pixmap)
     splash.show()
 
