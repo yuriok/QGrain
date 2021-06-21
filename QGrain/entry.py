@@ -54,7 +54,7 @@ def setup_app():
     app.setApplicationDisplayName(f"QGrain ({QGRAIN_VERSION})")
     app.setApplicationVersion(QGRAIN_VERSION)
     app.setStyle(QStyleFactory.create("Fusion"))
-    app.setStyleSheet("""* {font-family:Tahoma,Verdana,Arial,Georgia,"Microsoft YaHei","Times New Roman";
+    app.setStyleSheet("""* {font-family:Arial,Helvetica,Tahoma,Verdana;
                       color:#000000;background-color:#c4cbcf;alternate-background-color:#b2bbbe;
                       selection-color:#ffffff;selection-background-color:#555f69}""")
 
