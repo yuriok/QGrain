@@ -1,4 +1,3 @@
-from QGrain.artificial._param import *
 from QGrain.artificial._sample import *
 from QGrain.artificial._setting import *
 
