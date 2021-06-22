@@ -1,13 +1,38 @@
-__all__ = ["ArtificialComponent", "ArtificialSample", "ArtificialDataset"]
+__all__ = ["ComponentParameter",
+           "GenerateParameter",
+           "ArtificialComponent",
+           "ArtificialSample",
+           "ArtificialDataset"]
 
 import typing
 
 import numpy as np
-from QGrain.artificial import *
-from QGrain.ssu import SSUViewModel
 from QGrain.models.GrainSizeSample import GrainSizeSample
+from QGrain.ssu import SSUViewModel
 from QGrain.statistic import convert_μm_to_φ, convert_φ_to_μm
 from scipy.stats import skewnorm
+
+
+class ComponentParameter:
+    __slots__ = ("shape", "loc", "scale", "weight")
+
+    def __init__(self, shape: float, loc: float, scale: float, weight: float):
+        self.shape = shape
+        self.loc = loc
+        self.scale = scale
+        self.weight = weight
+
+
+class GenerateParameter:
+    __slots__ = ("n_components", "components", "fractions")
+
+    def __init__(self, params: np.ndarray):
+        self.n_components, left = divmod(len(params), 4)
+        assert left == 0
+        self.components = [ComponentParameter(*params[i*3:(i+1)*3], params[-self.n_components+i]) for i in range(self.n_components)]
+        total_weight = sum([component.weight for component in self.components])
+        self.fractions = [component.weight/total_weight for component in self.components]
+
 
 class ArtificialComponent:
     def __init__(self, classes_μm: np.ndarray, classes_φ: np.ndarray,

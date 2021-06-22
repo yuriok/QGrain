@@ -7,8 +7,8 @@ from scipy.stats import truncnorm
 
 class ComponentSetting:
     SHAPE_RANGE = (-100.0, 100.0)
-    LOC_RANGE = (-12.0, 12.0)
-    SCALE_RANGE = (1E-2, 100.0)  # CAN NOT EQUAL TO ZERO
+    LOC_RANGE = (-15.0, 15.0)
+    SCALE_RANGE = (1E-4, 100.0)  # CAN NOT EQUAL TO ZERO
     WEIGHT_RANGE = (1.0, 100.0)
 
     def __init__(self, shape, loc, scale, weight):
