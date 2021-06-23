@@ -664,13 +664,15 @@ class FittingResultViewer(QDialog):
             else:
                 ref_result = query
             keys = ["mean", "std", "skewness"]
-            reference = [{key: comp.logarithmic_moments[key] for key in keys} for comp in ref_result.components]
+            # reference = [{key: comp.logarithmic_moments[key] for key in keys} for comp in ref_result.components]
             task = SSUTask(result.sample,
-                               ref_result.distribution_type,
-                               ref_result.n_components,
-                               resolver=ref_result.task.resolver,
-                               resolver_setting=ref_result.task.resolver_setting,
-                               reference=reference)
+                           ref_result.distribution_type,
+                           ref_result.n_components,
+                           resolver=ref_result.task.resolver,
+                           resolver_setting=ref_result.task.resolver_setting,
+                        #    reference=reference)
+                           initial_guess=ref_result.last_func_args)
+
             self.logger.debug(f"Retry task: sample name={task.sample.name}, distribution_type={task.distribution_type.name}, n_components={task.n_components}")
             self.retry_tasks[task.uuid] = index
             self.async_worker.execute_task(task)
