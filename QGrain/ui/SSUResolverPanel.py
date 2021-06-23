@@ -204,13 +204,14 @@ class SSUResolverPanel(QDialog):
                                resolver_setting=setting)
         else:
             keys = ["mean", "std", "skewness"]
-            reference = [{key: comp.logarithmic_moments[key] for key in keys} for comp in query.components]
+            # reference = [{key: comp.logarithmic_moments[key] for key in keys} for comp in query.components]
             task = SSUTask(sample,
-                               query.distribution_type,
-                               query.n_components,
-                               resolver=resolver,
-                               resolver_setting=setting,
-                               reference=reference)
+                           query.distribution_type,
+                           query.n_components,
+                           resolver=resolver,
+                           resolver_setting=setting,
+                           # reference=reference)
+                           initial_guess=query.last_func_args)
         return task
 
     def on_fitting_succeeded(self, fitting_result: SSUResult):
