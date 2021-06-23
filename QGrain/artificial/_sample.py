@@ -24,7 +24,7 @@ class ComponentParameter:
 
 
 class GenerateParameter:
-    __slots__ = ("n_components", "components", "fractions")
+    __slots__ = ("n_components", "components", "fractions", "func_args")
 
     def __init__(self, params: np.ndarray):
         self.n_components, left = divmod(len(params), 4)
@@ -32,7 +32,13 @@ class GenerateParameter:
         self.components = [ComponentParameter(*params[i*3:(i+1)*3], params[-self.n_components+i]) for i in range(self.n_components)]
         total_weight = sum([component.weight for component in self.components])
         self.fractions = [component.weight/total_weight for component in self.components]
-
+        self.func_args = []
+        for component in self.components:
+            self.func_args.append(component.shape)
+            self.func_args.append(component.loc)
+            self.func_args.append(component.scale)
+        self.func_args.extend(self.fractions)
+        self.func_args = np.array(self.func_args[:-1])
 
 class ArtificialComponent:
     def __init__(self, classes_μm: np.ndarray, classes_φ: np.ndarray,
