@@ -68,6 +68,7 @@ class ComponentResult:
         self.update(sample, distribution, func_args, fraction)
 
     def update(self, sample: GrainSizeSample, distribution: BaseDistribution, func_args: typing.Iterable[float], fraction: float):
+        self.__func_args = func_args
         if np.any(np.isnan(func_args)):
             self.__fraction = np.nan
             self.__distribution = np.full_like(sample.distribution, fill_value=np.nan)
@@ -92,6 +93,10 @@ class ComponentResult:
                 self.__is_valid = False
             else:
                 self.__is_valid = True
+
+    @property
+    def func_args(self) -> float:
+        return self.__func_args
 
     @property
     def fraction(self) -> float:
