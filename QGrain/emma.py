@@ -150,7 +150,7 @@ class EndMemberModule(Module):
 
     def forward(self):
         # n_members x n_classes
-        end_members = torch.cat([kernel(self.__classes_φ).reshape(1, -1) for kernel in self.kernels], dim=0)
+        end_members = torch.cat([kernel(self.__classes_φ).unsqueeze(0) for kernel in self.kernels], dim=0)
         return end_members
 
     @property
@@ -161,16 +161,12 @@ class EndMemberModule(Module):
 class ProportionModule(Module):
     def __init__(self, n_samples: int, n_members: int):
         super().__init__()
-        self.samples = []
-        self.softmax = Softmax(dim=0)
-        for i in range(n_samples):
-            sample_i = Parameter(torch.rand(n_members), requires_grad=True)
-            self.__setattr__(f"sample_{i+1}", sample_i)
-            self.samples.append(sample_i)
+        self.softmax = Softmax(dim=1)
+        self.proportion_parameters = Parameter(torch.rand(n_samples, n_members), requires_grad=True)
 
     def forward(self):
         # n_samples x n_members
-        proportions = torch.cat([self.softmax(sample).view(1, -1) for sample in self.samples], dim=0)
+        proportions = self.softmax(self.proportion_parameters)
         return proportions
 
     @property
