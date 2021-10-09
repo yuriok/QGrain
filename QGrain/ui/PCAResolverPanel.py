@@ -81,7 +81,7 @@ class PCAResolverPanel(QDialog):
         # n_samples x n_components
         transformed = pca.fit_transform(X)
         self.chart.show_result(self.__dataset, transformed, pca)
-        self.last_result = (self.__dataset, transformed, pca.components_)
+        self.last_result = (self.__dataset, transformed, pca.components_, pca.explained_variance_ratio_)
         self.save_button.setEnabled(True)
 
     def on_save_clicked(self):
@@ -101,7 +101,7 @@ class PCAResolverPanel(QDialog):
 
     def save_as_xlsx(self, filename: str):
         assert self.last_result is not None
-        dataset, transformed, components = self.last_result
+        dataset, transformed, components, ratios = self.last_result
         n_samples, n_components = transformed.shape
 
         wb = openpyxl.Workbook()
@@ -170,7 +170,7 @@ class PCAResolverPanel(QDialog):
         write(0, 0, self.tr("Sample Name"), style="header")
         ws.column_dimensions[column_to_char(0)].width = 16
         for i in range(n_components):
-            write(0, i+1, self.tr("PC{0}").format(i+1), style="header")
+            write(0, i+1, self.tr("PC{0} ({1:0.4f})").format(i+1, ratios[i]), style="header")
             ws.column_dimensions[column_to_char(i+1)].width = 10
         for row, varations in enumerate(transformed, 1):
             if row % 2 == 0:
