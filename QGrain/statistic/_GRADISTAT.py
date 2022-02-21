@@ -1,22 +1,3 @@
-__all__ = ["arithmetic",
-           "geometric",
-           "logarithmic",
-           "geometric_FW57",
-           "logarithmic_FW57",
-           "scale_description",
-           "get_GSM_proportion",
-           "get_SSC_proportion",
-           "get_BGSSC_proportion",
-           "get_all_proportion",
-           "get_GSM_group_Folk54",
-           "get_SSC_group_Folk54",
-           "get_group_Folk54",
-           "get_GSM_group_BP12",
-           "get_SSC_group_BP12",
-           "get_group_BP12",
-           "get_statistic",
-           "get_all_statistic"]
-
 import string
 import typing
 
@@ -33,9 +14,9 @@ def arithmetic(classes_μm: np.ndarray, frequency: np.ndarray) -> dict:
     ## Parameters
 
     classes_μm: `np.ndarray`
-        The grain-size classes in μm.
+        The grain size classes in μm.
     frequency: `np.ndarray`
-        The frequency values of grain-size classes. Note that the sum of frequencies should be `1.0`.
+        The frequency values of grain size classes. Note that the sum of frequencies should be `1.0`.
 
     ## Returns
 
@@ -56,9 +37,9 @@ def geometric(classes_μm: np.ndarray, frequency: np.ndarray) -> dict:
     ## Parameters
 
     classes_μm: `np.ndarray`
-        The grain-size classes in μm.
+        The grain size classes in μm.
     frequency: `np.ndarray`
-        The frequency values of grain-size classes. Note that the sum of frequencies should be `1.0`.
+        The frequency values of grain size classes. Note that the sum of frequencies should be `1.0`.
 
     ## Returns
 
@@ -123,9 +104,9 @@ def logarithmic(classes_φ: np.ndarray, frequency: np.ndarray) -> dict:
     ## Parameters
 
     classes_φ: `np.ndarray`
-        The grain-size classes in φ.
+        The grain size classes in φ.
     frequency: `np.ndarray`
-        The frequency values of grain-size classes. Note that the sum of frequencies should be `1.0`.
+        The frequency values of grain size classes. Note that the sum of frequencies should be `1.0`.
 
     ## Returns
 
@@ -328,16 +309,16 @@ def geometric_FW57(reverse_phi_ppf) -> dict:
                 skewness_description=skewness_description(skewness),
                 kurtosis_description=kurtosis_description(kurtosis))
 
-# Referred to Blott & Pye (2012)'s grain-size scale
+# Referred to Blott & Pye (2012)'s grain size scale
 # DOI: 10.1111/j.1365-3091.2012.01335.x
 def scale_description(φ) -> typing.Tuple[str, str]:
     """
-    Get the size description of a φ value. Follow Blott & Pye (2012)'s grain-size scale.
+    Get the size description of a φ value. Follow Blott & Pye (2012)'s grain size scale.
 
     ## Parameters
 
     φ: `float`
-        The φ value of grain-size.
+        The φ value of grain size.
 
     ## Returns
 
@@ -412,9 +393,9 @@ def get_GSM_proportion(classes_φ: np.ndarray, frequency: np.ndarray) -> \
     ## Parameters
 
     classes_φ: `np.ndarray`
-        The grain-size classes in φ.
+        The grain size classes in φ.
     frequency: `np.ndarray`
-        The frequency values of grain-size classes. Note that the sum of frequencies should be `1.0`.
+        The frequency values of grain size classes. Note that the sum of frequencies should be `1.0`.
 
     ## Returns
 
@@ -440,9 +421,9 @@ def get_SSC_proportion(classes_φ: np.ndarray, frequency: np.ndarray) -> \
     ## Parameters
 
     classes_φ: `np.ndarray`
-        The grain-size classes in φ.
+        The grain size classes in φ.
     frequency: `np.ndarray`
-        The frequency values of grain-size classes. Note that the sum of frequencies should be `1.0`.
+        The frequency values of grain size classes. Note that the sum of frequencies should be `1.0`.
 
     ## Returns
 
@@ -468,9 +449,9 @@ def get_BGSSC_proportion(classes_φ: np.ndarray, frequency: np.ndarray) -> \
     ## Parameters
 
     classes_φ: `np.ndarray`
-        The grain-size classes in φ.
+        The grain size classes in φ.
     frequency: `np.ndarray`
-        The frequency values of grain-size classes. Note that the sum of frequencies should be `1.0`.
+        The frequency values of grain size classes. Note that the sum of frequencies should be `1.0`.
 
     ## Returns
 
@@ -500,9 +481,9 @@ def get_all_proportion(classes_φ: np.ndarray, frequency: np.ndarray):
     ## Parameters
 
     classes_φ: `np.ndarray`
-        The grain-size classes in φ.
+        The grain size classes in φ.
     frequency: `np.ndarray`
-        The frequency values of grain-size classes. Note that the sum of frequencies should be `1.0`.
+        The frequency values of grain size classes. Note that the sum of frequencies should be `1.0`.
 
     ## Returns
 
@@ -634,9 +615,9 @@ def get_group_Folk54(classes_φ: np.ndarray, frequency: np.ndarray):
     ## Parameters
 
     classes_φ: `np.ndarray`
-        The grain-size classes in φ.
+        The grain size classes in φ.
     frequency: `np.ndarray`
-        The frequency values of grain-size classes. Note that the sum of frequencies should be `1.0`.
+        The frequency values of grain size classes. Note that the sum of frequencies should be `1.0`.
 
     ## Returns
 
@@ -814,9 +795,9 @@ def get_group_BP12(classes_φ: np.ndarray, frequency: np.ndarray) \
     ## Parameters
 
     classes_φ: `np.ndarray`
-        The grain-size classes in φ.
+        The grain size classes in φ.
     frequency: `np.ndarray`
-        The frequency values of grain-size classes. Note that the sum of frequencies should be `1.0`.
+        The frequency values of grain size classes. Note that the sum of frequencies should be `1.0`.
 
     ## Returns
 
@@ -838,18 +819,18 @@ def get_statistic(classes_μm: np.ndarray,
                   frequency: np.ndarray,
                   is_geometric=False, is_FW57=False) -> dict:
     """
-    Get the statistic parameters of a grain-size distribution.
+    Get the statistic parameters of a grain size distribution.
 
     ## Parameters
 
     classes_μm: `np.ndarray`
-        The grain-size classes in μm.
+        The grain size classes in μm.
     classes_φ: `np.ndarray`
-        The grain-size classes in φ.
+        The grain size classes in φ.
     frequency: `np.ndarray`
-        The frequency values of grain-size classes. Note that the sum of frequencies should be `1.0`.
+        The frequency values of grain size classes. Note that the sum of frequencies should be `1.0`.
     is_geometric: `bool` (default `False`)
-        If `True` the grain-size unit is μm, else it's φ.
+        If `True` the grain size unit is μm, else it's φ.
     is_FW57: `bool` (default `False`)
         If `True` it will use Folk & Ward (1957)'s graphical method, else it will use the method of statistic moments.
 
@@ -884,16 +865,16 @@ def get_all_statistic(classes_μm: np.ndarray,
                       classes_φ: np.ndarray,
                       frequency: np.ndarray):
     """
-    Get all statistic parameters and classification groups of a grain-size distribution.
+    Get all statistic parameters and classification groups of a grain size distribution.
 
     ## Parameters
 
     classes_μm: `np.ndarray`
-        The grain-size classes in μm.
+        The grain size classes in μm.
     classes_φ: `np.ndarray`
-        The grain-size classes in φ.
+        The grain size classes in φ.
     frequency: `np.ndarray`
-        The frequency values of grain-size classes. Note that the sum of frequencies should be `1.0`.
+        The frequency values of grain size classes. Note that the sum of frequencies should be `1.0`.
 
     ## Returns
     all_statistic: `dict`
@@ -920,9 +901,3 @@ def get_all_statistic(classes_μm: np.ndarray,
     result["group_BP12"] = BP12_description
 
     return result
-
-if __name__ == "__main__":
-    from QGrain.artificial import get_random_sample
-    sample = get_random_sample()
-    all_statistic = get_all_statistic(sample.classes_μm, sample.classes_φ, sample.distribution)
-    print(all_statistic)

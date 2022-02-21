@@ -3,16 +3,14 @@ __all__ = ["ManualFittingPanel"]
 import copy
 
 import numpy as np
-import qtawesome as qta
-from PySide2.QtCore import Qt, QTimer, Signal
-from PySide2.QtWidgets import (QDialog, QDoubleSpinBox, QGridLayout, QGroupBox,
+from PySide6.QtCore import Qt, QTimer, Signal
+from PySide6.QtWidgets import (QDialog, QDoubleSpinBox, QGridLayout, QGroupBox,
                                QLabel, QMessageBox, QPushButton, QSlider,
                                QSplitter)
-from QGrain import DistributionType
-from QGrain.charts.MixedDistributionChart import MixedDistributionChart
-from QGrain.distributions import (BaseDistribution, NormalDistribution,
-                                  SkewNormalDistribution, WeibullDistribution)
-from QGrain.ssu import AsyncWorker, SSUResult, SSUTask
+
+from ..chart.MixedDistributionChart import MixedDistributionChart
+from ..ssu import (DISTRIBUTION_CLASS_MAP, AsyncWorker, DistributionType,
+                   SSUResult, SSUTask)
 
 
 class ManualFittingPanel(QDialog):
@@ -34,18 +32,17 @@ class ManualFittingPanel(QDialog):
 
     def initialize_ui(self):
         self.main_layout = QGridLayout(self)
-
         self.chart_group = QGroupBox(self.tr("Chart"))
         self.chart_layout = QGridLayout(self.chart_group)
-        self.chart = MixedDistributionChart(show_mode=True, toolbar=False)
+        self.chart = MixedDistributionChart(show_mode=True)
         self.chart_layout.addWidget(self.chart)
 
         self.control_group = QGroupBox(self.tr("Control"))
         self.control_layout = QGridLayout(self.control_group)
-        self.try_button = QPushButton(qta.icon("mdi.test-tube"), self.tr("Try"))
+        self.try_button = QPushButton(self.tr("Try"))
         self.try_button.clicked.connect(self.on_try_clicked)
         self.control_layout.addWidget(self.try_button, 1, 0, 1, 4)
-        self.confirm_button = QPushButton(qta.icon("ei.ok-circle"), self.tr("Confirm"))
+        self.confirm_button = QPushButton(self.tr("Confirm"))
         self.confirm_button.clicked.connect(self.on_confirm_clicked)
         self.control_layout.addWidget(self.confirm_button, 2, 0, 1, 4)
 
@@ -66,11 +63,12 @@ class ManualFittingPanel(QDialog):
         input_widgets = []
         mean_range = (-5, 15)
         std_range = (0.0, 10)
-        weight_range = (0, 10)
-        names = [self.tr("Mean"), self.tr("STD"), self.tr("Weight")]
-        ranges = [mean_range, std_range, weight_range]
-        slider_values = [500, 100, 100]
-        input_values = [0.0, 1.0, 1.0]
+        skewness_range = (-10, 10)
+        weight_range = (-10, 10)
+        names = [self.tr("Mean"), self.tr("Standard Deviation"), self.tr("Skewness"), self.tr("Weight")]
+        ranges = [mean_range, std_range, skewness_range, weight_range]
+        slider_values = [500, 100, 500, 600]
+        input_values = [0.0, 1.0, 0.0, 2.0]
 
         for i in range(n_components):
             group = QGroupBox(f"C{i+1}")
@@ -111,14 +109,13 @@ class ManualFittingPanel(QDialog):
 
     @property
     def expected(self):
-        reference = []
+        references = []
         weights = []
-        for i, (mean, std, weight) in enumerate(self.input_widgets):
-            reference.append(dict(mean=mean.value(), std=std.value(), skewness=0.0))
+        for i, (mean, std, skewness, weight) in enumerate(self.input_widgets):
+            references.append(dict(mean=mean.value(), std=std.value(), skewness=skewness.value()))
             weights.append(weight.value())
         weights = np.array(weights)
-        fractions = weights / np.sum(weights)
-        return reference, fractions
+        return references, weights
 
     def show_message(self, title: str, message: str):
         self.normal_msg.setWindowTitle(title)
@@ -136,12 +133,12 @@ class ManualFittingPanel(QDialog):
 
     def on_confirm_clicked(self):
         if self.last_result is not None:
-            for component, (mean, std, weight) in zip(self.last_result.components, self.input_widgets):
-                mean.setValue(component.logarithmic_moments["mean"])
-                std.setValue(component.logarithmic_moments["std"])
-                weight.setValue(component.fraction*10)
+            for i, (component, (mean, std, skewness, weight)) in enumerate(zip(self.last_result.components, self.input_widgets)):
+                mean.setValue(component.moments["mean"])
+                std.setValue(component.moments["std"])
+                skewness.setValue(component.moments["skewness"])
+                weight.setValue(self.last_result.func_args[0, -1, i])
             self.manual_fitting_finished.emit(self.last_result)
-
             self.last_result = None
             self.last_task = None
             self.try_button.setEnabled(False)
@@ -156,12 +153,22 @@ class ManualFittingPanel(QDialog):
         self.last_result = result
         self.confirm_button.setEnabled(True)
 
+    def get_initial_guess(self, distribution_type: DistributionType, references, weights):
+        distribution_class = DISTRIBUTION_CLASS_MAP[distribution_type]
+        params = []
+        for ref, p in zip(references, weights):
+            component_params = list(distribution_class.get_initial_guess(**ref))
+            component_params.append(p)
+            params.append(component_params)
+        params = np.expand_dims(np.array(params).T, 0)
+        return params
+
     def on_try_clicked(self):
         if self.last_task is None:
             return
         new_task = copy.copy(self.last_task)
-        reference, fractions = self.expected
-        initial_guess = BaseDistribution.get_initial_guess(self.last_task.distribution_type, reference, fractions=fractions)
+        references, weights = self.expected
+        initial_guess = self.get_initial_guess(self.last_task.distribution_type, references, weights)
         new_task.initial_guess = initial_guess
         self.async_worker.execute_task(new_task)
 
@@ -172,12 +179,11 @@ class ManualFittingPanel(QDialog):
     def update_chart(self):
         if self.last_task is None:
             return
-        reference, fractions = self.expected
-        for comp_ref in reference:
-            if comp_ref["std"] == 0.0:
+        references, weights = self.expected
+        for ref in references:
+            if ref["std"] == 0.0:
                 return
-        # print(reference)
-        initial_guess = BaseDistribution.get_initial_guess(self.last_task.distribution_type, reference, fractions=fractions)
+        initial_guess = self.get_initial_guess(self.last_task.distribution_type, references, weights)
         result = SSUResult(self.last_task, initial_guess)
         self.chart.show_model(result.view_model, quick=True)
 
@@ -186,23 +192,7 @@ class ManualFittingPanel(QDialog):
         self.try_button.setEnabled(True)
         if self.n_components != task.n_components:
             self.change_n_components(task.n_components)
-        reference, fractions = self.expected
-        initial_guess = BaseDistribution.get_initial_guess(task.distribution_type, reference, fractions=fractions)
+        references, weights = self.expected
+        initial_guess = self.get_initial_guess(self.last_task.distribution_type, references, weights)
         result = SSUResult(task, initial_guess)
         self.chart.show_model(result.view_model, quick=False)
-
-
-if __name__ == "__main__":
-    import sys
-
-    from QGrain.artificial import get_random_sample
-    from QGrain.entry import setup_app
-
-    app, splash = setup_app()
-    main = ManualFittingPanel()
-    main.show()
-    splash.finish(main)
-    sample = get_random_sample().sample_to_fit
-    task = SSUTask(sample, DistributionType.Normal, 3)
-    main.setup_task(task)
-    sys.exit(app.exec_())

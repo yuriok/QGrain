@@ -5,20 +5,19 @@ import pickle
 import time
 import typing
 
-import qtawesome as qta
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QCursor
-from PySide2.QtWidgets import (QAbstractItemView, QComboBox, QDialog,
+
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QCursor
+from PySide6.QtWidgets import (QAbstractItemView, QComboBox, QDialog,
                                QFileDialog, QGridLayout, QLabel, QMenu,
                                QMessageBox, QPushButton, QTableWidget,
                                QTableWidgetItem)
-from QGrain import DistributionType
-from QGrain.distributions import get_distance_func_by_name
-from QGrain.charts.DistanceCurveChart import DistanceCurveChart
-from QGrain.charts.MixedDistributionChart import MixedDistributionChart
-from QGrain.models.ClassicResolverSetting import built_in_distances
-from QGrain.ssu import SSUResult
-from QGrain.models.GrainSizeSample import GrainSizeSample
+
+from ..chart.DistanceCurveChart import DistanceCurveChart
+from ..chart.MixedDistributionChart import MixedDistributionChart
+from ..model import GrainSizeSample
+from ..ssu import SSUResult, built_in_distances, get_distance_func_by_name
+
 
 class ReferenceResultViewer(QDialog):
     PAGE_ROWS = 20
@@ -31,7 +30,7 @@ class ReferenceResultViewer(QDialog):
         self.retry_tasks = {}
         self.init_ui()
         self.distance_chart = DistanceCurveChart(parent=self, toolbar=True)
-        self.mixed_distribution_chart = MixedDistributionChart(parent=self, toolbar=True, use_animation=True)
+        self.mixed_distribution_chart = MixedDistributionChart()
         self.file_dialog = QFileDialog(parent=self)
         self.update_page_list()
         self.update_page(self.page_index)
@@ -53,13 +52,13 @@ class ReferenceResultViewer(QDialog):
         self.main_layout = QGridLayout(self)
         self.main_layout.addWidget(self.data_table, 0, 0, 1, 3)
 
-        self.previous_button = QPushButton(qta.icon("mdi.skip-previous-circle"), self.tr("Previous"))
+        self.previous_button = QPushButton(self.tr("Previous"))
         self.previous_button.setToolTip(self.tr("Click to back to the previous page."))
         self.previous_button.clicked.connect(self.on_previous_button_clicked)
         self.current_page_combo_box = QComboBox()
         self.current_page_combo_box.addItem(self.tr("Page {0}").format(1))
         self.current_page_combo_box.currentIndexChanged.connect(self.update_page)
-        self.next_button = QPushButton(qta.icon("mdi.skip-next-circle"), self.tr("Next"))
+        self.next_button = QPushButton(self.tr("Next"))
         self.next_button.setToolTip(self.tr("Click to jump to the next page."))
         self.next_button.clicked.connect(self.on_next_button_clicked)
         self.main_layout.addWidget(self.previous_button, 1, 0)
@@ -75,24 +74,24 @@ class ReferenceResultViewer(QDialog):
         self.main_layout.addWidget(self.distance_label, 2, 0)
         self.main_layout.addWidget(self.distance_combo_box, 2, 1, 1, 2)
         self.menu = QMenu(self.data_table)
-        self.mark_action = self.menu.addAction(qta.icon("mdi.marker-check"), self.tr("Mark Selection(s) as Reference"))
+        self.mark_action = self.menu.addAction(self.tr("Mark Selection(s) as Reference"))
         self.mark_action.triggered.connect(self.mark_selections)
-        self.unmark_action = self.menu.addAction(qta.icon("mdi.do-not-disturb"), self.tr("Unmark Selection(s)"))
+        self.unmark_action = self.menu.addAction(self.tr("Unmark Selection(s)"))
         self.unmark_action.triggered.connect(self.unmark_selections)
-        self.remove_action = self.menu.addAction(qta.icon("fa.remove"), self.tr("Remove Selection(s)"))
+        self.remove_action = self.menu.addAction(self.tr("Remove Selection(s)"))
         self.remove_action.triggered.connect(self.remove_selections)
-        self.remove_all_action = self.menu.addAction(qta.icon("fa.remove"), self.tr("Remove All"))
+        self.remove_all_action = self.menu.addAction(self.tr("Remove All"))
         self.remove_all_action.triggered.connect(self.remove_all_results)
-        self.plot_loss_chart_action = self.menu.addAction(qta.icon("mdi.chart-timeline-variant"), self.tr("Plot Loss Chart"))
+        self.plot_loss_chart_action = self.menu.addAction(self.tr("Plot Loss Chart"))
         self.plot_loss_chart_action.triggered.connect(self.show_distance)
-        self.plot_distribution_chart_action = self.menu.addAction(qta.icon("fa5s.chart-area"), self.tr("Plot Distribution Chart"))
+        self.plot_distribution_chart_action = self.menu.addAction(self.tr("Plot Distribution Chart"))
         self.plot_distribution_chart_action.triggered.connect(self.show_distribution)
-        self.plot_distribution_animation_action = self.menu.addAction(qta.icon("fa5s.chart-area"), self.tr("Plot Distribution Chart (Animation)"))
+        self.plot_distribution_animation_action = self.menu.addAction(self.tr("Plot Distribution Chart (Animation)"))
         self.plot_distribution_animation_action.triggered.connect(self.show_history_distribution)
 
-        self.load_dump_action = self.menu.addAction(qta.icon("fa.database"), self.tr("Load Binary Dump"))
+        self.load_dump_action = self.menu.addAction(self.tr("Load Binary Dump"))
         self.load_dump_action.triggered.connect(lambda: self.load_dump(mark_ref=True))
-        self.save_dump_action = self.menu.addAction(qta.icon("fa.save"), self.tr("Save Binary Dump"))
+        self.save_dump_action = self.menu.addAction(self.tr("Save Binary Dump"))
         self.save_dump_action.triggered.connect(self.save_dump)
         self.data_table.customContextMenuRequested.connect(self.show_menu)
 
@@ -182,9 +181,8 @@ class ReferenceResultViewer(QDialog):
         else:
             start, end = page_index * self.PAGE_ROWS, (page_index+1) * self.PAGE_ROWS
         self.data_table.setRowCount(end-start)
-        self.data_table.setColumnCount(8)
+        self.data_table.setColumnCount(7)
         self.data_table.setHorizontalHeaderLabels([
-            self.tr("Resolver"),
             self.tr("Distribution Type"),
             self.tr("N_components"),
             self.tr("N_iterations"),
@@ -195,16 +193,15 @@ class ReferenceResultViewer(QDialog):
         sample_names = [result.sample.name for result in self.__fitting_results[start: end]]
         self.data_table.setVerticalHeaderLabels(sample_names)
         for row, result in enumerate(self.__fitting_results[start: end]):
-            write(row, 0, result.task.resolver)
-            write(row, 1, self.get_distribution_name(result.task.distribution_type))
-            write(row, 2, result.task.n_components)
-            write(row, 3, result.n_iterations)
-            write(row, 4, result.time_spent)
-            write(row, 5, self.distance_func(result.sample.distribution, result.distribution))
+            write(row, 0, result.task.distribution_type.value)
+            write(row, 1, result.task.n_components)
+            write(row, 2, result.n_iterations)
+            write(row, 3, result.time_spent)
+            write(row, 4, self.distance_func(result.sample.distribution, result.distribution))
             has_ref = result.task.initial_guess is not None or result.task.reference is not None
-            write(row, 6, self.tr("Yes") if has_ref else self.tr("No"))
+            write(row, 5, self.tr("Yes") if has_ref else self.tr("No"))
             is_ref = result.uuid in self.__reference_map
-            write(row, 7, self.tr("Yes") if is_ref else self.tr("No"))
+            write(row, 6, self.tr("Yes") if is_ref else self.tr("No"))
 
         self.data_table.resizeColumnsToContents()
 
@@ -215,16 +212,6 @@ class ReferenceResultViewer(QDialog):
     def on_next_button_clicked(self):
         if self.page_index < self.n_pages - 1:
             self.current_page_combo_box.setCurrentIndex(self.page_index+1)
-
-    def get_distribution_name(self, distribution_type: DistributionType):
-        if distribution_type == DistributionType.Normal:
-            return self.tr("Normal")
-        elif distribution_type == DistributionType.Weibull:
-            return self.tr("Weibull")
-        elif distribution_type == DistributionType.SkewNormal:
-            return self.tr("Skew Normal")
-        else:
-            raise NotImplementedError(distribution_type)
 
     def add_result(self, result: SSUResult):
         if self.n_results == 0 or \

@@ -1,19 +1,17 @@
-__all__ = ["ConsolePanel"]
+from PySide6.QtCore import QSize, Qt
+from PySide6.QtGui import QCloseEvent
+from PySide6.QtWidgets import (QDialog, QGridLayout, QMessageBox, QPushButton,
+                               QSizePolicy)
 
+from .AboutDialog import AboutDialog
+from .ClusteringAnalyzer import ClusteringAnalyzer
+from .DatasetGenerator import DatasetGenerator
+from .EMMAAnalyzer import EMMAAnalyzer
+from .GrainSizeDatasetViewer import GrainSizeDatasetViewer
+from .PCAAnalyzer import PCAAnalyzer
+from .ReferenceAssembler import ReferenceAssembler
+from .SSUAnalyzer import SSUAnalyzer
 
-import qtawesome as qta
-from PySide2.QtCore import QSize, Qt
-from PySide2.QtWidgets import QDialog, QGridLayout, QMessageBox, QSizePolicy, QToolButton, QToolButton
-from QGrain.ui.AboutPanel import AboutPanel
-from QGrain.ui.EMMAResolverPanel import EMMAResolverPanel
-from QGrain.ui.GrainSizeDatasetViewer import GrainSizeDatasetViewer
-from QGrain.ui.PCAResolverPanel import PCAResolverPanel
-from QGrain.ui.RandomDatasetGenerator import RandomDatasetGenerator
-from QGrain.ui.SSUAlgorithmTesterPanel import SSUAlgorithmTesterPanel
-from QGrain.ui.SSUResolverPanel import SSUResolverPanel
-from QGrain.ui.HCResolverPanel import HCResolverPanel
-# from QGrain.ui.AppSettingPanel import AppSettingPanel
-from PySide2.QtGui import QCloseEvent
 
 class ConsolePanel(QDialog):
     def __init__(self, parent=None):
@@ -27,15 +25,13 @@ class ConsolePanel(QDialog):
         self.normal_msg.setDefaultButton(QMessageBox.Cancel)
 
     def init_ui(self):
-        self.dataset_generator = RandomDatasetGenerator(parent=self)
+        self.dataset_generator = DatasetGenerator(parent=self)
         self.dataset_viewer = GrainSizeDatasetViewer(parent=self)
-        self.pca_resolver = PCAResolverPanel(parent=self)
-        self.hc_resolver = HCResolverPanel(parent=self)
-        self.emma_resolver = EMMAResolverPanel(parent=self)
-        self.ssu_resolver = SSUResolverPanel(parent=self)
-        self.ssu_tester = SSUAlgorithmTesterPanel(parent=self)
-        # self.setting_window = AppSettingPanel(parent=self)
-        self.abount_window = AboutPanel(parent=self)
+        self.pca_resolver = PCAAnalyzer(parent=self)
+        self.hc_resolver = ClusteringAnalyzer(parent=self)
+        self.emma_resolver = EMMAAnalyzer(parent=self)
+        self.ssu_resolver = SSUAnalyzer(parent=self)
+        self.abount_window = AboutDialog(parent=self)
 
         self.main_layout = QGridLayout(self)
         self.main_layout.setRowMinimumHeight(0, 120)
@@ -45,68 +41,19 @@ class ConsolePanel(QDialog):
         self.main_layout.setColumnMinimumWidth(2, 160)
         self.main_layout.setColumnMinimumWidth(3, 160)
 
-        self.dataset_generator_button = QToolButton()
-        self.dataset_generator_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-        self.dataset_generator_button.setIcon(qta.icon("fa.random"))
-        self.dataset_generator_button.setIconSize(QSize(64, 64))
-        self.dataset_generator_button.setText(self.tr("Dataset Generator"))
-        self.dataset_generator_button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        self.dataset_generator_button = QPushButton(self.tr("Dataset Generator"))
         self.dataset_generator_button.clicked.connect(lambda: self.dataset_generator.show())
-        self.dataset_viewer_button = QToolButton()
-        self.dataset_viewer_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-        self.dataset_viewer_button.setIcon(qta.icon("fa.table"))
-        self.dataset_viewer_button.setIconSize(QSize(64, 64))
-        self.dataset_viewer_button.setText(self.tr("Dataset Viewer"))
-        self.dataset_viewer_button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        self.dataset_viewer_button = QPushButton(self.tr("Dataset Viewer"))
         self.dataset_viewer_button.clicked.connect(lambda: self.dataset_viewer.show())
-        self.pca_resolver_button = QToolButton()
-        self.pca_resolver_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-        self.pca_resolver_button.setIcon(qta.icon("fa.exchange"))
-        self.pca_resolver_button.setIconSize(QSize(64, 64))
-        self.pca_resolver_button.setText(self.tr("PCA Resolver"))
-        self.pca_resolver_button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        self.pca_resolver_button = QPushButton(self.tr("PCA Resolver"))
         self.pca_resolver_button.clicked.connect(lambda: self.pca_resolver.show())
-        self.hc_resolver_button = QToolButton()
-        self.hc_resolver_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-        self.hc_resolver_button.setIcon(qta.icon("fa.sitemap"))
-        self.hc_resolver_button.setIconSize(QSize(64, 64))
-        self.hc_resolver_button.setText(self.tr("HC Resolver"))
-        self.hc_resolver_button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        self.hc_resolver_button = QPushButton(self.tr("HC Resolver"))
         self.hc_resolver_button.clicked.connect(lambda: self.hc_resolver.show())
-        self.emma_resolver_button = QToolButton()
-        self.emma_resolver_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-        self.emma_resolver_button.setIcon(qta.icon("fa.cubes"))
-        self.emma_resolver_button.setIconSize(QSize(64, 64))
-        self.emma_resolver_button.setText(self.tr("EMMA Resolver"))
-        self.emma_resolver_button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        self.emma_resolver_button = QPushButton(self.tr("EMMA Resolver"))
         self.emma_resolver_button.clicked.connect(lambda: self.emma_resolver.show())
-        self.ssu_resolver_button = QToolButton()
-        self.ssu_resolver_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-        self.ssu_resolver_button.setIcon(qta.icon("fa.puzzle-piece"))
-        self.ssu_resolver_button.setIconSize(QSize(64, 64))
-        self.ssu_resolver_button.setText(self.tr("SSU Resolver"))
-        self.ssu_resolver_button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        self.ssu_resolver_button = QPushButton(self.tr("SSU Resolver"))
         self.ssu_resolver_button.clicked.connect(lambda: self.ssu_resolver.show())
-        self.ssu_tester_button = QToolButton()
-        self.ssu_tester_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-        self.ssu_tester_button.setIcon(qta.icon("fa.flask"))
-        self.ssu_tester_button.setIconSize(QSize(64, 64))
-        self.ssu_tester_button.setText(self.tr("SSU Tester"))
-        self.ssu_tester_button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-        self.ssu_tester_button.clicked.connect(lambda: self.ssu_tester.show())
-        # self.setting_button = QToolButton()
-        # self.setting_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-        # self.setting_button.setIcon(qta.icon("fa.gears"))
-        # self.setting_button.setIconSize(QSize(64, 64))
-        # self.setting_button.setText(self.tr("Setting"))
-        # self.setting_button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-        # self.setting_button.clicked.connect(lambda: self.setting_window.show())
-        self.about_button = QToolButton()
-        self.about_button.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-        self.about_button.setIcon(qta.icon("fa.info-circle"))
-        self.about_button.setIconSize(QSize(64, 64))
-        self.about_button.setText(self.tr("About"))
-        self.about_button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        self.about_button = QPushButton(self.tr("About"))
         self.about_button.clicked.connect(lambda: self.abount_window.show())
 
         self.main_layout.addWidget(self.dataset_generator_button, 0, 0)
@@ -115,8 +62,7 @@ class ConsolePanel(QDialog):
         self.main_layout.addWidget(self.hc_resolver_button, 0, 3)
         self.main_layout.addWidget(self.emma_resolver_button, 1, 0)
         self.main_layout.addWidget(self.ssu_resolver_button, 1, 1)
-        self.main_layout.addWidget(self.ssu_tester_button, 1, 2)
-        self.main_layout.addWidget(self.about_button, 1, 3)
+        self.main_layout.addWidget(self.about_button, 1, 2)
 
     def closeEvent(self, event: QCloseEvent):
         res = self.normal_msg.exec_()
@@ -124,14 +70,3 @@ class ConsolePanel(QDialog):
             event.accept()
         else:
             event.ignore()
-
-
-if __name__ == "__main__":
-    import sys
-    from QGrain.entry import setup_app
-
-    app, splash = setup_app()
-    main = ConsolePanel()
-    main.show()
-    splash.finish(main)
-    sys.exit(app.exec_())

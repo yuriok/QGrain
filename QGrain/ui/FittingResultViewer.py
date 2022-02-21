@@ -10,31 +10,29 @@ from uuid import UUID
 
 import numpy as np
 import openpyxl
-import qtawesome as qta
-from PySide2.QtCore import QCoreApplication, QPoint, Qt, QTimer, Signal
-from PySide2.QtGui import QCursor
-from PySide2.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox,
+from PySide6.QtCore import QCoreApplication, QPoint, Qt, QTimer, Signal
+from PySide6.QtGui import QCursor
+from PySide6.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox,
                                QDialog, QFileDialog, QGridLayout, QLabel,
                                QMenu, QMessageBox, QPushButton, QTableWidget,
                                QTableWidgetItem)
-from QGrain import QGRAIN_VERSION, DistributionType
-from QGrain.charts.BoxplotChart import BoxplotChart
-from QGrain.charts.DistanceCurveChart import DistanceCurveChart
-from QGrain.charts.MixedDistributionChart import MixedDistributionChart
-from QGrain.charts.SSUTypicalComponentChart import SSUTypicalComponentChart
-from QGrain.distributions import get_distance_func_by_name
-from QGrain.models.ClassicResolverSetting import built_in_distances
-from QGrain.models.GrainSizeSample import GrainSizeSample
-from QGrain.ssu import AsyncWorker, SSUResult, SSUTask
-from QGrain.statistic import logarithmic
-from QGrain.ui.ReferenceResultViewer import ReferenceResultViewer
-from QGrain.use_excel import column_to_char, prepare_styles
 from sklearn.cluster import KMeans
+
+from .. import QGRAIN_VERSION
+from ..chart.BoxplotChart import BoxplotChart
+from ..chart.DistanceCurveChart import DistanceCurveChart
+from ..chart.MixedDistributionChart import MixedDistributionChart
+from ..chart.SSUTypicalComponentChart import SSUTypicalComponentChart
+from ..io import column_to_char, prepare_styles
+from ..ssu import (AsyncWorker, SSUResult, SSUTask, built_in_distances,
+                   get_distance_func_by_name)
+from ..statistic import get_all_statistic, logarithmic
+from ..ui.ReferenceResultViewer import ReferenceResultViewer
 
 
 class FittingResultViewer(QDialog):
     PAGE_ROWS = 20
-    logger = logging.getLogger("root.QGrain.ui.FittingResultViewer")
+    logger = logging.getLogger("QGrain.ui.FittingResultViewer")
     result_marked = Signal(SSUResult)
     def __init__(self, reference_viewer: ReferenceResultViewer, parent=None):
         super().__init__(parent=parent, f=Qt.Window)
@@ -43,10 +41,10 @@ class FittingResultViewer(QDialog):
         self.retry_tasks = {} # type: dict[UUID, SSUTask]
         self.__reference_viewer = reference_viewer
         self.init_ui()
-        self.boxplot_chart = BoxplotChart(parent=self, toolbar=True)
-        self.typical_chart = SSUTypicalComponentChart(parent=self, toolbar=True)
-        self.distance_chart = DistanceCurveChart(parent=self, toolbar=True)
-        self.mixed_distribution_chart = MixedDistributionChart(parent=self, toolbar=True, use_animation=True)
+        self.boxplot_chart = BoxplotChart()
+        self.typical_chart = SSUTypicalComponentChart()
+        self.distance_chart = DistanceCurveChart()
+        self.mixed_distribution_chart = MixedDistributionChart()
         self.file_dialog = QFileDialog(parent=self)
         self.async_worker = AsyncWorker()
         self.async_worker.background_worker.task_succeeded.connect(self.on_fitting_succeeded)
@@ -80,13 +78,13 @@ class FittingResultViewer(QDialog):
         self.main_layout = QGridLayout(self)
         self.main_layout.addWidget(self.data_table, 0, 0, 1, 3)
 
-        self.previous_button = QPushButton(qta.icon("mdi.skip-previous-circle"), self.tr("Previous"))
+        self.previous_button = QPushButton(self.tr("Previous"))
         self.previous_button.setToolTip(self.tr("Click to back to the previous page."))
         self.previous_button.clicked.connect(self.on_previous_button_clicked)
         self.current_page_combo_box = QComboBox()
         self.current_page_combo_box.addItem(self.tr("Page {0}").format(1))
         self.current_page_combo_box.currentIndexChanged.connect(self.update_page)
-        self.next_button = QPushButton(qta.icon("mdi.skip-next-circle"), self.tr("Next"))
+        self.next_button = QPushButton(self.tr("Next"))
         self.next_button.setToolTip(self.tr("Click to jump to the next page."))
         self.next_button.clicked.connect(self.on_next_button_clicked)
         self.main_layout.addWidget(self.previous_button, 1, 0)
@@ -103,48 +101,48 @@ class FittingResultViewer(QDialog):
         self.main_layout.addWidget(self.distance_combo_box, 2, 1, 1, 2)
         self.menu = QMenu(self.data_table)
         self.menu.setShortcutAutoRepeat(True)
-        self.mark_action = self.menu.addAction(qta.icon("mdi.marker-check"), self.tr("Mark Selection(s) as Reference"))
+        self.mark_action = self.menu.addAction(self.tr("Mark Selection(s) as Reference"))
         self.mark_action.triggered.connect(self.mark_selections)
-        self.remove_selection_action = self.menu.addAction(qta.icon("fa.remove"), self.tr("Remove Selection(s)"))
+        self.remove_selection_action = self.menu.addAction(self.tr("Remove Selection(s)"))
         self.remove_selection_action.triggered.connect(self.remove_selections)
-        self.remove_all_action = self.menu.addAction(qta.icon("fa.remove"), self.tr("Remove All"))
+        self.remove_all_action = self.menu.addAction(self.tr("Remove All"))
         self.remove_all_action.triggered.connect(self.remove_all_results)
-        self.plot_loss_chart_action = self.menu.addAction(qta.icon("mdi.chart-timeline-variant"), self.tr("Plot Loss Chart"))
+        self.plot_loss_chart_action = self.menu.addAction(self.tr("Plot Loss Chart"))
         self.plot_loss_chart_action.triggered.connect(self.show_distance)
-        self.plot_distribution_chart_action = self.menu.addAction(qta.icon("fa5s.chart-area"), self.tr("Plot Distribution Chart"))
+        self.plot_distribution_chart_action = self.menu.addAction(self.tr("Plot Distribution Chart"))
         self.plot_distribution_chart_action.triggered.connect(self.show_distribution)
-        self.plot_distribution_animation_action = self.menu.addAction(qta.icon("fa5s.chart-area"), self.tr("Plot Distribution Chart (Animation)"))
+        self.plot_distribution_animation_action = self.menu.addAction(self.tr("Plot Distribution Chart (Animation)"))
         self.plot_distribution_animation_action.triggered.connect(self.show_history_distribution)
 
-        self.detect_outliers_menu = self.menu.addMenu(qta.icon("mdi.magnify"), self.tr("Detect Outliers"))
+        self.detect_outliers_menu = self.menu.addMenu(self.tr("Detect Outliers"))
         self.check_nan_and_inf_action = self.detect_outliers_menu.addAction(self.tr("Check NaN and Inf"))
         self.check_nan_and_inf_action.triggered.connect(self.check_nan_and_inf)
         self.check_final_distances_action = self.detect_outliers_menu.addAction(self.tr("Check Final Distances"))
         self.check_final_distances_action.triggered.connect(self.check_final_distances)
-        self.check_component_mean_action = self.detect_outliers_menu.addAction(self.tr("Check Component Mean"))
-        self.check_component_mean_action.triggered.connect(lambda: self.check_component_moments("mean"))
-        self.check_component_std_action = self.detect_outliers_menu.addAction(self.tr("Check Component STD"))
-        self.check_component_std_action.triggered.connect(lambda: self.check_component_moments("std"))
-        self.check_component_skewness_action = self.detect_outliers_menu.addAction(self.tr("Check Component Skewness"))
-        self.check_component_skewness_action.triggered.connect(lambda: self.check_component_moments("skewness"))
-        self.check_component_kurtosis_action = self.detect_outliers_menu.addAction(self.tr("Check Component Kurtosis"))
-        self.check_component_kurtosis_action.triggered.connect(lambda: self.check_component_moments("kurtosis"))
-        self.check_component_fractions_action = self.detect_outliers_menu.addAction(self.tr("Check Component Fractions"))
-        self.check_component_fractions_action.triggered.connect(self.check_component_fractions)
+        self.check_mean_action = self.detect_outliers_menu.addAction(self.tr("Check Mean"))
+        self.check_mean_action.triggered.connect(lambda: self.check_component_moments("mean"))
+        self.check_std_action = self.detect_outliers_menu.addAction(self.tr("Check Standard Deviation"))
+        self.check_std_action.triggered.connect(lambda: self.check_component_moments("std"))
+        self.check_skewness_action = self.detect_outliers_menu.addAction(self.tr("Check Skewness"))
+        self.check_skewness_action.triggered.connect(lambda: self.check_component_moments("skewness"))
+        self.check_kurtosis_action = self.detect_outliers_menu.addAction(self.tr("Check Kurtosis"))
+        self.check_kurtosis_action.triggered.connect(lambda: self.check_component_moments("kurtosis"))
+        self.check_proportion_action = self.detect_outliers_menu.addAction(self.tr("Check Proportion"))
+        self.check_proportion_action.triggered.connect(self.check_component_proportion)
         self.degrade_results_action = self.detect_outliers_menu.addAction(self.tr("Degrade Results"))
         self.degrade_results_action.triggered.connect(self.degrade_results)
         self.try_align_components_action = self.detect_outliers_menu.addAction(self.tr("Try Align Components"))
         self.try_align_components_action.triggered.connect(self.try_align_components)
 
-        self.analyse_typical_components_action = self.menu.addAction(qta.icon("ei.tags"), self.tr("Analyse Typical Components"))
+        self.analyse_typical_components_action = self.menu.addAction(self.tr("Analyse Typical Components"))
         self.analyse_typical_components_action.triggered.connect(self.analyse_typical_components)
-        self.load_dump_action = self.menu.addAction(qta.icon("fa.database"), self.tr("Load Binary Dump"))
+        self.load_dump_action = self.menu.addAction(self.tr("Load Binary Dump"))
         self.load_dump_action.triggered.connect(self.load_dump)
-        self.save_dump_action = self.menu.addAction(qta.icon("fa.save"), self.tr("Save Binary Dump"))
+        self.save_dump_action = self.menu.addAction(self.tr("Save Binary Dump"))
         self.save_dump_action.triggered.connect(self.save_dump)
-        self.save_excel_action = self.menu.addAction(qta.icon("mdi.microsoft-excel"), self.tr("Save Excel"))
+        self.save_excel_action = self.menu.addAction(self.tr("Save Excel"))
         self.save_excel_action.triggered.connect(lambda: self.on_save_excel_clicked(align_components=False))
-        self.save_excel_align_action = self.menu.addAction(qta.icon("mdi.microsoft-excel"), self.tr("Save Excel (Force Alignment)"))
+        self.save_excel_align_action = self.menu.addAction(self.tr("Save Excel (Force Alignment)"))
         self.save_excel_align_action.triggered.connect(lambda: self.on_save_excel_clicked(align_components=True))
         self.data_table.customContextMenuRequested.connect(self.show_menu)
         # necessary to add actions of menu to this widget itself,
@@ -237,9 +235,8 @@ class FittingResultViewer(QDialog):
         else:
             start, end = page_index * self.PAGE_ROWS, (page_index+1) * self.PAGE_ROWS
         self.data_table.setRowCount(end-start)
-        self.data_table.setColumnCount(7)
+        self.data_table.setColumnCount(6)
         self.data_table.setHorizontalHeaderLabels([
-            self.tr("Resolver"),
             self.tr("Distribution Type"),
             self.tr("N_components"),
             self.tr("N_iterations"),
@@ -249,14 +246,13 @@ class FittingResultViewer(QDialog):
         sample_names = [result.sample.name for result in self.__fitting_results[start: end]]
         self.data_table.setVerticalHeaderLabels(sample_names)
         for row, result in enumerate(self.__fitting_results[start: end]):
-            write(row, 0, result.task.resolver)
-            write(row, 1, self.get_distribution_name(result.task.distribution_type))
-            write(row, 2, result.task.n_components)
-            write(row, 3, result.n_iterations)
-            write(row, 4, result.time_spent)
-            write(row, 5, self.distance_func(result.sample.distribution, result.distribution))
-            has_ref = result.task.initial_guess is not None or result.task.reference is not None
-            write(row, 6, self.tr("Yes") if has_ref else self.tr("No"))
+            write(row, 0, result.task.distribution_type.value)
+            write(row, 1, result.task.n_components)
+            write(row, 2, result.n_iterations)
+            write(row, 3, result.time_spent)
+            write(row, 4, self.distance_func(result.sample.distribution, result.distribution))
+            has_ref = result.task.initial_guess is not None
+            write(row, 5, self.tr("Yes") if has_ref else self.tr("No"))
 
         self.data_table.resizeColumnsToContents()
 
@@ -267,16 +263,6 @@ class FittingResultViewer(QDialog):
     def on_next_button_clicked(self):
         if self.page_index < self.n_pages - 1:
             self.current_page_combo_box.setCurrentIndex(self.page_index+1)
-
-    def get_distribution_name(self, distribution_type: DistributionType):
-        if distribution_type == DistributionType.Normal:
-            return self.tr("Normal")
-        elif distribution_type == DistributionType.Weibull:
-            return self.tr("Weibull")
-        elif distribution_type == DistributionType.SkewNormal:
-            return self.tr("Skew Normal")
-        else:
-            raise NotImplementedError(distribution_type)
 
     def add_result(self, result: SSUResult):
         if self.n_results == 0 or \
@@ -380,7 +366,7 @@ class FittingResultViewer(QDialog):
                         if not np.all(np.less_equal(classes_error, 1e-8)):
                             classes_inconsistent = True
                     if classes_inconsistent:
-                        self.show_error(self.tr("The results in the dump file has inconsistent grain-size classes with that in your list."))
+                        self.show_error(self.tr("The results in the dump file has inconsistent grain size classes with that in your list."))
                         return
                 self.add_results(results)
             else:
@@ -403,6 +389,7 @@ class FittingResultViewer(QDialog):
 
         results = self.__fitting_results.copy()
         classes_μm = results[0].classes_μm
+        classes_φ = results[0].classes_φ
         n_components_list = [result.n_components for result in self.__fitting_results]
         count_dict = Counter(n_components_list)
         max_n_components = max(count_dict.keys())
@@ -440,7 +427,7 @@ class FittingResultViewer(QDialog):
             for target_flag in flag_set:
                 for i, flag in enumerate(flags):
                     if flag == target_flag:
-                        picked.append((target_flag, logarithmic(classes_μm, stacked_components[i])["mean"]))
+                        picked.append((target_flag, logarithmic(classes_φ, stacked_components[i])["mean"]))
                         break
             picked.sort(key=lambda x: x[1])
             flag_map = {flag: index for index, (flag, _) in enumerate(picked)}
@@ -498,10 +485,8 @@ class FittingResultViewer(QDialog):
         ws.column_dimensions[column_to_char(0)].width = 16
         headers = [self.tr("Distribution Type"),
                    self.tr("N_components"),
-                   self.tr("Resolver"),
                    self.tr("Resolver Settings"),
                    self.tr("Initial Guess"),
-                   self.tr("Reference"),
                    self.tr("Spent Time [s]"),
                    self.tr("N_iterations"),
                    self.tr("Final Distance [log10MSE]")]
@@ -519,13 +504,11 @@ class FittingResultViewer(QDialog):
             write(row, 0, result.sample.name, style=style)
             write(row, 1, result.distribution_type.name, style=style)
             write(row, 2, result.n_components, style=style)
-            write(row, 3, result.task.resolver, style=style)
-            write(row, 4, self.tr("Default") if result.task.resolver_setting is None else result.task.resolver_setting.__str__(), style=style)
-            write(row, 5, self.tr("None") if result.task.initial_guess is None else result.task.initial_guess.__str__(), style=style)
-            write(row, 6, self.tr("None") if result.task.reference is None else result.task.reference.__str__(), style=style)
-            write(row, 7, result.time_spent, style=style)
-            write(row, 8, result.n_iterations, style=style)
-            write(row, 9, result.get_distance("log10MSE"), style=style)
+            write(row, 3, self.tr("Default") if result.task.resolver_setting is None else result.task.resolver_setting.__str__(), style=style)
+            write(row, 4, self.tr("None") if result.task.initial_guess is None else result.task.initial_guess.__str__(), style=style)
+            write(row, 5, result.time_spent, style=style)
+            write(row, 6, result.n_iterations, style=style)
+            write(row, 7, result.get_distance("log10MSE"), style=style)
 
         ws = wb.create_sheet(self.tr("Statistic Moments"))
         write(0, 0, self.tr("Sample Name"), style="header")
@@ -555,13 +538,14 @@ class FittingResultViewer(QDialog):
             write(row, 0, result.sample.name, style=style)
             for component in result.components:
                 index = flags[flag_index]
-                write(row, index*len(sub_headers)+1, component.fraction, style=style)
-                write(row, index*len(sub_headers)+2, component.logarithmic_moments["mean"], style=style)
-                write(row, index*len(sub_headers)+3, component.geometric_moments["mean"], style=style)
-                write(row, index*len(sub_headers)+4, component.logarithmic_moments["std"], style=style)
-                write(row, index*len(sub_headers)+5, component.geometric_moments["std"], style=style)
-                write(row, index*len(sub_headers)+6, component.logarithmic_moments["skewness"], style=style)
-                write(row, index*len(sub_headers)+7, component.logarithmic_moments["kurtosis"], style=style)
+                statistics = get_all_statistic(result.classes_μm, result.classes_φ, component.distribution)
+                write(row, index*len(sub_headers)+1, component.proportion, style=style)
+                write(row, index*len(sub_headers)+2, statistics["logarithmic"]["mean"], style=style)
+                write(row, index*len(sub_headers)+3, statistics["geometric"]["mean"], style=style)
+                write(row, index*len(sub_headers)+4, statistics["logarithmic"]["std"], style=style)
+                write(row, index*len(sub_headers)+5, statistics["geometric"]["std"], style=style)
+                write(row, index*len(sub_headers)+6, statistics["logarithmic"]["skewness"], style=style)
+                write(row, index*len(sub_headers)+7, statistics["logarithmic"]["kurtosis"], style=style)
                 flag_index += 1
 
         ws = wb.create_sheet(self.tr("Unmixed Components"))
@@ -581,7 +565,7 @@ class FittingResultViewer(QDialog):
             ws.merge_cells(start_row=row+1, start_column=1, end_row=row+result.n_components+1, end_column=1)
             for component_i, component in enumerate(result.components, 1):
                 write(row, 1, self.tr("C{0}").format(component_i), style=style)
-                for col, value in enumerate(component.distribution*component.fraction, 2):
+                for col, value in enumerate(component.distribution*component.proportion, 2):
                     write(row, col, value, style=style)
                 row += 1
             write(row, 1, self.tr("Sum"), style=style)
@@ -652,7 +636,7 @@ class FittingResultViewer(QDialog):
         self.show_error(self.tr("Failed to retry task, sample name={0}.\n{1}").format(task.sample.name, failed_info))
         self.logger.warning(f"Failed to retry task, sample name={task.sample.name}, distribution_type={task.distribution_type.name}, n_components={task.n_components}")
 
-    def retry_results(self, indexes, results):
+    def retry_results(self, indexes: typing.List[int], results: typing.List[SSUResult]):
         assert len(indexes) == len(results)
         if len(results) == 0:
             return
@@ -666,15 +650,11 @@ class FittingResultViewer(QDialog):
                 ref_result = self.__reference_viewer.find_similar(result.sample, nearby_results)
             else:
                 ref_result = query
-            keys = ["mean", "std", "skewness"]
-            # reference = [{key: comp.logarithmic_moments[key] for key in keys} for comp in ref_result.components]
             task = SSUTask(result.sample,
                            ref_result.distribution_type,
                            ref_result.n_components,
-                           resolver=ref_result.task.resolver,
                            resolver_setting=ref_result.task.resolver_setting,
-                        #    reference=reference)
-                           initial_guess=ref_result.last_func_args)
+                           initial_guess=ref_result.func_args)
 
             self.logger.debug(f"Retry task: sample name={task.sample.name}, distribution_type={task.distribution_type.name}, n_components={task.n_components}")
             self.retry_tasks[task.uuid] = index
@@ -685,7 +665,7 @@ class FittingResultViewer(QDialog):
         degrade_indexes = [] # type: list[int]
         for i, result in enumerate(self.__fitting_results):
             for component in result.components:
-                if component.fraction < 1e-3:
+                if component.proportion < 1e-3:
                     degrade_results.append(result)
                     degrade_indexes.append(i)
                     break
@@ -702,18 +682,19 @@ class FittingResultViewer(QDialog):
             reference = []
             n_redundant = 0
             for component in result.components:
-                if component.fraction < 1e-3:
+                if component.proportion < 1e-3:
                     n_redundant += 1
                 else:
-                    reference.append(dict(mean=component.logarithmic_moments["mean"],
-                                          std=component.logarithmic_moments["std"],
-                                          skewness=component.logarithmic_moments["skewness"]))
-            task = SSUTask(result.sample,
-                               result.distribution_type,
-                               result.n_components-n_redundant if result.n_components > n_redundant else 1,
-                               resolver=result.task.resolver,
-                               resolver_setting=result.task.resolver_setting,
-                               reference=reference)
+                    reference.append(
+                        dict(mean=component.moments["mean"],
+                             std=component.moments["std"],
+                             skewness=component.moments["skewness"]))
+            task = SSUTask(
+                result.sample,
+                result.distribution_type,
+                result.n_components-n_redundant if result.n_components > n_redundant else 1,
+                resolver_setting=result.task.resolver_setting,
+                reference=reference)
             self.logger.debug(f"Retry task: sample name={task.sample.name}, distribution_type={task.distribution_type.name}, n_components={task.n_components}")
             self.retry_tasks[task.uuid] = index
             self.async_worker.execute_task(task)
@@ -725,10 +706,10 @@ class FittingResultViewer(QDialog):
             self.show_info(self.tr("No fitting result was evaluated as an outlier."))
         else:
             if len(outlier_results) > 100:
-                self.outlier_msg.setText(self.tr("The fitting results have the component that its fraction is near zero:\n    {0}...(total {1} outliers)\nHow to deal with them?").format(
+                self.outlier_msg.setText(self.tr("The fitting results have the component that its proportion is near zero:\n    {0}...(total {1} outliers)\nHow to deal with them?").format(
                         ", ".join([result.sample.name for result in outlier_results[:100]]), len(outlier_results)))
             else:
-                self.outlier_msg.setText(self.tr("The fitting results have the component that its fraction is near zero:\n    {0}\nHow to deal with them?").format(
+                self.outlier_msg.setText(self.tr("The fitting results have the component that its proportion is near zero:\n    {0}\nHow to deal with them?").format(
                         ", ".join([result.sample.name for result in outlier_results])))
             res = self.outlier_msg.exec_()
             if res == QMessageBox.Discard:
@@ -802,10 +783,10 @@ class FittingResultViewer(QDialog):
 
         for result in self.__fitting_results:
             for i, component in enumerate(result.components):
-                if np.isnan(component.logarithmic_moments[key]) or np.isinf(component.logarithmic_moments[key]):
+                if np.isnan(component.moments[key]) or np.isinf(component.moments[key]):
                     pass
                 else:
-                    moments[i].append(component.logarithmic_moments[key])
+                    moments[i].append(component.moments[key])
 
         # key_trans = {"mean": self.tr("Mean"), "std": self.tr("STD"), "skewness": self.tr("Skewness"), "kurtosis": self.tr("Kurtosis")}
         key_label_trans = {"mean": self.tr("Mean [φ]"), "std": self.tr("STD [φ]"), "skewness": self.tr("Skewness"), "kurtosis": self.tr("Kurtosis")}
@@ -828,7 +809,7 @@ class FittingResultViewer(QDialog):
 
             for j, result in enumerate(self.__fitting_results):
                 if result.n_components > i:
-                    distance = result.components[i].logarithmic_moments[key]
+                    distance = result.components[i].moments[key]
                     if distance > value_3_4 + distance_QR * 1.5 or distance < value_1_4 - distance_QR * 1.5:
                         outlier_dict[j] = result
 
@@ -840,16 +821,16 @@ class FittingResultViewer(QDialog):
         self.logger.debug(f"Outlier results with abnormal {key} values of their components: {[result.sample.name for result in outlier_results]}")
         self.ask_deal_outliers(outlier_results, outlier_indexes)
 
-    def check_component_fractions(self):
+    def check_component_proportion(self):
         outlier_results = []
         outlier_indexes = []
         for i, result in enumerate(self.__fitting_results):
             for component in result.components:
-                if component.fraction < 1e-3:
+                if component.proportion < 1e-3:
                     outlier_results.append(result)
                     outlier_indexes.append(i)
                     break
-        self.logger.debug(f"Outlier results with the component that its fraction is near zero: {[result.sample.name for result in outlier_results]}")
+        self.logger.debug(f"Outlier results with the component that its proportion is near zero: {[result.sample.name for result in outlier_results]}")
         self.ask_deal_outliers(outlier_results, outlier_indexes)
 
     def try_align_components(self):
@@ -883,7 +864,7 @@ class FittingResultViewer(QDialog):
         for flag, distribution in zip(flags, stacked_components):
             plt.plot(x, distribution, c=cmap(flag), zorder=flag)
         axes.set_xscale("log")
-        axes.set_xlabel(self.tr("Grain-size [μm]"))
+        axes.set_xlabel(self.tr("Grain size [μm]"))
         axes.set_ylabel(self.tr("Frequency"))
         figure.tight_layout()
         figure.show()
