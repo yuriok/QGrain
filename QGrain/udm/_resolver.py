@@ -8,10 +8,10 @@ from scipy.interpolate import interp1d
 from ..emma import KERNEL_CLASS_MAP, KernelType, Proportion
 from ..model import GrainSizeDataset, GrainSizeSample
 from ..ssu import (DISTRIBUTION_CLASS_MAP, DistributionType,
-                   SSUResolverSetting, try_sample)
+                   SSUAlgorithmSetting, try_sample)
 from ..statistic import convert_φ_to_μm, logarithmic
 from ._result import UDMResult
-from ._setting import UDMResolverSetting
+from ._setting import UDMAlgorithmSetting
 
 
 class UDMModule(torch.nn.Module):
@@ -48,18 +48,18 @@ class UDMResolver:
                 kernel_type: KernelType,
                 n_components: int,
                 initial_params: np.ndarray = None,
-                resolver_setting: UDMResolverSetting = None,
+                resolver_setting: UDMAlgorithmSetting = None,
                 save_history = False):
         if resolver_setting is None:
-            s = UDMResolverSetting()
+            s = UDMAlgorithmSetting()
         else:
-            assert isinstance(resolver_setting, UDMResolverSetting)
+            assert isinstance(resolver_setting, UDMAlgorithmSetting)
             s = resolver_setting
 
         X = torch.from_numpy(dataset.distributions.astype(np.float32)).to(s.device)
         classes_φ = dataset.classes_φ.astype(np.float32)
         udm = UDMModule(dataset.n_samples, n_components, classes_φ, kernel_type, initial_params).to(s.device)
-        optimizer = torch.optim.Adam(udm.parameters(), lr=s.lr, betas=s.betas)
+        optimizer = torch.optim.Adam(udm.parameters(), lr=s.learning_rate, betas=s.betas)
 
         start = time.time()
         distribution_loss_series = []
@@ -90,7 +90,7 @@ class UDMResolver:
             X_hat = (proportions @ components).squeeze(1)
             distribution_loss = torch.log10(torch.mean(torch.square(X_hat - X)))
             component_loss = torch.mean(torch.std(components, dim=0))
-            loss = distribution_loss + s.constraint_weight * component_loss
+            loss = distribution_loss + (10**s.constraint_level) * component_loss
             distribution_loss_series.append(distribution_loss.item())
             component_loss_series.append(component_loss.item())
             print(f"Training -- Epoch {epoch}, GSD Loss {distribution_loss.item():0.4f}, Component Loss {component_loss.item(): 0.4f}")
@@ -107,7 +107,7 @@ class UDMResolver:
 
             if epoch > s.min_epochs:
                 delta_loss = np.mean(distribution_loss_series[-100:-80])-np.mean(distribution_loss_series[-20:])
-                if delta_loss < s.min_delta_loss:
+                if delta_loss < 10**(-s.precision):
                     break
 
         time_spent = time.time() - start

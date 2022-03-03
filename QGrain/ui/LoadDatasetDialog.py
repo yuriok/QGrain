@@ -136,7 +136,7 @@ class LoadDatasetDialog(QtWidgets.QDialog):
             progress_dialog = QtWidgets.QProgressDialog(
                 self.tr("Loading grain size distributions..."), self.tr("Cancel"),
                 0, 100, self)
-            progress_dialog.setWindowTitle(self.tr("QGrain"))
+            progress_dialog.setWindowTitle("QGrain")
             progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
             def callback(progress: float):
                 if progress_dialog.wasCanceled():

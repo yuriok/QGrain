@@ -11,13 +11,13 @@ from ..model import GrainSizeDataset
 class PCAAnalyzer(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.setWindowTitle(self.tr("PCA Resolver"))
         self.init_ui()
         self.file_dialog = QtWidgets.QFileDialog(self)
         self.normal_msg = QtWidgets.QMessageBox(self)
         self.__dataset = None
 
     def init_ui(self):
+        self.setWindowTitle(self.tr("PCA Analyzer"))
         self.main_layout = QtWidgets.QGridLayout(self)
         self.chart = PCAResultChart()
         self.main_layout.addWidget(self.chart, 0, 0)
@@ -39,3 +39,10 @@ class PCAAnalyzer(QtWidgets.QWidget):
     def on_dataset_loaded(self, dataset: GrainSizeDataset):
         self.__dataset = dataset
         self.chart.show_dataset(dataset)
+
+    def changeEvent(self, event: QtCore.QEvent):
+        if event.type() == QtCore.QEvent.LanguageChange:
+            self.retranslate()
+
+    def retranslate(self):
+        self.setWindowTitle(self.tr("PCA Analyzer"))

@@ -6,7 +6,7 @@ from ..emma import KernelType
 from ..model import GrainSizeDataset
 from ..ssu import (DISTRIBUTION_CLASS_MAP, DistributionType, GeneralWeibull,
                    Normal, SkewNormal, Weibull)
-from ._setting import UDMResolverSetting
+from ._setting import UDMAlgorithmSetting
 
 
 class UDMResult:
@@ -17,7 +17,7 @@ class UDMResult:
                  distribution_loss_series: typing.Iterable[float],
                  component_loss_series: typing.Iterable[float],
                  initial_params: np.ndarray = None,
-                 resolver_setting: UDMResolverSetting = None,
+                 resolver_setting: UDMAlgorithmSetting = None,
                  time_spent: float = None,
                  history_params: typing.Iterable[np.ndarray] = None):
         self.dataset = dataset

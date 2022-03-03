@@ -6,14 +6,14 @@ import numpy as np
 from ..model import GrainSizeDataset
 from ..ssu import get_distance_func_by_name
 from ._kernel import KernelType
-from ._setting import EMMAResolverSetting
+from ._setting import EMMAAlgorithmSetting
 
 
 class EMMAResult:
     def __init__(self, dataset: GrainSizeDataset,
                  kernel_type: KernelType,
                  n_members: int,
-                 resolver_setting: EMMAResolverSetting,
+                 resolver_setting: EMMAAlgorithmSetting,
                  proportions: np.ndarray,
                  end_members: np.ndarray,
                  time_spent: float,
@@ -49,7 +49,7 @@ class EMMAResult:
         return len(self.__dataset.classes_φ)
 
     @property
-    def resolver_setting(self) -> EMMAResolverSetting:
+    def resolver_setting(self) -> EMMAAlgorithmSetting:
         return self.__resolver_setting
 
     @property
@@ -72,33 +72,34 @@ class EMMAResult:
     def n_iterations(self) -> int:
         return len(self.__history)
 
-    def get_distance(self, distance: str):
+    def get_distance(self, distance: str) -> float:
         distance_func = get_distance_func_by_name(distance)
         return distance_func(self.__X_hat, self.__dataset.distributions)
 
-    def get_distance_series(self, distance: str):
-        distance_series = []
+    def get_history_distances(self, distance: str) -> np.ndarray:
+        distances = []
         distance_func = get_distance_func_by_name(distance)
         X = self.__dataset.distributions
         for fractions, end_members in self.__history:
             X_hat = fractions @ end_members
             distance = distance_func(X_hat, X)
-            distance_series.append(distance)
-        return distance_series
+            distances.append(distance)
+        distances = np.array(distances)
+        return distances
 
-    def get_class_wise_distance_series(self, distance: str):
+    def get_class_wise_distances(self, distance: str) -> np.ndarray:
         X_hat = self.__X_hat
         X = self.__dataset.distributions
         distance_func = get_distance_func_by_name(distance)
-        series = [distance_func(X_hat[:, i], X[:, i]) for i in range(self.n_classes)]
-        return series
+        distances = distance_func(X_hat, X, axis=0)
+        return distances
 
-    def get_sample_wise_distance_series(self, distance: str):
+    def get_sample_wise_distances(self, distance: str) -> np.ndarray:
         X_hat = self.__X_hat
         X = self.__dataset.distributions
         distance_func = get_distance_func_by_name(distance)
-        series = [distance_func(X_hat[i, :], X[i, :]) for i in range(self.n_samples)]
-        return series
+        distances = distance_func(X_hat, X, axis=1)
+        return distances
 
     @property
     def history(self):

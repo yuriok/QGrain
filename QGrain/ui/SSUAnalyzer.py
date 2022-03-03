@@ -3,11 +3,10 @@ import typing
 import numpy as np
 from PySide6 import QtCore, QtWidgets
 
-from ..chart.MixedDistributionChart import MixedDistributionChart
+from ..chart.DistributionChart import DistributionChart
 from ..model import GrainSizeDataset
 from ..ssu import AsyncWorker, DistributionType, SSUResult, SSUTask
 from ..ui.FittingResultViewer import FittingResultViewer
-from ..ui.ManualFittingPanel import ManualFittingPanel
 from ..ui.ReferenceResultViewer import ReferenceResultViewer
 from .ParameterEditor import ParameterEditor
 from .SSUSettingDialog import SSUSettingDialog
@@ -19,12 +18,12 @@ class SSUAnalyzer(QtWidgets.QWidget):
         DistributionType.SkewNormal,
         DistributionType.Weibull,
         DistributionType.GeneralWeibull)
-    def __init__(self, setting_dialog: SSUSettingDialog, parent=None):
+    def __init__(self, setting_dialog: SSUSettingDialog, parameter_editor: ParameterEditor, parent=None):
         super().__init__(parent=parent)
-        self.setWindowTitle(self.tr("SSU Analyzer"))
         assert setting_dialog is not None
+        assert parameter_editor is not None
         self.setting_dialog = setting_dialog
-        self.parameter_editor = ParameterEditor()
+        self.parameter_editor = parameter_editor
         self.async_worker = AsyncWorker()
         self.async_worker.background_worker.task_succeeded.connect(self.on_fitting_succeeded)
         self.async_worker.background_worker.task_failed.connect(self.on_fitting_failed)
@@ -36,6 +35,7 @@ class SSUAnalyzer(QtWidgets.QWidget):
         self.init_ui()
 
     def init_ui(self):
+        self.setWindowTitle(self.tr("SSU Analyzer"))
         self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
         self.main_layout = QtWidgets.QGridLayout(self)
         # control group
@@ -84,7 +84,7 @@ class SSUAnalyzer(QtWidgets.QWidget):
         # chart group
         self.chart_group = QtWidgets.QGroupBox(self.tr("Chart"))
         self.chart_layout = QtWidgets.QGridLayout(self.chart_group)
-        self.result_chart = MixedDistributionChart(show_mode=True)
+        self.result_chart = DistributionChart(show_mode=True)
         self.chart_layout.addWidget(self.result_chart, 0, 0)
 
         # table group
@@ -220,3 +220,10 @@ class SSUAnalyzer(QtWidgets.QWidget):
             return
         self.sample_index_input.setValue(current+1)
         self.do_test()
+
+    def changeEvent(self, event: QtCore.QEvent):
+        if event.type() == QtCore.QEvent.LanguageChange:
+            self.retranslate()
+
+    def retranslate(self):
+        self.setWindowTitle(self.tr("SSU Analyzer"))
