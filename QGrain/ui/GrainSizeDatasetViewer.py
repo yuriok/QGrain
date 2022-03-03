@@ -359,6 +359,10 @@ class GrainSizeDatasetViewer(QtWidgets.QWidget):
             chart.show_samples(samples, append=append, **kwargs)
             chart.show()
 
+    def changeEvent(self, event: QtCore.QEvent):
+        if event.type() == QtCore.QEvent.LanguageChange:
+            self.retranslate()
+
     def retranslate(self):
         self.data_table.setHorizontalHeaderLabels([self.tr("Tips")])
         if not self.__dataset.has_sample:
@@ -427,7 +431,3 @@ class GrainSizeDatasetViewer(QtWidgets.QWidget):
         self.BP12_SSC_append_selected_action.setText(self.tr("Append Selected Samples"))
         self.BP12_SSC_plot_all_action.setText(self.tr("Plot All Samples"))
         self.BP12_SSC_append_all_action.setText(self.tr("Append All Samples"))
-
-    def changeEvent(self, event: QtCore.QEvent):
-        if event.type() == QtCore.QEvent.LanguageChange:
-            self.retranslate()

@@ -14,7 +14,6 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
     logger = logging.getLogger("QGrain")
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.setWindowTitle(self.tr("Clustering Analyzer"))
         self.init_ui()
         self.file_dialog = QtWidgets.QFileDialog(self)
         self.normal_msg = QtWidgets.QMessageBox(self)
@@ -23,6 +22,8 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
         self.__last_result = None
 
     def init_ui(self):
+        self.setWindowTitle(self.tr("Clustering Analyzer"))
+        self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
         self.main_layout = QtWidgets.QGridLayout(self)
         self.chart = HierarchicalChart()
         self.main_layout.addWidget(self.chart, 0, 0, 1, 8)
@@ -51,7 +52,7 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
         self.linkage_method_combo_box.addItems(self.supported_methods)
         self.linkage_method_combo_box.setCurrentText("ward")
         self.linkage_method_combo_box.currentTextChanged.connect(lambda linkage: self.perform())
-        self.distance_label = QtWidgets.QLabel(self.tr("Distance"))
+        self.distance_label = QtWidgets.QLabel(self.tr("Distance Function"))
         self.distance_label.setToolTip(self.tr("The distance metric."))
         self.distance_combo_box = QtWidgets.QComboBox()
         self.distance_combo_box.addItems(self.supported_distances)
@@ -152,7 +153,7 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
             progress_dialog = QtWidgets.QProgressDialog(
                 self.tr("Saving clustering result..."), self.tr("Cancel"),
                 0, 100, self)
-            progress_dialog.setWindowTitle(self.tr("QGrain"))
+            progress_dialog.setWindowTitle("QGrain")
             progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
             def callback(progress: float):
                 if progress_dialog.wasCanceled():
@@ -165,3 +166,18 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
         except Exception as e:
             self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
             self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
+
+    def changeEvent(self, event: QtCore.QEvent):
+        if event.type() == QtCore.QEvent.LanguageChange:
+            self.retranslate()
+
+    def retranslate(self):
+        self.setWindowTitle(self.tr("Clustering Analyzer"))
+        self.linkage_method_label.setText(self.tr("Linkage Method"))
+        self.linkage_method_label.setToolTip(self.tr("The linkage method for calculating the distance between the newly formed cluster and each observation vector."))
+        self.distance_label.setText(self.tr("Distance Function"))
+        self.distance_label.setToolTip(self.tr("The distance metric."))
+        self.p_label.setText(self.tr("p"))
+        self.p_label.setToolTip(self.tr("Controls the number of leaves at the bottom level of the figure."))
+        self.n_clusers_label.setText(self.tr("Number of Clusters"))
+        self.n_clusers_label.setToolTip(self.tr("Controls the number of clusters of this clustering algorithm."))

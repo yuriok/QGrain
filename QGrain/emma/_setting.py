@@ -9,33 +9,39 @@ def check_distance(distance):
             break
     assert in_set
 
-class EMMAResolverSetting:
+class EMMAAlgorithmSetting:
     def __init__(self,
                  device="cpu",
                  distance="log10MSE",
-                 min_niter=100,
-                 max_niter=10000,
-                 tol=1e-8,
-                 ftol=1e-10,
-                 lr=15e-3):
+                 min_epochs=100,
+                 max_epochs=10000,
+                 precision=6,
+                 learning_rate=5e-3,
+                 betas=(0.8, 0.5)):
         assert isinstance(device, str)
         check_distance(distance)
-        assert isinstance(min_niter, int)
-        assert isinstance(max_niter, int)
-        assert isinstance(tol, (int, float))
-        assert isinstance(ftol, float)
-        assert isinstance(lr, float)
-        assert min_niter > 0
-        assert max_niter > 0
-        assert 0.0 < ftol < 1.0
-        assert lr > 0.0
+        assert isinstance(min_epochs, int)
+        assert isinstance(max_epochs, int)
+        assert isinstance(precision, (int, float))
+        assert isinstance(learning_rate, (int, float))
+        assert isinstance(betas, tuple)
+        assert len(betas) == 2
+        beta1, beta2 = betas
+        assert isinstance(beta1, float)
+        assert isinstance(beta2, float)
+        assert min_epochs > 0
+        assert max_epochs > 0
+        assert 1.0 < precision < 100.0
+        assert learning_rate > 0.0
+        assert 0.0 < beta1 < 1.0
+        assert 0.0 < beta2 < 1.0
         self.device = device
         self.distance = distance
-        self.min_niter = min_niter
-        self.max_niter = max_niter
-        self.tol = tol
-        self.ftol = ftol
-        self.lr = lr
+        self.min_epochs = min_epochs
+        self.max_epochs = max_epochs
+        self.precision = precision
+        self.learning_rate = learning_rate
+        self.betas = betas
 
     def __str__(self) -> str:
         return self.__dict__.__str__()

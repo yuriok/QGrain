@@ -42,7 +42,7 @@ def check_minimizer(minimizer):
     assert in_set
 
 
-class SSUResolverSetting:
+class SSUAlgorithmSetting:
     def __init__(self,
                  distance: str="log10MSE",
                  minimizer: str="SLSQP",
@@ -51,21 +51,21 @@ class SSUResolverSetting:
                  GO_success_niter: int=5, # GO - Global Optimization
                  GO_step: float=0.1,
                  GO_minimizer_max_niter: int=500,
-                 FLO_max_niter: int=1000):
+                 LO_max_niter: int=1000):
         # validation
         check_distance(distance)
         check_minimizer(minimizer)
         assert isinstance(try_GO, bool)
         assert isinstance(GO_max_niter, int)
         assert isinstance(GO_success_niter, int)
-        assert isinstance(GO_step, float)
+        assert isinstance(GO_step, (int, float))
         assert isinstance(GO_minimizer_max_niter, int)
-        assert isinstance(FLO_max_niter, int)
+        assert isinstance(LO_max_niter, int)
         assert GO_max_niter > 0
         assert GO_success_niter > 0
         assert GO_step > 0.0
         assert GO_minimizer_max_niter > 0
-        assert FLO_max_niter > 0
+        assert LO_max_niter > 0
 
         self.distance = distance
         self.minimizer = minimizer
@@ -74,7 +74,7 @@ class SSUResolverSetting:
         self.GO_success_niter = GO_success_niter
         self.GO_step = GO_step
         self.GO_minimizer_max_niter = GO_minimizer_max_niter
-        self.FLO_max_niter = FLO_max_niter
+        self.LO_max_niter = LO_max_niter
 
     def __str__(self) -> str:
         return self.__dict__.__str__()
@@ -129,9 +129,9 @@ class BasicResolver:
     def try_fit(self, task: SSUTask) -> typing.Optional[SSUResult]:
         history = []
         if task.resolver_setting is None:
-            setting = SSUResolverSetting()
+            setting = SSUAlgorithmSetting()
         else:
-            assert isinstance(task.resolver_setting, SSUResolverSetting)
+            assert isinstance(task.resolver_setting, SSUAlgorithmSetting)
             setting = task.resolver_setting
         classes = np.expand_dims(np.expand_dims(task.sample.classes_φ, 0), 0).repeat(task.n_components, 1)
         distribution_class = DISTRIBUTION_CLASS_MAP[task.distribution_type]
@@ -157,7 +157,7 @@ class BasicResolver:
             initial_guess = np.expand_dims(distribution_class.get_defaults(task.n_components), 0)
 
         GO_options = {"maxiter": setting.GO_minimizer_max_niter, "disp": False}
-        FLO_options = {"maxiter": setting.FLO_max_niter, "disp": False}
+        LO_options = {"maxiter": setting.LO_max_niter, "disp": False}
 
         if setting.try_GO:
             GO_minimizer_kwargs = \
@@ -181,25 +181,25 @@ class BasicResolver:
                 self.on_fitting_finished()
                 return GO_result.message, task
 
-        FLO_result = minimize(
+        LO_result = minimize(
             closure,
             method=setting.minimizer,
             x0=initial_guess,
             callback=local_callback,
-            options=FLO_options) # type: OptimizeResult
+            options=LO_options) # type: OptimizeResult
         # Judge if the final fitting succeed
-        if FLO_result.success or FLO_result.status == 9:
+        if LO_result.success or LO_result.status == 9:
             finish_time = time.time()
             self.on_fitting_finished()
             time_spent = finish_time - start_time
-            func_args = np.reshape(FLO_result.x, (1, distribution_class.N_PARAMS+1, task.n_components))
+            func_args = np.reshape(LO_result.x, (1, distribution_class.N_PARAMS+1, task.n_components))
             fitting_result = SSUResult(task, func_args, history=history, time_spent=time_spent)
-            self.on_fitting_succeeded(FLO_result, fitting_result)
-            return FLO_result.message, fitting_result
+            self.on_fitting_succeeded(LO_result, fitting_result)
+            return LO_result.message, fitting_result
         else:
-            self.on_final_fitting_failed(FLO_result)
+            self.on_final_fitting_failed(LO_result)
             self.on_fitting_finished()
-            return FLO_result.message, task
+            return LO_result.message, task
 
 
 class BackgroundWorker(QObject):
@@ -248,7 +248,7 @@ def try_sample(
         sample: GrainSizeSample,
         distribution_type: DistributionType,
         n_components: int,
-        resolver_setting: SSUResolverSetting = None,
+        resolver_setting: SSUAlgorithmSetting = None,
         initial_guess=None):
     task = SSUTask(sample, distribution_type, n_components, resolver_setting, initial_guess)
     resolver = BasicResolver()
@@ -259,7 +259,7 @@ def try_dataset(
     dataset: GrainSizeDataset,
     distribution_type: DistributionType,
     n_components: int,
-    resolver_setting: SSUResolverSetting = None,
+    resolver_setting: SSUAlgorithmSetting = None,
     initial_guess=None,
     processes=1):
     pass

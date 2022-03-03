@@ -3,9 +3,9 @@ import typing
 
 from PySide6 import QtCore, QtWidgets
 
-from ..artificial import (LACUSTRINE_PRESET, LOESS_PRESET, DistributionType,
+from ..artificial import (SIMPLE_PRESET, DistributionType,
                           get_dataset, get_mean_sample, get_sample)
-from ..chart.MixedDistributionChart import MixedDistributionChart
+from ..chart.DistributionChart import DistributionChart
 from ..io import save_artificial_dataset
 
 
@@ -146,8 +146,7 @@ class DatasetGenerator(QtWidgets.QWidget):
         super().__init__(parent=parent)
         self.init_ui()
         self.distribution_type_combo_box.setCurrentIndex(1)
-        # self.target = LACUSTRINE_PRESET["target"]
-        self.target = LOESS_PRESET["target"]
+        self.target = SIMPLE_PRESET["target"]
         self.minimum_size_input.setValue(0.02)
         self.maximum_size_input.setValue(2000.0)
         self.n_classes_input.setValue(101)
@@ -162,6 +161,8 @@ class DatasetGenerator(QtWidgets.QWidget):
         self.main_layout = QtWidgets.QGridLayout(self)
         self.control_group = QtWidgets.QGroupBox(self.tr("Control"))
         self.control_layout = QtWidgets.QGridLayout(self.control_group)
+        self.control_layout.setColumnStretch(0, 1)
+        self.control_layout.setColumnStretch(1, 1)
         self.n_components_label = QtWidgets.QLabel(self.tr("Number of Components"))
         self.n_components_input = QtWidgets.QSpinBox()
         self.n_components_input.setRange(1, 12)
@@ -223,7 +224,7 @@ class DatasetGenerator(QtWidgets.QWidget):
         self.preview_group = QtWidgets.QGroupBox(self.tr("Preview"))
         self.preview_layout = QtWidgets.QGridLayout(self.preview_group)
         self.preview_layout.setContentsMargins(0, 0, 0, 0)
-        self.chart = MixedDistributionChart(parent=self, show_mode=True)
+        self.chart = DistributionChart(parent=self, show_mode=True)
         self.preview_layout.addWidget(self.chart, 0, 0)
 
         self.splitter_1 = QtWidgets.QSplitter()
