@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (QAbstractItemView, QComboBox, QDialog,
                                QTableWidgetItem)
 
 from ..chart.DistanceCurveChart import DistanceCurveChart
-from ..chart.MixedDistributionChart import MixedDistributionChart
+from ..chart.DistributionChart import DistributionChart
 from ..model import GrainSizeSample
 from ..ssu import SSUResult, built_in_distances, get_distance_func_by_name
 
@@ -30,7 +30,7 @@ class ReferenceResultViewer(QDialog):
         self.retry_tasks = {}
         self.init_ui()
         self.distance_chart = DistanceCurveChart(parent=self, toolbar=True)
-        self.mixed_distribution_chart = MixedDistributionChart()
+        self.mixed_distribution_chart = DistributionChart()
         self.file_dialog = QFileDialog(parent=self)
         self.update_page_list()
         self.update_page(self.page_index)

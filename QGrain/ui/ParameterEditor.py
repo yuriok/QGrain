@@ -5,7 +5,7 @@ import typing
 import numpy as np
 from PySide6 import QtCore, QtWidgets
 
-from ..chart.MixedDistributionChart import MixedDistributionChart
+from ..chart.DistributionChart import DistributionChart
 from ..ssu import DISTRIBUTION_CLASS_MAP, DistributionType, SSUViewModel
 from ..statistic import get_interval_φ
 
@@ -110,7 +110,7 @@ class ParameterComponent(QtWidgets.QWidget):
             param_label.setText(self.tr(param_name))
 
 
-class ParameterEditor(QtWidgets.QWidget):
+class ParameterEditor(QtWidgets.QDialog):
     logger = logging.getLogger("QGrain")
     SUPPORT_DISTRIBUTIONS = (
         DistributionType.Normal,
@@ -123,7 +123,7 @@ class ParameterEditor(QtWidgets.QWidget):
         DistributionType.Weibull: 2,
         DistributionType.GeneralWeibull: 3}
     def __init__(self, parent=None):
-        super().__init__(parent=parent)
+        super().__init__(parent=parent, f=QtCore.Qt.Window)
         self.__cache_dict = {}
         self.__classes_μm = np.logspace(0, 5, 101) * 0.02
         self.__classes_φ = -np.log2(self.__classes_μm/1000.0)
@@ -179,7 +179,7 @@ class ParameterEditor(QtWidgets.QWidget):
         self.preview_group = QtWidgets.QGroupBox(self.tr("Preview"))
         self.preview_layout = QtWidgets.QGridLayout(self.preview_group)
         self.preview_layout.setContentsMargins(0, 0, 0, 0)
-        self.preview_chart = MixedDistributionChart(parent=self, show_mode=True)
+        self.preview_chart = DistributionChart(parent=self, show_mode=True)
         self.preview_layout.addWidget(self.preview_chart, 0, 0)
 
         self.splitter_1 = QtWidgets.QSplitter()

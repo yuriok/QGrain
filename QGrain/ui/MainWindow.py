@@ -16,24 +16,28 @@ from ..model import GrainSizeDataset
 from .AboutDialog import AboutDialog
 from .ClusteringAnalyzer import ClusteringAnalyzer
 from .DatasetGenerator import DatasetGenerator
+from .EMMAAnalyzer import EMMAAnalyzer
 from .EMMASettingDialog import EMMASettingDialog
 from .GrainSizeDatasetViewer import GrainSizeDatasetViewer
 from .LoadDatasetDialog import LoadDatasetDialog
 from .LogDialog import *
+from .ParameterEditor import ParameterEditor
 from .PCAAnalyzer import PCAAnalyzer
 from .SSUAnalyzer import SSUAnalyzer
 from .SSUSettingDialog import SSUSettingDialog
-from .ParameterEditor import ParameterEditor
+from .UDMSettingDialog import UDMSettingDialog
 
 class MainWindow(QtWidgets.QMainWindow):
     logger = logging.getLogger("QGrain")
     def __init__(self):
         super().__init__()
-        self.setWindowTitle(self.tr("QGrain"))
+        self.setWindowTitle("QGrain")
         self.__dataset = GrainSizeDataset() # type: GrainSizeDataset
         self.current_translator = None # type: QtCore.QTranslator
-        self.ssu_setting_dialog = SSUSettingDialog()
-        self.emma_setting_dialog = EMMASettingDialog()
+        self.ssu_setting_dialog = SSUSettingDialog(self)
+        self.emma_setting_dialog = EMMASettingDialog(self)
+        self.udm_setting_dialog = UDMSettingDialog(self)
+        self.parameter_editor = ParameterEditor(self)
         self.init_ui()
         self.load_dataset_dialog = LoadDatasetDialog(self)
         self.load_dataset_dialog.dataset_loaded.connect(self.on_dataset_loaded)
@@ -41,6 +45,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.load_dataset_dialog.dataset_loaded.connect(self.pca_analyzer.on_dataset_loaded)
         self.load_dataset_dialog.dataset_loaded.connect(self.clustering_analyzer.on_dataset_loaded)
         self.load_dataset_dialog.dataset_loaded.connect(self.ssu_analyzer.on_dataset_loaded)
+        self.load_dataset_dialog.dataset_loaded.connect(self.emma_analyzer.on_dataset_loaded)
         self.log_dialog = LogDialog(self)
         self.about_dialog = AboutDialog(self)
         self.file_dialog = QtWidgets.QFileDialog(parent=self)
@@ -55,47 +60,50 @@ class MainWindow(QtWidgets.QMainWindow):
         dataset = self.dataset_generator.get_random_dataset(100)
         self.load_dataset_dialog.dataset_loaded.emit(dataset.dataset_to_fit)
         self.ssu_analyzer.on_try_fit_clicked()
+        self.emma_analyzer.on_try_fit_clicked()
 
     def init_ui(self):
         self.tab_widget = QtWidgets.QTabWidget(self)
         self.tab_widget.setTabPosition(QtWidgets.QTabWidget.West)
         self.setCentralWidget(self.tab_widget)
         self.dataset_generator = DatasetGenerator()
-        self.tab_widget.addTab(self.dataset_generator, self.tr("Dataset Generator"))
+        self.tab_widget.addTab(self.dataset_generator, self.tr("Generator"))
         self.dataset_viewer = GrainSizeDatasetViewer()
-        self.tab_widget.addTab(self.dataset_viewer, self.tr("Dataset Viewer"))
+        self.tab_widget.addTab(self.dataset_viewer, self.tr("Viewer"))
         self.pca_analyzer = PCAAnalyzer()
-        self.tab_widget.addTab(self.pca_analyzer, self.tr("PCA Analyzer"))
+        self.tab_widget.addTab(self.pca_analyzer, self.tr("PCA"))
         self.clustering_analyzer = ClusteringAnalyzer()
-        self.tab_widget.addTab(self.clustering_analyzer, self.tr("Clustering Analyzer"))
-        # self.emma_panel = QtWidgets.QWidget()
-        # self.tab_widget.addTab(self.emma_panel, self.tr("EMMA Analyzer"))
-        self.ssu_analyzer = SSUAnalyzer(setting_dialog=self.ssu_setting_dialog)
-        self.tab_widget.addTab(self.ssu_analyzer, self.tr("SSU Analyzer"))
-        # self.udm_panel = QtWidgets.QWidget()
-        # self.tab_widget.addTab(self.udm_panel, self.tr("UDM Analyzer"))
+        self.tab_widget.addTab(self.clustering_analyzer, self.tr("Clustering"))
+        self.ssu_analyzer = SSUAnalyzer(self.ssu_setting_dialog, self.parameter_editor)
+        self.tab_widget.addTab(self.ssu_analyzer, self.tr("SSU"))
+        self.emma_analyzer = EMMAAnalyzer(self.emma_setting_dialog, self.parameter_editor)
+        self.tab_widget.addTab(self.emma_analyzer, self.tr("EMMA"))
+        self.udm_panel = QtWidgets.QWidget()
+        self.tab_widget.addTab(self.udm_panel, self.tr("UDM"))
 
         self.init_menus()
 
     def init_menus(self):
         # Open
         self.open_menu = self.menuBar().addMenu(self.tr("Open")) # type: QtWidgets.QMenu
-        self.open_dataset_action = self.open_menu.addAction(self.tr("Grain Size Dataset"))
+        self.open_dataset_action = self.open_menu.addAction(self.tr("Grain Size Dataset")) # type: QtGui.QAction
         self.open_dataset_action.triggered.connect(lambda: self.load_dataset_dialog.show())
         # Save
         self.save_menu = self.menuBar().addMenu(self.tr("Save")) # type: QtWidgets.QMenu
-        self.save_statistic_action = self.save_menu.addAction(self.tr("Statistic Result"))
+        self.save_statistic_action = self.save_menu.addAction(self.tr("Statistic Result")) # type: QtGui.QAction
         self.save_statistic_action.triggered.connect(self.on_save_statistic_clicked)
-        self.save_pca_action = self.save_menu.addAction(self.tr("PCA Result"))
+        self.save_pca_action = self.save_menu.addAction(self.tr("PCA Result")) # type: QtGui.QAction
         self.save_pca_action.triggered.connect(self.on_save_pca_clicked)
-        self.save_clustering_action = self.save_menu.addAction(self.tr("Clustering Result"))
+        self.save_clustering_action = self.save_menu.addAction(self.tr("Clustering Result")) # type: QtGui.QAction
         self.save_clustering_action.triggered.connect(self.clustering_analyzer.on_save_clicked)
         # Config
         self.config_menu = self.menuBar().addMenu(self.tr("Config")) # type: QtWidgets.QMenu
-        self.config_ssu_action = self.config_menu.addAction(self.tr("SSU Settings"))
-        self.config_ssu_action.triggered.connect(lambda: self.ssu_setting_dialog.show())
-        self.config_emma_action = self.config_menu.addAction(self.tr("EMMA Settings"))
-        self.config_emma_action.triggered.connect(lambda: self.emma_setting_dialog.show())
+        self.config_ssu_action = self.config_menu.addAction(self.tr("SSU Settings")) # type: QtGui.QAction
+        self.config_ssu_action.triggered.connect(self.ssu_setting_dialog.show)
+        self.config_emma_action = self.config_menu.addAction(self.tr("EMMA Settings")) # type: QtGui.QAction
+        self.config_emma_action.triggered.connect(self.emma_setting_dialog.show)
+        self.config_udm_action = self.config_menu.addAction(self.tr("UDM Settings")) # type: QtGui.QAction
+        self.config_udm_action.triggered.connect(self.udm_setting_dialog.show)
 
         # Language
         self.language_menu = self.menuBar().addMenu(self.tr("Language")) # type: QtWidgets.QMenu
@@ -185,7 +193,7 @@ class MainWindow(QtWidgets.QMainWindow):
             progress_dialog = QtWidgets.QProgressDialog(
                 self.tr("Saving statistic result..."), self.tr("Cancel"),
                 0, 100, self)
-            progress_dialog.setWindowTitle(self.tr("QGrain"))
+            progress_dialog.setWindowTitle("QGrain")
             progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
             def callback(progress: float):
                 if progress_dialog.wasCanceled():
@@ -212,7 +220,7 @@ class MainWindow(QtWidgets.QMainWindow):
             progress_dialog = QtWidgets.QProgressDialog(
                 self.tr("Saving PCA result..."), self.tr("Cancel"),
                 0, 100, self)
-            progress_dialog.setWindowTitle(self.tr("QGrain"))
+            progress_dialog.setWindowTitle("QGrain")
             progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
             def callback(progress: float):
                 if progress_dialog.wasCanceled():
@@ -236,7 +244,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.current_translator = translator
 
     def retranslate(self):
-        self.setWindowTitle(self.tr("QGrain"))
+        self.setWindowTitle("QGrain")
         self.close_msg.setWindowTitle(self.tr("Warning"))
         self.close_msg.setText(self.tr("Closing this window will terminate all running tasks, are you sure to close it?"))
         self.open_menu.setTitle((self.tr("Open")))
@@ -245,12 +253,21 @@ class MainWindow(QtWidgets.QMainWindow):
         self.save_statistic_action.setText(self.tr("Statistic Result"))
         self.save_pca_action.setText(self.tr("PCA Result"))
         self.save_clustering_action.setText(self.tr("Clustering Result"))
+        self.config_menu.setTitle(self.tr("Config"))
+        self.config_ssu_action.setText(self.tr("SSU Settings"))
+        self.config_emma_action.setText(self.tr("EMMA Settings"))
+        self.config_udm_action.setText(self.tr("UDM Settings"))
         self.language_menu.setTitle(self.tr("Language"))
         self.theme_menu.setTitle(self.tr("Theme"))
         self.log_action.setText(self.tr("Log"))
         self.about_action.setText(self.tr("About"))
-        self.tab_widget.setTabText(0, self.tr("Dataset Generator"))
-        self.tab_widget.setTabText(1, self.tr("Dataset Viewer"))
+        self.tab_widget.setTabText(0, self.tr("Generator"))
+        self.tab_widget.setTabText(1, self.tr("Viewer"))
+        self.tab_widget.setTabText(2, self.tr("PCA"))
+        self.tab_widget.setTabText(3, self.tr("Clustering"))
+        self.tab_widget.setTabText(4, self.tr("SSU"))
+        self.tab_widget.setTabText(5, self.tr("EMMA"))
+        self.tab_widget.setTabText(6, self.tr("UDM"))
 
     def changeEvent(self, event: QtCore.QEvent):
         if event.type() == QtCore.QEvent.LanguageChange:

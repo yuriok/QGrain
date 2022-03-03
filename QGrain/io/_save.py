@@ -9,6 +9,7 @@ from sklearn.decomposition import PCA
 
 from .. import QGRAIN_VERSION
 from ..artificial._generator import ArtificialDataset
+from ..emma import EMMAResult
 from ..model import GrainSizeDataset, GrainSizeSample
 from ..ssu import DISTRIBUTION_CLASS_MAP
 from ..statistic._GRADISTAT import _get_all_scales, get_all_statistic
@@ -96,13 +97,13 @@ def save_artificial_dataset(
         3. The third sheet is random parameters which were used to calulate the component distributions and their mixture.
         4. The left sheets are the component distributions of all samples.
 
-        Sampling settings
-            Minimum size [μm]: {1},
-            Maximum size [μm]: {2},
-            N_classes: {3},
-            Precision: {4},
-            Noise: {5},
-            N_samples: {6}
+        Sampling Settings
+            Minimum size [μm]: {1}
+            Maximum size [μm]: {2}
+            Number of Grain Size Classes: {3}
+            Precision: {4}
+            Noise Decimals: {5}
+            Number of Samples: {6}
 
         """.format(QGRAIN_VERSION,
                     dataset.min_μm,
@@ -568,4 +569,112 @@ def save_clustering(
     wb.save(filename)
     wb.close()
     logger.info(f"The Clustering result has been saved to the Excel file: [{filename}].")
+
+
+def save_emma(
+        result: EMMAResult, filename: str,
+        progress_callback: typing.Callable = None,
+        logger: logging.Logger = None):
+    if logger is None:
+        logger = logging.getLogger("QGrain")
+    else:
+        assert isinstance(logger, logging.Logger)
+
+    # get the mode size of each end-members
+    modes = [(i, result.dataset.classes_μm[np.unravel_index(np.argmax(result.end_members[i]), result.end_members[i].shape)]) for i in range(result.n_members)]
+    # sort them by mode size
+    modes.sort(key=lambda x: x[1])
+
+    wb = openpyxl.Workbook()
+    prepare_styles(wb)
+    logger.debug("Creating the `README` sheet.")
+    readme_text = \
+        """
+        It contanins three sheets:
+        1. The first sheet is the dataset which was used to perform the EMMA algorithm.
+        2. The second sheet is used to put the distributions of all end members.
+        3. The third sheet is the proportions of end members of all samples.
+
+        This EMMA algorithm was implemented by QGrian, using the famous machine learning framework, PyTorch.
+
+        EMMA Algorithm Details
+            Number of Samples: {0}
+            Kernel Type: {1}
+            Number of End Members: {2}
+            Number of Iterations: {3}
+            Spent Time: {4} s
+
+            Computing Device: {5}
+            Distance Function: {6}
+            Minimum Number of Iterations: {7}
+            Maximum Number of Iterations: {8}
+            Learning Rate: {9}
+            Precision: {10}
+            Betas: {11}
+
+        """.format(
+            result.dataset.n_samples,
+            result.kernel_type.name,
+            result.n_members,
+            result.n_iterations,
+            result.time_spent,
+            result.resolver_setting.device,
+            result.resolver_setting.distance,
+            result.resolver_setting.min_epochs,
+            result.resolver_setting.max_epochs,
+            result.resolver_setting.learning_rate,
+            result.resolver_setting.precision,
+            result.resolver_setting.betas)
+    _write_readme_sheet(wb.active, readme_text)
+    logger.debug("Creating the `GSDs` sheet.")
+    if progress_callback is not None:
+        _callback = lambda progress: progress_callback(progress * 0.4)
+    else:
+        _callback = None
+    ws = wb.create_sheet("GSDs")
+    _write_dataset_sheet(ws, result.dataset, progress_callback=_callback)
+
+    def write(row, col, value, style="normal_light"):
+        cell = ws.cell(row+1, col+1, value=value)
+        cell.style = style
+
+    logger.debug("Creating the `Distributions of End Members` sheet.")
+    ws = wb.create_sheet("Distributions of End Members")
+    write(0, 0, "End Member", style="header")
+    ws.column_dimensions[column_to_char(0)].width = 16
+    for col, value in enumerate(result.dataset.classes_μm, 1):
+        write(0, col, value, style="header")
+        ws.column_dimensions[column_to_char(col)].width = 10
+    for i, (index, _) in enumerate(modes):
+        row = i + 1
+        if row % 2 == 0:
+            style = "normal_dark"
+        else:
+            style = "normal_light"
+        write(row, 0, f"EM{i+1}", style=style)
+        for col, value in enumerate(result.end_members[index], 1):
+            write(row, col, value, style=style)
+
+    logger.debug("Creating the `Proportions of End Members` sheet.")
+    ws = wb.create_sheet("Proportions of End Members")
+    write(0, 0, "Sample Name", style="header")
+    ws.column_dimensions[column_to_char(0)].width = 16
+    for i in range(result.n_members):
+        write(0, i+1, f"EM{i+1}", style="header")
+        ws.column_dimensions[column_to_char(i+1)].width = 10
+    for i, sample_proportions in enumerate(result.proportions):
+        row = i + 1
+        if row % 2 == 0:
+            style = "normal_dark"
+        else:
+            style = "normal_light"
+        write(row, 0, result.dataset.samples[i].name, style=style)
+        for col, (index, _) in enumerate(modes, 1):
+            write(row, col, sample_proportions[index], style=style)
+        if progress_callback is not None:
+            progress_callback(i / result.dataset.n_samples * 0.6 + 0.4)
+
+    wb.save(filename)
+    wb.close()
+    logger.info(f"The EMMA result has been saved to the Excel file: [{filename}].")
 

@@ -21,7 +21,7 @@ from sklearn.cluster import KMeans
 from .. import QGRAIN_VERSION
 from ..chart.BoxplotChart import BoxplotChart
 from ..chart.DistanceCurveChart import DistanceCurveChart
-from ..chart.MixedDistributionChart import MixedDistributionChart
+from ..chart.DistributionChart import DistributionChart
 from ..chart.SSUTypicalComponentChart import SSUTypicalComponentChart
 from ..io import column_to_char, prepare_styles
 from ..ssu import (AsyncWorker, SSUResult, SSUTask, built_in_distances,
@@ -44,7 +44,7 @@ class FittingResultViewer(QDialog):
         self.boxplot_chart = BoxplotChart()
         self.typical_chart = SSUTypicalComponentChart()
         self.distance_chart = DistanceCurveChart()
-        self.mixed_distribution_chart = MixedDistributionChart()
+        self.mixed_distribution_chart = DistributionChart()
         self.file_dialog = QFileDialog(parent=self)
         self.async_worker = AsyncWorker()
         self.async_worker.background_worker.task_succeeded.connect(self.on_fitting_succeeded)
