@@ -2,33 +2,50 @@ import typing
 
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDialog, QGridLayout
+
+from .BaseChart import BaseChart
+from .config_matplotlib import highlight_color, normal_color
 
 
-class BoxplotChart(QDialog):
-    def __init__(self, parent=None, toolbar=False):
-        flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
-        super().__init__(parent=parent, f=flags)
-        self.setWindowTitle(self.tr("Boxplot Chart"))
-        self.figure = plt.figure(figsize=(4, 3))
+class BoxplotChart(BaseChart):
+    def __init__(self, parent=None, figsize=(4, 3)):
+        super().__init__(parent=parent, figsize=figsize)
         self.axes = self.figure.subplots()
-        self.canvas = FigureCanvas(self.figure)
-        self.toolbar = NavigationToolbar(self.canvas, self)
-        self.main_layout = QGridLayout(self)
-        self.main_layout.addWidget(self.toolbar, 0, 0, 1, 2)
-        self.main_layout.addWidget(self.canvas, 1, 0, 1, 2)
-        if not toolbar:
-            self.toolbar.hide()
+        self.setWindowTitle(self.tr("Boxplot Chart"))
+        self.__last_result = None
 
     def show_dataset(self, dataset: typing.List[np.ndarray],
-                     xlabels, ylabel,
-                     title=""):
+                     xlabels: typing.List[str], ylabel: str,
+                     title: str = ""):
         self.axes.clear()
-        self.axes.boxplot(dataset, labels=xlabels)
+        assert len(dataset) == len(xlabels)
+        # "whiskers", "caps", "boxes", "medians", "fliers", "means"
+        artists = self.axes.boxplot(dataset, labels=xlabels, patch_artist=True)
+        cmap = plt.get_cmap()
+        for i, box in enumerate(artists["boxes"]):
+            box.set_facecolor(cmap(i))
+            box.set_edgecolor(normal_color())
+        for whisker in artists["whiskers"]:
+            whisker.set_color(normal_color())
+        for median in artists["medians"]:
+            median.set_color(normal_color())
+        for cap in artists["caps"]:
+            cap.set_color(normal_color())
+        for i, flier in enumerate(artists["fliers"]):
+            flier.set_markerfacecolor(cmap(i))
+            flier.set_markeredgewidth(0.0)
         self.axes.set_ylabel(ylabel)
         self.axes.set_title(title)
         self.figure.tight_layout()
         self.canvas.draw()
+        self.__last_result = dataset, xlabels, ylabel, title
+
+    def update_chart(self):
+        if self.__last_result is not None:
+            self.figure.clear()
+            self.axes = self.figure.subplots()
+            self.show_dataset(*self.__last_result)
+
+    def retranslate(self):
+        super().retranslate()
+        self.setWindowTitle(self.tr("Boxplot Chart"))

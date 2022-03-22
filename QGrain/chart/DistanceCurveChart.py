@@ -1,32 +1,33 @@
 import typing
 
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDialog, QGridLayout
+
+from .BaseChart import BaseChart
 
 
-class DistanceCurveChart(QDialog):
-    def __init__(self, parent=None, toolbar=False):
-        flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
-        super().__init__(parent=parent, f=flags)
-        self.setWindowTitle(self.tr("Distance History"))
-        self.figure = plt.figure(figsize=(4, 3))
+class DistanceCurveChart(BaseChart):
+    def __init__(self, parent=None, figsize=(4, 3)):
+        super().__init__(parent=parent, figsize=figsize)
+        self.setWindowTitle(self.tr("Distance Series"))
         self.axes = self.figure.subplots()
-        self.canvas = FigureCanvas(self.figure)
-        self.toolbar = NavigationToolbar(self.canvas, self)
-        self.main_layout = QGridLayout(self)
-        self.main_layout.addWidget(self.toolbar, 0, 0, 1, 2)
-        self.main_layout.addWidget(self.canvas, 1, 0, 1, 2)
-        if not toolbar:
-            self.toolbar.hide()
+        self.__last_result = None
 
-    def show_distance_series(self, series: typing.Iterable[float], title=""):
+    def show_distance_series(self, series: typing.Iterable[float], ylabel: str, title: str = ""):
         self.axes.clear()
         self.axes.plot(series)
-        self.axes.set_xlabel(self.tr("Iteration index"))
-        self.axes.set_ylabel(self.tr("Distance"))
+        self.axes.set_xlabel("Iteration index")
+        self.axes.set_ylabel(ylabel)
         self.axes.set_title(title)
         self.figure.tight_layout()
         self.canvas.draw()
+        self.__last_result = series, ylabel, title
+
+    def update_chart(self):
+        if self.__last_result is not None:
+            self.figure.clear()
+            self.axes = self.figure.subplots()
+            self.show_distance_series(*self.__last_result)
+
+    def retranslate(self):
+        super().retranslate()
+        self.setWindowTitle(self.tr("Distance Series"))

@@ -356,17 +356,31 @@ class DatasetGenerator(QtWidgets.QWidget):
             self.preview_button.setText(self.tr("Preview"))
             self.update_timer.stop()
             self.update_chart()
-        self.generate_button.setEnabled(False)
         filename, _ = self.file_dialog.getSaveFileName(
             self, self.tr("Choose a filename to save the generated dataset"),
             None, "Microsoft Excel (*.xlsx)")
         if filename is None or filename == "":
             return
-        n_samples = self.n_samples_input.value()
-        dataset = self.get_random_dataset(n_samples)
-        save_artificial_dataset(dataset, filename)
-        self.generate_button.setEnabled(True)
-        self.logger.info(f"Generated dataset has been saved to the Excel file: [{filename}].")
+        try:
+            self.generate_button.setEnabled(False)
+            n_samples = self.n_samples_input.value()
+            dataset = self.get_random_dataset(n_samples)
+            progress_dialog = QtWidgets.QProgressDialog(
+                self.tr("Saving artificial dataset..."), self.tr("Cancel"),
+                0, 100, self)
+            progress_dialog.setWindowTitle("QGrain")
+            progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
+            def callback(progress: float):
+                if progress_dialog.wasCanceled():
+                    raise StopIteration()
+                progress_dialog.setValue(int(progress*100))
+                QtCore.QCoreApplication.processEvents()
+            save_artificial_dataset(dataset, filename, progress_callback=callback)
+        except Exception as e:
+            self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
+            self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
+        finally:
+            self.generate_button.setEnabled(True)
 
     def get_random_sample(self):
         if self.minimum_size_input.value() == self.maximum_size_input.value():

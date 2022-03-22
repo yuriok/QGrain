@@ -228,9 +228,7 @@ class EMMAResultChart(BaseChart):
         end_member_axes.set_ylim(0.0, round(np.max(result.end_members)*1.2, 2))
         end_member_axes.set_xlabel(self.xlabel)
         end_member_axes.set_ylabel(self.ylabel)
-        end_member_axes.set_title("Distributions of end members")
-        if result.n_members < 6:
-            end_member_axes.legend(loc="upper left")
+        end_member_axes.set_title("Distributions")
 
         if result.n_samples > self.N_DISPLAY_SAMPLES:
             interval = result.n_samples // self.N_DISPLAY_SAMPLES
@@ -245,7 +243,7 @@ class EMMAResultChart(BaseChart):
         proportion_axes.set_ylim(0.0, 1.0)
         proportion_axes.set_xlabel("Sample index")
         proportion_axes.set_ylabel("Proportion")
-        proportion_axes.set_title("Proportions of end members")
+        proportion_axes.set_title("Proportions")
         self.figure.tight_layout()
         self.canvas.draw()
 
@@ -315,7 +313,7 @@ class EMMAResultChart(BaseChart):
         self.end_member_axes.set_ylim(0.0, round(np.max(result.end_members)*1.2, 2))
         self.end_member_axes.set_xlabel(self.xlabel)
         self.end_member_axes.set_ylabel(self.ylabel)
-        self.end_member_axes.set_title("Distributions of end members")
+        self.end_member_axes.set_title("Distributions")
 
         if result.n_samples > self.N_DISPLAY_SAMPLES:
             interval = result.n_samples // self.N_DISPLAY_SAMPLES
@@ -326,7 +324,7 @@ class EMMAResultChart(BaseChart):
         self.proportion_axes.set_ylim(0.0, 1.0)
         self.proportion_axes.set_xlabel("Sample index")
         self.proportion_axes.set_ylabel("Proportion")
-        self.proportion_axes.set_title("Proportions of end members")
+        self.proportion_axes.set_title("Proportions")
 
         # self.figure.tight_layout()
         # self.canvas.draw()
@@ -371,7 +369,9 @@ class EMMAResultChart(BaseChart):
 
     def save_animation(self):
         if self.__last_result is not None:
-            filename, format_str  = self.file_dialog.getSaveFileName(self, self.tr("Save the animation of this EMMA result"), None, self.tr("MPEG-4 Video File (*.mp4);;Graphics Interchange Format (*.gif)"))
+            filename, format_str  = self.file_dialog.getSaveFileName(
+                self, self.tr("Choose a filename to save the animation of this EMMA result"),
+                None, "MPEG-4 Video File (*.mp4);;Graphics Interchange Format (*.gif)")
             if filename is None or filename == "":
                 return
             progress = QtWidgets.QProgressDialog(self)

@@ -85,6 +85,7 @@ class DiagramChart(BaseChart):
             self.axes.plot(x, y, **plot_kwargs)
         self.canvas.draw()
 
+
 class Folk54GSMDiagramChart(DiagramChart):
     def __init__(self, parent=None, figsize=(8, 6)):
         super().__init__(parent=parent, figsize=figsize)
@@ -181,6 +182,11 @@ class Folk54GSMDiagramChart(DiagramChart):
             gravel.append(gravel_i)
         return sand, gravel
 
+    def retranslate(self):
+        super().retranslate()
+        self.setWindowTitle(self.tr("GSM Diagram (Folk, 1954)"))
+
+
 class Folk54SSCDiagramChart(DiagramChart):
     def __init__(self, parent=None, figsize=(8, 6)):
         super().__init__(parent=parent, figsize=figsize)
@@ -259,6 +265,11 @@ class Folk54SSCDiagramChart(DiagramChart):
             silt.append(silt_i)
             sand.append(sand_i)
         return silt, sand
+
+    def retranslate(self):
+        super().retranslate()
+        self.setWindowTitle(self.tr("SSC Diagram (Folk, 1954)"))
+
 
 class BP12GSMDiagramChart(DiagramChart):
     def __init__(self, parent=None, figsize=(8, 6)):
@@ -510,6 +521,11 @@ class BP12GSMDiagramChart(DiagramChart):
             sand.append(sand_i)
             gravel.append(gravel_i)
         return sand, gravel
+
+    def retranslate(self):
+        super().retranslate()
+        self.setWindowTitle(self.tr("GSM Diagram (Blott & Pye, 2012)"))
+
 
 class BP12SSCDiagramChart(DiagramChart):
     def __init__(self, parent=None, figsize=(8, 6)):
@@ -763,3 +779,7 @@ class BP12SSCDiagramChart(DiagramChart):
             sand.append(sand_i)
 
         return silt, sand
+
+    def retranslate(self):
+        super().retranslate()
+        self.setWindowTitle(self.tr("SSC Diagram (Blott & Pye, 2012)"))

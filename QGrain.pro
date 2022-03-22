@@ -11,7 +11,7 @@ SOURCES=C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\__main__.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\chart\DistributionChart.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\chart\EMMAResultChart.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\chart\EMMASummaryChart.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\chart\FrequencyCurve3DChart.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\chart\Frequency3DChart.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\chart\FrequencyCurveChart.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\chart\HierarchicalChart.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\chart\PCAResultChart.py\
@@ -41,16 +41,18 @@ SOURCES=C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\__main__.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\DatasetGenerator.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\EMMAAnalyzer.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\EMMASettingDialog.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\FittingResultViewer.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\GrainSizeDatasetViewer.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\LoadDatasetDialog.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\LogDialog.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\MainWindow.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\ParameterEditor.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\PCAAnalyzer.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\ReferenceAssembler.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\ReferenceResultViewer.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\SSUAnalyzer.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\SSUSettingDialog.py
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\SSUMulticoreAnalyzer.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\SSUReferenceViewer.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\SSUResultViewer.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\SSUSettingDialog.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\UDMAnalyzer.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\UDMSettingDialog.py
 TRANSLATIONS=en.ts zh_CN.ts
 CODECFORTR=UTF-8

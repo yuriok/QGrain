@@ -4,7 +4,7 @@ import typing
 import numpy as np
 
 from ..model import GrainSizeDataset
-from ..ssu import get_distance_func_by_name
+from ..ssu import get_distance_function
 from ._kernel import KernelType
 from ._setting import EMMAAlgorithmSetting
 
@@ -73,12 +73,12 @@ class EMMAResult:
         return len(self.__history)
 
     def get_distance(self, distance: str) -> float:
-        distance_func = get_distance_func_by_name(distance)
+        distance_func = get_distance_function(distance)
         return distance_func(self.__X_hat, self.__dataset.distributions)
 
     def get_history_distances(self, distance: str) -> np.ndarray:
         distances = []
-        distance_func = get_distance_func_by_name(distance)
+        distance_func = get_distance_function(distance)
         X = self.__dataset.distributions
         for fractions, end_members in self.__history:
             X_hat = fractions @ end_members
@@ -90,14 +90,14 @@ class EMMAResult:
     def get_class_wise_distances(self, distance: str) -> np.ndarray:
         X_hat = self.__X_hat
         X = self.__dataset.distributions
-        distance_func = get_distance_func_by_name(distance)
+        distance_func = get_distance_function(distance)
         distances = distance_func(X_hat, X, axis=0)
         return distances
 
     def get_sample_wise_distances(self, distance: str) -> np.ndarray:
         X_hat = self.__X_hat
         X = self.__dataset.distributions
-        distance_func = get_distance_func_by_name(distance)
+        distance_func = get_distance_function(distance)
         distances = distance_func(X_hat, X, axis=1)
         return distances
 

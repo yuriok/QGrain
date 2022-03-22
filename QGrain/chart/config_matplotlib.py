@@ -15,9 +15,12 @@ def normal_color():
 def highlight_color():
     return os.environ["QTMATERIAL_PRIMARYCOLOR"]
 
+def backgroud_color():
+    return os.environ["QTMATERIAL_SECONDARYDARKCOLOR"]
+
 def synchronize_theme():
-    plt.rcParams["axes.facecolor"] = os.environ["QTMATERIAL_SECONDARYCOLOR"]
-    plt.rcParams["figure.facecolor"] = os.environ["QTMATERIAL_SECONDARYCOLOR"]
+    plt.rcParams["axes.facecolor"] = os.environ["QTMATERIAL_SECONDARYDARKCOLOR"]
+    plt.rcParams["figure.facecolor"] = os.environ["QTMATERIAL_SECONDARYDARKCOLOR"]
     plt.rcParams["axes.edgecolor"] = os.environ["QTMATERIAL_SECONDARYTEXTCOLOR"]
     plt.rcParams["axes.titlecolor"] = os.environ["QTMATERIAL_SECONDARYTEXTCOLOR"]
     plt.rcParams["axes.labelcolor"] = os.environ["QTMATERIAL_SECONDARYTEXTCOLOR"]
