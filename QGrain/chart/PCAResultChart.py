@@ -68,3 +68,7 @@ class PCAResultChart(BaseChart):
         self.series_axes = self.figure.add_subplot(2, 1, 2)
         if self.__last_dataset is not None:
             self.show_dataset(self.__last_dataset)
+
+    def retranslate(self):
+        super().retranslate()
+        self.setWindowTitle(self.tr("PCA Chart"))

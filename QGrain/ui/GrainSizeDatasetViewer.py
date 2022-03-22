@@ -8,7 +8,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from ..chart.config_matplotlib import normal_color, highlight_color
 from ..chart.CumulativeCurveChart import CumulativeCurveChart
 from ..chart.diagrams import *
-from ..chart.FrequencyCurve3DChart import FrequencyCurve3DChart
+from ..chart.Frequency3DChart import Frequency3DChart
 from ..chart.FrequencyCurveChart import FrequencyCurveChart
 from ..model import GrainSizeDataset, GrainSizeSample
 from ..statistic import get_all_statistic
@@ -22,7 +22,7 @@ class GrainSizeDatasetViewer(QtWidgets.QWidget):
         self.init_ui()
 
         self.frequency_curve_chart = FrequencyCurveChart()
-        self.frequency_curve_3D_chart = FrequencyCurve3DChart()
+        self.frequency_curve_3D_chart = Frequency3DChart()
         self.cumulative_curve_chart = CumulativeCurveChart()
         self.folk54_GSM_diagram_chart = Folk54GSMDiagramChart()
         self.folk54_SSC_diagram_chart = Folk54SSCDiagramChart()
@@ -270,19 +270,19 @@ class GrainSizeDatasetViewer(QtWidgets.QWidget):
             start, end = page_index * self.PAGE_ROWS, (page_index+1) * self.PAGE_ROWS
         proportion_key, proportion_name = self.proportion
         col_names = [self.tr("Mean [{0}]").format(self.unit),
-                     self.tr("Mean\nDescription"),
+                     self.tr("Mean Description"),
                      self.tr("Median [{0}]").format(self.unit),
                      self.tr("Modes [{0}]").format(self.unit),
-                     self.tr("Sorting\nCoefficient"),
-                     self.tr("Sorting\nDescription"),
+                     self.tr("Sorting Coefficient"),
+                     self.tr("Sorting Description"),
                      self.tr("Skewness"),
-                     self.tr("Skewness\nDescription"),
+                     self.tr("Skewness Description"),
                      self.tr("Kurtosis"),
-                     self.tr("Kurtosis\nDescription"),
-                     self.tr("({0})\nProportion [%]").format(proportion_name),
-                     self.tr("Group\n(Folk, 1954)"),
-                     self.tr("Group Symbol\n(Blott and Pye, 2012)"),
-                     self.tr("Group\n(Blott and Pye, 2012)")]
+                     self.tr("Kurtosis Description"),
+                     self.tr("({0}) Proportion [%]").format(proportion_name),
+                     self.tr("Group (Folk, 1954)"),
+                     self.tr("Group Symbol (Blott and Pye, 2012)"),
+                     self.tr("Group (Blott and Pye, 2012)")]
         col_keys = [(True, "mean"),
                     (True, "mean_description"),
                     (True, "median"),
@@ -300,6 +300,7 @@ class GrainSizeDatasetViewer(QtWidgets.QWidget):
         self.data_table.setRowCount(end-start)
         self.data_table.setColumnCount(len(col_names))
         self.data_table.setHorizontalHeaderLabels(col_names)
+        self.data_table.horizontalHeader().setDefaultAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.TextWordWrap)
         self.data_table.setVerticalHeaderLabels([sample.name for sample in self.__dataset.samples[start: end]])
         for row, sample in enumerate(self.__dataset.samples[start: end]):
             statistic = get_all_statistic(sample.classes_μm, sample.classes_φ, sample.distribution)

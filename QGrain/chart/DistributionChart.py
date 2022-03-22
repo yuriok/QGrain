@@ -227,7 +227,9 @@ class DistributionChart(BaseChart):
 
     def save_animation(self):
         if self.last_result is not None:
-            filename, format_str = self.file_dialog.getSaveFileName(self, self.tr("Save the animation of this SSU result"), None, self.tr("MPEG-4 Video File (*.mp4);;Graphics Interchange Format (*.gif)"))
+            filename, format_str = self.file_dialog.getSaveFileName(
+                self, self.tr("Choose a filename to save the animation of this SSU result"),
+                None, "MPEG-4 Video File (*.mp4);;Graphics Interchange Format (*.gif)")
             if filename is None or filename == "":
                 return
             progress = QtWidgets.QProgressDialog(self)

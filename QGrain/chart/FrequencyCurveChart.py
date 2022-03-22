@@ -2,49 +2,50 @@ import typing
 
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDialog, QGridLayout, QComboBox, QLabel
+from PySide6 import QtCore, QtGui, QtWidgets
 
-from ..statistic import convert_φ_to_μm
 from ..model import GrainSizeSample
+from ..statistic import convert_φ_to_μm
+from .BaseChart import BaseChart
+from .config_matplotlib import normal_color
 
 
-class FrequencyCurveChart(QDialog):
-    def __init__(self, parent=None, toolbar=False):
-        flags = Qt.Window | Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint
-        super().__init__(parent=parent, f=flags)
+class FrequencyCurveChart(BaseChart):
+    def __init__(self, parent=None, figsize=(4, 3)):
+        super().__init__(parent=parent, figsize=figsize)
         self.setWindowTitle(self.tr("Frequency Curve Chart"))
-        self.figure = plt.figure(figsize=(4, 3))
         self.axes = self.figure.subplots()
-        self.canvas = FigureCanvas(self.figure)
-        self.toolbar = NavigationToolbar(self.canvas, self)
-        self.main_layout = QGridLayout(self)
-        self.main_layout.addWidget(self.toolbar, 0, 0, 1, 2)
-        self.main_layout.addWidget(self.canvas, 1, 0, 1, 2)
-        if not toolbar:
-            self.toolbar.hide()
-        self.supported_scales = [("log-linear", self.tr("Log-linear")),
-                                 ("log", self.tr("Log")),
-                                 ("phi", self.tr("φ")),
-                                 ("linear", self.tr("Linear"))]
 
-        self.scale_label = QLabel(self.tr("Scale"))
-        self.scale_combo_box = QComboBox()
-        self.scale_combo_box.addItems([name for key, name in self.supported_scales])
-        self.scale_combo_box.currentIndexChanged.connect(self.update_chart)
-        self.main_layout.addWidget(self.scale_label, 2, 0)
-        self.main_layout.addWidget(self.scale_combo_box, 2, 1)
+        self.scale_menu = QtWidgets.QMenu(self.tr("Scale")) # type: QtWidgets.QMenu
+        self.menu.insertMenu(self.save_figure_action, self.scale_menu)
+        self.scale_group = QtGui.QActionGroup(self.scale_menu)
+        self.scale_group.setExclusive(True)
+        self.scale_actions = [] # type: list[QtGui.QAction]
+        for key, name in self.supported_scales:
+            scale_action = self.scale_group.addAction(name) # type: QtGui.QAction
+            scale_action.setCheckable(True)
+            scale_action.triggered.connect(self.update_chart)
+            self.scale_menu.addAction(scale_action)
+            self.scale_actions.append(scale_action)
+        self.scale_actions[0].setChecked(True)
 
         self.last_samples = []
         self.last_max_frequency = 0.0
 
     @property
+    def supported_scales(self) -> typing.List[typing.Tuple[str, str]]:
+        scales = [("log-linear", self.tr("Log-linear")),
+                  ("log", self.tr("Log")),
+                  ("phi", self.tr("Phi")),
+                  ("linear", self.tr("Linear"))]
+        return scales
+
+    @property
     def scale(self) -> str:
-        index = self.scale_combo_box.currentIndex()
-        key, name = self.supported_scales[index]
-        return key
+        for i, scale_action in enumerate(self.scale_actions):
+            if scale_action.isChecked():
+                key, name = self.supported_scales[i]
+                return key
 
     @property
     def transfer(self) -> typing.Callable:
@@ -60,17 +61,17 @@ class FrequencyCurveChart(QDialog):
     @property
     def xlabel(self) -> str:
         if self.scale == "log-linear":
-            return self.tr("Grain size [μm]")
+            return "Grain size [μm]"
         elif self.scale == "log":
-            return self.tr("Ln(grain size in μm)")
+            return "Ln(grain size in μm)"
         elif self.scale == "phi":
-            return self.tr("Grain size [φ]")
+            return "Grain size [φ]"
         elif self.scale == "linear":
-            return self.tr("Grain size [μm]")
+            return "Grain size [μm]"
 
     @property
     def ylabel(self) -> str:
-        return self.tr("Frequency")
+        return "Frequency"
 
     @property
     def xlog(self) -> bool:
@@ -80,6 +81,8 @@ class FrequencyCurveChart(QDialog):
             return False
 
     def update_chart(self):
+        self.figure.clear()
+        self.axes = self.figure.subplots()
         self.show_samples(self.last_samples, append=False)
 
     def show_samples(self, samples: typing.Iterable[GrainSizeSample], append=False, title=None):
@@ -96,13 +99,13 @@ class FrequencyCurveChart(QDialog):
                     if self.xlog:
                         self.axes.set_xscale("log")
                     if title is None:
-                        self.axes.set_title(self.tr("Frequency curves of samples"))
+                        self.axes.set_title("Frequency curves of samples")
                     else:
                         self.axes.set_title(title)
                     self.axes.set_xlabel(self.xlabel)
                     self.axes.set_ylabel(self.ylabel)
                     self.axes.set_xlim(x[0], x[-1])
-            self.axes.plot(x, sample.distribution, c="black")
+            self.axes.plot(x, sample.distribution, c=normal_color())
             sample_max_freq = np.max(sample.distribution)
             if sample_max_freq > max_frequency:
                 max_frequency = sample_max_freq
@@ -110,3 +113,8 @@ class FrequencyCurveChart(QDialog):
         self.last_max_frequency = max_frequency
         self.figure.tight_layout()
         self.canvas.draw()
+
+    def retranslate(self):
+        super().retranslate()
+        self.setWindowTitle(self.tr("Frequency Curve Chart"))
+        self.scale_menu.setTitle(self.tr("Scale"))

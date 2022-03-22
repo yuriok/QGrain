@@ -21,7 +21,7 @@ def angular_distance(values: np.ndarray, targets: np.ndarray, axis=None) -> floa
     angular = 2 * np.arccos(cosine) / np.pi
     return angular
 
-def get_distance_func_by_name(distance: str):
+def get_distance_function(distance: str):
     if distance[-4:] == "norm":
         p = int(distance[0])
         return lambda x, y, axis=None: p_norm(x, y, p, axis=axis)

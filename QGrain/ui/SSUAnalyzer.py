@@ -6,9 +6,9 @@ from PySide6 import QtCore, QtWidgets
 from ..chart.DistributionChart import DistributionChart
 from ..model import GrainSizeDataset
 from ..ssu import AsyncWorker, DistributionType, SSUResult, SSUTask
-from ..ui.FittingResultViewer import FittingResultViewer
-from ..ui.ReferenceResultViewer import ReferenceResultViewer
 from .ParameterEditor import ParameterEditor
+from .SSUReferenceViewer import SSUReferenceViewer
+from .SSUResultViewer import SSUResultViewer
 from .SSUSettingDialog import SSUSettingDialog
 
 
@@ -28,10 +28,7 @@ class SSUAnalyzer(QtWidgets.QWidget):
         self.async_worker.background_worker.task_succeeded.connect(self.on_fitting_succeeded)
         self.async_worker.background_worker.task_failed.connect(self.on_fitting_failed)
         self.normal_msg = QtWidgets.QMessageBox(self)
-        self.dataset = None
-        self.task_table = {}
-        self.task_results = {}
-        self.failed_task_ids = []
+        self.__dataset = None
         self.init_ui()
 
     def init_ui(self):
@@ -88,9 +85,11 @@ class SSUAnalyzer(QtWidgets.QWidget):
         self.chart_layout.addWidget(self.result_chart, 0, 0)
 
         # table group
-        self.reference_view = ReferenceResultViewer()
-        self.result_view = FittingResultViewer(self.reference_view)
+        self.reference_view = SSUReferenceViewer()
+        self.reference_view.result_displayed.connect(self.on_result_displayed)
+        self.result_view = SSUResultViewer(self.reference_view)
         self.result_view.result_marked.connect(lambda result: self.reference_view.add_references([result]))
+        self.result_view.result_displayed.connect(self.on_result_displayed)
         self.table_tab = QtWidgets.QTabWidget()
         self.table_tab.addTab(self.result_view, self.tr("Result"))
         self.table_tab.addTab(self.reference_view, self.tr("Reference"))
@@ -130,8 +129,10 @@ class SSUAnalyzer(QtWidgets.QWidget):
         self.show_message(self.tr("Error"), message)
 
     def on_dataset_loaded(self, dataset: GrainSizeDataset):
-        self.dataset = dataset
+        self.__dataset = dataset
         self.sample_index_input.setRange(1, dataset.n_samples)
+        self.sample_index_input.setValue(1)
+        self.on_sample_index_changed(1)
         self.sample_index_input.setEnabled(True)
         self.try_fit_button.setEnabled(True)
         self.edit_parameter_button.setEnabled(True)
@@ -139,11 +140,10 @@ class SSUAnalyzer(QtWidgets.QWidget):
         self.try_next_button.setEnabled(True)
 
     def on_sample_index_changed(self, index):
-        self.sample_name_display.setText(self.dataset.samples[index-1].name)
+        self.sample_name_display.setText(self.__dataset.samples[index-1].name)
 
-    def generate_task(self):
-        sample_index = self.sample_index_input.value()-1
-        sample = self.dataset.samples[sample_index]
+    def get_task(self, sample_index: int) -> SSUTask:
+        sample = self.__dataset.samples[sample_index]
         setting = self.setting_dialog.setting
         if self.parameter_editor.parameter_enabled:
             task = SSUTask(
@@ -170,18 +170,29 @@ class SSUAnalyzer(QtWidgets.QWidget):
                     resolver_setting=setting)
         return task
 
+    def get_all_tasks(self) -> typing.List[SSUTask]:
+        tasks = []
+        for i in range(self.__dataset.n_samples):
+            task = self.get_task(i)
+            tasks.append(task)
+        return tasks
+
+    def on_result_displayed(self, result: SSUResult, animated: bool):
+        if animated:
+            self.result_chart.show_result(result)
+        else:
+            self.result_chart.show_model(result.view_model)
+
     def on_fitting_succeeded(self, fitting_result: SSUResult):
         # update chart
         self.result_chart.show_model(fitting_result.view_model)
         self.result_view.add_result(fitting_result)
-        self.task_results[fitting_result.task.uuid] = fitting_result
         self.try_fit_button.setEnabled(True)
         self.edit_parameter_button.setEnabled(True)
         self.try_previous_button.setEnabled(True)
         self.try_next_button.setEnabled(True)
 
     def on_fitting_failed(self, failed_info: str, task: SSUTask):
-        self.failed_task_ids.append(task.uuid)
         self.try_fit_button.setEnabled(True)
         self.edit_parameter_button.setEnabled(True)
         self.try_previous_button.setEnabled(True)
@@ -193,14 +204,13 @@ class SSUAnalyzer(QtWidgets.QWidget):
         self.edit_parameter_button.setEnabled(False)
         self.try_previous_button.setEnabled(False)
         self.try_next_button.setEnabled(False)
-        task = self.generate_task()
-        self.task_table[task.uuid] = task
+        task = self.get_task(self.sample_index_input.value()-1)
         self.async_worker.execute_task(task)
 
     def on_edit_parameter_clicked(self):
-        if self.dataset is not None:
+        if self.__dataset is not None:
             sample_index = self.sample_index_input.value()-1
-            sample = self.dataset.samples[sample_index]
+            sample = self.__dataset.samples[sample_index]
             self.parameter_editor.setup_target(sample.classes_μm, sample.distribution)
         self.parameter_editor.show()
 
@@ -216,7 +226,7 @@ class SSUAnalyzer(QtWidgets.QWidget):
 
     def on_try_next_clicked(self):
         current = self.sample_index_input.value()
-        if current == self.dataset.n_samples:
+        if current == self.__dataset.n_samples:
             return
         self.sample_index_input.setValue(current+1)
         self.do_test()
@@ -227,3 +237,19 @@ class SSUAnalyzer(QtWidgets.QWidget):
 
     def retranslate(self):
         self.setWindowTitle(self.tr("SSU Analyzer"))
+        self.control_group.setTitle(self.tr("Control"))
+        self.distribution_label.setText(self.tr("Distribution Type"))
+        self.component_number_label.setText(self.tr("Number of Components"))
+        self.sample_index_label.setText(self.tr("Sample Index"))
+        self.sample_name_label.setText(self.tr("Sample Name"))
+        if not self.__dataset.has_sample:
+            self.sample_name_display.setText(self.tr("Unknown"))
+        self.try_fit_button.setText(self.tr("Try Fit"))
+        self.edit_parameter_button.setText(self.tr("Edit Parameters"))
+        self.try_previous_button.setText(self.tr("Try Previous"))
+        self.try_next_button.setText(self.tr("Try Next"))
+        self.chart_group.setTitle(self.tr("Chart"))
+        self.table_tab.setTabText(0, self.tr("Result"))
+        self.table_tab.setTabText(1, self.tr("Reference"))
+        self.result_view.retranslate()
+        self.reference_view.retranslate()
