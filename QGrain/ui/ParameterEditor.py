@@ -317,10 +317,10 @@ class ParameterEditor(QtWidgets.QDialog):
 
     def retranslate(self):
         self.setWindowTitle(self.tr("Parameter Editor"))
-        self.control_group = QtWidgets.QGroupBox(self.tr("Control"))
-        self.preset_label = QtWidgets.QLabel(self.tr("Preset Archive"))
+        self.control_group.setTitle(self.tr("Control"))
+        self.preset_label.setText(self.tr("Preset Archive"))
         self.enabled_checkbox.setText(self.tr("Enabled"))
         self.preview_button.setText(self.tr("Preview"))
-        self.n_components_label = QtWidgets.QLabel(self.tr("Number of Components"))
+        self.n_components_label.setText(self.tr("Number of Components"))
         self.distribution_type_label.setText(self.tr("Distribution Type"))
         self.preview_group.setTitle(self.tr("Preview"))

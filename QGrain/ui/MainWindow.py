@@ -24,8 +24,10 @@ from .LogDialog import *
 from .ParameterEditor import ParameterEditor
 from .PCAAnalyzer import PCAAnalyzer
 from .SSUAnalyzer import SSUAnalyzer
+from .SSUMulticoreAnalyzer import SSUMulticoreAnalyzer
 from .SSUSettingDialog import SSUSettingDialog
 from .UDMSettingDialog import UDMSettingDialog
+
 
 class MainWindow(QtWidgets.QMainWindow):
     logger = logging.getLogger("QGrain")
@@ -38,7 +40,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.emma_setting_dialog = EMMASettingDialog(self)
         self.udm_setting_dialog = UDMSettingDialog(self)
         self.parameter_editor = ParameterEditor(self)
+        self.ssu_multicore_analyzer = SSUMulticoreAnalyzer(self)
         self.init_ui()
+        self.ssu_multicore_analyzer.result_finished.connect(self.ssu_analyzer.result_view.add_result)
         self.load_dataset_dialog = LoadDatasetDialog(self)
         self.load_dataset_dialog.dataset_loaded.connect(self.on_dataset_loaded)
         self.load_dataset_dialog.dataset_loaded.connect(self.dataset_viewer.on_dataset_loaded)
@@ -69,7 +73,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.dataset_generator = DatasetGenerator()
         self.tab_widget.addTab(self.dataset_generator, self.tr("Generator"))
         self.dataset_viewer = GrainSizeDatasetViewer()
-        self.tab_widget.addTab(self.dataset_viewer, self.tr("Viewer"))
+        self.tab_widget.addTab(self.dataset_viewer, self.tr("Statistics"))
         self.pca_analyzer = PCAAnalyzer()
         self.tab_widget.addTab(self.pca_analyzer, self.tr("PCA"))
         self.clustering_analyzer = ClusteringAnalyzer()
@@ -88,6 +92,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.open_menu = self.menuBar().addMenu(self.tr("Open")) # type: QtWidgets.QMenu
         self.open_dataset_action = self.open_menu.addAction(self.tr("Grain Size Dataset")) # type: QtGui.QAction
         self.open_dataset_action.triggered.connect(lambda: self.load_dataset_dialog.show())
+        self.load_emma_result_action = self.open_menu.addAction(self.tr("EMMA Results")) # type: QtGui.QAction
+        self.load_emma_result_action.triggered.connect(self.emma_analyzer.load_results)
+        self.load_ssu_result_action = self.open_menu.addAction(self.tr("SSU Results")) # type: QtGui.QAction
+        self.load_ssu_result_action.triggered.connect(self.ssu_analyzer.result_view.load_results)
+        self.load_ssu_reference_action = self.open_menu.addAction(self.tr("SSU References")) # type: QtGui.QAction
+        self.load_ssu_reference_action.triggered.connect(self.ssu_analyzer.reference_view.load_references)
+
         # Save
         self.save_menu = self.menuBar().addMenu(self.tr("Save")) # type: QtWidgets.QMenu
         self.save_statistic_action = self.save_menu.addAction(self.tr("Statistic Result")) # type: QtGui.QAction
@@ -96,6 +107,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.save_pca_action.triggered.connect(self.on_save_pca_clicked)
         self.save_clustering_action = self.save_menu.addAction(self.tr("Clustering Result")) # type: QtGui.QAction
         self.save_clustering_action.triggered.connect(self.clustering_analyzer.on_save_clicked)
+        self.dump_emma_result_action = self.save_menu.addAction(self.tr("EMMA Results (Dumped)")) # type: QtGui.QAction
+        self.dump_emma_result_action.triggered.connect(self.emma_analyzer.load_results)
+        self.save_emma_result_action = self.save_menu.addAction(self.tr("EMMA Result (Excel)")) # type: QtGui.QAction
+        self.save_emma_result_action.triggered.connect(self.emma_analyzer.save_selected_result)
+        self.dump_ssu_result_action = self.save_menu.addAction(self.tr("SSU Results (Dumped)")) # type: QtGui.QAction
+        self.dump_ssu_result_action.triggered.connect(self.ssu_analyzer.result_view.load_results)
+        self.dump_ssu_reference_action = self.save_menu.addAction(self.tr("SSU References (Dumped)")) # type: QtGui.QAction
+        self.dump_ssu_reference_action.triggered.connect(self.ssu_analyzer.reference_view.load_references)
+        self.save_ssu_result_action = self.save_menu.addAction(self.tr("SSU Results (Excel)")) # type: QtGui.QAction
+        self.save_ssu_result_action.triggered.connect(lambda: self.ssu_analyzer.result_view.on_save_excel_clicked(False))
+
         # Config
         self.config_menu = self.menuBar().addMenu(self.tr("Config")) # type: QtWidgets.QMenu
         self.config_ssu_action = self.config_menu.addAction(self.tr("SSU Settings")) # type: QtGui.QAction
@@ -104,6 +126,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.config_emma_action.triggered.connect(self.emma_setting_dialog.show)
         self.config_udm_action = self.config_menu.addAction(self.tr("UDM Settings")) # type: QtGui.QAction
         self.config_udm_action.triggered.connect(self.udm_setting_dialog.show)
+
+        # Experimental
+        self.experimental_menu = self.menuBar().addMenu(self.tr("Experimental")) # type: QtWidgets.QMenu
+        self.ssu_fit_all_action = self.experimental_menu.addAction(self.tr("Perform SSU For All Samples")) # type: QtGui.QAction
+        self.ssu_fit_all_action.triggered.connect(self.ssu_fit_all_samples)
 
         # Language
         self.language_menu = self.menuBar().addMenu(self.tr("Language")) # type: QtWidgets.QMenu
@@ -180,6 +207,11 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         self.__dataset = dataset
 
+    def ssu_fit_all_samples(self):
+        tasks = self.ssu_analyzer.get_all_tasks()
+        self.ssu_multicore_analyzer.setup_tasks(tasks)
+        self.ssu_multicore_analyzer.exec()
+
     def on_save_statistic_clicked(self):
         if not self.__dataset.has_sample:
             self.show_warning(self.tr("Dataset has not been loaded."))
@@ -201,8 +233,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 progress_dialog.setValue(int(progress*100))
                 QtCore.QCoreApplication.processEvents()
             save_statistic(self.__dataset, filename, progress_callback=callback)
-            progress_dialog.setValue(100)
-            self.logger.info("Statistic result of this dataset has been saved to the Excel file.")
         except Exception as e:
             self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
             self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
@@ -228,8 +258,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 progress_dialog.setValue(int(progress*100))
                 QtCore.QCoreApplication.processEvents()
             save_pca(self.__dataset, filename, progress_callback=callback)
-            progress_dialog.setValue(100)
-            self.logger.info("PCA result of this dataset has been saved to the Excel file.")
         except Exception as e:
             self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
             self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
@@ -250,24 +278,36 @@ class MainWindow(QtWidgets.QMainWindow):
         self.open_menu.setTitle((self.tr("Open")))
         self.save_menu.setTitle(self.tr("Save"))
         self.open_dataset_action.setText(self.tr("Grain Size Dataset"))
+        self.load_emma_result_action.setText(self.tr("EMMA Results"))
+        self.load_ssu_result_action.setText(self.tr("SSU Results"))
+        self.load_ssu_reference_action.setText(self.tr("SSU References"))
         self.save_statistic_action.setText(self.tr("Statistic Result"))
         self.save_pca_action.setText(self.tr("PCA Result"))
         self.save_clustering_action.setText(self.tr("Clustering Result"))
+        self.dump_emma_result_action.setText(self.tr("EMMA Results (Dumped)"))
+        self.save_emma_result_action.setText(self.tr("EMMA Result (Excel)"))
+        self.dump_ssu_result_action.setText(self.tr("SSU Results (Dumped)"))
+        self.dump_ssu_reference_action.setText(self.tr("SSU References (Dumped)"))
+        self.save_ssu_result_action.setText(self.tr("SSU Results (Excel)"))
         self.config_menu.setTitle(self.tr("Config"))
         self.config_ssu_action.setText(self.tr("SSU Settings"))
         self.config_emma_action.setText(self.tr("EMMA Settings"))
         self.config_udm_action.setText(self.tr("UDM Settings"))
+        self.experimental_menu.setTitle(self.tr("Experimental"))
+        self.ssu_fit_all_action.setText(self.tr("Perform SSU For All Samples"))
         self.language_menu.setTitle(self.tr("Language"))
         self.theme_menu.setTitle(self.tr("Theme"))
         self.log_action.setText(self.tr("Log"))
         self.about_action.setText(self.tr("About"))
         self.tab_widget.setTabText(0, self.tr("Generator"))
-        self.tab_widget.setTabText(1, self.tr("Viewer"))
+        self.tab_widget.setTabText(1, self.tr("Statistics"))
         self.tab_widget.setTabText(2, self.tr("PCA"))
         self.tab_widget.setTabText(3, self.tr("Clustering"))
         self.tab_widget.setTabText(4, self.tr("SSU"))
         self.tab_widget.setTabText(5, self.tr("EMMA"))
         self.tab_widget.setTabText(6, self.tr("UDM"))
+        self.ssu_multicore_analyzer.retranslate()
+
 
     def changeEvent(self, event: QtCore.QEvent):
         if event.type() == QtCore.QEvent.LanguageChange:

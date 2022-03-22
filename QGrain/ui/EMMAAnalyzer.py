@@ -50,7 +50,7 @@ class EMMAAnalyzer(QtWidgets.QWidget):
         self.kernel_combo_box.setCurrentIndex(1)
         self.control_layout.addWidget(self.kernel_label, 0, 0)
         self.control_layout.addWidget(self.kernel_combo_box, 0, 1)
-        self.n_members_label = QtWidgets.QLabel("Number of End Members")
+        self.n_members_label = QtWidgets.QLabel(self.tr("Number of End Members"))
         self.n_members_input = QtWidgets.QSpinBox()
         self.n_members_input.setRange(1, 12)
         self.n_members_input.setValue(3)
@@ -82,9 +82,9 @@ class EMMAAnalyzer(QtWidgets.QWidget):
         self.show_animation_button = QtWidgets.QPushButton(self.tr("Show Animation"))
         self.show_animation_button.clicked.connect(self.on_show_animation_clicked)
         self.load_button = QtWidgets.QPushButton(self.tr("Load"))
-        self.load_button.clicked.connect(self.on_load_clicked)
+        self.load_button.clicked.connect(self.load_results)
         self.save_button = QtWidgets.QPushButton(self.tr("Save"))
-        self.save_button.clicked.connect(self.on_save_clicked)
+        self.save_button.clicked.connect(self.save_selected_result)
         self.remove_result_button.setEnabled(False)
         self.try_summarize_button.setEnabled(False)
         self.show_result_button.setEnabled(False)
@@ -227,63 +227,69 @@ class EMMAAnalyzer(QtWidgets.QWidget):
         if result is not None:
             self.result_chart.show_animation(result)
 
-    def on_load_clicked(self):
+    def load_results(self):
         filename, _  = self.file_dialog.getOpenFileName(
-            self, self.tr("Select the dump file of the EMMA result(s)"),
-            None, f"{self.tr('Binary Dump')} (*.dump)")
+            self, self.tr("Choose the file which stores the dumped EMMA results"),
+            None, "Dumped EMMA Results (*.emma)")
         if filename is None or filename == "":
             return
         with open(filename, "rb") as f:
             results = pickle.load(f)
-            invalid = False
+            valid = True
             if isinstance(results, list):
                 for result in results:
                     if not isinstance(result, EMMAResult):
-                        invalid = True
+                        valid = False
                         break
             else:
-                invalid = True
-            if invalid:
-                self.show_error(self.tr("The dump file does not contain any EMMA result."))
-                return
-            else:
+                valid = False
+
+            if valid:
                 self.add_results(results)
+                self.logger.info(f"There are {len(results)} EMMA results that have been loaded.")
+            else:
+                self.logger.error("The binary file is invalid (i.e., the objects in it are not EMMA results).")
+                self.show_error(self.tr("The binary file is invalid (i.e., the objects in it are not EMMA results)."))
+                return
 
-    def on_save_clicked(self):
+    def dump_results(self):
         if self.n_results == 0:
-            self.show_warning(self.tr("There is not an EMMA result in the list."))
+            self.show_warning(self.tr("There is no EMMA result."))
             return
-
         filename, _ = self.file_dialog.getSaveFileName(
-            self, self.tr("Choose a filename to save the EMMA result(s) in list"),
-            None, f"{self.tr('Binary Dump')} (*.dump);;{self.tr('Microsoft Excel')} (*.xlsx)")
+            self, self.tr("Choose a filename to dump the EMMA results"),
+            None, "Dumped EMMA Results (*.emma)")
         if filename is None or filename == "":
             return
-        _, ext = os.path.splitext(filename)
+        with open(filename, "wb") as f:
+            pickle.dump(self.__result_list, f)
+            self.logger.info("All EMMA results have been dumped.")
 
-        if ext == ".dump":
-            with open(filename, "wb") as f:
-                pickle.dump(self.__result_list, f)
-                self.logger.info("All EMMA results in list has been saved to the dump file.")
-        elif ext == ".xlsx":
-            try:
-                result = self.selected_result
-                progress_dialog = QtWidgets.QProgressDialog(
-                    self.tr("Saving EMMA result..."), self.tr("Cancel"),
-                    0, 100, self)
-                progress_dialog.setWindowTitle("QGrain")
-                progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
-                def callback(progress: float):
-                    if progress_dialog.wasCanceled():
-                        raise StopIteration()
-                    progress_dialog.setValue(int(progress*100))
-                    QtCore.QCoreApplication.processEvents()
-                save_emma(result, filename, progress_callback=callback)
-                progress_dialog.setValue(100)
-                self.logger.info("The selected EMMA result of this dataset has been saved to the Excel file.")
-            except Exception as e:
-                self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
-                self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
+    def save_selected_result(self):
+        if self.n_results == 0:
+            self.show_warning(self.tr("There is no EMMA result."))
+            return
+        filename, _ = self.file_dialog.getSaveFileName(
+            self, self.tr("Choose a filename to save the selected EMMA result"),
+            None, "Microsoft Excel (*.xlsx)")
+        if filename is None or filename == "":
+            return
+        try:
+            result = self.selected_result
+            progress_dialog = QtWidgets.QProgressDialog(
+                self.tr("Saving the EMMA result..."), self.tr("Cancel"),
+                0, 100, self)
+            progress_dialog.setWindowTitle("QGrain")
+            progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
+            def callback(progress: float):
+                if progress_dialog.wasCanceled():
+                    raise StopIteration()
+                progress_dialog.setValue(int(progress*100))
+                QtCore.QCoreApplication.processEvents()
+            save_emma(result, filename, progress_callback=callback)
+        except Exception as e:
+            self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
+            self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
 
     def changeEvent(self, event: QtCore.QEvent):
         if event.type() == QtCore.QEvent.LanguageChange:
@@ -293,8 +299,8 @@ class EMMAAnalyzer(QtWidgets.QWidget):
         self.setWindowTitle(self.tr("EMMA Analyzer"))
         self.control_group.setTitle(self.tr("Control"))
         self.kernel_label.setText(self.tr("Kernel Type"))
-        self.n_members_label.setText("Number of End Members")
-        self.update_EMs_checkbox.setText(self.tr("Update Distributions of End Members"))
+        self.n_members_label.setText(self.tr("Number of End Members"))
+        self.update_EMs_checkbox.setText(self.tr("Update The Distributions of End Members"))
         self.try_fit_button.setText(self.tr("Try Fit"))
         self.edit_parameter_button.setText(self.tr("Edit Parameters"))
         self.result_group.setTitle(self.tr("Result"))

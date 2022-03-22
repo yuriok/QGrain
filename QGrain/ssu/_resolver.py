@@ -1,3 +1,4 @@
+import logging
 import multiprocessing
 import time
 import traceback
@@ -8,7 +9,7 @@ from PySide6.QtCore import QObject, Qt, QThread, Signal, Slot
 from scipy.optimize import OptimizeResult, basinhopping, minimize
 
 from ..model import GrainSizeDataset, GrainSizeSample
-from ._distance import get_distance_func_by_name
+from ._distance import get_distance_function
 from ._distribution import DISTRIBUTION_CLASS_MAP, DistributionType
 from ._result import SSUResult
 from ._task import SSUTask
@@ -126,7 +127,7 @@ class BasicResolver:
             weights[peak - 2: peak + 2] += 2.0
         return weights
 
-    def try_fit(self, task: SSUTask) -> typing.Optional[SSUResult]:
+    def try_fit(self, task: SSUTask) -> typing.Tuple[str, typing.Union[SSUTask, SSUResult]] :
         history = []
         if task.resolver_setting is None:
             setting = SSUAlgorithmSetting()
@@ -135,7 +136,7 @@ class BasicResolver:
             setting = task.resolver_setting
         classes = np.expand_dims(np.expand_dims(task.sample.classes_φ, 0), 0).repeat(task.n_components, 1)
         distribution_class = DISTRIBUTION_CLASS_MAP[task.distribution_type]
-        distance_func = get_distance_func_by_name(setting.distance)
+        distance_func = get_distance_function(setting.distance)
 
         start_time = time.time()
         self.on_fitting_started()
@@ -205,6 +206,7 @@ class BasicResolver:
 class BackgroundWorker(QObject):
     task_succeeded = Signal(SSUResult)
     task_failed = Signal(str, SSUTask)
+    logger = logging.getLogger("QGrain")
 
     def __init__(self):
         super().__init__()
@@ -216,10 +218,10 @@ class BackgroundWorker(QObject):
             if isinstance(result, SSUResult):
                 self.task_succeeded.emit(result)
             else:
-                self.task_failed.emit(self.tr("Fitting Failed: {0}").format(message), task)
+                self.task_failed.emit(message, task)
         except Exception as e:
-            message = self.tr("Unknown Exception Raised: {0}, {1}, {2}").format(type(e), e.__str__(), traceback.format_exc())
-            self.task_failed.emit(message, task)
+            self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
+            self.task_failed.emit("An unknown exception was raised. Please check the logs for more details.", task)
 
 class AsyncWorker(QObject):
     task_started = Signal(SSUTask)
@@ -255,16 +257,16 @@ def try_sample(
     message, result = resolver.try_fit(task)
     return result
 
+
 def try_dataset(
-    dataset: GrainSizeDataset,
-    distribution_type: DistributionType,
-    n_components: int,
-    resolver_setting: SSUAlgorithmSetting = None,
-    initial_guess=None,
-    processes=1):
-    pass
+        dataset: GrainSizeDataset,
+        distribution_type: DistributionType,
+        n_components: int,
+        resolver_setting: SSUAlgorithmSetting = None,
+        initial_guess: np.ndarray = None,
+        n_processes: int = 1):
     multiprocessing.freeze_support()
-    pool = multiprocessing.Pool(processes)
+    pool = multiprocessing.Pool(n_processes)
     tasks = [SSUTask(sample, distribution_type, n_components, resolver_setting, initial_guess) for sample in dataset.samples]
     def run_task(task: SSUTask):
         resolver = BasicResolver()

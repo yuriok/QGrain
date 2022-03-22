@@ -161,8 +161,6 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
                 progress_dialog.setValue(int(progress*100))
                 QtCore.QCoreApplication.processEvents()
             save_clustering(self.__dataset, flags, filename, progress_callback=callback)
-            progress_dialog.setValue(100)
-            self.logger.info("Clustering result of this dataset has been saved to the Excel file.")
         except Exception as e:
             self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
             self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))

@@ -6,7 +6,7 @@ import numpy as np
 from scipy.stats import norm
 
 from ..model import GrainSizeSample
-from ._distance import get_distance_func_by_name
+from ._distance import get_distance_function
 from ._distribution import DISTRIBUTION_CLASS_MAP, DistributionType
 from ._task import SSUTask
 
@@ -184,7 +184,7 @@ class SSUResult:
             yield copy_result
 
     def get_distance(self, distance: str):
-        distance_func = get_distance_func_by_name(distance)
+        distance_func = get_distance_function(distance)
         distance = distance_func(self.distribution, self.sample.distribution)
         return distance
 

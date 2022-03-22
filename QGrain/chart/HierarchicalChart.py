@@ -18,6 +18,8 @@ class HierarchicalChart(BaseChart):
     def show_result(self,
                     linkage_matrix: np.ndarray,
                     p=100):
+        self.__linkage_matrix = linkage_matrix
+        self.__p = p
         self.axes.clear()
         dendrogram(linkage_matrix,
                    no_labels=False,
@@ -34,3 +36,7 @@ class HierarchicalChart(BaseChart):
         self.axes = self.figure.subplots()
         if self.__linkage_matrix is not None:
             self.show_result(self.__linkage_matrix, self.__p)
+
+    def retranslate(self):
+        super().retranslate()
+        self.setWindowTitle(self.tr("Hierarchical Clustering"))

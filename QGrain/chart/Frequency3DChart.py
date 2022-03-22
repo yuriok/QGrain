@@ -8,13 +8,14 @@ from ..model import GrainSizeSample
 from ..statistic import convert_φ_to_μm, get_cumulative_frequency
 from .BaseChart import BaseChart
 from .config_matplotlib import normal_color
+from mpl_toolkits.mplot3d import Axes3D
 
-
-class CumulativeCurveChart(BaseChart):
-    def __init__(self, parent=None, figsize=(4, 3)):
+class Frequency3DChart(BaseChart):
+    def __init__(self, parent=None, figsize=(6, 4)):
         super().__init__(parent=parent, figsize=figsize)
-        self.setWindowTitle(self.tr("Cumulative Curve Chart"))
-        self.axes = self.figure.subplots()
+        self.setWindowTitle(self.tr("Frequency 3D Chart"))
+        self.axes = Axes3D(self.figure, auto_add_to_figure=False)
+        self.figure.add_axes(self.axes)
 
         self.scale_menu = QtWidgets.QMenu(self.tr("Scale")) # type: QtWidgets.QMenu
         self.menu.insertMenu(self.save_figure_action, self.scale_menu)
@@ -27,9 +28,11 @@ class CumulativeCurveChart(BaseChart):
             scale_action.triggered.connect(self.update_chart)
             self.scale_menu.addAction(scale_action)
             self.scale_actions.append(scale_action)
-        self.scale_actions[0].setChecked(True)
+        self.scale_actions[2].setChecked(True)
 
-        self.__last_samples = []
+        self.last_samples = []
+        self.last_max_frequency = 0.0
+
 
     @property
     def supported_scales(self) -> typing.List[typing.Tuple[str, str]]:
@@ -72,41 +75,42 @@ class CumulativeCurveChart(BaseChart):
     def ylabel(self) -> str:
         return "Frequency"
 
-    @property
-    def xlog(self) -> bool:
-        if self.scale == "log-linear":
-            return True
-        else:
-            return False
-
     def update_chart(self):
         self.figure.clear()
-        self.axes = self.figure.subplots()
-        self.show_samples(self.__last_samples, append=False)
+        self.axes = Axes3D(self.figure, auto_add_to_figure=False)
+        self.figure.add_axes(self.axes)
+        self.show_samples(self.last_samples, append=False)
 
     def show_samples(self, samples: typing.Iterable[GrainSizeSample], append=False):
-        append = append and len(self.__last_samples) != 0
+        append = append and len(self.last_samples) != 0
         if not append:
-            self.axes.clear()
-            self.__last_samples = []
-        for i, sample in enumerate(samples):
-            self.__last_samples.append(sample)
-            if i == 0:
-                x = self.transfer(sample.classes_φ)
-                if not append:
-                    if self.xlog:
-                        self.axes.set_xscale("log")
-                    self.axes.set_title("Cumulative curves of samples")
-                    self.axes.set_xlabel(self.xlabel)
-                    self.axes.set_ylabel(self.ylabel)
-                    self.axes.set_xlim(x[0], x[-1])
-                    self.axes.set_ylim(0.0, 1.0)
-            cumulative_frequency = get_cumulative_frequency(sample.distribution)
-            self.axes.plot(x, cumulative_frequency, c=normal_color())
-        self.figure.tight_layout()
+            self.last_samples = []
+        self.axes.clear()
+        record_samples = []
+        sample_distributions = []
+        for sample in self.last_samples:
+            record_samples.append(sample)
+            sample_distributions.append(sample.distribution)
+        for sample in samples:
+            record_samples.append(sample)
+            sample_distributions.append(sample.distribution)
+        Z = np.array(sample_distributions)
+        x = self.transfer(record_samples[0].classes_φ)
+        y = np.linspace(1, len(Z), len(Z))
+        X, Y = np.meshgrid(x, y)
+        self.axes.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap="binary")
+        self.axes.set_xlim(x[0], x[-1])
+        self.axes.set_xlabel(self.xlabel)
+        self.axes.set_ylabel(self.tr("Sample index"))
+        self.axes.set_zlabel(self.ylabel)
+        self.last_samples = record_samples
+        if self.scale == "linear":
+            self.axes.view_init(elev=15.0, azim=45)
+        else:
+            self.axes.view_init(elev=45.0, azim=-120)
         self.canvas.draw()
 
     def retranslate(self):
         super().retranslate()
-        self.setWindowTitle(self.tr("Cumulative Curve Chart"))
+        self.setWindowTitle(self.tr("Frequency 3D Chart"))
         self.scale_menu.setTitle(self.tr("Scale"))
