@@ -54,8 +54,8 @@ class UDMSettingDialog(QtWidgets.QDialog):
         self.precision_input = QtWidgets.QDoubleSpinBox()
         self.precision_input.setRange(2.0, 20.0)
         self.precision_input.setValue(10.0)
-        self.main_layout.addWidget(self.precision_label, 5, 0)
-        self.main_layout.addWidget(self.precision_input, 5, 1)
+        self.main_layout.addWidget(self.precision_label, 4, 0)
+        self.main_layout.addWidget(self.precision_input, 4, 1)
 
         self.learning_rate_label = QtWidgets.QLabel(self.tr("Learning Rate (x10<sup>-3</sup>)"))
         self.learning_rate_label.setToolTip(self.tr("The learning rate of the neural network to update its weights from gradient."))
@@ -63,8 +63,8 @@ class UDMSettingDialog(QtWidgets.QDialog):
         self.learning_rate_input.setDecimals(3)
         self.learning_rate_input.setRange(0.001, 1000)
         self.learning_rate_input.setValue(5)
-        self.main_layout.addWidget(self.learning_rate_label, 6, 0)
-        self.main_layout.addWidget(self.learning_rate_input, 6, 1)
+        self.main_layout.addWidget(self.learning_rate_label, 5, 0)
+        self.main_layout.addWidget(self.learning_rate_input, 5, 1)
 
         self.beta1_label = QtWidgets.QLabel(self.tr("Beta 1"))
         self.beta1_label.setToolTip(self.tr("Betas are the coefficients used for computing running averages of gradient and its square."))
@@ -72,8 +72,8 @@ class UDMSettingDialog(QtWidgets.QDialog):
         self.beta1_input.setDecimals(4)
         self.beta1_input.setRange(0.0001, 0.9999)
         self.beta1_input.setValue(0.8000)
-        self.main_layout.addWidget(self.beta1_label, 7, 0)
-        self.main_layout.addWidget(self.beta1_input, 7, 1)
+        self.main_layout.addWidget(self.beta1_label, 6, 0)
+        self.main_layout.addWidget(self.beta1_input, 6, 1)
 
         self.beta2_label = QtWidgets.QLabel(self.tr("Beta 2"))
         self.beta2_label.setToolTip(self.tr("Betas are the coefficients used for computing running averages of gradient and its square."))
@@ -81,8 +81,8 @@ class UDMSettingDialog(QtWidgets.QDialog):
         self.beta2_input.setDecimals(4)
         self.beta2_input.setRange(0.0001, 0.9999)
         self.beta2_input.setValue(0.5000)
-        self.main_layout.addWidget(self.beta2_label, 8, 0)
-        self.main_layout.addWidget(self.beta2_input, 8, 1)
+        self.main_layout.addWidget(self.beta2_label, 7, 0)
+        self.main_layout.addWidget(self.beta2_input, 7, 1)
 
         self.constraint_level_label = QtWidgets.QLabel(self.tr("Constraint Level"))
         self.constraint_level_label.setToolTip(self.tr("It controls the constraint intensity of the end member diversity between different samples. When the constraint level is high, the end members of different samples tend to be equal."))
@@ -90,8 +90,8 @@ class UDMSettingDialog(QtWidgets.QDialog):
         self.constraint_level_input.setDecimals(4)
         self.constraint_level_input.setRange(-10, 10.0)
         self.constraint_level_input.setValue(3.0)
-        self.main_layout.addWidget(self.constraint_level_label, 9, 0)
-        self.main_layout.addWidget(self.constraint_level_input, 9, 1)
+        self.main_layout.addWidget(self.constraint_level_label, 8, 0)
+        self.main_layout.addWidget(self.constraint_level_input, 8, 1)
 
     @property
     def setting(self):

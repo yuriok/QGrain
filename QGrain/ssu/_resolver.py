@@ -273,8 +273,8 @@ def try_dataset(
         message, result = resolver.try_fit(task)
         return result
     results = pool.map(run_task, tasks)
-    suceeded_results = []
-    failed_tasks = []
+    suceeded_results = [] # type: list[SSUResult]
+    failed_tasks = [] # type: list[SSUTask]
     for result, task in zip(results, tasks):
         if isinstance(result, SSUResult):
             suceeded_results.append(suceeded_results)

@@ -224,7 +224,7 @@ class DatasetGenerator(QtWidgets.QWidget):
         self.preview_group = QtWidgets.QGroupBox(self.tr("Preview"))
         self.preview_layout = QtWidgets.QGridLayout(self.preview_group)
         self.preview_layout.setContentsMargins(0, 0, 0, 0)
-        self.chart = DistributionChart(parent=self, show_mode=True)
+        self.chart = DistributionChart(parent=self)
         self.preview_layout.addWidget(self.chart, 0, 0)
 
         self.splitter_1 = QtWidgets.QSplitter()

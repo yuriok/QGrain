@@ -129,10 +129,6 @@ class GrainSizeDataset:
         matrix = np.array(distributions)
         return matrix
 
-    @property
-    def distributions(self) -> np.ndarray:
-        return np.array([sample.distribution for sample in self.__samples])
-
     @staticmethod
     def is_incremental(nums: np.ndarray) -> bool:
         """Returns `True` while the array is incremental.

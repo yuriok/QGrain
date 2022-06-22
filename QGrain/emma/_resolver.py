@@ -59,17 +59,31 @@ class EMMAResolver:
             assert isinstance(resolver_setting, EMMAAlgorithmSetting)
             setting = resolver_setting
 
-        X = torch.from_numpy(dataset.distributions.astype(np.float32)).to(setting.device)
+        X = torch.from_numpy(dataset.distribution_matrix.astype(np.float32)).to(setting.device)
         classes_φ = dataset.classes_φ.astype(np.float32)
         emma = EMMAModule(dataset.n_samples, n_members, classes_φ, kernel_type, params).to(setting.device)
-        emma.end_members.requires_grad = update_end_members
-        emma.end_members.params.requires_grad = update_end_members
+
         distance_func = get_distance_func_by_name(setting.distance)
         optimizer = torch.optim.Adam(emma.parameters(), lr=setting.learning_rate, betas=setting.betas)
         loss_series = []
         history = []
-        iteration = 0
         start = time.time()
+
+        emma.end_members.requires_grad = False
+        emma.end_members.params.requires_grad = False
+        for pretrain_epoch in range(setting.pretrain_epochs):
+            proportions, end_members = emma()
+            X_hat = proportions @ end_members
+            loss = distance_func(X_hat, X)
+            loss_series.append(loss.item())
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            history.append((proportions.detach().cpu().numpy(), end_members.detach().cpu().numpy()))
+
+        emma.end_members.requires_grad = update_end_members
+        emma.end_members.params.requires_grad = update_end_members
+        epochs = 0
         while True:
             # train
             proportions, end_members = emma()
@@ -80,13 +94,13 @@ class EMMAResolver:
             loss.backward()
             optimizer.step()
             history.append((proportions.detach().cpu().numpy(), end_members.detach().cpu().numpy()))
-            iteration += 1
-            if iteration < setting.min_epochs:
+            epochs += 1
+            if epochs < setting.min_epochs:
                 continue
             delta_loss = np.mean(loss_series[-100:-80])-np.mean(loss_series[-20:])
             if delta_loss < 10**(-setting.precision):
                 break
-            if iteration > setting.max_epochs:
+            if epochs > setting.max_epochs:
                 break
         time_spent = time.time() - start
         result = EMMAResult(

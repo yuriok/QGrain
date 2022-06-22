@@ -81,7 +81,7 @@ class SSUAnalyzer(QtWidgets.QWidget):
         # chart group
         self.chart_group = QtWidgets.QGroupBox(self.tr("Chart"))
         self.chart_layout = QtWidgets.QGridLayout(self.chart_group)
-        self.result_chart = DistributionChart(show_mode=True)
+        self.result_chart = DistributionChart()
         self.chart_layout.addWidget(self.result_chart, 0, 0)
 
         # table group

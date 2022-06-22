@@ -9,7 +9,6 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from ..chart.BoxplotChart import BoxplotChart
 from ..chart.DistanceCurveChart import DistanceCurveChart
-from ..chart.SSUTypicalComponentChart import SSUTypicalComponentChart
 from ..io import save_ssu
 from ..ssu import SSUResult, built_in_distances, get_distance_function
 
@@ -24,7 +23,6 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.__results = [] # type: list[SSUResult]
         self.init_ui()
         self.boxplot_chart = BoxplotChart()
-        self.typical_chart = SSUTypicalComponentChart()
         self.distance_chart = DistanceCurveChart()
         self.file_dialog = QtWidgets.QFileDialog(parent=self)
         self.update_page_list()
@@ -91,8 +89,8 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.check_kurtosis_action.triggered.connect(lambda: self.check_component_moments("kurtosis"))
         self.check_proportion_action = self.detect_outliers_menu.addAction(self.tr("Proportion")) # type: QtGui.QAction
         self.check_proportion_action.triggered.connect(self.check_component_proportion)
-        self.try_summarize_action = self.menu.addAction(self.tr("Try Summarize")) # type: QtGui.QAction
-        self.try_summarize_action.triggered.connect(self.try_summarize)
+        # self.try_summarize_action = self.menu.addAction(self.tr("Try Summarize")) # type: QtGui.QAction
+        # self.try_summarize_action.triggered.connect(self.try_summarize)
         self.data_table.customContextMenuRequested.connect(self.show_menu)
         # necessary to add actions of menu to this widget itself,
         # otherwise, the shortcuts will not be triggered
@@ -503,8 +501,7 @@ class SSUResultViewer(QtWidgets.QWidget):
         elif self.n_results < 10:
             self.show_warning(self.tr("The number of results is not enough."))
             return
-        self.typical_chart.show_typical(self.__results)
-        self.typical_chart.show()
+        # TODO: Finish this function
 
     def retranslate(self):
         self.setWindowTitle(self.tr("SSU Result Viewer"))
@@ -530,5 +527,5 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.check_skewness_action.setText(self.tr("Skewness"))
         self.check_kurtosis_action.setText(self.tr("Kurtosis"))
         self.check_proportion_action.setText(self.tr("Proportion"))
-        self.try_summarize_action.setText(self.tr("Try Summarize"))
+        # self.try_summarize_action.setText(self.tr("Try Summarize"))
         self.update_page(self.page_index)

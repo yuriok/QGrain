@@ -34,21 +34,29 @@ class EMMASettingDialog(QtWidgets.QDialog):
         self.main_layout.addWidget(self.distance_label, 1, 0)
         self.main_layout.addWidget(self.distance_combo_box, 1, 1)
 
+        self.pretrain_epochs_label = QtWidgets.QLabel(self.tr("Pretrain Epochs"))
+        self.pretrain_epochs_label.setToolTip(self.tr("The number of epochs before formal training. The pretrain process only update the proportions of end members."))
+        self.pretrain_epochs_input = QtWidgets.QSpinBox()
+        self.pretrain_epochs_input.setRange(0, 100000)
+        self.pretrain_epochs_input.setValue(0)
+        self.main_layout.addWidget(self.pretrain_epochs_label, 2, 0)
+        self.main_layout.addWidget(self.pretrain_epochs_input, 2, 1)
+
         self.min_epochs_label = QtWidgets.QLabel(self.tr("Minimum Number of Epochs"))
         self.min_epochs_label.setToolTip(self.tr("Minimum number of epochs to be performed."))
         self.min_epochs_input = QtWidgets.QSpinBox()
         self.min_epochs_input.setRange(10, 10000)
         self.min_epochs_input.setValue(2000)
-        self.main_layout.addWidget(self.min_epochs_label, 2, 0)
-        self.main_layout.addWidget(self.min_epochs_input, 2, 1)
+        self.main_layout.addWidget(self.min_epochs_label, 3, 0)
+        self.main_layout.addWidget(self.min_epochs_input, 3, 1)
 
         self.max_epochs_label = QtWidgets.QLabel(self.tr("Maximum Number of Epochs"))
         self.max_epochs_label.setToolTip(self.tr("Maximum number of epochs to be performed."))
         self.max_epochs_input = QtWidgets.QSpinBox()
         self.max_epochs_input.setRange(100, 100000)
         self.max_epochs_input.setValue(5000)
-        self.main_layout.addWidget(self.max_epochs_label, 3, 0)
-        self.main_layout.addWidget(self.max_epochs_input, 3, 1)
+        self.main_layout.addWidget(self.max_epochs_label, 4, 0)
+        self.main_layout.addWidget(self.max_epochs_input, 4, 1)
 
         self.precision_label = QtWidgets.QLabel(self.tr("Precision"))
         self.precision_label.setToolTip(self.tr("It controls the precision for the value of loss function in the stopping criterion."))
@@ -91,6 +99,7 @@ class EMMASettingDialog(QtWidgets.QDialog):
         setting = EMMAAlgorithmSetting(
             device=devices[self.device_combo_box.currentIndex()],
             distance=self.distance_combo_box.currentText(),
+            pretrain_epochs=self.pretrain_epochs_input.value(),
             min_epochs=self.min_epochs_input.value(),
             max_epochs=self.max_epochs_input.value(),
             precision=self.precision_input.value(),
@@ -103,6 +112,7 @@ class EMMASettingDialog(QtWidgets.QDialog):
         device_map = {"cpu": 0, "cuda": 1}
         self.device_combo_box.setCurrentIndex(device_map[setting.device])
         self.distance_combo_box.setCurrentText(setting.distance)
+        self.pretrain_epochs_input.setValue(setting.pretrain_epochs)
         self.min_epochs_input.setValue(setting.min_epochs)
         self.max_epochs_input.setValue(setting.max_epochs)
         self.precision_input.setValue(setting.precision)
@@ -121,6 +131,8 @@ class EMMASettingDialog(QtWidgets.QDialog):
         self.device_label.setToolTip(self.tr("The neural netowrk framwork, pytorch, also can use the GPU of NVIDIA to do calculations."))
         self.distance_label.setText(self.tr("Distance Function"))
         self.distance_label.setToolTip(self.tr("The function to calculate the difference (on the contrary, similarity) between two samples."))
+        self.pretrain_epochs_label.setText(self.tr("Pretrain Epochs"))
+        self.pretrain_epochs_label.setToolTip(self.tr("The number of epochs before formal training. The pretrain process only update the proportions of end members."))
         self.min_epochs_label.setText(self.tr("Minimum Number of Epochs"))
         self.min_epochs_label.setToolTip(self.tr("Minimum number of epochs to be performed."))
         self.max_epochs_label.setText(self.tr("Maximum Number of Epochs"))
