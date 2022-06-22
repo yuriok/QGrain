@@ -6,17 +6,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.animation import FFMpegWriter, FuncAnimation, ImageMagickWriter
 from PySide6 import QtCore, QtGui, QtWidgets
+from scipy.stats import pearsonr
 
 from ..ssu import SSUResult, SSUViewModel
-from ..statistic import convert_φ_to_μm
+from ..statistic import convert_φ_to_μm, get_mode
 from .BaseChart import BaseChart
 from .config_matplotlib import normal_color
 
-
 class DistributionChart(BaseChart):
-    def __init__(self, parent=None, figsize=(4, 4), show_mode=True):
+    def __init__(self, parent=None, figsize=(4, 4)):
         super().__init__(parent=parent, figsize=figsize)
-        self.axes = self.figure.subplots()
+        self.axes = self.figure.subplots() # type: plt.Axes
 
         self.scale_menu = QtWidgets.QMenu(self.tr("Scale")) # type: QtWidgets.QMenu
         self.menu.insertMenu(self.save_figure_action, self.scale_menu)
@@ -44,17 +44,28 @@ class DistributionChart(BaseChart):
             self.interval_actions.append(interval_action)
         self.interval_actions[3].setChecked(True)
 
-        self.repeat_action = QtGui.QAction(self.tr("Repeat Animation")) # type: QtGui.QAction
-        self.repeat_action.triggered.connect(self.update_chart)
-        self.menu.insertAction(self.save_figure_action, self.repeat_action)
-        self.repeat_action.setCheckable(True)
-        self.repeat_action.setChecked(False)
+        self.repeat_animation_action = QtGui.QAction(self.tr("Repeat Animation")) # type: QtGui.QAction
+        self.repeat_animation_action.triggered.connect(self.update_chart)
+        self.menu.insertAction(self.save_figure_action, self.repeat_animation_action)
+        self.repeat_animation_action.setCheckable(True)
+        self.repeat_animation_action.setChecked(False)
+
+        self.show_mode_lines_action = QtGui.QAction(self.tr("Show Mode Lines")) # type: QtGui.QAction
+        self.show_mode_lines_action.triggered.connect(self.update_chart)
+        self.menu.insertAction(self.save_figure_action, self.show_mode_lines_action)
+        self.show_mode_lines_action.setCheckable(True)
+        self.show_mode_lines_action.setChecked(False)
+
+        self.show_legend_action = QtGui.QAction(self.tr("Show Legend")) # type: QtGui.QAction
+        self.show_legend_action.triggered.connect(self.update_chart)
+        self.menu.insertAction(self.save_figure_action, self.show_legend_action)
+        self.show_legend_action.setCheckable(True)
+        self.show_legend_action.setChecked(False)
 
         self.save_animation_action = QtGui.QAction(self.tr("Save Animation")) # type: QtGui.QAction
         self.menu.addAction(self.save_animation_action)
         self.save_animation_action.triggered.connect(self.save_animation)
 
-        self.show_mode = show_mode
         self.animation = None
         self.last_model = None # type: SSUViewModel
         self.last_result = None # type: SSUResult
@@ -94,7 +105,15 @@ class DistributionChart(BaseChart):
 
     @property
     def repeat_animation(self) -> bool:
-        return self.repeat_action.isChecked()
+        return self.repeat_animation_action.isChecked()
+
+    @property
+    def show_mode_lines(self) -> bool:
+        return self.show_mode_lines_action.isChecked()
+
+    @property
+    def show_legend(self) -> bool:
+        return self.show_legend_action.isChecked()
 
     @property
     def transfer(self) -> typing.Callable:
@@ -139,47 +158,54 @@ class DistributionChart(BaseChart):
         self.menu.popup(QtGui.QCursor.pos())
 
     def show_model(self, model: SSUViewModel, quick=False):
+        modes_φ = [model.classes_φ[np.unravel_index(np.argmax(distribution), distribution.shape)] for distribution in model.distributions]
         if self.animation is not None:
             self.animation._stop()
             self.animation = None
         if not quick:
             self.last_result = None
             self.last_model = model
-
             self.axes.clear()
             x = self.transfer(model.classes_φ)
-            if self.xlog:
-                self.axes.set_xscale("log")
             self.axes.set_title(model.title)
             self.axes.set_xlabel(self.xlabel)
             self.axes.set_ylabel(self.ylabel)
-            self.target = self.axes.plot(x, model.target, c="#ffffff00", marker=".", ms=8, mfc=normal_color(), mew=0.0, label="Target")[0]
-            # scatter can not be modified from the tool bar
-            # self.target = self.axes.scatter(x, model.target, c=normal_color(), s=1)
+            self.target_line = self.axes.plot(x, model.target, c="#ffffff00", marker=".", ms=8, mfc=normal_color(), mew=0.0)[0]
             self.axes.set_xlim(x[0], x[-1])
             self.axes.set_ylim(0.0, round(np.max(model.target)*1.2, 2))
-            self.mixed = self.axes.plot(x, model.mixed, c=normal_color(), label="Mixed")[0]
-            self.components = [self.axes.plot(x, distribution*proportion, c=plt.get_cmap()(i), label=model.component_prefix+str(i+1))[0] for i, (distribution, proportion) in enumerate(zip(model.distributions, model.proportions))]
-            if self.show_mode:
-                modes = [self.transfer(model.classes_φ[np.unravel_index(np.argmax(distribution), distribution.shape)])  for distribution in model.distributions]
-                colors = [plt.get_cmap()(i) for i in range(model.n_components)]
-                self.vlines = self.axes.vlines(modes, 0.0, 1.0, colors=colors)
-            if model.n_components <= 6:
-                self.axes.legend(loc="upper left")
+            self.mixed_line = self.axes.plot(x, model.mixed, c=normal_color())[0]
+            self.component_lines = []
+            for i, (distribution, proportion) in enumerate(zip(model.distributions, model.proportions)):
+                component = self.axes.plot(x, distribution*proportion, c=plt.get_cmap()(i))[0]
+                self.component_lines.append(component)
             self.figure.tight_layout()
-            self.canvas.draw()
         else:
-            self.target.set_ydata(model.target)
-            self.mixed.set_ydata(model.mixed)
-            for comp, distribution, proportion in zip(self.components, model.distributions, model.proportions):
-                comp.set_ydata(distribution*proportion)
-            if self.show_mode:
+            self.target_line.set_ydata(model.target)
+            self.mixed_line.set_ydata(model.mixed)
+            for component_line, distribution, proportion in zip(self.component_lines, model.distributions, model.proportions):
+                component_line.set_ydata(distribution*proportion)
+        if self.xlog:
+            self.axes.set_xscale("log")
+        if self.show_mode_lines:
+            if hasattr(self, "vlines"):
                 self.vlines.remove()
-                modes = [self.transfer(model.classes_φ[np.unravel_index(np.argmax(distribution), distribution.shape)]) for distribution in model.distributions]
-                colors = [plt.get_cmap()(i) for i in range(model.n_components)]
-                self.vlines = self.axes.vlines(modes, 0.0, 1.0, colors=colors)
-            self.figure.tight_layout()
-            self.canvas.draw()
+            modes = [self.transfer(mode_φ) for mode_φ in modes_φ]
+            colors = [plt.get_cmap()(i) for i in range(model.n_components)]
+            self.vlines = self.axes.vlines(modes, 0.0, 1.0, colors=colors)
+        if self.show_legend:
+            r, p = pearsonr(model.target, model.mixed)
+            r2 = r**2
+            handles = [self.target_line, self.mixed_line]
+            handles.extend(self.component_lines)
+            labels = ["Target", f"Mixed ($R^2$={r2:.2f})"]
+            for i, (mode_φ, proportion) in enumerate(zip(modes_φ, model.proportions)):
+                mode_μm = convert_φ_to_μm(mode_φ)
+                label = f"{model.component_prefix}{i+1} ({mode_μm:.2f} μm, {proportion:.2%})"
+                labels.append(label)
+            self.legend = self.axes.legend(
+                handles=handles, labels=labels,
+                loc="upper left", prop={"size": 8})
+        self.canvas.draw()
 
     def show_result(self, result: SSUResult):
         if self.animation is not None:
@@ -197,33 +223,61 @@ class DistributionChart(BaseChart):
         self.axes.set_title(first.title)
         self.axes.set_xlabel(self.xlabel)
         self.axes.set_ylabel(self.ylabel)
-        self.target = self.axes.plot(x, first.target, c="#ffffff00", marker=".", ms=8, mfc=normal_color(), mew=0.0)[0]
+        self.target_line = self.axes.plot(x, first.target, c="#ffffff00", marker=".", ms=8, mfc=normal_color(), mew=0.0)[0]
         self.axes.set_xlim(x[0], x[-1])
         self.axes.set_ylim(0.0, round(np.max(first.target)*1.2, 2))
         self.figure.tight_layout()
         # self.canvas.draw()
-        colors = [plt.get_cmap()(i) for i in range(first.n_components)]
+        def common(model):
+            modes_φ = [model.classes_φ[np.unravel_index(np.argmax(distribution), distribution.shape)] for distribution in model.distributions]
+            if self.show_mode_lines:
+                if hasattr(self, "vlines"):
+                    self.vlines.remove()
+                modes = [self.transfer(mode_φ) for mode_φ in modes_φ]
+                colors = [plt.get_cmap()(i) for i in range(model.n_components)]
+                self.vlines = self.axes.vlines(modes, 0.0, 1.0, colors=colors)
+            if self.show_legend:
+                r, p = pearsonr(model.target, model.mixed)
+                r2 = r**2
+                handles = [self.target_line, self.mixed_line]
+                handles.extend(self.component_lines)
+                labels = ["Target", f"Mixed ($R^2$={r2:.2f})"]
+                for i, (mode_φ, proportion) in enumerate(zip(modes_φ, model.proportions)):
+                    mode_μm = convert_φ_to_μm(mode_φ)
+                    label = f"{model.component_prefix}{i+1} ({mode_μm:.2f} μm, {proportion:.2%})"
+                    labels.append(label)
+                self.legend = self.axes.legend(
+                    handles=handles, labels=labels,
+                    loc="upper left", prop={"size": 8})
         def init():
             model = first
-            self.mixed = self.axes.plot(x, model.mixed, c=normal_color())[0]
-            self.components = [self.axes.plot(x, distribution*proportion, c=plt.get_cmap()(i))[0] for i, (distribution, proportion) in enumerate(zip(model.distributions, model.proportions))]
-            if self.show_mode:
-                modes = [self.transfer(model.classes_φ[np.unravel_index(np.argmax(distribution), distribution.shape)])  for distribution in model.distributions]
-                self.vlines = self.axes.vlines(modes, 0.0, 1.0, colors=colors)
-            return self.mixed, self.vlines, *self.components
+            self.mixed_line = self.axes.plot(x, model.mixed, c=normal_color())[0]
+            self.component_lines = [self.axes.plot(x, distribution*proportion, c=plt.get_cmap()(i))[0] for i, (distribution, proportion) in enumerate(zip(model.distributions, model.proportions))]
+            common(model)
+            check_artists = [self.mixed_line]
+            check_artists.extend(self.component_lines)
+            if self.show_mode_lines:
+                check_artists.append(self.vlines)
+            if self.show_legend:
+                check_artists.append(self.legend)
+            return check_artists
         def animate(current: SSUViewModel):
             model = current
-            self.mixed.set_ydata(current.mixed)
-            for line, distribution, proportion in zip(self.components, model.distributions, model.proportions):
+            self.mixed_line.set_ydata(current.mixed)
+            for line, distribution, proportion in zip(self.component_lines, model.distributions, model.proportions):
                 line.set_ydata(distribution*proportion)
-            if self.show_mode:
-                self.vlines.remove()
-                modes = [self.transfer(model.classes_φ[np.unravel_index(np.argmax(distribution), distribution.shape)])  for distribution in model.distributions]
-                self.vlines = self.axes.vlines(modes, 0.0, 1.0, colors=colors)
-            return self.mixed, self.vlines, *self.components
-        self.animation = FuncAnimation(self.figure, animate, frames=models, init_func=init,
-                                       interval=self.animation_interval, blit=True,
-                                       repeat=self.repeat_animation, repeat_delay=3.0, save_count=result.n_iterations)
+            common(model)
+            check_artists = [self.mixed_line]
+            check_artists.extend(self.component_lines)
+            if self.show_mode_lines:
+                check_artists.append(self.vlines)
+            if self.show_legend:
+                check_artists.append(self.legend)
+            return check_artists
+        self.animation = FuncAnimation(
+            self.figure, animate, frames=models, init_func=init,
+            interval=self.animation_interval, blit=True,
+            repeat=self.repeat_animation, repeat_delay=3.0, save_count=result.n_iterations)
 
     def save_animation(self):
         if self.last_result is not None:
@@ -279,5 +333,7 @@ class DistributionChart(BaseChart):
         self.interval_menu.setTitle(self.tr("Animation Interval"))
         for action, (interval, name) in zip(self.interval_actions, self.supported_intervals):
             action.setText(name)
-        self.repeat_action.setText(self.tr("Repeat Animation"))
+        self.repeat_animation_action.setText(self.tr("Repeat Animation"))
+        self.show_mode_lines_action.setText(self.tr("Show Mode Lines"))
+        self.show_legend_action.setText(self.tr("Show Legend"))
         self.save_animation_action.setText(self.tr("Save Animation"))

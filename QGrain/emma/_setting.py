@@ -13,6 +13,7 @@ class EMMAAlgorithmSetting:
     def __init__(self,
                  device="cpu",
                  distance="log10MSE",
+                 pretrain_epochs=0,
                  min_epochs=100,
                  max_epochs=10000,
                  precision=6,
@@ -20,6 +21,7 @@ class EMMAAlgorithmSetting:
                  betas=(0.8, 0.5)):
         assert isinstance(device, str)
         check_distance(distance)
+        assert isinstance(pretrain_epochs, int)
         assert isinstance(min_epochs, int)
         assert isinstance(max_epochs, int)
         assert isinstance(precision, (int, float))
@@ -29,6 +31,7 @@ class EMMAAlgorithmSetting:
         beta1, beta2 = betas
         assert isinstance(beta1, float)
         assert isinstance(beta2, float)
+        assert pretrain_epochs >= 0
         assert min_epochs > 0
         assert max_epochs > 0
         assert 1.0 < precision < 100.0
@@ -37,6 +40,7 @@ class EMMAAlgorithmSetting:
         assert 0.0 < beta2 < 1.0
         self.device = device
         self.distance = distance
+        self.pretrain_epochs = pretrain_epochs
         self.min_epochs = min_epochs
         self.max_epochs = max_epochs
         self.precision = precision

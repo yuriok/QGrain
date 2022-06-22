@@ -43,7 +43,7 @@ class ArtificialSample:
         self.__classes_μm = classes_μm
         self.__classes_φ = classes_φ
         self.__distribution = distribution
-        self.__components = []
+        self.__components = [] # type: list[ArtificialComponent]
         m, v, s, k = moments
         for component, proportion, moments in zip(components, proportions, zip(m, v, s, k)):
             artificial_component = ArtificialComponent(component, proportion, moments)
@@ -140,6 +140,8 @@ class ArtificialDataset:
         proportions, components, (m, v, s, k) = distribution_class.interpret(params, classes, self.interval_φ)
         noise = np.random.randn(self.n_samples, self.n_classes) * (10**(-self.noise))
         distributions = np.round((proportions @ components).squeeze(1) + noise, decimals=self.precision)
+        self.__proportions = proportions
+        self.__components = components
         self.__distributions = distributions
         self.__samples = []
         for i in range(self.n_samples):
@@ -227,6 +229,14 @@ class ArtificialDataset:
         sample_names = [f"AS{i+1}" for i in range(self.n_samples)]
         dataset.add_batch(self.classes_μm, sample_names, self.distributions)
         return dataset
+
+    @property
+    def proportions(self) -> np.ndarray:
+        return self.__proportions
+
+    @property
+    def components(self) -> np.ndarray:
+        return self.__components
 
 
 def get_params(

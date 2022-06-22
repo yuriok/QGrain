@@ -5,7 +5,7 @@ import numpy as np
 from ..emma import KernelType
 from ..model import GrainSizeDataset
 from ..ssu import (DISTRIBUTION_CLASS_MAP, DistributionType, GeneralWeibull,
-                   Normal, SkewNormal, Weibull)
+                   Normal, SkewNormal, Weibull, get_distance_function)
 from ._setting import UDMAlgorithmSetting
 
 
@@ -51,3 +51,8 @@ class UDMResult:
     def clear_history(self):
         self.history_params.clear()
         self.history_params.append(self.params)
+
+    def get_distance(self, distance: str) -> float:
+        distance_func = get_distance_function(distance)
+        X_hat = (self.proportions @ self.components).squeeze()
+        return distance_func(X_hat, self.dataset.distribution_matrix)
