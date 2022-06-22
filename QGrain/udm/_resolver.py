@@ -56,7 +56,7 @@ class UDMResolver:
             assert isinstance(resolver_setting, UDMAlgorithmSetting)
             s = resolver_setting
 
-        X = torch.from_numpy(dataset.distributions.astype(np.float32)).to(s.device)
+        X = torch.from_numpy(dataset.distribution_matrix.astype(np.float32)).to(s.device)
         classes_φ = dataset.classes_φ.astype(np.float32)
         udm = UDMModule(dataset.n_samples, n_components, classes_φ, kernel_type, initial_params).to(s.device)
         optimizer = torch.optim.Adam(udm.parameters(), lr=s.learning_rate, betas=s.betas)

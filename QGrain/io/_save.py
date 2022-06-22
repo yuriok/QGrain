@@ -100,12 +100,12 @@ def save_artificial_dataset(
         4. The left sheets are the distributions of all components.
 
         Sampling Settings
-            Minimum size [μm]: {1}
-            Maximum size [μm]: {2}
-            Number of Grain Size Classes: {3}
-            Precision: {4}
-            Noise Decimals: {5}
-            Number of Samples: {6}
+            Minimum size [μm]: {0}
+            Maximum size [μm]: {1}
+            Number of Grain Size Classes: {2}
+            Precision: {3}
+            Noise Decimals: {4}
+            Number of Samples: {5}
         """.format(
             dataset.min_μm,
             dataset.max_μm,
@@ -119,31 +119,34 @@ def save_artificial_dataset(
         cell = ws.cell(row+1, col+1, value=value)
         cell.style = style
 
-    logger.debug("Creating the `Random Settings` sheet.")
-    ws = wb.create_sheet("Random Settings")
-    write(0, 0, "Parameter", style="header")
-    ws.merge_cells(start_row=1, start_column=1, end_row=2, end_column=1)
     param_names = list(DISTRIBUTION_CLASS_MAP[dataset.distribution_type].PARAM_NAMES) + ["Weight"]
-    n_params = len(param_names)
-    for i_param, param_name in enumerate(param_names):
-        write(0, i_param*2+1, param_name, style="header")
-        ws.merge_cells(start_row=1, start_column=i_param*2+2, end_row=1, end_column=i_param*2+3)
-    ws.column_dimensions[column_to_char(0)].width = 16
-    for col in range(1, n_params*2+1):
-        ws.column_dimensions[column_to_char(col)].width = 16
-        if col % 2 == 0:
-            write(1, col, "Standard deviation", style="header")
-        else:
-            write(1, col, "Mean", style="header")
-    for row, comp_params in enumerate(dataset.target, 2):
-        if row % 2 == 1:
-            style = "normal_dark"
-        else:
-            style = "normal_light"
-        write(row, 0, f"Component{row-1}", style=style)
-        for i, (mean, std) in enumerate(comp_params):
-            write(row, i*2+1, mean, style=style)
-            write(row, i*2+2, std, style=style)
+    n_params = DISTRIBUTION_CLASS_MAP[dataset.distribution_type].N_PARAMS + 1
+    if dataset.target is not None:
+        logger.debug("Creating the `Random Settings` sheet.")
+        ws = wb.create_sheet("Random Settings")
+        write(0, 0, "Parameter", style="header")
+        ws.merge_cells(start_row=1, start_column=1, end_row=2, end_column=1)
+        for i_param, param_name in enumerate(param_names):
+            write(0, i_param*2+1, param_name, style="header")
+            ws.merge_cells(start_row=1, start_column=i_param*2+2, end_row=1, end_column=i_param*2+3)
+        ws.column_dimensions[column_to_char(0)].width = 16
+        for col in range(1, n_params*2+1):
+            ws.column_dimensions[column_to_char(col)].width = 16
+            if col % 2 == 0:
+                write(1, col, "Standard deviation", style="header")
+            else:
+                write(1, col, "Mean", style="header")
+        for row, comp_params in enumerate(dataset.target, 2):
+            if row % 2 == 1:
+                style = "normal_dark"
+            else:
+                style = "normal_light"
+            write(row, 0, f"Component{row-1}", style=style)
+            for i, (mean, std) in enumerate(comp_params):
+                write(row, i*2+1, mean, style=style)
+                write(row, i*2+2, std, style=style)
+    else:
+        logger.warning("Not creating the `Random Settings` sheet.")
 
     logger.debug("Creating the `Dataset` sheet.")
     ws = wb.create_sheet("Dataset")

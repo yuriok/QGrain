@@ -363,16 +363,11 @@ class SSUReferenceViewer(QtWidgets.QWidget):
         min_result = None
         trans_func = interp1d(target.classes_φ, target.distribution, bounds_error=False, fill_value=0.0)
         for result in ref_results:
-            # TODO: Use statistic moments to calculate the distance? MOMENTS MAY NOT BE PERFECT, MAY IGNORE THE MINOR DIFFERENCE
-            # result_moments = logarithmic(result.classes_φ, result.distribution)
-            # distance = sum([(sample_moments[key]-result_moments[key])**2 for key in keys_to_check])
             trans_dist = trans_func(result.classes_φ)
             distance = self.distance_function(result.distribution, trans_dist)
-
             if distance < min_distance:
                 min_distance = distance
                 min_result = result
-
         # self.logger.debug(f"It took {time.time()-start_time:0.4f} s to query the reference from {len(ref_results)} results.")
         return min_result
 

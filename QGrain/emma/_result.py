@@ -74,12 +74,12 @@ class EMMAResult:
 
     def get_distance(self, distance: str) -> float:
         distance_func = get_distance_function(distance)
-        return distance_func(self.__X_hat, self.__dataset.distributions)
+        return distance_func(self.__X_hat, self.__dataset.distribution_matrix)
 
     def get_history_distances(self, distance: str) -> np.ndarray:
         distances = []
         distance_func = get_distance_function(distance)
-        X = self.__dataset.distributions
+        X = self.__dataset.distribution_matrix
         for fractions, end_members in self.__history:
             X_hat = fractions @ end_members
             distance = distance_func(X_hat, X)
@@ -89,14 +89,14 @@ class EMMAResult:
 
     def get_class_wise_distances(self, distance: str) -> np.ndarray:
         X_hat = self.__X_hat
-        X = self.__dataset.distributions
+        X = self.__dataset.distribution_matrix
         distance_func = get_distance_function(distance)
         distances = distance_func(X_hat, X, axis=0)
         return distances
 
     def get_sample_wise_distances(self, distance: str) -> np.ndarray:
         X_hat = self.__X_hat
-        X = self.__dataset.distributions
+        X = self.__dataset.distribution_matrix
         distance_func = get_distance_function(distance)
         distances = distance_func(X_hat, X, axis=1)
         return distances
