@@ -1,95 +1,70 @@
-import csv
-import datetime
+__all__ = ["LoadDatasetDialog"]
+
+import logging
 import os
 import typing
-from enum import Enum, unique
 
-import numpy as np
 import openpyxl
-import qtawesome as qta
 import xlrd
-from PySide2.QtCore import QCoreApplication, Qt, Signal
-from PySide2.QtWidgets import (QComboBox, QDialog, QFileDialog, QGridLayout,
-                               QLabel, QPushButton, QSpinBox, QTextEdit)
-from QGrain.models.DataLayoutSetting import DataLayoutError, DataLayoutSetting
-from QGrain.models.GrainSizeDataset import GrainSizeDataset
+from PySide6 import QtCore, QtWidgets
+
+from ..io import *
+from ..model import GrainSizeDataset
 
 
-@unique
-class ReadFileType(Enum):
-    XLS = 0
-    XLSX = 1
-    CSV = 2
-
-
-def get_type_by_name(filename: str):
-    _, extension = os.path.splitext(filename)
-    if extension == ".csv":
-        return ReadFileType.CSV
-    elif extension == ".xls":
-        return ReadFileType.XLS
-    elif extension == ".xlsx":
-        return ReadFileType.XLSX
-    else:
-        raise NotImplementedError(extension)
-
-class LoadDatasetDialog(QDialog):
-    dataset_loaded = Signal(GrainSizeDataset)
+class LoadDatasetDialog(QtWidgets.QDialog):
+    logger = logging.getLogger("QGrain")
+    dataset_loaded = QtCore.Signal(GrainSizeDataset)
     def __init__(self, parent=None):
-        super().__init__(parent=parent, f=Qt.Window)
+        super().__init__(parent=parent, f=QtCore.Qt.Window)
         self.setWindowTitle(self.tr("Dataset Loader"))
         self.initialize_ui()
-        self.file_dialog = QFileDialog(parent=self)
+        self.normal_msg = QtWidgets.QMessageBox(self)
+        self.file_dialog = QtWidgets.QFileDialog(parent=self)
         self.filename = None # type: str
         self.workbook = None # type: typing.Union[openpyxl.Workbook, xlrd.Book]
         self.dataset = None # type: GrainSizeDataset
 
     def initialize_ui(self):
-        self.setAttribute(Qt.WA_StyledBackground, True)
-        self.main_layout = QGridLayout(self)
+        self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
+        self.main_layout = QtWidgets.QGridLayout(self)
 
-        self.filename_label = QLabel(self.tr("Filename:"))
-        self.filename_display = QLabel(self.tr("Unknown"))
-        self.main_layout.addWidget(self.filename_label, 0, 0)
-        self.main_layout.addWidget(self.filename_display, 0, 1, 1, 2)
-        self.select_button = QPushButton(qta.icon("mdi.file-table"), self.tr("Select"))
+        self.filename_display = QtWidgets.QLabel(self.tr("Filename Unknown"))
+        self.main_layout.addWidget(self.filename_display, 0, 0)
+        self.select_button = QtWidgets.QPushButton(self.tr("Select"))
         self.select_button.clicked.connect(self.on_select_clicked)
-        self.main_layout.addWidget(self.select_button, 0, 3)
-        self.sheet_label = QLabel(self.tr("Sheet:"))
-        self.sheet_combo_box = QComboBox()
+        self.main_layout.addWidget(self.select_button, 0, 1)
+        self.sheet_label = QtWidgets.QLabel(self.tr("Sheet Name"))
+        self.sheet_combo_box = QtWidgets.QComboBox()
         self.sheet_combo_box.addItem(self.tr("Empty"))
         self.main_layout.addWidget(self.sheet_label, 1, 0)
-        self.main_layout.addWidget(self.sheet_combo_box, 1, 1, 1, 3)
+        self.main_layout.addWidget(self.sheet_combo_box, 1, 1)
 
-        self.classes_row_label = QLabel(self.tr("Row With Grain-size Classes:"))
-        self.classes_row_input = QSpinBox()
+        self.classes_row_label = QtWidgets.QLabel(self.tr("Row With Grain Size Classes"))
+        self.classes_row_input = QtWidgets.QSpinBox()
         self.classes_row_input.setRange(1, 999)
-        self.main_layout.addWidget(self.classes_row_label, 2, 0, 1, 3)
-        self.main_layout.addWidget(self.classes_row_input, 2, 3)
-        self.sample_names_column_label = QLabel(self.tr("Column With Sample Names:"))
-        self.sample_names_column_input = QSpinBox()
+        self.main_layout.addWidget(self.classes_row_label, 2, 0)
+        self.main_layout.addWidget(self.classes_row_input, 2, 1)
+        self.sample_names_column_label = QtWidgets.QLabel(self.tr("Column With Sample Names"))
+        self.sample_names_column_input = QtWidgets.QSpinBox()
         self.sample_names_column_input.setRange(1, 999)
-        self.main_layout.addWidget(self.sample_names_column_label, 3, 0, 1, 3)
-        self.main_layout.addWidget(self.sample_names_column_input, 3, 3)
-        self.distribution_start_row_label = QLabel(self.tr("Distribution Start Row:"))
-        self.distribution_start_row_input = QSpinBox()
+        self.main_layout.addWidget(self.sample_names_column_label, 3, 0)
+        self.main_layout.addWidget(self.sample_names_column_input, 3, 1)
+        self.distribution_start_row_label = QtWidgets.QLabel(self.tr("Distribution Start Row"))
+        self.distribution_start_row_input = QtWidgets.QSpinBox()
         self.distribution_start_row_input.setRange(2, 999999)
-        self.main_layout.addWidget(self.distribution_start_row_label, 4, 0, 1, 3)
-        self.main_layout.addWidget(self.distribution_start_row_input, 4, 3)
-        self.distribution_start_column_label = QLabel(self.tr("Distribution Start Column:"))
-        self.distribution_start_column_input = QSpinBox()
+        self.main_layout.addWidget(self.distribution_start_row_label, 4, 0)
+        self.main_layout.addWidget(self.distribution_start_row_input, 4, 1)
+        self.distribution_start_column_label = QtWidgets.QLabel(self.tr("Distribution Start Column"))
+        self.distribution_start_column_input = QtWidgets.QSpinBox()
         self.distribution_start_column_input.setRange(2, 999999)
-        self.main_layout.addWidget(self.distribution_start_column_label, 5, 0, 1, 3)
-        self.main_layout.addWidget(self.distribution_start_column_input, 5, 3)
+        self.main_layout.addWidget(self.distribution_start_column_label, 5, 0)
+        self.main_layout.addWidget(self.distribution_start_column_input, 5, 1)
 
-        self.try_load_button = QPushButton(qta.icon("fa5s.book-reader"), self.tr("Try Load"))
+        self.try_load_button = QtWidgets.QPushButton(self.tr("Try Load"))
         self.try_load_button.clicked.connect(self.on_try_load_clicked)
         self.try_load_button.setEnabled(False)
-        self.main_layout.addWidget(self.try_load_button, 6, 0, 1, 4)
-
-        self.info_display = QTextEdit()
-        self.info_display.setReadOnly(True)
-        self.main_layout.addWidget(self.info_display, 7, 0, 1, 4)
+        self.main_layout.addWidget(self.try_load_button, 6, 0, 1, 2)
 
     @property
     def sheet_index(self) -> int:
@@ -107,25 +82,39 @@ class LoadDatasetDialog(QDialog):
         distribution_start_row = self.distribution_start_row_input.value() - 1
         distribution_start_column = self.distribution_start_column_input.value() - 1
         try:
-            layout = DataLayoutSetting(classes_row=classes_row,
-                                    sample_names_column=sample_names_column,
-                                    distribution_start_row=distribution_start_row,
-                                    distribution_start_column=distribution_start_column)
+            layout = DataLayoutSetting(
+                classes_row=classes_row,
+                sample_names_column=sample_names_column,
+                distribution_start_row=distribution_start_row,
+                distribution_start_column=distribution_start_column)
             return layout
         except DataLayoutError as e:
-            self.show_error(f"The current setting is invalid.\n    {e.__str__()}")
+            self.logger.exception("The current layout setting is invalid.", stack_info=True)
+            self.show_error(self.tr("The current layout setting is invalid."))
             return None
 
+    def show_message(self, title: str, message: str):
+        self.normal_msg.setWindowTitle(title)
+        self.normal_msg.setText(message)
+        self.normal_msg.exec_()
+
+    def show_info(self, message: str):
+        self.show_message(self.tr("Info"), message)
+
+    def show_warning(self, message: str):
+        self.show_message(self.tr("Warning"), message)
+
+    def show_error(self, message: str):
+        self.show_message(self.tr("Error"), message)
+
     def on_select_clicked(self):
-        filename, _ = self.file_dialog.getOpenFileName(\
+        filename, _ = self.file_dialog.getOpenFileName(
             self, self.tr("Select a file"), None,
-            self.tr("Excel (*.xlsx);;97-2003 Excel (*.xls);;CSV (*.csv)"))
+            "Excel (*.xlsx);;97-2003 Excel (*.xls);;CSV (*.csv)")
         if filename is None or filename == "":
-            self.show_warning(f"No file was selected.")
             return
         self.filename = filename
         file_type = get_type_by_name(filename)
-        self.show_info(f"Data file [{file_type}] was selected: [{filename}].")
         if file_type == ReadFileType.CSV:
             sheet_names = [os.path.basename(filename)]
         elif file_type == ReadFileType.XLS:
@@ -137,124 +126,52 @@ class LoadDatasetDialog(QDialog):
         else:
             raise NotImplementedError(file_type)
 
-        if file_type != ReadFileType.CSV:
-            self.show_info(f"It has {len(sheet_names)} sheet(s), please select one.")
         self.filename_display.setText(os.path.basename(filename))
         self.sheet_combo_box.clear()
         self.sheet_combo_box.addItems(sheet_names)
         self.try_load_button.setEnabled(True)
 
-    def show_info(self, text: str):
-        self.info_display.append(f'<font size="3" color="black">[{datetime.datetime.now()}] - {text}</font>\n')
-
-    def show_warning(self, text: str):
-        self.info_display.append(f'<font size="3" color="#fed71a">[{datetime.datetime.now()}] - {text}</font>\n')
-
-    def show_error(self, text: str):
-        self.info_display.append(f'<font size="3" color="#f03752">[{datetime.datetime.now()}] - {text}</font>\n')
-
-    def show_success(self, text: str):
-        self.info_display.append(f'<font size="3" color="#2c9678">[{datetime.datetime.now()}] - {text}</font>\n')
-
     def on_try_load_clicked(self):
         try:
-            self.try_load()
+            progress_dialog = QtWidgets.QProgressDialog(
+                self.tr("Loading grain size distributions..."), self.tr("Cancel"),
+                0, 100, self)
+            progress_dialog.setWindowTitle("QGrain")
+            progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
+            def callback(progress: float):
+                if progress_dialog.wasCanceled():
+                    raise StopIteration()
+                progress_dialog.setValue(int(progress*100))
+                QtCore.QCoreApplication.processEvents()
+            result = load_dataset(self.filename, self.sheet_index, self.data_layout, progress_callback=callback)
+            progress_dialog.setValue(100)
+            if result is None:
+                self.logger.exception("Can not load the grain size dataset from this file. Please check the logs for more details.", stack_info=True)
+                self.show_error(self.tr("Can not load the grain size dataset from this file. Please check the logs for more details."))
+            else:
+                self.dataset_loaded.emit(result)
+                self.logger.info("Good job! The grain size dataset has been loaded from this file, and has been emitted to other widgets.")
+                self.hide()
+        except StopIteration as e:
+            self.logger.info("Loading task was canceled.")
+            progress_dialog.close()
         except Exception as e:
-            self.show_error(f"Error raised while loading.\n    {e.__str__()}")
+            self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
+            self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
 
-    def try_load(self):
-        layout = self.data_layout
-        if layout is None:
-            return
-        assert self.filename is not None
-        file_type = get_type_by_name(self.filename)
-        self.show_info("Start to load raw data from the file.")
-        QCoreApplication.processEvents()
-        if file_type == ReadFileType.CSV:
-            try:
-                with open(self.filename, encoding="utf-8") as f:
-                    reader = csv.reader(f)
-                    raw_data = [row for row in reader]
-            except Exception as e:
-                self.show_error(f"Exception rasised when reading {file_type} file.\n    {e.__str__()}")
-                return
-        elif file_type == ReadFileType.XLS:
-            sheet = self.workbook.sheet_by_index(self.sheet_index)
-            raw_data = [sheet.row_values(row) for row in range(sheet.nrows)]
-        elif file_type == ReadFileType.XLSX:
-            sheet = self.workbook[self.sheet_name]
-            raw_data = [[value for value in row] for row in sheet.values]
-        else:
-            raise NotImplementedError(file_type)
-        self.show_success(f"Raw data has been loaded from the file.")
-        QCoreApplication.processEvents()
-        try:
-            classes_μm = np.array(raw_data[layout.classes_row][layout.distribution_start_column:], dtype=np.float64)
-        except Exception as e:
-            self.show_error(f"Can not convert the row of classes to a numerical array, it may contains invalid values (e.g. text or empty cell).\n    {e.__str__()}")
-            return
-        self.show_info(f"Grain-size classes in μm: [{','.join([f'{x: 0.4f}' for x in classes_μm[:3]])}, ...,{','.join([f'{x: 0.4f}' for x in classes_μm[-3:]])}].")
-        GrainSizeDataset.validate_classes_μm(classes_μm)
-        self.show_success("Validation of grain-size classes passed.")
-        QCoreApplication.processEvents()
+    def retranslate(self):
+        self.setWindowTitle(self.tr("Dataset Loader"))
+        if self.filename is None:
+            self.filename_display.setText(self.tr("Filename Unspecified"))
+            self.sheet_combo_box.setItemText(0, self.tr("Empty"))
+        self.select_button.setText(self.tr("Select"))
+        self.sheet_label.setText(self.tr("Sheet Name"))
+        self.classes_row_label.setText(self.tr("Row With Grain Size Classes"))
+        self.sample_names_column_label.setText(self.tr("Column With Sample Names"))
+        self.distribution_start_row_label.setText(self.tr("Distribution Start Row"))
+        self.distribution_start_column_label.setText(self.tr("Distribution Start Column"))
+        self.try_load_button.setText(self.tr("Try Load"))
 
-        names = []
-        distributions = []
-        i = layout.distribution_start_row + 1
-        for row_values in raw_data[layout.distribution_start_row:]:
-            # check if it's a empty row, i.e. the values all are empty string
-            is_empty_row = True
-            for distribution_value in row_values[layout.distribution_start_column:]:
-                if distribution_value != "" and distribution_value is not None:
-                    is_empty_row = False
-                    break
-            # if it's a empty row, jump this row to process the next one
-            if is_empty_row:
-                self.show_warning(f"This row is empty, jump to next.")
-                continue
-
-            sample_name = row_values[layout.sample_name_column]
-            self.show_info(f"Processing the {i} row, sample name is [{sample_name}].")
-            if sample_name is None:
-                sample_name = "NONE"
-                self.show_warning(f"The sample name is invalid, use 'NONE' instead.")
-            # users may use pure number as the sample name
-            elif type(sample_name) != str:
-                sample_name = str(sample_name)
-                self.show_warning(f"The sample name is not text (may be a number), convert it to text.")
-            elif sample_name == "":
-                sample_name = "EMPTY"
-                self.show_warning(f"The sample name is a empty text, use 'EMPTY' instead.")
-
-            try:
-                distribution = np.array(row_values[layout.distribution_start_column:], dtype=np.float64)
-            except Exception as e:
-                self.show_error(f"Can not convert the distribution values at row [{i}] to a numerical array, it may contains invalid values (e.g. text or empty cell).\n    {e.__str__()}")
-                return
-            try:
-                GrainSizeDataset.validate_distribution(distribution)
-            except Exception as e:
-                self.show_error(f"Validation of the distribution array of sample [{sample_name}] did not pass.\n    {e.__str__()}")
-                return
-            names.append(sample_name)
-            distributions.append(distribution)
-            i += 1
-            self.show_info(f"Validation of sample {sample_name} passed.")
-            QCoreApplication.processEvents()
-
-        self.show_success("All data has been convert to array. Next to do the final validation.")
-        dataset = GrainSizeDataset()
-        dataset.add_batch(classes_μm, names, distributions)
-        self.dataset = dataset
-        self.show_success("Dataset has been loaded successfully, you can close this dialog now.")
-        self.dataset_loaded.emit(dataset)
-
-
-if __name__ == "__main__":
-    import sys
-    from QGrain.entry import setup_app
-    app, splash = setup_app()
-    main = LoadDatasetDialog()
-    main.show()
-    splash.finish(main)
-    sys.exit(app.exec_())
+    def changeEvent(self, event: QtCore.QEvent):
+        if event.type() == QtCore.QEvent.LanguageChange:
+            self.retranslate()

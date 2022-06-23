@@ -1,9 +1,3 @@
-__all__ = ["get_mode", "get_modes",
-           "get_cumulative_frequency",
-           "get_reverse_phi_ppf",
-           "convert_μm_to_φ",
-           "convert_φ_to_μm"]
-
 import typing
 
 import numpy as np
@@ -14,25 +8,25 @@ from scipy.signal import find_peaks
 def get_mode(classes_μm: np.ndarray,
              classes_φ: np.ndarray,
              frequency: np.ndarray,
-             is_geometric=False) -> float:
+             is_geometric: bool = False) -> float:
     """
-    Get the mode size of a grain-size distribution.
+    Get the mode size of the grain size distribution.
 
     ## Parameters
 
     classes_μm: `np.ndarray`
-        The grain-size classes in μm.
+        The grain size classes in μm.
     classes_φ: `np.ndarray`
-        The grain-size classes in φ.
+        The grain size classes in φ.
     frequency: `np.ndarray`
-        The frequency values of grain-size classes. Note that the sum of frequencies should be `1.0`.
+        The frequency values of grain size classes. Note that the sum of frequencies should be `1.0`.
     is_geometric: `bool` (default `False`)
         If `True` the mode size is in μm, else it's in φ.
 
     ## Returns
 
     mode: `float`
-        The mode size of a grain-size distribution.
+        The mode size of a grain size distribution.
 
     """
     max_pos = np.unravel_index(np.argmax(frequency), frequency.shape)
@@ -47,16 +41,16 @@ def get_modes(classes_μm: np.ndarray,
               is_geometric=False, trace=0.01) \
         -> typing.Tuple[typing.Tuple[float], typing.Tuple[float]]:
     """
-    Get the mode sizes (peaks) of a grain-size distribution. The number may be greater than 1.
+    Get the mode sizes (peaks) of a grain size distribution. The number may be greater than 1.
 
     ## Parameters
 
     classes_μm: `np.ndarray`
-        The grain-size classes in μm.
+        The grain size classes in μm.
     classes_φ: `np.ndarray`
-        The grain-size classes in φ.
+        The grain size classes in φ.
     frequency: `np.ndarray`
-        The frequency values of grain-size classes. Note that the sum of frequencies should be `1.0`.
+        The frequency values of grain size classes. Note that the sum of frequencies should be `1.0`.
     is_geometric: `bool` (default `False`)
         If `True` the mode size is in μm, else it's in φ.
     trace: `float` (default `0.01`, `1%`)
@@ -65,7 +59,7 @@ def get_modes(classes_μm: np.ndarray,
     ## Returns
 
     modes: `tuple`
-        The mode sizes of a grain-size distribution.
+        The mode sizes of a grain size distribution.
     frequencies: `tuple`
         The frequencies of corresponding mode sizes.
 
@@ -83,7 +77,7 @@ def get_cumulative_frequency(frequency: np.ndarray, expand=False):
     ## Parameters
 
     frequency: `np.ndarray`
-        The frequency values of grain-size classes. Note that the sum of frequencies should be `1.0`.
+        The frequency values of grain size classes. Note that the sum of frequencies should be `1.0`.
     expand: `bool` (default `False`)
         If `True`, `0.0` and `1.0` will be added at the head and tail, respectively.
 
@@ -106,16 +100,16 @@ def get_cumulative_frequency(frequency: np.ndarray, expand=False):
 
 def get_reverse_phi_ppf(classes_φ: np.ndarray, frequency: np.ndarray) -> interp1d:
     """
-    Get the reversed percent point function (PPF) of a grain-size distribution.
-    Because the grain-size classes in φ is isometric, it's more suitable for interpolation.
+    Get the reversed percent point function (PPF) of a grain size distribution.
+    Because the grain size classes in φ is isometric, it's more suitable for interpolation.
     And because coarser particles have smaller φ values, the PPF is reversed.
 
     ## Parameters
 
     classes_φ: `np.ndarray`
-        The grain-size classes in φ.
+        The grain size classes in φ.
     frequency: `np.ndarray`
-        The frequency values of grain-size classes. Note that the sum of frequencies should be `1.0`.
+        The frequency values of grain size classes. Note that the sum of frequencies should be `1.0`.
 
     ## Returns
 
@@ -131,19 +125,37 @@ def get_reverse_phi_ppf(classes_φ: np.ndarray, frequency: np.ndarray) -> interp
     ppf = interp1d(cumulative_frequency, expand_classes, kind="slinear")
     return ppf
 
+def get_interval_φ(classes_φ: np.ndarray)-> float:
+    """
+    Get the interval of grain size classes.
+
+    ## Parameters
+
+    classes_φ: `np.ndarray`
+        The grain size classes in φ.
+
+    ## Returns
+
+    interval_φ: `float`
+        The interval in φ.
+
+    """
+
+    return abs((classes_φ[0]-classes_φ[-1]) / (len(classes_φ)-1))
+
 def convert_μm_to_φ(size_μm: typing.Union[float, np.ndarray]):
     """
-    Convert the grain-size from μm space to φ space.
+    Convert the grain size from μm space to φ space.
 
     ## Parameters
 
     size_μm: `float` or `np.ndarray`
-        The grain-size in μm.
+        The grain size in μm.
 
     ## Returns
 
     size_φ: `np.ndarray`
-        The grain-size in φ.
+        The grain size in φ.
 
     """
 
@@ -151,17 +163,17 @@ def convert_μm_to_φ(size_μm: typing.Union[float, np.ndarray]):
 
 def convert_φ_to_μm(size_φ: np.ndarray):
     """
-    Convert the grain-size from φ space to μm space.
+    Convert the grain size from φ space to μm space.
 
     ## Parameters
 
     size_φ: `float` or `np.ndarray`
-        The grain-size in φ.
+        The grain size in φ.
 
     ## Returns
 
     size_μm: `np.ndarray`
-        The grain-size in μm.
+        The grain size in μm.
 
     """
 
