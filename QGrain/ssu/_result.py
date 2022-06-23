@@ -115,11 +115,11 @@ class SSUResult:
             self.__distribution = distribution
             if len(self.__components) == 0:
                 for i in range(self.n_components):
-                    component_result = SSUComponentResult(components[i], proportions[0][i], (m[i], v[i], s[i], k[i]), func_args[0, :-1, i])
+                    component_result = SSUComponentResult(components[i], proportions[0][i], (m[i], v[i], s[i], k[i]), func_args[0, :, i])
                     self.__components.append(component_result)
             else:
                 for i in range(self.n_components):
-                    self.__components[i].update(components[i], proportions[0][i], (m[i], v[i], s[i], k[i]), func_args[0, :-1, i])
+                    self.__components[i].update(components[i], proportions[0][i], (m[i], v[i], s[i], k[i]), func_args[0, :, i])
             # sort by mean φ values
             # reverse is necessary
             self.__components.sort(key=lambda component: component.moments["mean"], reverse=True)

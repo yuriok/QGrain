@@ -89,9 +89,10 @@ class ArtificialSample:
         distributions = [component.distribution for component in self.components]
         proportions = [component.proportion for component in self.components]
 
-        model = SSUViewModel(self.classes_φ, self.distribution,
-                             self.distribution, distributions, proportions,
-                             title=self.name, component_prefix="AC")
+        model = SSUViewModel(
+            self.classes_φ, self.distribution,
+            self.distribution, distributions, proportions,
+            title=self.name, component_prefix="AC")
         return model
 
 

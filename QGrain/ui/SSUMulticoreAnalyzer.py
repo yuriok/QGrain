@@ -176,7 +176,7 @@ class SSUMulticoreAnalyzer(QtWidgets.QDialog):
         self.next_button = QtWidgets.QPushButton(self.tr("Next"))
         self.previous_button.clicked.connect(lambda: self.page_combo_box.setCurrentIndex(max(self.page_index-1, 0)))
         self.page_combo_box.currentIndexChanged.connect(self.update_page)
-        self.next_button.clicked.connect(lambda: self.page_combo_box.setCurrentIndex(min(self.page_index+1, self.n_pages)))
+        self.next_button.clicked.connect(lambda: self.page_combo_box.setCurrentIndex(min(self.page_index+1, self.n_pages-1)))
         self.state_layout.addWidget(self.bubble_holder, 0, 0, 1, 3)
         self.state_layout.addWidget(self.previous_button, 1, 0)
         self.state_layout.addWidget(self.page_combo_box, 1, 1)
@@ -213,11 +213,6 @@ class SSUMulticoreAnalyzer(QtWidgets.QDialog):
         self.__failed_queue = mp.Queue()
         self.__event_queue = mp.Queue()
 
-    def cancel_tasks(self):
-        self.kill_processes()
-        self.run_button.setText(self.tr("Start"))
-        self.__start_flag = False
-
     def setup_tasks(self, tasks: typing.List[SSUTask]):
         self.__tasks.clear()
         self.__index_map.clear()
@@ -237,18 +232,13 @@ class SSUMulticoreAnalyzer(QtWidgets.QDialog):
         for i in range(self.n_pages):
             self.page_combo_box.addItem(self.tr("Page {0}").format(i+1))
         self.page_combo_box.setCurrentIndex(0)
-
-    def start_tasks(self):
-        self.__start_flag = True
-        self.setup_tasks(self.__tasks.copy())
-        self.setup_processes()
-        self.run_button.setText(self.tr("Cancel"))
+        self.n_workers_input.setEnabled(True)
+        self.run_button.setEnabled(True)
 
     def on_run_button_clicked(self):
-        if self.__start_flag:
-            self.cancel_tasks()
-        else:
-            self.start_tasks()
+        self.n_workers_input.setEnabled(False)
+        self.run_button.setEnabled(False)
+        self.setup_processes()
 
     def update_page(self):
         if self.page_index < 0:
@@ -317,7 +307,7 @@ class SSUMulticoreAnalyzer(QtWidgets.QDialog):
             results.sort(key=lambda x: x[0])
             for index, result in results:
                 self.result_finished.emit(result)
-            self.cancel_tasks()
+            self.kill_processes()
 
     def retranslate(self):
         self.setWindowTitle(self.tr("SSU Multicore Analyzer"))
@@ -336,10 +326,7 @@ class SSUMulticoreAnalyzer(QtWidgets.QDialog):
         else:
             for i in range(self.page_combo_box.count()):
                 self.page_combo_box.setItemText(i, self.tr("Page {0}").format(i+1))
-        if self.__start_flag:
-            self.run_button.setText(self.tr("Cancel"))
-        else:
-            self.run_button.setText(self.tr("Start"))
+        self.run_button.setText(self.tr("Start"))
         self.state_group.setTitle(self.tr("State"))
         self.previous_button.setText(self.tr("Previous"))
         self.next_button.setText(self.tr("Next"))
