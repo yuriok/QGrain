@@ -30,7 +30,21 @@ class DistributionChart(BaseChart):
             self.scale_menu.addAction(scale_action)
             self.scale_actions.append(scale_action)
         self.scale_actions[0].setChecked(True)
-
+        self.show_mode_lines_action = QtGui.QAction(self.tr("Show Mode Lines")) # type: QtGui.QAction
+        self.show_mode_lines_action.triggered.connect(self.update_chart)
+        self.menu.insertAction(self.save_figure_action, self.show_mode_lines_action)
+        self.show_mode_lines_action.setCheckable(True)
+        self.show_mode_lines_action.setChecked(False)
+        self.show_legend_action = QtGui.QAction(self.tr("Show Legend")) # type: QtGui.QAction
+        self.show_legend_action.triggered.connect(self.update_chart)
+        self.menu.insertAction(self.save_figure_action, self.show_legend_action)
+        self.show_legend_action.setCheckable(True)
+        self.show_legend_action.setChecked(False)
+        self.show_animation_action = QtGui.QAction(self.tr("Show Animation")) # type: QtGui.QAction
+        self.show_animation_action.triggered.connect(self.update_chart)
+        self.menu.insertAction(self.save_figure_action, self.show_animation_action)
+        self.show_animation_action.setCheckable(True)
+        self.show_animation_action.setChecked(False)
         self.interval_menu = QtWidgets.QMenu(self.tr("Animation Interval")) # type: QtWidgets.QMenu
         self.menu.insertMenu(self.save_figure_action, self.interval_menu)
         self.interval_group = QtGui.QActionGroup(self.interval_menu)
@@ -43,25 +57,11 @@ class DistributionChart(BaseChart):
             self.interval_menu.addAction(interval_action)
             self.interval_actions.append(interval_action)
         self.interval_actions[3].setChecked(True)
-
         self.repeat_animation_action = QtGui.QAction(self.tr("Repeat Animation")) # type: QtGui.QAction
         self.repeat_animation_action.triggered.connect(self.update_chart)
         self.menu.insertAction(self.save_figure_action, self.repeat_animation_action)
         self.repeat_animation_action.setCheckable(True)
         self.repeat_animation_action.setChecked(False)
-
-        self.show_mode_lines_action = QtGui.QAction(self.tr("Show Mode Lines")) # type: QtGui.QAction
-        self.show_mode_lines_action.triggered.connect(self.update_chart)
-        self.menu.insertAction(self.save_figure_action, self.show_mode_lines_action)
-        self.show_mode_lines_action.setCheckable(True)
-        self.show_mode_lines_action.setChecked(False)
-
-        self.show_legend_action = QtGui.QAction(self.tr("Show Legend")) # type: QtGui.QAction
-        self.show_legend_action.triggered.connect(self.update_chart)
-        self.menu.insertAction(self.save_figure_action, self.show_legend_action)
-        self.show_legend_action.setCheckable(True)
-        self.show_legend_action.setChecked(False)
-
         self.save_animation_action = QtGui.QAction(self.tr("Save Animation")) # type: QtGui.QAction
         self.menu.addAction(self.save_animation_action)
         self.save_animation_action.triggered.connect(self.save_animation)
@@ -69,7 +69,6 @@ class DistributionChart(BaseChart):
         self.animation = None
         self.last_model = None # type: SSUViewModel
         self.last_result = None # type: SSUResult
-
         self.file_dialog = QtWidgets.QFileDialog(parent=self)
 
     @property
@@ -97,6 +96,18 @@ class DistributionChart(BaseChart):
                 return key
 
     @property
+    def show_mode_lines(self) -> bool:
+        return self.show_mode_lines_action.isChecked()
+
+    @property
+    def show_legend(self) -> bool:
+        return self.show_legend_action.isChecked()
+
+    @property
+    def show_animation(self) -> bool:
+        return self.show_animation_action.isChecked()
+
+    @property
     def animation_interval(self) -> int:
         for i, interval_action in enumerate(self.interval_actions):
             if interval_action.isChecked():
@@ -106,14 +117,6 @@ class DistributionChart(BaseChart):
     @property
     def repeat_animation(self) -> bool:
         return self.repeat_animation_action.isChecked()
-
-    @property
-    def show_mode_lines(self) -> bool:
-        return self.show_mode_lines_action.isChecked()
-
-    @property
-    def show_legend(self) -> bool:
-        return self.show_legend_action.isChecked()
 
     @property
     def transfer(self) -> typing.Callable:
@@ -207,7 +210,7 @@ class DistributionChart(BaseChart):
                 loc="upper left", prop={"size": 8})
         self.canvas.draw()
 
-    def show_result(self, result: SSUResult):
+    def _show_animation(self, result: SSUResult):
         if self.animation is not None:
             self.animation._stop()
             self.animation = None
@@ -279,6 +282,14 @@ class DistributionChart(BaseChart):
             interval=self.animation_interval, blit=True,
             repeat=self.repeat_animation, repeat_delay=3.0, save_count=result.n_iterations)
 
+    def show_result(self, result: SSUResult):
+        if self.show_animation:
+            self._show_animation(result)
+        else:
+            self.show_model(result.view_model)
+        self.last_model = None
+        self.last_result = result
+
     def save_animation(self):
         if self.last_result is not None:
             filename, format_str = self.file_dialog.getSaveFileName(
@@ -297,7 +308,7 @@ class DistributionChart(BaseChart):
                     raise StopIteration()
                 progress.setValue((i+1)/n*100)
                 QtCore.QCoreApplication.processEvents()
-            self.show_result(self.last_result)
+            self._show_animation(self.last_result)
             # plt.rcParams["savefig.dpi"] = 120.0
             if "*.gif" in format_str:
                 if not ImageMagickWriter.isAvailable():
@@ -330,10 +341,11 @@ class DistributionChart(BaseChart):
         self.scale_menu.setTitle(self.tr("Scale"))
         for action, (key, name) in zip(self.scale_actions, self.supported_scales):
             action.setText(name)
+        self.show_mode_lines_action.setText(self.tr("Show Mode Lines"))
+        self.show_legend_action.setText(self.tr("Show Legend"))
+        self.show_animation_action.setText(self.tr("Show Animation"))
         self.interval_menu.setTitle(self.tr("Animation Interval"))
         for action, (interval, name) in zip(self.interval_actions, self.supported_intervals):
             action.setText(name)
         self.repeat_animation_action.setText(self.tr("Repeat Animation"))
-        self.show_mode_lines_action.setText(self.tr("Show Mode Lines"))
-        self.show_legend_action.setText(self.tr("Show Legend"))
         self.save_animation_action.setText(self.tr("Save Animation"))

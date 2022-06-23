@@ -1,4 +1,3 @@
-
 import logging
 import typing
 
@@ -6,7 +5,7 @@ import numpy as np
 from PySide6 import QtCore, QtWidgets
 
 from ..chart.DistributionChart import DistributionChart
-from ..ssu import DISTRIBUTION_CLASS_MAP, DistributionType, SSUViewModel
+from ..ssu import DISTRIBUTION_CLASS_MAP, DistributionType, SSUResult, SSUViewModel
 from ..statistic import get_interval_φ
 
 
@@ -28,14 +27,14 @@ class ParameterComponent(QtWidgets.QWidget):
     WEIBULL_SETTINGS = dict(
         n_params = 3,
         param_names=("Shape", "Scale", "Weight"),
-        ranges=((-500.0, 500.0), (0.01, 500.0), (0.0, 10.0)),
+        ranges=((-2000.0, 2000.0), (0.01, 2000.0), (0.0, 10.0)),
         defaults=(3.6, 1.0, 1.0),
         steps=(0.1, 0.1, 0.1))
 
     GENERAL_WEIBULL_SETTINGS = dict(
         n_params = 4,
         param_names=("Shape", "Location", "Scale", "Weight"),
-        ranges=((-500.0, 500.0), (-500.0, 500.0), (0.01, 500.0), (0.0, 10.0)),
+        ranges=((-2000.0, 2000.0), (-2000.0, 2000.0), (0.01, 2000.0), (0.0, 10.0)),
         defaults=(3.6, 5.0, 1.0, 1.0),
         steps=(0.1, 0.1, 0.1, 0.1))
 
@@ -130,8 +129,7 @@ class ParameterEditor(QtWidgets.QDialog):
         self.__interval_φ = get_interval_φ(self.__classes_φ)
         self.__target = None
         self.init_ui()
-        self.distribution_type_combo_box.setCurrentIndex(3)
-        self.n_components_input.setValue(3)
+        self.switch_preset(0)
         self.file_dialog = QtWidgets.QFileDialog(parent=self)
 
     def init_ui(self):
@@ -281,20 +279,23 @@ class ParameterEditor(QtWidgets.QDialog):
             distribution_type, n_components, parameter_matrix = self.__cache_dict[preset_index]
             self.distribution_type_combo_box.setCurrentIndex(self.DISTRIBUTION_INDEX_MAP[distribution_type])
             self.n_components_input.setValue(n_components)
-            enabled_components = [] # type: list[ParameterComponent]
-            for _, _, components in self.component_sets:
-                for component in components:
-                    if component.isEnabled():
-                        enabled_components.append(component)
-            for component_parameters, component in zip(parameter_matrix.T, enabled_components):
-                component.set_parameters(component_parameters)
+            parameters = parameter_matrix.T
         else:
             self.distribution_type_combo_box.setCurrentIndex(3)
             self.n_components_input.setValue(3)
-            # TODO: add defaults
-            self._clear_components()
-            self._add_components()
-            self.on_n_components_changed(3)
+            parameters = [
+                [611.76, -467.20, 477.40, 0.81],
+                [2.28, 5.35, 2.57, 2.12],
+                [2.74, 2.67, 2.68, 2.77]]
+        enabled_components = [] # type: list[ParameterComponent]
+        for _, _, components in self.component_sets:
+            for component in components:
+                if component.isEnabled():
+                    enabled_components.append(component)
+        for component_parameters, component in zip(parameters, enabled_components):
+            component.set_parameters(component_parameters)
+        self.update_cache()
+        self.update_chart()
 
     def setup_target(self, classes_μm: np.ndarray, target: np.ndarray):
         self.__classes_μm = classes_μm
@@ -310,6 +311,19 @@ class ParameterEditor(QtWidgets.QDialog):
         target = self.__target if self.__target is not None else mixed
         model = SSUViewModel(self.__classes_φ, target, mixed, components.squeeze(), proportions.squeeze())
         self.preview_chart.show_model(model)
+
+    def refer_ssu_result(self, result: SSUResult):
+        self.distribution_type_combo_box.setCurrentIndex(self.DISTRIBUTION_INDEX_MAP[result.distribution_type])
+        self.n_components_input.setValue(result.n_components)
+        enabled_components = [] # type: list[ParameterComponent]
+        for _, _, components in self.component_sets:
+            for component in components:
+                if component.isEnabled():
+                    enabled_components.append(component)
+        for result_component, component in zip(result.components, enabled_components):
+            component.set_parameters(result_component.component_args)
+        self.update_chart()
+        self.update_cache()
 
     def changeEvent(self, event: QtCore.QEvent):
         if event.type() == QtCore.QEvent.LanguageChange:

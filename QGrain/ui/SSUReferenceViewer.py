@@ -46,13 +46,13 @@ class SSUReferenceViewer(QtWidgets.QWidget):
 
         self.previous_button = QtWidgets.QPushButton(self.tr("Previous"))
         self.previous_button.setToolTip(self.tr("Click to get back to the previous page."))
-        self.previous_button.clicked.connect(self.on_previous_button_clicked)
         self.page_combo_box = QtWidgets.QComboBox()
         self.page_combo_box.addItem(self.tr("Page {0}").format(1))
-        self.page_combo_box.currentIndexChanged.connect(self.update_page)
         self.next_button = QtWidgets.QPushButton(self.tr("Next"))
         self.next_button.setToolTip(self.tr("Click to jump to the next page."))
-        self.next_button.clicked.connect(self.on_next_button_clicked)
+        self.previous_button.clicked.connect(lambda: self.page_combo_box.setCurrentIndex(max(self.page_index-1, 0)))
+        self.page_combo_box.currentIndexChanged.connect(self.update_page)
+        self.next_button.clicked.connect(lambda: self.page_combo_box.setCurrentIndex(min(self.page_index+1, self.n_pages-1)))
         self.main_layout.addWidget(self.previous_button, 1, 0)
         self.main_layout.addWidget(self.page_combo_box, 1, 1)
         self.main_layout.addWidget(self.next_button, 1, 2)
@@ -75,9 +75,7 @@ class SSUReferenceViewer(QtWidgets.QWidget):
         self.remove_all_action = self.menu.addAction(self.tr("Remove All")) # type: QtGui.QAction
         self.remove_all_action.triggered.connect(self.remove_all_results)
         self.show_chart_action = self.menu.addAction(self.tr("Show Chart")) # type: QtGui.QAction
-        self.show_chart_action.triggered.connect(self.show_distribution)
-        self.show_animation_action = self.menu.addAction(self.tr("Show Animation")) # type: QtGui.QAction
-        self.show_animation_action.triggered.connect(self.show_animation)
+        self.show_chart_action.triggered.connect(self.show_chart)
         self.show_distance_action = self.menu.addAction(self.tr("Show Distance Series")) # type: QtGui.QAction
         self.show_distance_action.triggered.connect(self.show_distance)
         self.data_table.customContextMenuRequested.connect(self.show_menu)
@@ -196,14 +194,6 @@ class SSUReferenceViewer(QtWidgets.QWidget):
 
         self.data_table.resizeColumnsToContents()
 
-    def on_previous_button_clicked(self):
-        if self.page_index > 0:
-            self.page_combo_box.setCurrentIndex(self.page_index-1)
-
-    def on_next_button_clicked(self):
-        if self.page_index < self.n_pages - 1:
-            self.page_combo_box.setCurrentIndex(self.page_index+1)
-
     def add_result(self, result: SSUResult):
         if self.n_results == 0 or \
             (self.page_index == self.n_pages - 1 and \
@@ -285,19 +275,12 @@ class SSUReferenceViewer(QtWidgets.QWidget):
             title=result.sample.name)
         self.distance_chart.show()
 
-    def show_distribution(self):
+    def show_chart(self):
         results = [self.__fitting_results[i] for i in self.selections]
         if results is None or len(results) == 0:
             return
         result = results[0]
-        self.result_displayed.emit(result, False)
-
-    def show_animation(self):
-        results = [self.__fitting_results[i] for i in self.selections]
-        if results is None or len(results) == 0:
-            return
-        result = results[0]
-        self.result_displayed.emit(result, True)
+        self.result_displayed.emit(result)
 
     def load_references(self, mark_ref=False):
         filename, _ = self.file_dialog.getOpenFileName(
@@ -377,6 +360,10 @@ class SSUReferenceViewer(QtWidgets.QWidget):
             return None
         return self.find_similar(sample, self.__reference_map.values())
 
+    def changeEvent(self, event: QtCore.QEvent):
+        if event.type() == QtCore.QEvent.LanguageChange:
+            self.retranslate()
+
     def retranslate(self):
         self.setWindowTitle(self.tr("SSU Reference Viewer"))
         self.previous_button.setText(self.tr("Previous"))
@@ -392,6 +379,5 @@ class SSUReferenceViewer(QtWidgets.QWidget):
         self.remove_action.setText(self.tr("Remove"))
         self.remove_all_action.setText(self.tr("Remove All"))
         self.show_chart_action.setText(self.tr("Show Chart"))
-        self.show_animation_action.setText(self.tr("Show Animation"))
         self.show_distance_action.setText(self.tr("Show Distance Series"))
         self.update_page(self.page_index)
