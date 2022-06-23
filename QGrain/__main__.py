@@ -1,4 +1,4 @@
-from QGrain.entry import qgrain_console
+from .ui.MainWindow import qgrain_app
 
 if __name__ == "__main__":
-    qgrain_console()
+    qgrain_app()
