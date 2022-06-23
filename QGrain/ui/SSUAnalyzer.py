@@ -90,6 +90,7 @@ class SSUAnalyzer(QtWidgets.QWidget):
         self.result_view = SSUResultViewer(self.reference_view)
         self.result_view.result_marked.connect(lambda result: self.reference_view.add_references([result]))
         self.result_view.result_displayed.connect(self.on_result_displayed)
+        self.result_view.result_referred.connect(self.parameter_editor.refer_ssu_result)
         self.table_tab = QtWidgets.QTabWidget()
         self.table_tab.addTab(self.result_view, self.tr("Result"))
         self.table_tab.addTab(self.reference_view, self.tr("Reference"))
@@ -177,15 +178,12 @@ class SSUAnalyzer(QtWidgets.QWidget):
             tasks.append(task)
         return tasks
 
-    def on_result_displayed(self, result: SSUResult, animated: bool):
-        if animated:
-            self.result_chart.show_result(result)
-        else:
-            self.result_chart.show_model(result.view_model)
+    def on_result_displayed(self, result: SSUResult):
+        self.result_chart.show_result(result)
 
     def on_fitting_succeeded(self, fitting_result: SSUResult):
         # update chart
-        self.result_chart.show_model(fitting_result.view_model)
+        self.result_chart.show_result(fitting_result)
         self.result_view.add_result(fitting_result)
         self.try_fit_button.setEnabled(True)
         self.edit_parameter_button.setEnabled(True)
@@ -213,6 +211,7 @@ class SSUAnalyzer(QtWidgets.QWidget):
             sample = self.__dataset.samples[sample_index]
             self.parameter_editor.setup_target(sample.classes_μm, sample.distribution)
         self.parameter_editor.show()
+        self.parameter_editor.update_chart()
 
     def on_try_fit_clicked(self):
         self.do_test()
