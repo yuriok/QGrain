@@ -24,7 +24,7 @@ class ParameterTable(QtWidgets.QDialog):
         _ = [self.tr("Shape"), self.tr("Location"), self.tr("Scale"), self.tr("Weight")]
         self.main_layout = QtWidgets.QGridLayout(self)
         self.setMinimumSize(200, 160)
-        self.setWindowTitle(self.tr("Parameters"))
+        self.setWindowTitle(self.tr("Resolved Parameters"))
         parameter_names = self.parameter_name_map[result.distribution_type]
         self.headers = [] # type: list[tuple[str, QtWidgets.QLabel]]
         for i, name in enumerate(parameter_names):
@@ -45,6 +45,6 @@ class ParameterTable(QtWidgets.QDialog):
             self.retranslate()
 
     def retranslate(self):
-        self.setWindowTitle(self.tr("Parameters"))
+        self.setWindowTitle(self.tr("Resolved Parameters"))
         for name, header in self.headers:
             header.setText(self.tr(name))

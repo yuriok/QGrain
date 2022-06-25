@@ -71,11 +71,11 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.remove_all_action.triggered.connect(self.remove_all_results)
         self.mark_action = self.menu.addAction(self.tr("Mark Reference")) # type: QtGui.QAction
         self.mark_action.triggered.connect(self.mark_selections)
-        self.refer_action = self.menu.addAction(self.tr("Refer It To Parameter Editor")) # type: QtGui.QAction
+        self.refer_action = self.menu.addAction(self.tr("Refer Parameters")) # type: QtGui.QAction
         self.refer_action.triggered.connect(self.refer_result)
         self.show_chart_action = self.menu.addAction(self.tr("Show Chart")) # type: QtGui.QAction
         self.show_chart_action.triggered.connect(self.show_chart)
-        self.auto_show_selected_action = self.menu.addAction(self.tr("Auto Show Selected")) # type: QtGui.QAction
+        self.auto_show_selected_action = self.menu.addAction(self.tr("Auto Show")) # type: QtGui.QAction
         self.auto_show_selected_action.setCheckable(True)
         self.auto_show_selected_action.setChecked(False)
         self.show_distance_action = self.menu.addAction(self.tr("Show Distance Series")) # type: QtGui.QAction
@@ -85,7 +85,7 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.detect_outliers_menu = self.menu.addMenu(self.tr("Check")) # type: QtWidgets.QMenu
         self.check_nan_and_inf_action = self.detect_outliers_menu.addAction(self.tr("NaN / Inf")) # type: QtGui.QAction
         self.check_nan_and_inf_action.triggered.connect(self.check_nan_and_inf)
-        self.check_final_distances_action = self.detect_outliers_menu.addAction(self.tr("Final Distances")) # type: QtGui.QAction
+        self.check_final_distances_action = self.detect_outliers_menu.addAction(self.tr("Final Distance")) # type: QtGui.QAction
         self.check_final_distances_action.triggered.connect(self.check_final_distances)
         self.check_mean_action = self.detect_outliers_menu.addAction(self.tr("Mean")) # type: QtGui.QAction
         self.check_mean_action.triggered.connect(lambda: self.check_component_moments("mean"))
@@ -520,14 +520,14 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.remove_action.setText(self.tr("Remove"))
         self.remove_all_action.setText(self.tr("Remove All"))
         self.mark_action.setText(self.tr("Mark Reference"))
-        self.refer_action.setText(self.tr("Refer It To Parameter Editor"))
+        self.refer_action.setText(self.tr("Refer Parameters"))
         self.show_chart_action.setText(self.tr("Show Chart"))
-        self.auto_show_selected_action.setText(self.tr("Auto Show Selected"))
+        self.auto_show_selected_action.setText(self.tr("Auto Show"))
         self.show_distance_action.setText(self.tr("Show Distance Series"))
         self.show_parameter_action.setText(self.tr("Show Parameters"))
         self.detect_outliers_menu.setTitle(self.tr("Check"))
         self.check_nan_and_inf_action.setText(self.tr("NaN / Inf"))
-        self.check_final_distances_action.setText(self.tr("Final Distances"))
+        self.check_final_distances_action.setText(self.tr("Final Distance"))
         self.check_mean_action.setText(self.tr("Mean"))
         self.check_std_action.setText(self.tr("Sorting Coefficient"))
         self.check_skewness_action.setText(self.tr("Skewness"))

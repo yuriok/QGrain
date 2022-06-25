@@ -11,7 +11,7 @@
 <context>
     <name>BP12GSMDiagramChart</name>
     <message>
-        <location filename="QGrain/chart/diagrams.py" line="527"/>
+        <location filename="QGrain/chart/diagrams.py" line="529"/>
         <source>GSM Diagram (Blott &amp; Pye, 2012)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -19,7 +19,7 @@
 <context>
     <name>BP12SSCDiagramChart</name>
     <message>
-        <location filename="QGrain/chart/diagrams.py" line="785"/>
+        <location filename="QGrain/chart/diagrams.py" line="787"/>
         <source>SSC Diagram (Blott &amp; Pye, 2012)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -151,7 +151,7 @@
 <context>
     <name>CumulativeCurveChart</name>
     <message>
-        <location filename="QGrain/chart/CumulativeCurveChart.py" line="111"/>
+        <location filename="QGrain/chart/CumulativeCurveChart.py" line="113"/>
         <source>Cumulative Curve Chart</source>
         <translation type="unfinished"></translation>
     </message>
@@ -171,7 +171,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/CumulativeCurveChart.py" line="112"/>
+        <location filename="QGrain/chart/CumulativeCurveChart.py" line="114"/>
         <source>Scale</source>
         <translation type="unfinished"></translation>
     </message>
@@ -290,22 +290,22 @@
 <context>
     <name>DistributionChart</name>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="341"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="342"/>
         <source>Scale</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="347"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="348"/>
         <source>Animation Interval</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="350"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="351"/>
         <source>Repeat Animation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="351"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="352"/>
         <source>Save Animation</source>
         <translation type="unfinished"></translation>
     </message>
@@ -355,22 +355,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="302"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="303"/>
         <source>Saving Animation [{0} Frames]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="322"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="323"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="316"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="317"/>
         <source>ImageMagick is not installed, please download and install it from its offical website (https://imagemagick.org/index.php).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="323"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="324"/>
         <source>FFMpeg is not installed, please download and install it from its offical website (https://ffmpeg.org/).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -380,17 +380,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="344"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="345"/>
         <source>Show Mode Lines</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="345"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="346"/>
         <source>Show Legend</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="346"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="347"/>
         <source>Animated</source>
         <translation type="unfinished"></translation>
     </message>
@@ -398,112 +398,112 @@
 <context>
     <name>EMMAAnalyzer</name>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="270"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="273"/>
         <source>EMMA Analyzer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="271"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="274"/>
         <source>Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="272"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="275"/>
         <source>Kernel Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="275"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="278"/>
         <source>Try Fit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="276"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="279"/>
         <source>Edit Parameters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="277"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="280"/>
         <source>Result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="278"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="281"/>
         <source>Remove</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="280"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="283"/>
         <source>Chart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="104"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="107"/>
         <source>Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="107"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="110"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="110"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="113"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="153"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="156"/>
         <source>Dataset has not been loaded.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="246"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="249"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="263"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="266"/>
         <source>An unknown exception was raised. Please check the logs for more details.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="234"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="237"/>
         <source>There is no EMMA result.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="237"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="240"/>
         <source>Choose a filename to save the selected EMMA result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="246"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="249"/>
         <source>Saving the EMMA result...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="273"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="276"/>
         <source>Number of End Members</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="274"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="277"/>
         <source>Update End Members</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="279"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="282"/>
         <source>Show</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="217"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="220"/>
         <source>Choose the file which stores the dumped EMMA result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMAAnalyzer.py" line="228"/>
+        <location filename="QGrain/ui/EMMAAnalyzer.py" line="231"/>
         <source>The binary file is invalid (i.e., the object in it is not the EMMA result).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -526,7 +526,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/EMMAResultChart.py" line="368"/>
+        <location filename="QGrain/chart/EMMAResultChart.py" line="370"/>
         <source>Scale</source>
         <translation type="unfinished"></translation>
     </message>
@@ -536,37 +536,37 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/EMMAResultChart.py" line="357"/>
+        <location filename="QGrain/chart/EMMAResultChart.py" line="359"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/EMMAResultChart.py" line="351"/>
+        <location filename="QGrain/chart/EMMAResultChart.py" line="353"/>
         <source>ImageMagick is not installed, please download and install it from its offical website (https://imagemagick.org/index.php).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/EMMAResultChart.py" line="358"/>
+        <location filename="QGrain/chart/EMMAResultChart.py" line="360"/>
         <source>FFMpeg is not installed, please download and install it from its offical website (https://ffmpeg.org/).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/EMMAResultChart.py" line="371"/>
+        <location filename="QGrain/chart/EMMAResultChart.py" line="373"/>
         <source>Distance Function</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/EMMAResultChart.py" line="375"/>
+        <location filename="QGrain/chart/EMMAResultChart.py" line="377"/>
         <source>Animation Interval</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/EMMAResultChart.py" line="378"/>
+        <location filename="QGrain/chart/EMMAResultChart.py" line="380"/>
         <source>Repeat Animation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/EMMAResultChart.py" line="379"/>
+        <location filename="QGrain/chart/EMMAResultChart.py" line="381"/>
         <source>Save Animation</source>
         <translation type="unfinished"></translation>
     </message>
@@ -646,7 +646,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/EMMAResultChart.py" line="374"/>
+        <location filename="QGrain/chart/EMMAResultChart.py" line="376"/>
         <source>Animated</source>
         <translation type="unfinished"></translation>
     </message>
@@ -747,7 +747,7 @@
 <context>
     <name>Folk54GSMDiagramChart</name>
     <message>
-        <location filename="QGrain/chart/diagrams.py" line="187"/>
+        <location filename="QGrain/chart/diagrams.py" line="189"/>
         <source>GSM Diagram (Folk, 1954)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -755,7 +755,7 @@
 <context>
     <name>Folk54SSCDiagramChart</name>
     <message>
-        <location filename="QGrain/chart/diagrams.py" line="271"/>
+        <location filename="QGrain/chart/diagrams.py" line="273"/>
         <source>SSC Diagram (Folk, 1954)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -763,12 +763,12 @@
 <context>
     <name>Frequency3DChart</name>
     <message>
-        <location filename="QGrain/chart/Frequency3DChart.py" line="115"/>
+        <location filename="QGrain/chart/Frequency3DChart.py" line="117"/>
         <source>Frequency 3D Chart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/Frequency3DChart.py" line="116"/>
+        <location filename="QGrain/chart/Frequency3DChart.py" line="118"/>
         <source>Scale</source>
         <translation type="unfinished"></translation>
     </message>
@@ -793,7 +793,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/Frequency3DChart.py" line="104"/>
+        <location filename="QGrain/chart/Frequency3DChart.py" line="106"/>
         <source>Sample index</source>
         <translation type="unfinished"></translation>
     </message>
@@ -801,7 +801,7 @@
 <context>
     <name>FrequencyCurveChart</name>
     <message>
-        <location filename="QGrain/chart/FrequencyCurveChart.py" line="119"/>
+        <location filename="QGrain/chart/FrequencyCurveChart.py" line="121"/>
         <source>Frequency Curve Chart</source>
         <translation type="unfinished"></translation>
     </message>
@@ -821,7 +821,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/FrequencyCurveChart.py" line="120"/>
+        <location filename="QGrain/chart/FrequencyCurveChart.py" line="122"/>
         <source>Scale</source>
         <translation type="unfinished"></translation>
     </message>
@@ -910,26 +910,6 @@ Deviation</source>
     <message>
         <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="394"/>
         <source>Plot Cumlulative Curve Chart</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="431"/>
-        <source>Plot Selected Samples</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="432"/>
-        <source>Append Selected Samples</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="433"/>
-        <source>Plot All Samples</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="434"/>
-        <source>Append All Samples</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1102,6 +1082,26 @@ Deviation</source>
         <source>Group (Blott and Pye, 2012)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="431"/>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="432"/>
+        <source>Append</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="433"/>
+        <source>Plot All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="434"/>
+        <source>Append All</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>HierarchicalChart</name>
@@ -1225,193 +1225,193 @@ Deviation</source>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="290"/>
+        <location filename="QGrain/ui/MainWindow.py" line="302"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="292"/>
+        <location filename="QGrain/ui/MainWindow.py" line="304"/>
         <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="294"/>
+        <location filename="QGrain/ui/MainWindow.py" line="306"/>
         <source>Grain Size Dataset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="293"/>
+        <location filename="QGrain/ui/MainWindow.py" line="305"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="312"/>
+        <location filename="QGrain/ui/MainWindow.py" line="324"/>
         <source>Language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="313"/>
+        <location filename="QGrain/ui/MainWindow.py" line="325"/>
         <source>Theme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="315"/>
+        <location filename="QGrain/ui/MainWindow.py" line="327"/>
         <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="199"/>
+        <location filename="QGrain/ui/MainWindow.py" line="211"/>
         <source>Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="205"/>
+        <location filename="QGrain/ui/MainWindow.py" line="217"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="245"/>
+        <location filename="QGrain/ui/MainWindow.py" line="257"/>
         <source>Dataset has not been loaded.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="291"/>
+        <location filename="QGrain/ui/MainWindow.py" line="303"/>
         <source>Closing this window will terminate all running tasks, are you sure to close it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="299"/>
+        <location filename="QGrain/ui/MainWindow.py" line="311"/>
         <source>Statistic Result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="316"/>
+        <location filename="QGrain/ui/MainWindow.py" line="328"/>
         <source>Generator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="318"/>
+        <location filename="QGrain/ui/MainWindow.py" line="330"/>
         <source>PCA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="319"/>
+        <location filename="QGrain/ui/MainWindow.py" line="331"/>
         <source>Clustering</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="320"/>
+        <location filename="QGrain/ui/MainWindow.py" line="332"/>
         <source>SSU</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="321"/>
+        <location filename="QGrain/ui/MainWindow.py" line="333"/>
         <source>EMMA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="322"/>
+        <location filename="QGrain/ui/MainWindow.py" line="334"/>
         <source>UDM</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="300"/>
+        <location filename="QGrain/ui/MainWindow.py" line="312"/>
         <source>PCA Result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="301"/>
+        <location filename="QGrain/ui/MainWindow.py" line="313"/>
         <source>Clustering Result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="306"/>
-        <source>Config</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/MainWindow.py" line="307"/>
-        <source>SSU Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/MainWindow.py" line="308"/>
-        <source>EMMA Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/MainWindow.py" line="314"/>
+        <location filename="QGrain/ui/MainWindow.py" line="326"/>
         <source>Log</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="223"/>
+        <location filename="QGrain/ui/MainWindow.py" line="235"/>
         <source>Save statistic result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="229"/>
+        <location filename="QGrain/ui/MainWindow.py" line="241"/>
         <source>Saving statistic result...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="254"/>
+        <location filename="QGrain/ui/MainWindow.py" line="266"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="266"/>
+        <location filename="QGrain/ui/MainWindow.py" line="278"/>
         <source>An unknown exception was raised. Please check the logs for more details.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="248"/>
+        <location filename="QGrain/ui/MainWindow.py" line="260"/>
         <source>Save PCA result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="254"/>
+        <location filename="QGrain/ui/MainWindow.py" line="266"/>
         <source>Saving PCA result...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="302"/>
+        <location filename="QGrain/ui/MainWindow.py" line="314"/>
         <source>SSU Results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="309"/>
-        <source>UDM Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/MainWindow.py" line="303"/>
+        <location filename="QGrain/ui/MainWindow.py" line="315"/>
         <source>SSU References</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="310"/>
+        <location filename="QGrain/ui/MainWindow.py" line="322"/>
         <source>Experimental</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="311"/>
+        <location filename="QGrain/ui/MainWindow.py" line="323"/>
         <source>Perform SSU For All Samples</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="317"/>
+        <location filename="QGrain/ui/MainWindow.py" line="329"/>
         <source>Statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="304"/>
+        <location filename="QGrain/ui/MainWindow.py" line="316"/>
         <source>EMMA Result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="305"/>
+        <location filename="QGrain/ui/MainWindow.py" line="317"/>
         <source>UDM Result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/MainWindow.py" line="318"/>
+        <source>Configure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/MainWindow.py" line="319"/>
+        <source>SSU Algorithm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/MainWindow.py" line="320"/>
+        <source>EMMA Algorithm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/MainWindow.py" line="321"/>
+        <source>UDM Algorithm</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1536,7 +1536,7 @@ Deviation</source>
     </message>
     <message>
         <location filename="QGrain/ui/ParameterTable.py" line="48"/>
-        <source>Parameters</source>
+        <source>Resolved Parameters</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1636,11 +1636,6 @@ Deviation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="314"/>
-        <source>Number of Tasks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="323"/>
         <source>Unknown</source>
         <translation type="unfinished"></translation>
@@ -1648,11 +1643,6 @@ Deviation</source>
     <message>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="315"/>
         <source>Number of Workers</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="316"/>
-        <source>Number of Remains</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1698,6 +1688,16 @@ Deviation</source>
     <message>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="312"/>
         <source>SSU Multicore Analyzer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="314"/>
+        <source>Total Number of Tasks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="316"/>
+        <source>Number of Remaining Tasks</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1972,7 +1972,7 @@ Deviation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="202"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="530"/>
         <source>Final Distance</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2047,11 +2047,6 @@ Deviation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="530"/>
-        <source>Final Distances</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="531"/>
         <source>Mean</source>
         <translation type="unfinished"></translation>
@@ -2087,18 +2082,18 @@ Deviation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="525"/>
-        <source>Auto Show Selected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="527"/>
         <source>Show Parameters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="523"/>
-        <source>Refer It To Parameter Editor</source>
+        <source>Refer Parameters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="525"/>
+        <source>Auto Show</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2193,107 +2188,107 @@ Deviation</source>
 <context>
     <name>UDMAnalyzer</name>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="260"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="264"/>
         <source>UDM Analyzer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="261"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="265"/>
         <source>Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="262"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="266"/>
         <source>Kernel Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="263"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="267"/>
         <source>Number of Components</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="264"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="268"/>
         <source>Try Fit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="265"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="269"/>
         <source>Edit Parameters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="266"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="270"/>
         <source>Result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="267"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="271"/>
         <source>Remove</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="268"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="272"/>
         <source>Show</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="269"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="273"/>
         <source>Chart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="100"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="104"/>
         <source>Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="103"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="107"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="106"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="110"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="148"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="152"/>
         <source>Dataset has not been loaded.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="207"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="211"/>
         <source>Choose the file which stores the dumped UDM result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="219"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="223"/>
         <source>The binary file is invalid (i.e., the object in it is not the UDM result).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="224"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="228"/>
         <source>There is no UDM result.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="227"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="231"/>
         <source>Choose a filename to save the selected UDM result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="236"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="240"/>
         <source>Saving the UDM result...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="236"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="240"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMAnalyzer.py" line="253"/>
+        <location filename="QGrain/ui/UDMAnalyzer.py" line="257"/>
         <source>An unknown exception was raised. Please check the logs for more details.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2301,27 +2296,27 @@ Deviation</source>
 <context>
     <name>UDMResultChart</name>
     <message>
-        <location filename="QGrain/chart/UDMResultChart.py" line="378"/>
+        <location filename="QGrain/chart/UDMResultChart.py" line="381"/>
         <source>Scale</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/UDMResultChart.py" line="381"/>
+        <location filename="QGrain/chart/UDMResultChart.py" line="384"/>
         <source>Animated</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/UDMResultChart.py" line="382"/>
+        <location filename="QGrain/chart/UDMResultChart.py" line="385"/>
         <source>Animation Interval</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/UDMResultChart.py" line="385"/>
+        <location filename="QGrain/chart/UDMResultChart.py" line="388"/>
         <source>Repeat Animation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/UDMResultChart.py" line="386"/>
+        <location filename="QGrain/chart/UDMResultChart.py" line="389"/>
         <source>Save Animation</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2371,27 +2366,27 @@ Deviation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/UDMResultChart.py" line="340"/>
+        <location filename="QGrain/chart/UDMResultChart.py" line="342"/>
         <source>Choose a filename to save the animation of this UDM result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/UDMResultChart.py" line="347"/>
+        <location filename="QGrain/chart/UDMResultChart.py" line="349"/>
         <source>Saving Animation [{0} Frames]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/UDMResultChart.py" line="367"/>
+        <location filename="QGrain/chart/UDMResultChart.py" line="370"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/UDMResultChart.py" line="361"/>
+        <location filename="QGrain/chart/UDMResultChart.py" line="364"/>
         <source>ImageMagick is not installed, please download and install it from its offical website (https://imagemagick.org/index.php).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/chart/UDMResultChart.py" line="368"/>
+        <location filename="QGrain/chart/UDMResultChart.py" line="371"/>
         <source>FFMpeg is not installed, please download and install it from its offical website (https://ffmpeg.org/).</source>
         <translation type="unfinished"></translation>
     </message>
