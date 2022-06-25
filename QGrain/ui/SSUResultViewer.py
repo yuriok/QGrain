@@ -344,7 +344,7 @@ class SSUResultViewer(QtWidgets.QWidget):
 
     def save_results(self, align_components=False):
         if self.n_results == 0:
-            self.show_warning(self.tr("There is no SSU result."))
+            self.show_error(self.tr("There is no SSU result."))
             return
         filename, _ = self.file_dialog.getSaveFileName(
             None, self.tr("Choose a filename to save the SSU Results"),
@@ -392,7 +392,7 @@ class SSUResultViewer(QtWidgets.QWidget):
 
     def check_nan_and_inf(self):
         if self.n_results == 0:
-            self.show_warning(self.tr("There is no SSU result."))
+            self.show_error(self.tr("There is no SSU result."))
             return
         outlier_results = []
         outlier_indexes = []
@@ -405,10 +405,10 @@ class SSUResultViewer(QtWidgets.QWidget):
 
     def check_final_distances(self):
         if self.n_results == 0:
-            self.show_warning(self.tr("There is no SSU result."))
+            self.show_error(self.tr("There is no SSU result."))
             return
         elif self.n_results < 10:
-            self.show_warning(self.tr("The number of results is not enough."))
+            self.show_error(self.tr("The number of results is not enough."))
             return
         distances = []
         for result in self.__results:
@@ -439,10 +439,10 @@ class SSUResultViewer(QtWidgets.QWidget):
 
     def check_component_moments(self, key: str):
         if self.n_results == 0:
-            self.show_warning(self.tr("There is no SSU result."))
+            self.show_error(self.tr("There is no SSU result."))
             return
         elif self.n_results < 10:
-            self.show_warning(self.tr("The number of results is not enough."))
+            self.show_error(self.tr("The number of results is not enough."))
             return
         max_n_components = 0
         for result in self.__results:
