@@ -38,7 +38,7 @@ class EMMASettingDialog(QtWidgets.QDialog):
         self.pretrain_epochs_label.setToolTip(self.tr("The number of epochs before formal training. The pretrain process only update the proportions of end members."))
         self.pretrain_epochs_input = QtWidgets.QSpinBox()
         self.pretrain_epochs_input.setRange(0, 100000)
-        self.pretrain_epochs_input.setValue(0)
+        self.pretrain_epochs_input.setValue(200)
         self.main_layout.addWidget(self.pretrain_epochs_label, 2, 0)
         self.main_layout.addWidget(self.pretrain_epochs_input, 2, 1)
 
@@ -46,7 +46,7 @@ class EMMASettingDialog(QtWidgets.QDialog):
         self.min_epochs_label.setToolTip(self.tr("Minimum number of epochs to be performed."))
         self.min_epochs_input = QtWidgets.QSpinBox()
         self.min_epochs_input.setRange(10, 10000)
-        self.min_epochs_input.setValue(2000)
+        self.min_epochs_input.setValue(500)
         self.main_layout.addWidget(self.min_epochs_label, 3, 0)
         self.main_layout.addWidget(self.min_epochs_input, 3, 1)
 
@@ -54,7 +54,7 @@ class EMMASettingDialog(QtWidgets.QDialog):
         self.max_epochs_label.setToolTip(self.tr("Maximum number of epochs to be performed."))
         self.max_epochs_input = QtWidgets.QSpinBox()
         self.max_epochs_input.setRange(100, 100000)
-        self.max_epochs_input.setValue(5000)
+        self.max_epochs_input.setValue(1000)
         self.main_layout.addWidget(self.max_epochs_label, 4, 0)
         self.main_layout.addWidget(self.max_epochs_input, 4, 1)
 
@@ -71,7 +71,7 @@ class EMMASettingDialog(QtWidgets.QDialog):
         self.learning_rate_input = QtWidgets.QDoubleSpinBox()
         self.learning_rate_input.setDecimals(3)
         self.learning_rate_input.setRange(0.001, 1000)
-        self.learning_rate_input.setValue(5)
+        self.learning_rate_input.setValue(50)
         self.main_layout.addWidget(self.learning_rate_label, 6, 0)
         self.main_layout.addWidget(self.learning_rate_input, 6, 1)
 
