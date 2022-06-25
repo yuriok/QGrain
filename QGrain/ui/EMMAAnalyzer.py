@@ -43,6 +43,7 @@ class EMMAAnalyzer(QtWidgets.QWidget):
         self.main_layout = QtWidgets.QGridLayout(self)
         # Control group
         self.control_group = QtWidgets.QGroupBox(self.tr("Control"))
+        self.control_group.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         self.control_layout = QtWidgets.QGridLayout(self.control_group)
         self.kernel_label = QtWidgets.QLabel(self.tr("Kernel Type"))
         self.kernel_combo_box = QtWidgets.QComboBox()
@@ -70,6 +71,7 @@ class EMMAAnalyzer(QtWidgets.QWidget):
 
         # Result group
         self.result_group = QtWidgets.QGroupBox(self.tr("Result"))
+        self.result_group.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
         self.result_layout = QtWidgets.QGridLayout(self.result_group)
         self.result_list_widget = QtWidgets.QListWidget()
         self.result_layout.addWidget(self.result_list_widget, 0, 0, 1, 2)
@@ -83,6 +85,7 @@ class EMMAAnalyzer(QtWidgets.QWidget):
         self.result_layout.addWidget(self.show_button, 1, 1)
 
         self.chart_group = QtWidgets.QGroupBox(self.tr("Chart"))
+        self.chart_group.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         self.chart_layout = QtWidgets.QGridLayout(self.chart_group)
         self.result_chart = EMMAResultChart()
         self.chart_layout.addWidget(self.result_chart)
