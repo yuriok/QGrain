@@ -225,7 +225,7 @@ class UDMAnalyzer(QtWidgets.QWidget):
 
     def save_selected_result(self):
         if self.n_results == 0:
-            self.show_warning(self.tr("There is no UDM result."))
+            self.show_error(self.tr("There is no UDM result."))
             return
         filename, _ = self.file_dialog.getSaveFileName(
             self, self.tr("Choose a filename to save the selected UDM result"),

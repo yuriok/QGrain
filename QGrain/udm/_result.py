@@ -8,7 +8,8 @@ import numpy as np
 from ..emma import KernelType
 from ..model import GrainSizeDataset
 from ..ssu import (DISTRIBUTION_CLASS_MAP, DistributionType, GeneralWeibull,
-                   Normal, SkewNormal, Weibull, get_distance_function)
+                   Normal, SkewNormal, SSUResult, SSUTask, Weibull,
+                   get_distance_function)
 from ._setting import UDMAlgorithmSetting
 
 
@@ -54,6 +55,10 @@ class UDMResult:
     @property
     def kernel_type(self) -> KernelType:
         return self.__kernel_type
+
+    @property
+    def distribution_type(self) -> DistributionType:
+        return DistributionType._member_map_[self.kernel_type.name]
 
     @property
     def n_components(self) -> int:
@@ -111,3 +116,21 @@ class UDMResult:
         distance_func = get_distance_function(distance)
         predict = (self.proportions @ self.components).squeeze()
         return distance_func(predict, self.dataset.distribution_matrix)
+
+    def convert_to_ssu_results(self) -> typing.List[SSUResult]:
+        results = []
+        weight = np.ones((1, self.n_components))
+        initial_guess = np.concatenate([self.initial_parameters, weight], axis=0).astype(np.float64)
+        time_spent = self.time_spent / self.n_samples
+        for i in range(self.n_samples):
+            sample = self.dataset.samples[i]
+            task = SSUTask(
+                sample,
+                self.distribution_type,
+                self.n_components,
+                resolver_setting=None,
+                initial_guess=initial_guess)
+            func_args=np.expand_dims(self.final_parameters[i], axis=0)
+            result = SSUResult(task, func_args, time_spent=time_spent)
+            results.append(result)
+        return results

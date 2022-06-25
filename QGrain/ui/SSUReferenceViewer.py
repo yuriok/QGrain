@@ -324,7 +324,7 @@ class SSUReferenceViewer(QtWidgets.QWidget):
 
     def dump_references(self):
         if self.n_results == 0:
-            self.show_warning(self.tr("There is no SSU result."))
+            self.show_error(self.tr("There is no SSU result."))
             return
         filename, _  = self.file_dialog.getSaveFileName(
             self, self.tr("Choose a filename to dump the SSU results"),

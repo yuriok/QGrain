@@ -349,9 +349,9 @@ class GrainSizeDatasetViewer(QtWidgets.QWidget):
 
     def plot_chart(self, chart, samples: typing.List[GrainSizeSample], append: str):
         if not self.__dataset.has_sample:
-            self.show_warning(self.tr("Dataset has not been loaded."))
+            self.show_error(self.tr("Dataset has not been loaded."))
         elif len(samples) == 0:
-            self.show_warning(self.tr("No sample was selected."))
+            self.show_error(self.tr("No sample was selected."))
         else:
             if isinstance(chart, DiagramChart):
                 kwargs = {"mfc": highlight_color()}
