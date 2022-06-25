@@ -14,14 +14,15 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
+        "psutil",
         "numpy",
         "scipy",
-        "matplotlib>=3.5.0",
-        "PySide6>=6.2.0",
         "scikit-learn",
         "torch",
         "xlrd",
         "openpyxl",
+        "PySide6>=6.2.0",
+        "matplotlib>=3.5.0",
         "SciencePlots",
         "qt-material"],
     classifiers=[
