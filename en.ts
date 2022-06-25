@@ -1225,193 +1225,203 @@ Deviation</source>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="302"/>
+        <location filename="QGrain/ui/MainWindow.py" line="313"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="304"/>
+        <location filename="QGrain/ui/MainWindow.py" line="315"/>
         <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="306"/>
+        <location filename="QGrain/ui/MainWindow.py" line="317"/>
         <source>Grain Size Dataset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="305"/>
+        <location filename="QGrain/ui/MainWindow.py" line="316"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="324"/>
+        <location filename="QGrain/ui/MainWindow.py" line="336"/>
         <source>Language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="325"/>
+        <location filename="QGrain/ui/MainWindow.py" line="337"/>
         <source>Theme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="327"/>
+        <location filename="QGrain/ui/MainWindow.py" line="339"/>
         <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="211"/>
+        <location filename="QGrain/ui/MainWindow.py" line="213"/>
         <source>Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="217"/>
+        <location filename="QGrain/ui/MainWindow.py" line="219"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="257"/>
+        <location filename="QGrain/ui/MainWindow.py" line="268"/>
         <source>Dataset has not been loaded.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="303"/>
+        <location filename="QGrain/ui/MainWindow.py" line="314"/>
         <source>Closing this window will terminate all running tasks, are you sure to close it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="311"/>
+        <location filename="QGrain/ui/MainWindow.py" line="322"/>
         <source>Statistic Result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="328"/>
+        <location filename="QGrain/ui/MainWindow.py" line="340"/>
         <source>Generator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="330"/>
+        <location filename="QGrain/ui/MainWindow.py" line="342"/>
         <source>PCA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="331"/>
+        <location filename="QGrain/ui/MainWindow.py" line="343"/>
         <source>Clustering</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="332"/>
+        <location filename="QGrain/ui/MainWindow.py" line="344"/>
         <source>SSU</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="333"/>
+        <location filename="QGrain/ui/MainWindow.py" line="345"/>
         <source>EMMA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="334"/>
+        <location filename="QGrain/ui/MainWindow.py" line="346"/>
         <source>UDM</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="312"/>
+        <location filename="QGrain/ui/MainWindow.py" line="323"/>
         <source>PCA Result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="313"/>
+        <location filename="QGrain/ui/MainWindow.py" line="324"/>
         <source>Clustering Result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="326"/>
+        <location filename="QGrain/ui/MainWindow.py" line="338"/>
         <source>Log</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="235"/>
+        <location filename="QGrain/ui/MainWindow.py" line="246"/>
         <source>Save statistic result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="241"/>
+        <location filename="QGrain/ui/MainWindow.py" line="252"/>
         <source>Saving statistic result...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="266"/>
+        <location filename="QGrain/ui/MainWindow.py" line="277"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="278"/>
+        <location filename="QGrain/ui/MainWindow.py" line="289"/>
         <source>An unknown exception was raised. Please check the logs for more details.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="260"/>
+        <location filename="QGrain/ui/MainWindow.py" line="271"/>
         <source>Save PCA result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="266"/>
+        <location filename="QGrain/ui/MainWindow.py" line="277"/>
         <source>Saving PCA result...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="314"/>
+        <location filename="QGrain/ui/MainWindow.py" line="325"/>
         <source>SSU Results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="315"/>
+        <location filename="QGrain/ui/MainWindow.py" line="326"/>
         <source>SSU References</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="322"/>
+        <location filename="QGrain/ui/MainWindow.py" line="333"/>
         <source>Experimental</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="323"/>
+        <location filename="QGrain/ui/MainWindow.py" line="334"/>
         <source>Perform SSU For All Samples</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="329"/>
+        <location filename="QGrain/ui/MainWindow.py" line="341"/>
         <source>Statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="316"/>
+        <location filename="QGrain/ui/MainWindow.py" line="327"/>
         <source>EMMA Result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="317"/>
+        <location filename="QGrain/ui/MainWindow.py" line="328"/>
         <source>UDM Result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="318"/>
+        <location filename="QGrain/ui/MainWindow.py" line="329"/>
         <source>Configure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="319"/>
+        <location filename="QGrain/ui/MainWindow.py" line="330"/>
         <source>SSU Algorithm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="320"/>
+        <location filename="QGrain/ui/MainWindow.py" line="331"/>
         <source>EMMA Algorithm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="321"/>
+        <location filename="QGrain/ui/MainWindow.py" line="332"/>
         <source>UDM Algorithm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/MainWindow.py" line="335"/>
+        <source>Convert UDM Result To SSU Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/MainWindow.py" line="233"/>
+        <source>There is no UDM result.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

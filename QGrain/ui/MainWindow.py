@@ -145,6 +145,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.experimental_menu = self.menuBar().addMenu(self.tr("Experimental")) # type: QtWidgets.QMenu
         self.ssu_fit_all_action = self.experimental_menu.addAction(self.tr("Perform SSU For All Samples")) # type: QtGui.QAction
         self.ssu_fit_all_action.triggered.connect(self.ssu_fit_all_samples)
+        self.convert_udm_to_ssu_action = self.experimental_menu.addAction(self.tr("Convert UDM Result To SSU Results")) # type: QtGui.QAction
+        self.convert_udm_to_ssu_action.triggered.connect(self.convert_udm_to_ssu)
 
         # Language
         self.language_menu = self.menuBar().addMenu(self.tr("Language")) # type: QtWidgets.QMenu
@@ -226,6 +228,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ssu_multicore_analyzer.setup_tasks(tasks)
         self.ssu_multicore_analyzer.exec()
 
+    def convert_udm_to_ssu(self):
+        if self.udm_analyzer.n_results == 0:
+            self.show_error(self.tr("There is no UDM result."))
+            return
+        udm_result = self.udm_analyzer.selected_result
+        assert udm_result is not None
+        ssu_results = udm_result.convert_to_ssu_results()
+        self.ssu_analyzer.result_view.add_results(ssu_results)
+
     def on_save_statistic_clicked(self):
         if not self.__dataset.has_sample:
             self.logger.error("Dataset has not been loaded.")
@@ -254,7 +265,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def on_save_pca_clicked(self):
         if not self.__dataset.has_sample:
-            self.show_warning(self.tr("Dataset has not been loaded."))
+            self.show_error(self.tr("Dataset has not been loaded."))
             return
         filename, _ = self.file_dialog.getSaveFileName(
             None, self.tr("Save PCA result"),
@@ -321,6 +332,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.config_udm_action.setText(self.tr("UDM Algorithm"))
         self.experimental_menu.setTitle(self.tr("Experimental"))
         self.ssu_fit_all_action.setText(self.tr("Perform SSU For All Samples"))
+        self.convert_udm_to_ssu_action.setText(self.tr("Convert UDM Result To SSU Results"))
         self.language_menu.setTitle(self.tr("Language"))
         self.theme_menu.setTitle(self.tr("Theme"))
         self.log_action.setText(self.tr("Log"))
