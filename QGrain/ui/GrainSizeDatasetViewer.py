@@ -1,94 +1,87 @@
 __all__ = ["GrainSizeDatasetViewer"]
 
 import logging
+import typing
 
-import openpyxl
-import qtawesome as qta
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QCursor
-from PySide2.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox,
-                               QDialog, QFileDialog, QGridLayout, QMenu,
-                               QMessageBox, QPushButton, QTableWidget,
-                               QTableWidgetItem)
-from QGrain import QGRAIN_VERSION
-from QGrain.statistic import get_all_statistic
-from QGrain.charts.CumulativeCurveChart import CumulativeCurveChart
-from QGrain.charts.diagrams import (BP12GSMDiagramChart,
-                                    BP12SSCDiagramChart,
-                                    Folk54GSMDiagramChart,
-                                    Folk54SSCDiagramChart)
-from QGrain.charts.FrequencyCurve3DChart import FrequencyCurve3DChart
-from QGrain.charts.FrequencyCurveChart import FrequencyCurveChart
-from QGrain.models.GrainSizeDataset import GrainSizeDataset
-from QGrain.ui.LoadDatasetDialog import LoadDatasetDialog
-from QGrain.use_excel import column_to_char, prepare_styles
+from PySide6 import QtCore, QtGui, QtWidgets
+
+from ..chart.config_matplotlib import normal_color, highlight_color
+from ..chart.CumulativeCurveChart import CumulativeCurveChart
+from ..chart.diagrams import *
+from ..chart.Frequency3DChart import Frequency3DChart
+from ..chart.FrequencyCurveChart import FrequencyCurveChart
+from ..model import GrainSizeDataset, GrainSizeSample
+from ..statistic import get_all_statistic
 
 
-class GrainSizeDatasetViewer(QDialog):
+class GrainSizeDatasetViewer(QtWidgets.QWidget):
     PAGE_ROWS = 20
-    logger = logging.getLogger("root.ui.GrainSizeDatasetView")
-    gui_logger = logging.getLogger("GUI")
     def __init__(self, parent=None):
-        super().__init__(parent=parent, f=Qt.Window)
-        self.setWindowTitle(self.tr("Grain-size Dataset Viewer"))
+        super().__init__(parent=parent)
         self.__dataset = GrainSizeDataset() # type: GrainSizeDataset
         self.init_ui()
-        self.data_table.setRowCount(0)
-        self.frequency_curve_chart = FrequencyCurveChart(parent=self, toolbar=True)
-        self.frequency_curve_3D_chart = FrequencyCurve3DChart(parent=self, toolbar=True)
-        self.cumulative_curve_chart = CumulativeCurveChart(parent=self, toolbar=True)
-        self.folk54_GSM_diagram_chart = Folk54GSMDiagramChart(parent=self, toolbar=True)
-        self.folk54_SSC_diagram_chart = Folk54SSCDiagramChart(parent=self, toolbar=True)
-        self.BP12_GSM_diagram_chart = BP12GSMDiagramChart(parent=self, toolbar=True)
-        self.BP12_SSC_diagram_chart = BP12SSCDiagramChart(parent=self, toolbar=True)
-        self.load_dataset_dialog = LoadDatasetDialog(parent=self)
-        self.load_dataset_dialog.dataset_loaded.connect(self.on_data_loaded)
-        self.file_dialog = QFileDialog(parent=self)
-        self.normal_msg = QMessageBox(self)
+
+        self.frequency_curve_chart = FrequencyCurveChart()
+        self.frequency_curve_3D_chart = Frequency3DChart()
+        self.cumulative_curve_chart = CumulativeCurveChart()
+        self.folk54_GSM_diagram_chart = Folk54GSMDiagramChart()
+        self.folk54_SSC_diagram_chart = Folk54SSCDiagramChart()
+        self.BP12_GSM_diagram_chart = BP12GSMDiagramChart()
+        self.BP12_SSC_diagram_chart = BP12SSCDiagramChart()
+
+        self.normal_msg = QtWidgets.QMessageBox(self)
 
     def init_ui(self):
-        self.setWindowTitle(self.tr("Dataset Viewer"))
-        self.data_table = QTableWidget(100, 100)
-        self.data_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.data_table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.data_table = QtWidgets.QTableWidget(100, 100)
+        self.data_table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.data_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.data_table.setAlternatingRowColors(True)
-        self.data_table.setContextMenuPolicy(Qt.CustomContextMenu)
-        # self.data_table.hideColumn(0)
-        self.main_layout = QGridLayout(self)
+        self.data_table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.data_table.setHorizontalHeaderLabels([self.tr("Tips")])
+        for row, tip in enumerate(self.tips):
+            item = QtWidgets.QTableWidgetItem(tip)
+            item.setTextAlignment(QtCore.Qt.AlignCenter)
+            self.data_table.setItem(row, 0, item)
+        self.data_table.setColumnWidth(0, 800)
+        self.data_table.setColumnCount(1)
+        self.data_table.setRowCount(len(self.tips))
+        self.main_layout = QtWidgets.QGridLayout(self)
         self.main_layout.addWidget(self.data_table, 0, 0, 1, 3)
 
-        self.previous_button = QPushButton(self.tr("Previous"))
+        self.previous_button = QtWidgets.QPushButton(self.tr("Previous"))
         self.previous_button.setToolTip(self.tr("Click to back to the previous page."))
         self.previous_button.clicked.connect(self.on_previous_button_clicked)
-        self.current_page_combo_box = QComboBox()
+        self.current_page_combo_box = QtWidgets.QComboBox()
+        self.current_page_combo_box.addItem(self.tr("No Page"))
+        _ = self.tr("Page {0}").format(1)
         self.current_page_combo_box.currentIndexChanged.connect(self.update_page)
-        self.next_button = QPushButton(self.tr("Next"))
+        self.next_button = QtWidgets.QPushButton(self.tr("Next"))
         self.next_button.setToolTip(self.tr("Click to jump to the next page."))
         self.next_button.clicked.connect(self.on_next_button_clicked)
         self.main_layout.addWidget(self.previous_button, 1, 0)
         self.main_layout.addWidget(self.current_page_combo_box, 1, 1)
         self.main_layout.addWidget(self.next_button, 1, 2)
 
-        self.geometric_checkbox = QCheckBox(self.tr("Geometric"))
+        self.geometric_checkbox = QtWidgets.QCheckBox(self.tr("Geometric [unit is {0}]").format("μm"))
         self.geometric_checkbox.setChecked(True)
         self.geometric_checkbox.stateChanged.connect(self.on_is_geometric_changed)
         self.main_layout.addWidget(self.geometric_checkbox, 2, 0)
-        self.FW57_checkbox = QCheckBox(self.tr("Method of statistic moments"))
+        self.FW57_checkbox = QtWidgets.QCheckBox(self.tr("Method of Statistic Moments"))
         self.FW57_checkbox.setChecked(False)
         self.FW57_checkbox.stateChanged.connect(self.on_is_FW57_changed)
         self.main_layout.addWidget(self.FW57_checkbox, 2, 1)
-        self.proportion_combo_box = QComboBox()
-        self.supported_proportions = [("GSM_proportion", self.tr("Gravel, Sand, Mud")),
-                                      ("SSC_proportion", self.tr("Sand, Silt, Clay")),
-                                      ("BGSSC_proportion", self.tr("Boulder, Gravel, Sand, Silt, Clay"))]
+        self.proportion_combo_box = QtWidgets.QComboBox()
+
         self.proportion_combo_box.addItems([description for _, description in self.supported_proportions])
         self.proportion_combo_box.currentIndexChanged.connect(lambda: self.update_page(self.page_index))
         self.main_layout.addWidget(self.proportion_combo_box, 2, 2)
 
-        self.menu = QMenu(self.data_table)
-        self.load_dataset_action = self.menu.addAction(qta.icon("fa.database"), self.tr("Load Dataset"))
-        self.load_dataset_action.triggered.connect(self.load_dataset)
-        self.plot_cumulative_curve_menu = self.menu.addMenu(qta.icon("mdi.chart-bell-curve-cumulative"), self.tr("Plot Cumlulative Curve Chart"))
+        self.main_layout.setColumnStretch(0, 1)
+        self.main_layout.setColumnStretch(1, 1)
+        self.main_layout.setColumnStretch(2, 1)
+
+        self.menu = QtWidgets.QMenu(self.data_table)
+        self.plot_cumulative_curve_menu = self.menu.addMenu(self.tr("Plot Cumlulative Curve Chart"))
         self.cumulative_plot_selected_action = self.plot_cumulative_curve_menu.addAction(self.tr("Plot Selected Samples"))
         self.cumulative_plot_selected_action.triggered.connect(lambda: self.plot_chart(self.cumulative_curve_chart, self.selections, False))
         self.cumulative_append_selected_action = self.plot_cumulative_curve_menu.addAction(self.tr("Append Selected Samples"))
@@ -98,7 +91,7 @@ class GrainSizeDatasetViewer(QDialog):
         self.cumulative_append_all_action = self.plot_cumulative_curve_menu.addAction(self.tr("Append All Samples"))
         self.cumulative_append_all_action.triggered.connect(lambda: self.plot_chart(self.cumulative_curve_chart, self.__dataset.samples, True))
 
-        self.plot_frequency_curve_menu = self.menu.addMenu(qta.icon("mdi.chart-bell-curve"), self.tr("Plot Frequency Curve Chart"))
+        self.plot_frequency_curve_menu = self.menu.addMenu(self.tr("Plot Frequency Curve Chart"))
         self.frequency_plot_selected_action = self.plot_frequency_curve_menu.addAction(self.tr("Plot Selected Samples"))
         self.frequency_plot_selected_action.triggered.connect(lambda: self.plot_chart(self.frequency_curve_chart, self.selections, False))
         self.frequency_append_selected_action = self.plot_frequency_curve_menu.addAction(self.tr("Append Selected Samples"))
@@ -108,7 +101,7 @@ class GrainSizeDatasetViewer(QDialog):
         self.frequency_append_all_action = self.plot_frequency_curve_menu.addAction(self.tr("Append All Samples"))
         self.frequency_append_all_action.triggered.connect(lambda: self.plot_chart(self.frequency_curve_chart, self.__dataset.samples, True))
 
-        self.plot_frequency_curve_3D_menu = self.menu.addMenu(qta.icon("mdi.video-3d"), self.tr("Plot Frequency Curve 3D Chart"))
+        self.plot_frequency_curve_3D_menu = self.menu.addMenu(self.tr("Plot Frequency Curve 3D Chart"))
         self.frequency_3D_plot_selected_action = self.plot_frequency_curve_3D_menu.addAction(self.tr("Plot Selected Samples"))
         self.frequency_3D_plot_selected_action.triggered.connect(lambda: self.plot_chart(self.frequency_curve_3D_chart, self.selections, False))
         self.frequency_3D_append_selected_action = self.plot_frequency_curve_3D_menu.addAction(self.tr("Append Selected Samples"))
@@ -118,7 +111,7 @@ class GrainSizeDatasetViewer(QDialog):
         self.frequency_3D_append_all_action = self.plot_frequency_curve_3D_menu.addAction(self.tr("Append All Samples"))
         self.frequency_3D_append_all_action.triggered.connect(lambda: self.plot_chart(self.frequency_curve_3D_chart, self.__dataset.samples, True))
 
-        self.folk54_GSM_diagram_menu = self.menu.addMenu(qta.icon("mdi.triangle-outline"), self.tr("Plot GSM Diagram (Folk, 1954)"))
+        self.folk54_GSM_diagram_menu = self.menu.addMenu(self.tr("Plot GSM Diagram (Folk, 1954)"))
         self.folk54_GSM_plot_selected_action = self.folk54_GSM_diagram_menu.addAction(self.tr("Plot Selected Samples"))
         self.folk54_GSM_plot_selected_action.triggered.connect(lambda: self.plot_chart(self.folk54_GSM_diagram_chart, self.selections, False))
         self.folk54_GSM_append_selected_action = self.folk54_GSM_diagram_menu.addAction(self.tr("Append Selected Samples"))
@@ -128,7 +121,7 @@ class GrainSizeDatasetViewer(QDialog):
         self.folk54_GSM_append_all_action = self.folk54_GSM_diagram_menu.addAction(self.tr("Append All Samples"))
         self.folk54_GSM_append_all_action.triggered.connect(lambda: self.plot_chart(self.folk54_GSM_diagram_chart, self.__dataset.samples, True))
 
-        self.folk54_SSC_diagram_menu = self.menu.addMenu(qta.icon("mdi.triangle-outline"), self.tr("Plot SSC Diagram (Folk, 1954)"))
+        self.folk54_SSC_diagram_menu = self.menu.addMenu(self.tr("Plot SSC Diagram (Folk, 1954)"))
         self.folk54_SSC_plot_selected_action = self.folk54_SSC_diagram_menu.addAction(self.tr("Plot Selected Samples"))
         self.folk54_SSC_plot_selected_action.triggered.connect(lambda: self.plot_chart(self.folk54_SSC_diagram_chart, self.selections, False))
         self.folk54_SSC_append_selected_action = self.folk54_SSC_diagram_menu.addAction(self.tr("Append Selected Samples"))
@@ -138,7 +131,7 @@ class GrainSizeDatasetViewer(QDialog):
         self.folk54_SSC_append_all_action = self.folk54_SSC_diagram_menu.addAction(self.tr("Append All Samples"))
         self.folk54_SSC_append_all_action.triggered.connect(lambda: self.plot_chart(self.folk54_SSC_diagram_chart, self.__dataset.samples, True))
 
-        self.BP12_GSM_diagram_menu = self.menu.addMenu(qta.icon("mdi.triangle-outline"), self.tr("Plot GSM Diagram (Blott && Pye, 2012)"))
+        self.BP12_GSM_diagram_menu = self.menu.addMenu(self.tr("Plot GSM Diagram (Blott and Pye, 2012)"))
         self.BP12_GSM_plot_selected_action = self.BP12_GSM_diagram_menu.addAction(self.tr("Plot Selected Samples"))
         self.BP12_GSM_plot_selected_action.triggered.connect(lambda: self.plot_chart(self.BP12_GSM_diagram_chart, self.selections, False))
         self.BP12_GSM_append_selected_action = self.BP12_GSM_diagram_menu.addAction(self.tr("Append Selected Samples"))
@@ -148,7 +141,7 @@ class GrainSizeDatasetViewer(QDialog):
         self.BP12_GSM_append_all_action = self.BP12_GSM_diagram_menu.addAction(self.tr("Append All Samples"))
         self.BP12_GSM_append_all_action.triggered.connect(lambda: self.plot_chart(self.BP12_GSM_diagram_chart, self.__dataset.samples, True))
 
-        self.BP12_SSC_diagram_menu = self.menu.addMenu(qta.icon("mdi.triangle-outline"), self.tr("Plot SSC Diagram (Blott && Pye, 2012)"))
+        self.BP12_SSC_diagram_menu = self.menu.addMenu(self.tr("Plot SSC Diagram (Blott and Pye, 2012)"))
         self.BP12_SSC_plot_selected_action = self.BP12_SSC_diagram_menu.addAction(self.tr("Plot Selected Samples"))
         self.BP12_SSC_plot_selected_action.triggered.connect(lambda: self.plot_chart(self.BP12_SSC_diagram_chart, self.selections, False))
         self.BP12_SSC_append_selected_action = self.BP12_SSC_diagram_menu.addAction(self.tr("Append Selected Samples"))
@@ -158,12 +151,14 @@ class GrainSizeDatasetViewer(QDialog):
         self.BP12_SSC_append_all_action = self.BP12_SSC_diagram_menu.addAction(self.tr("Append All Samples"))
         self.BP12_SSC_append_all_action.triggered.connect(lambda: self.plot_chart(self.BP12_SSC_diagram_chart, self.__dataset.samples, True))
 
-        self.save_action = self.menu.addAction(qta.icon("mdi.microsoft-excel"), self.tr("Save Summary"))
-        self.save_action.triggered.connect(self.on_save_clicked)
+        self.previous_button.setEnabled(False)
+        self.current_page_combo_box.setEnabled(False)
+        self.next_button.setEnabled(False)
+
         self.data_table.customContextMenuRequested.connect(self.show_menu)
 
     def show_menu(self, pos):
-        self.menu.popup(QCursor.pos())
+        self.menu.popup(QtGui.QCursor.pos())
 
     def show_message(self, title: str, message: str):
         self.normal_msg.setWindowTitle(title)
@@ -179,27 +174,38 @@ class GrainSizeDatasetViewer(QDialog):
     def show_error(self, message: str):
         self.show_message(self.tr("Error"), message)
 
-    def load_dataset(self):
-        self.load_dataset_dialog.show()
-
-    def on_data_loaded(self, dataset: GrainSizeDataset):
+    def on_dataset_loaded(self, dataset: GrainSizeDataset):
+        if dataset is None or not dataset.has_sample:
+            return
         self.__dataset = dataset
         self.current_page_combo_box.clear()
         page_count, left = divmod(self.__dataset.n_samples, self.PAGE_ROWS)
         if left != 0:
             page_count += 1
-        self.current_page_combo_box.addItems([f"{self.tr('Page')} {i+1}" for i in range(page_count)])
+        self.current_page_combo_box.addItems([self.tr("Page {0}").format(i+1) for i in range(page_count)])
+        self.previous_button.setEnabled(True)
+        self.current_page_combo_box.setEnabled(True)
+        self.next_button.setEnabled(True)
+
         self.update_page(0)
+
+    @property
+    def tips(self) -> typing.List[str]:
+        tips = [
+            self.tr("By clicking the option at menu bar, you can load the grain size distributions (Menu -> Open -> Grain Size Dataset)."),
+            self.tr("By clicking the option at menu bar, you can save the statistic parameters and classification groups to a Excel file (Menu -> Save -> Statistic Result)."),
+            self.tr("By right clicking at the table region, you can open the menu to draw charts.")]
+        return tips
 
     @property
     def is_geometric(self) -> bool:
         return self.geometric_checkbox.isChecked()
 
     def on_is_geometric_changed(self, state):
-        if state == Qt.Checked:
-            self.geometric_checkbox.setText(self.tr("Geometric"))
+        if state == QtCore.Qt.Checked:
+            self.geometric_checkbox.setText(self.tr("Geometric [unit is {0}]").format(self.unit))
         else:
-            self.geometric_checkbox.setText(self.tr("Logarithmic"))
+            self.geometric_checkbox.setText(self.tr("Logarithmic [unit is {0}]").format(self.unit))
         self.update_page(self.page_index)
 
     @property
@@ -207,11 +213,19 @@ class GrainSizeDatasetViewer(QDialog):
         return self.FW57_checkbox.isChecked()
 
     def on_is_FW57_changed(self, state):
-        if state == Qt.Checked:
-            self.FW57_checkbox.setText(self.tr("Folk and Ward (1957) method"))
+        if state == QtCore.Qt.Checked:
+            self.FW57_checkbox.setText(self.tr("Method of Folk and Ward (1957)"))
         else:
-            self.FW57_checkbox.setText(self.tr("Method of statistic moments"))
+            self.FW57_checkbox.setText(self.tr("Method of Statistic Moments"))
         self.update_page(self.page_index)
+
+    @property
+    def supported_proportions(self) -> typing.Tuple[typing.Tuple[str, str]]:
+        result = (
+            ("GSM_proportion", self.tr("Gravel, Sand, Mud")),
+            ("SSC_proportion", self.tr("Sand, Silt, Clay")),
+            ("BGSSC_proportion", self.tr("Boulder, Gravel, Sand, Silt, Clay")))
+        return result
 
     @property
     def proportion(self) -> str:
@@ -232,7 +246,7 @@ class GrainSizeDatasetViewer(QDialog):
         return "μm" if self.is_geometric else "φ"
 
     def update_page(self, page_index: int):
-        if self.__dataset is None:
+        if not self.__dataset.has_sample:
             return
 
         def write(row: int, col: int, value: str):
@@ -244,8 +258,8 @@ class GrainSizeDatasetViewer(QDialog):
                 value = f"{value: 0.2f}"
             else:
                 value = value.__str__()
-            item = QTableWidgetItem(value)
-            item.setTextAlignment(Qt.AlignCenter)
+            item = QtWidgets.QTableWidgetItem(value)
+            item.setTextAlignment(QtCore.Qt.AlignCenter)
             self.data_table.setItem(row, col, item)
         # necessary to clear
         self.data_table.clear()
@@ -254,21 +268,21 @@ class GrainSizeDatasetViewer(QDialog):
             end = self.__dataset.n_samples
         else:
             start, end = page_index * self.PAGE_ROWS, (page_index+1) * self.PAGE_ROWS
-        proportion_key, proportion_desciption = self.proportion
-        col_names = [f"{self.tr('Mean')}[{self.unit}]",
-                     self.tr("Mean Desc."),
-                     f"{self.tr('Median')} [{self.unit}]",
-                     f"{self.tr('Modes')} [{self.unit}]",
-                     self.tr("STD (Sorting)"),
-                     self.tr("Sorting Desc."),
+        proportion_key, proportion_name = self.proportion
+        col_names = [self.tr("Mean [{0}]").format(self.unit),
+                     self.tr("Mean Description"),
+                     self.tr("Median [{0}]").format(self.unit),
+                     self.tr("Modes [{0}]").format(self.unit),
+                     self.tr("Sorting Coefficient"),
+                     self.tr("Sorting Description"),
                      self.tr("Skewness"),
-                     self.tr("Skew. Desc."),
+                     self.tr("Skewness Description"),
                      self.tr("Kurtosis"),
-                     self.tr("Kurt. Desc."),
-                     f"({proportion_desciption})\n{self.tr('Proportion')} [%]",
-                     self.tr("Group\n(Folk, 1954)"),
-                     self.tr("Group\nSymbol (Blott & Pye, 2012)"),
-                     self.tr("Group\n(Blott & Pye, 2012)")]
+                     self.tr("Kurtosis Description"),
+                     self.tr("({0}) Proportion [%]").format(proportion_name),
+                     self.tr("Group (Folk, 1954)"),
+                     self.tr("Group Symbol (Blott and Pye, 2012)"),
+                     self.tr("Group (Blott and Pye, 2012)")]
         col_keys = [(True, "mean"),
                     (True, "mean_description"),
                     (True, "median"),
@@ -286,6 +300,7 @@ class GrainSizeDatasetViewer(QDialog):
         self.data_table.setRowCount(end-start)
         self.data_table.setColumnCount(len(col_names))
         self.data_table.setHorizontalHeaderLabels(col_names)
+        self.data_table.horizontalHeader().setDefaultAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.TextWordWrap)
         self.data_table.setVerticalHeaderLabels([sample.name for sample in self.__dataset.samples[start: end]])
         for row, sample in enumerate(self.__dataset.samples[start: end]):
             statistic = get_all_statistic(sample.classes_μm, sample.classes_φ, sample.distribution)
@@ -312,10 +327,8 @@ class GrainSizeDatasetViewer(QDialog):
 
     @property
     def selections(self):
-        if self.__dataset.n_samples == 0:
-            self.show_warning(self.tr("Dataset has not been loaded."))
+        if not self.__dataset.has_sample:
             return []
-
         start = self.page_index*self.PAGE_ROWS
         temp = set()
         for item in self.data_table.selectedRanges():
@@ -334,136 +347,88 @@ class GrainSizeDatasetViewer(QDialog):
         if self.page_index < self.n_pages - 1:
             self.current_page_combo_box.setCurrentIndex(self.page_index+1)
 
-    def plot_chart(self, chart, samples, append):
-        if len(samples) == 0:
-            return
-        chart.show_samples(samples, append=append)
-        chart.show()
-
-    def save_file(self, filename: str):
-        wb = openpyxl.Workbook()
-        prepare_styles(wb)
-
-        ws = wb.active
-        ws.title = self.tr("README")
-        description = \
-            """
-            This Excel file was generated by QGrain ({0}).
-
-            Please cite:
-            Liu, Y., Liu, X., Sun, Y., 2021. QGrain: An open-source and easy-to-use software for the comprehensive analysis of grain size distributions. Sedimentary Geology 423, 105980. https://doi.org/10.1016/j.sedgeo.2021.105980
-
-            It contanins one sheet:
-            1. The sheet puts the statistic parameters and the classification groups of the samples.
-
-            The statistic formulas are referred to Blott & Pye (2001)'s work.
-            The classification of GSDs is referred to Folk (1957)'s and Blott & Pye (2012)'s scheme.
-
-            References:
-                1.Blott, S. J. & Pye, K. Particle size scales and classification of sediment types based on particle size distributions: Review and recommended procedures. Sedimentology 59, 2071–2096 (2012).
-                2.Blott, S. J. & Pye, K. GRADISTAT: a grain-size distribution and statistics package for the analysis of unconsolidated sediments. Earth Surf. Process. Landforms 26, 1237–1248 (2001).
-                3.Folk, R. L. The Distinction between Grain Size and Mineral Composition in Sedimentary-Rock Nomenclature. The Journal of Geology 62, 344–359 (1954).
-
-            """.format(QGRAIN_VERSION)
-
-        def write(row, col, value, style="normal_light"):
-            cell = ws.cell(row+1, col+1, value=value)
-            cell.style = style
-
-        lines_of_desc = description.split("\n")
-        for row, line in enumerate(lines_of_desc):
-            write(row, 0, line, style="description")
-        ws.column_dimensions[column_to_char(0)].width = 200
-
-        ws = wb.create_sheet(self.tr("Parameters and Groups"))
-        proportion_key, proportion_desciption = self.proportion
-        col_names = [f"{self.tr('Mean')}[{self.unit}]",
-                     self.tr("Mean Desc."),
-                     f"{self.tr('Median')} [{self.unit}]",
-                     f"{self.tr('Modes')} [{self.unit}]",
-                     self.tr("STD (Sorting)"),
-                     self.tr("Sorting Desc."),
-                     self.tr("Skewness"),
-                     self.tr("Skew. Desc."),
-                     self.tr("Kurtosis"),
-                     self.tr("Kurt. Desc."),
-                     f"({proportion_desciption})\n{self.tr('Proportion')} [%]",
-                     self.tr("Group\n(Folk, 1954)"),
-                     self.tr("Group\nSymbol (Blott & Pye, 2012)"),
-                     self.tr("Group\n(Blott & Pye, 2012)")]
-        col_keys = [(True, "mean"),
-                    (True, "mean_description"),
-                    (True, "median"),
-                    (True, "modes"),
-                    (True, "std"),
-                    (True, "std_description"),
-                    (True, "skewness"),
-                    (True, "skewness_description"),
-                    (True, "kurtosis"),
-                    (True, "kurtosis_description"),
-                    (False, proportion_key),
-                    (False, "group_Folk54"),
-                    (False, "group_BP12_symbol"),
-                    (False, "group_BP12")]
-        write(0, 0, self.tr("Sample Name"), style="header")
-        ws.column_dimensions[column_to_char(0)].width = 16
-        for col, moment_name in enumerate(col_names, 1):
-            write(0, col, moment_name, style="header")
-            if col in (2, 4, 6, 8, 10, 11, 12, 14):
-                ws.column_dimensions[column_to_char(col)].width = 30
-            else:
-                ws.column_dimensions[column_to_char(col)].width = 16
-        ws.column_dimensions[column_to_char(len(col_names))].width = 40
-        for row, sample in enumerate(self.__dataset.samples, 1):
-            if row % 2 == 0:
-                style = "normal_dark"
-            else:
-                style = "normal_light"
-            write(row, 0, sample.name, style=style)
-            statistic = get_all_statistic(sample.classes_μm, sample.classes_φ, sample.distribution)
-            if self.is_geometric:
-                if self.is_FW57:
-                    sub_key = "geometric_FW57"
-                else:
-                    sub_key = "geometric"
-            else:
-                if self.is_FW57:
-                    sub_key = "logarithmic_FW57"
-                else:
-                    sub_key = "logarithmic"
-            for col, (in_sub, key) in enumerate(col_keys, 1):
-                value = statistic[sub_key][key] if in_sub else statistic[key]
-                if key == "modes":
-                    write(row, col, ", ".join([f"{m:0.4f}" for m in value]), style=style)
-                elif key[-11:] == "_proportion":
-                    write(row, col, ", ".join([f"{p*100:0.4f}" for p in value]), style=style)
-                else:
-                    write(row, col, value, style=style)
-
-        wb.save(filename)
-        wb.close()
-
-    def on_save_clicked(self):
-        if self.__dataset is None or self.__dataset.n_samples == 0:
+    def plot_chart(self, chart, samples: typing.List[GrainSizeSample], append: str):
+        if not self.__dataset.has_sample:
             self.show_warning(self.tr("Dataset has not been loaded."))
-            return
+        elif len(samples) == 0:
+            self.show_warning(self.tr("No sample was selected."))
+        else:
+            if isinstance(chart, DiagramChart):
+                kwargs = {"mfc": highlight_color()}
+            else:
+                kwargs = {}
+            chart.show_samples(samples, append=append, **kwargs)
+            chart.show()
 
-        filename, _  = self.file_dialog.getSaveFileName(self, self.tr("Select Filename"),
-                                         None, "Excel (*.xlsx)")
-        if filename is None or filename == "":
-            return
+    def changeEvent(self, event: QtCore.QEvent):
+        if event.type() == QtCore.QEvent.LanguageChange:
+            self.retranslate()
 
-        try:
-            self.save_file(filename)
-            self.show_info(self.tr("The summary of this dataset has been saved to:\n    {0}").format(filename))
-        except Exception as e:
-            self.show_error(self.tr("Error raised while save summary to Excel file.\n    {0}").format(e.__str__()))
+    def retranslate(self):
+        self.data_table.setHorizontalHeaderLabels([self.tr("Tips")])
+        if not self.__dataset.has_sample:
+            for row, tip in enumerate(self.tips):
+                item = QtWidgets.QTableWidgetItem(tip)
+                item.setTextAlignment(QtCore.Qt.AlignCenter)
+                self.data_table.setItem(row, 0, item)
+            self.current_page_combo_box.setItemText(0, self.tr("No Page"))
+        else:
+            self.update_page(self.page_index)
+            for i in range(self.n_pages):
+                self.current_page_combo_box.setItemText(i, self.tr("Page {0}").format(i+1))
+        self.previous_button.setText(self.tr("Previous"))
+        self.previous_button.setToolTip(self.tr("Click to back to the previous page."))
+        self.next_button.setText(self.tr("Next"))
+        self.next_button.setToolTip(self.tr("Click to jump to the next page."))
+        if self.is_geometric:
+            self.geometric_checkbox.setText(self.tr("Geometric [unit is {0}]").format(self.unit))
+        else:
+            self.geometric_checkbox.setText(self.tr("Logarithmic [unit is {0}]").format(self.unit))
+        if self.is_FW57:
+            self.FW57_checkbox.setText(self.tr("Method of Folk and Ward (1957)"))
+        else:
+            self.FW57_checkbox.setText(self.tr("Method of Statistic Moments"))
+        for i, (_, description) in enumerate(self.supported_proportions):
+            self.proportion_combo_box.setItemText(i, description)
 
-if __name__ == "__main__":
-    import sys
-    from QGrain.entry import setup_app
-    app, splash = setup_app()
-    main = GrainSizeDatasetViewer()
-    main.show()
-    splash.finish(main)
-    sys.exit(app.exec_())
+        self.plot_cumulative_curve_menu.setTitle(self.tr("Plot Cumlulative Curve Chart"))
+        self.cumulative_plot_selected_action.setText(self.tr("Plot Selected Samples"))
+        self.cumulative_append_selected_action.setText(self.tr("Append Selected Samples"))
+        self.cumulative_plot_all_action.setText(self.tr("Plot All Samples"))
+        self.cumulative_append_all_action.setText(self.tr("Append All Samples"))
+
+        self.plot_frequency_curve_menu.setTitle(self.tr("Plot Frequency Curve Chart"))
+        self.frequency_plot_selected_action.setText(self.tr("Plot Selected Samples"))
+        self.frequency_append_selected_action.setText(self.tr("Append Selected Samples"))
+        self.frequency_plot_all_action.setText(self.tr("Plot All Samples"))
+        self.frequency_append_all_action.setText(self.tr("Append All Samples"))
+
+        self.plot_frequency_curve_3D_menu.setTitle(self.tr("Plot Frequency Curve 3D Chart"))
+        self.frequency_3D_plot_selected_action.setText(self.tr("Plot Selected Samples"))
+        self.frequency_3D_append_selected_action.setText(self.tr("Append Selected Samples"))
+        self.frequency_3D_plot_all_action.setText(self.tr("Plot All Samples"))
+        self.frequency_3D_append_all_action.setText(self.tr("Append All Samples"))
+
+        self.folk54_GSM_diagram_menu.setTitle(self.tr("Plot GSM Diagram (Folk, 1954)"))
+        self.folk54_GSM_plot_selected_action.setText(self.tr("Plot Selected Samples"))
+        self.folk54_GSM_append_selected_action.setText(self.tr("Append Selected Samples"))
+        self.folk54_GSM_plot_all_action.setText(self.tr("Plot All Samples"))
+        self.folk54_GSM_append_all_action.setText(self.tr("Append All Samples"))
+
+        self.folk54_SSC_diagram_menu.setTitle(self.tr("Plot SSC Diagram (Folk, 1954)"))
+        self.folk54_SSC_plot_selected_action.setText(self.tr("Plot Selected Samples"))
+        self.folk54_SSC_append_selected_action.setText(self.tr("Append Selected Samples"))
+        self.folk54_SSC_plot_all_action.setText(self.tr("Plot All Samples"))
+        self.folk54_SSC_append_all_action.setText(self.tr("Append All Samples"))
+
+        self.BP12_GSM_diagram_menu.setTitle(self.tr("Plot GSM Diagram (Blott and Pye, 2012)"))
+        self.BP12_GSM_plot_selected_action.setText(self.tr("Plot Selected Samples"))
+        self.BP12_GSM_append_selected_action.setText(self.tr("Append Selected Samples"))
+        self.BP12_GSM_plot_all_action.setText(self.tr("Plot All Samples"))
+        self.BP12_GSM_append_all_action.setText(self.tr("Append All Samples"))
+
+        self.BP12_SSC_diagram_menu.setTitle(self.tr("Plot SSC Diagram (Blott and Pye, 2012)"))
+        self.BP12_SSC_plot_selected_action.setText(self.tr("Plot Selected Samples"))
+        self.BP12_SSC_append_selected_action.setText(self.tr("Append Selected Samples"))
+        self.BP12_SSC_plot_all_action.setText(self.tr("Plot All Samples"))
+        self.BP12_SSC_append_all_action.setText(self.tr("Append All Samples"))
