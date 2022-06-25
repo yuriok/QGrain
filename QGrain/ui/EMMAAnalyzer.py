@@ -77,17 +77,10 @@ class EMMAAnalyzer(QtWidgets.QWidget):
         self.remove_button.clicked.connect(self.on_remove_clicked)
         self.show_button = QtWidgets.QPushButton(self.tr("Show"))
         self.show_button.clicked.connect(self.on_show_clicked)
-        self.load_button = QtWidgets.QPushButton(self.tr("Load"))
-        self.load_button.clicked.connect(self.load_result)
-        self.save_button = QtWidgets.QPushButton(self.tr("Save"))
-        self.save_button.clicked.connect(self.save_selected_result)
         self.remove_button.setEnabled(False)
         self.show_button.setEnabled(False)
-        self.save_button.setEnabled(False)
         self.result_layout.addWidget(self.remove_button, 1, 0)
         self.result_layout.addWidget(self.show_button, 1, 1)
-        self.result_layout.addWidget(self.load_button, 2, 0)
-        self.result_layout.addWidget(self.save_button, 2, 1)
 
         self.chart_group = QtWidgets.QGroupBox(self.tr("Chart"))
         self.chart_layout = QtWidgets.QGridLayout(self.chart_group)
@@ -198,7 +191,6 @@ class EMMAAnalyzer(QtWidgets.QWidget):
         if self.n_results == 0:
             self.remove_button.setEnabled(True)
             self.show_button.setEnabled(True)
-            self.save_button.setEnabled(True)
 
         self.__result_list.extend(results)
         self.result_list_widget.addItems([self.get_result_name(result) for result in results])
@@ -214,7 +206,6 @@ class EMMAAnalyzer(QtWidgets.QWidget):
         if self.n_results == 0:
             self.remove_button.setEnabled(False)
             self.show_button.setEnabled(False)
-            self.save_button.setEnabled(False)
 
     def on_show_clicked(self):
         result = self.selected_result
@@ -286,6 +277,4 @@ class EMMAAnalyzer(QtWidgets.QWidget):
         self.result_group.setTitle(self.tr("Result"))
         self.remove_button.setText(self.tr("Remove"))
         self.show_button.setText(self.tr("Show"))
-        self.load_button.setText(self.tr("Load"))
-        self.save_button.setText(self.tr("Save"))
         self.chart_group.setTitle(self.tr("Chart"))
