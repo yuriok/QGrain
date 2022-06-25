@@ -86,6 +86,8 @@ class FrequencyCurveChart(BaseChart):
         self.show_samples(self.last_samples, append=False)
 
     def show_samples(self, samples: typing.Iterable[GrainSizeSample], append=False, title=None):
+        if len(samples) == 0:
+            return
         append = append and len(self.last_samples) != 0
         if not append:
             self.axes.clear()

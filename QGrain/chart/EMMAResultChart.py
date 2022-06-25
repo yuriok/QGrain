@@ -343,7 +343,9 @@ class EMMAResultChart(BaseChart):
                     raise StopIteration()
                 progress.setValue((i+1)/n*100)
                 QtCore.QCoreApplication.processEvents()
-            self.animated(self.__last_result)
+
+            self.animated_action.setChecked(True)
+            self.update_chart()
             # plt.rcParams["savefig.dpi"] = 120.0
             if "*.gif" in format_str:
                 if not ImageMagickWriter.isAvailable():

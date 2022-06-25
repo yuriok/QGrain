@@ -85,6 +85,8 @@ class CumulativeCurveChart(BaseChart):
         self.show_samples(self.__last_samples, append=False)
 
     def show_samples(self, samples: typing.Iterable[GrainSizeSample], append=False):
+        if len(samples) == 0:
+            return
         append = append and len(self.__last_samples) != 0
         if not append:
             self.axes.clear()

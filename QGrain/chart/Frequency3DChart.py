@@ -82,6 +82,8 @@ class Frequency3DChart(BaseChart):
         self.show_samples(self.last_samples, append=False)
 
     def show_samples(self, samples: typing.Iterable[GrainSizeSample], append=False):
+        if len(samples) == 0:
+            return
         append = append and len(self.last_samples) != 0
         if not append:
             self.last_samples = []
