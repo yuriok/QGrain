@@ -13,8 +13,9 @@ from .. import QGRAIN_VERSION
 from ..artificial._generator import ArtificialDataset
 from ..emma import EMMAResult
 from ..model import GrainSizeDataset, GrainSizeSample
-from ..ssu import DISTRIBUTION_CLASS_MAP, SSUResult
+from ..ssu import DISTRIBUTION_CLASS_MAP, SSUResult, DistributionType
 from ..statistic._GRADISTAT import _get_all_scales, get_all_statistic, logarithmic
+from ..udm import UDMAlgorithmSetting, UDMResult
 from ._use_excel import column_to_char, prepare_styles
 
 SMALL_WIDTH = 12
@@ -93,7 +94,7 @@ def save_artificial_dataset(
     logger.debug("Creating the `README` sheet.")
     readme_text = \
         """
-        It contanins n_components + 3 sheets:
+        It contanins [number of components + 3] sheets:
         1. The first sheet is used to put the random settings which were used to generate random parameters.
         2. The second sheet is the generated dataset.
         3. The third sheet stores the random parameters which were used to calulate the component distributions and their mixture.
@@ -399,7 +400,7 @@ def save_pca(
     logger.debug("Creating the `README` sheet.")
     readme_text = \
         """
-        It contanins three sheets:
+        It contanins 3 sheets:
         1. The first sheet is the dataset which was used to perform the PCA algorithm.
         2. The second sheet is used to put the distributions of all PCs.
         3. The third sheet is used to store the PC variations of all samples.
@@ -492,7 +493,7 @@ def save_clustering(
     logger.debug("Creating the `README` sheet.")
     readme_text = \
         """
-        It contanins three (or n_clusters + 3) sheets:
+        It contanins 3 or [number of clusters + 3] sheets:
         1. The first sheet is the dataset which was used to perform the hierarchy clustering algorithm.
         2. The second sheet is used to put the clustering flags of all samples.
         3. The third sheet is the typical sampels (i.e, the first sample of each cluster was selected).
@@ -619,25 +620,29 @@ def save_emma(
             Number of Samples: {0}
             Kernel Type: {1}
             Number of End Members: {2}
-            Number of Iterations: {3}
-            Spent Time: {4} s
+            Initial Parameters: {3}
+            Number of Epochs: {4}
+            Spent Time: {5} s
 
-            Computing Device: {5}
-            Distance Function: {6}
-            Minimum Number of Iterations: {7}
-            Maximum Number of Iterations: {8}
-            Learning Rate: {9}
-            Precision: {10}
-            Betas: {11}
+            Computing Device: {6}
+            Distance Function: {7}
+            Number of Pretrain Epochs: {8}
+            Minimum Number of Epochs: {9}
+            Maximum Number of Epochs: {10}
+            Learning Rate: {11}
+            Precision: {12}
+            Betas: {13}
 
         """.format(
-            result.dataset.n_samples,
+            result.n_samples,
             result.kernel_type.name,
             result.n_members,
+            result.initial_parameters,
             result.n_iterations,
             result.time_spent,
             result.resolver_setting.device,
             result.resolver_setting.distance,
+            result.resolver_setting.pretrain_epochs,
             result.resolver_setting.min_epochs,
             result.resolver_setting.max_epochs,
             result.resolver_setting.learning_rate,
@@ -690,7 +695,7 @@ def save_emma(
         for col, (index, _) in enumerate(modes, 1):
             write(row, col, sample_proportions[index], style=style)
         if progress_callback is not None:
-            progress_callback(i / result.dataset.n_samples * 0.6 + 0.4)
+            progress_callback(i / result.n_samples * 0.6 + 0.4)
 
     wb.save(filename)
     wb.close()
@@ -749,7 +754,7 @@ def save_ssu(
         for target_flag in flag_set:
             for i, flag in enumerate(flags):
                 if flag == target_flag:
-                    picked.append((target_flag, logarithmic(classes_φ, stacked_components[i])["mean"]))
+                    picked.append((target_flag, logarithmic(dataset.classes_φ, stacked_components[i])["mean"]))
                     break
         picked.sort(key=lambda x: x[1])
         flag_map = {flag: index for index, (flag, _) in enumerate(picked)}
@@ -760,10 +765,10 @@ def save_ssu(
     logger.debug("Creating the `README` sheet.")
     readme_text = \
         """
-        It contanins 4 + max number of components sheets:
+        It contanins [max number of components + 4] sheets:
         1. The first sheet is used to put the grain size distributions of corresponding samples.
         2. The second sheet is used to put the fitting information and resolved parameters of SSU results.
-        3. The third sheet stores the statistic parameters of each components.
+        3. The third sheet stores the statistic parameters of all components.
         4. The fouth sheet is used to put the distributions of unmixed components and the sum.
         5. Other sheets severally store the distributions of each component group.
 
@@ -870,8 +875,8 @@ def save_ssu(
         write(0, col, value, style="header")
         ws.column_dimensions[column_to_char(col)].width = 10
     row = 1
-    for result_index, result in enumerate(results):
-        if result_index % 2 == 0:
+    for i, result in enumerate(results):
+        if i % 2 == 0:
             style = "normal_light"
         else:
             style = "normal_dark"
@@ -924,3 +929,208 @@ def save_ssu(
     if progress_callback is not None:
         progress_callback(1.0)
     logger.info(f"The SSU results have been saved to the Excel file: [{filename}].")
+
+
+def save_udm(
+        result: UDMResult, filename: str,
+        progress_callback: typing.Callable = None,
+        logger: logging.Logger = None):
+    if logger is None:
+        logger = logging.getLogger("QGrain")
+    else:
+        assert isinstance(logger, logging.Logger)
+    logger.debug("Start to save the UDM result.")
+
+    wb = openpyxl.Workbook()
+    prepare_styles(wb)
+    logger.debug("Creating the `README` sheet.")
+    readme_text = \
+        """
+        It contanins [number of components + 4] sheets:
+        1. The first sheet is used to put the grain size distributions of corresponding samples.
+        2. The second sheet is used to put the resolved parameters of all samples.
+        3. The third sheet stores the statistic parameters of all components.
+        4. The fouth sheet is used to put the distributions of unmixed components and the sum.
+        5. Other sheets severally store the distributions of each component group.
+
+        The UDM algorithm was proposed and implemented by QGrain.
+
+        UDM Algorithm Details
+            Number of Samples: {0}
+            Kernel Type: {1}
+            Number of Components: {2}
+            Initial Parameters: {3}
+            Number of Epochs: {4}
+            Spent Time: {5} s
+
+            Computing Device: {6}
+            Number of Pretrain Epochs: {7}
+            Minimum Number of Epochs: {8}
+            Maximum Number of Epochs: {9}
+            Learning Rate: {10}
+            Precision: {11}
+            Betas: {12}
+            Constraint Level: {13}
+
+        """.format(
+            result.n_samples,
+            result.kernel_type.name,
+            result.n_components,
+            result.initial_parameters,
+            result.n_iterations,
+            result.time_spent,
+            result.resolver_setting.device,
+            result.resolver_setting.pretrain_epochs,
+            result.resolver_setting.min_epochs,
+            result.resolver_setting.max_epochs,
+            result.resolver_setting.learning_rate,
+            result.resolver_setting.precision,
+            result.resolver_setting.betas,
+            result.resolver_setting.constraint_level)
+    _write_readme_sheet(wb.active, readme_text)
+    logger.debug("Creating the `GSDs` sheet.")
+    if progress_callback is not None:
+        _callback = lambda progress: progress_callback(progress * 0.1)
+    else:
+        _callback = None
+    ws = wb.create_sheet("GSDs")
+    _write_dataset_sheet(ws, result.dataset, progress_callback=_callback)
+
+    def write(row, col, value, style="normal_light"):
+        cell = ws.cell(row+1, col+1, value=value)
+        cell.style = style
+
+    logger.debug("Creating the `Resolved Paramters` sheet.")
+    ws = wb.create_sheet("Resolved Paramters")
+    write(0, 0, "Sample Name", style="header")
+    ws.merge_cells(start_row=1, start_column=1, end_row=2, end_column=1)
+    ws.column_dimensions[column_to_char(0)].width = 16
+    headers = []
+    distribution_type = DistributionType._member_map_[result.kernel_type.name]
+    distribution_class = DISTRIBUTION_CLASS_MAP[distribution_type]
+    sub_headers = (*distribution_class.PARAM_NAMES, "Weight")
+    for i in range(result.n_components):
+        write(0, i*len(sub_headers)+1, f"C{i+1}", style="header")
+        ws.merge_cells(start_row=1, start_column=i*len(sub_headers)+2, end_row=1, end_column=(i+1)*len(sub_headers)+1)
+        headers.extend(sub_headers)
+    for col, value in enumerate(headers, 1):
+        write(1, col, value, style="header")
+        ws.column_dimensions[column_to_char(col)].width = 10
+    mean = np.mean(result.components, axis=0)
+    modes = [(i, result.dataset.classes_μm[np.unravel_index(np.argmax(mean[i]), mean[i].shape)]) for i in range(result.n_components)]
+    modes.sort(key=lambda x: x[1])
+    sort_map = {i_c: i for i_c, (i, _) in enumerate(modes)}
+    for i, sample in enumerate(result.dataset.samples):
+        row = i + 2
+        if row % 2 == 0:
+            style = "normal_light"
+        else:
+            style = "normal_dark"
+        write(row, 0, sample.name, style=style)
+        for j in range(result.n_components):
+            true_index = sort_map[j]
+            for k in range(len(sub_headers)):
+                col = j * len(sub_headers) + k + 1
+                value = result.final_parameters[i, k, true_index]
+                write(row, col, value, style=style)
+        if progress_callback is not None:
+            progress_callback(i / result.n_samples * 0.1 + 0.1)
+
+    logger.debug("Creating the `Statistic Moments` sheet.")
+    ws = wb.create_sheet("Statistic Moments")
+    write(0, 0, "Sample Name", style="header")
+    ws.merge_cells(start_row=1, start_column=1, end_row=2, end_column=1)
+    ws.column_dimensions[column_to_char(0)].width = 16
+    headers = []
+    sub_headers = ["Proportion [%]",
+                   "Mean [φ]",
+                   "Mean [μm]",
+                   "Standard Deviation [φ]",
+                   "Standard Deviation [μm]",
+                   "Skewness",
+                   "Kurtosis"]
+    for i in range(result.n_components):
+        write(0, i*len(sub_headers)+1, f"C{i+1}", style="header")
+        ws.merge_cells(start_row=1, start_column=i*len(sub_headers)+2, end_row=1, end_column=(i+1)*len(sub_headers)+1)
+        headers.extend(sub_headers)
+    for col, value in enumerate(headers, 1):
+        write(1, col, value, style="header")
+        ws.column_dimensions[column_to_char(col)].width = 10
+
+    for i, sample in enumerate(result.dataset.samples):
+        row = i + 2
+        if row % 2 == 0:
+            style = "normal_light"
+        else:
+            style = "normal_dark"
+        write(row, 0, sample.name, style=style)
+        for j in range(result.n_components):
+            true_index = sort_map[j]
+            s = get_all_statistic(result.dataset.classes_μm, result.dataset.classes_φ, result.components[i, true_index])
+            write(row, true_index*len(sub_headers)+1, result.proportions[i, 0, true_index] * 100, style=style)
+            write(row, true_index*len(sub_headers)+2, s["logarithmic"]["mean"], style=style)
+            write(row, true_index*len(sub_headers)+3, s["geometric"]["mean"], style=style)
+            write(row, true_index*len(sub_headers)+4, s["logarithmic"]["std"], style=style)
+            write(row, true_index*len(sub_headers)+5, s["geometric"]["std"], style=style)
+            write(row, true_index*len(sub_headers)+6, s["logarithmic"]["skewness"], style=style)
+            write(row, true_index*len(sub_headers)+7, s["logarithmic"]["kurtosis"], style=style)
+        if progress_callback is not None:
+            progress_callback(i / result.n_samples * 0.1 + 0.2)
+
+    logger.debug("Creating the `Unmixed Components` sheet.")
+    ws = wb.create_sheet("Unmixed Components")
+    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=2)
+    write(0, 0, "Sample Name", style="header")
+    ws.column_dimensions[column_to_char(0)].width = 16
+    for col, value in enumerate(result.dataset.classes_μm, 2):
+        write(0, col, value, style="header")
+        ws.column_dimensions[column_to_char(col)].width = 10
+
+    predict = result.proportions @ result.components
+    row = 1
+    for i, sample in enumerate(result.dataset.samples):
+        if i % 2 == 0:
+            style = "normal_light"
+        else:
+            style = "normal_dark"
+        write(row, 0, sample.name, style=style)
+        ws.merge_cells(start_row=row+1, start_column=1, end_row=row+result.n_components+1, end_column=1)
+        for j in range(result.n_components):
+            write(row, 1, f"C{j+1}", style=style)
+            true_index = sort_map[j]
+            for col, value in enumerate(result.components[i, true_index]*result.proportions[i, 0, true_index], 2):
+                write(row, col, value, style=style)
+            row += 1
+        write(row, 1, "Sum", style=style)
+        for col, value in enumerate(predict[i, 0], 2):
+            write(row, col, value, style=style)
+        row += 1
+        if progress_callback is not None:
+            progress_callback(i / result.n_samples * 0.2 + 0.3)
+
+    logger.debug("Creating separate sheets for all components.")
+    for j in range(result.n_components):
+        ws = wb.create_sheet(f"C{j+1}")
+        write(0, 0, "Sample Name", style="header")
+        ws.column_dimensions[column_to_char(0)].width = 16
+        for col, value in enumerate(result.dataset.classes_μm, 1):
+            write(0, col, value, style="header")
+            ws.column_dimensions[column_to_char(col)].width = 10
+        true_index = sort_map[j]
+        for i, sample in enumerate(result.dataset.samples):
+            row = i + 1
+            if row % 2 == 0:
+                style = "normal_dark"
+            else:
+                style = "normal_light"
+            write(row, 0, sample.name, style=style)
+            for col, value in enumerate(result.components[i, true_index], 1):
+                write(row, col, value, style=style)
+            if progress_callback is not None:
+                progress_callback(((i / result.n_samples) + j) / result.n_components * 0.5 + 0.5)
+
+    wb.save(filename)
+    wb.close()
+    if progress_callback is not None:
+        progress_callback(1.0)
+    logger.info(f"The UDM result have been saved to the Excel file: [{filename}].")
