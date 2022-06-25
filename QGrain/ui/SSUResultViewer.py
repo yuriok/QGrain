@@ -71,7 +71,7 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.remove_all_action.triggered.connect(self.remove_all_results)
         self.mark_action = self.menu.addAction(self.tr("Mark Reference")) # type: QtGui.QAction
         self.mark_action.triggered.connect(self.mark_selections)
-        self.refer_action = self.menu.addAction(self.tr("Refer It To Paremeter Editor")) # type: QtGui.QAction
+        self.refer_action = self.menu.addAction(self.tr("Refer It To Parameter Editor")) # type: QtGui.QAction
         self.refer_action.triggered.connect(self.refer_result)
         self.show_chart_action = self.menu.addAction(self.tr("Show Chart")) # type: QtGui.QAction
         self.show_chart_action.triggered.connect(self.show_chart)
