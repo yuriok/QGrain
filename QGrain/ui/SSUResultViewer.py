@@ -16,7 +16,7 @@ from .ParameterTable import ParameterTable
 
 class SSUResultViewer(QtWidgets.QWidget):
     PAGE_ROWS = 20
-    logger = logging.getLogger("QGrain")
+    logger = logging.getLogger("QGrain.SSUResultViewer")
     result_marked = QtCore.Signal(SSUResult)
     result_displayed = QtCore.Signal(SSUResult)
     result_referred = QtCore.Signal(SSUResult)
@@ -71,7 +71,7 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.remove_all_action.triggered.connect(self.remove_all_results)
         self.mark_action = self.menu.addAction(self.tr("Mark Reference")) # type: QtGui.QAction
         self.mark_action.triggered.connect(self.mark_selections)
-        self.refer_action = self.menu.addAction(self.tr("Refer It To Paremeter Editor")) # type: QtGui.QAction
+        self.refer_action = self.menu.addAction(self.tr("Refer It To Parameter Editor")) # type: QtGui.QAction
         self.refer_action.triggered.connect(self.refer_result)
         self.show_chart_action = self.menu.addAction(self.tr("Show Chart")) # type: QtGui.QAction
         self.show_chart_action.triggered.connect(self.show_chart)
@@ -97,8 +97,6 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.check_kurtosis_action.triggered.connect(lambda: self.check_component_moments("kurtosis"))
         self.check_proportion_action = self.detect_outliers_menu.addAction(self.tr("Proportion")) # type: QtGui.QAction
         self.check_proportion_action.triggered.connect(self.check_component_proportion)
-        # self.try_summarize_action = self.menu.addAction(self.tr("Try Summarize")) # type: QtGui.QAction
-        # self.try_summarize_action.triggered.connect(self.try_summarize)
         self.data_table.customContextMenuRequested.connect(self.show_menu)
         self.data_table.itemSelectionChanged.connect(self.on_selection_changed)
         # necessary to add actions of menu to this widget itself,
@@ -344,40 +342,34 @@ class SSUResultViewer(QtWidgets.QWidget):
                 self.logger.error("The binary file is invalid (i.e., the objects in it are not SSU results).")
                 self.show_error(self.tr("The binary file is invalid (i.e., the objects in it are not SSU results)."))
 
-    def dump_results(self):
-        if self.n_results == 0:
-            self.show_warning(self.tr("There is no SSU result."))
-            return
-        filename, _  = self.file_dialog.getSaveFileName(
-            self, self.tr("Choose a filename to dump the SSU results"),
-            None, "Dumped SSU Results (*.ssu)")
-        if filename is None or filename == "":
-            return
-        with open(filename, "wb") as f:
-            pickle.dump(self.__results, f)
-        self.logger.info("All SSU results have been dumped.")
-
-    def on_save_excel_clicked(self, align_components=False):
+    def save_results(self, align_components=False):
         if self.n_results == 0:
             self.show_warning(self.tr("There is no SSU result."))
             return
         filename, _ = self.file_dialog.getSaveFileName(
             None, self.tr("Choose a filename to save the SSU Results"),
-            None, "Microsoft Excel (*.xlsx)")
+            None, "Microsoft Excel (*.xlsx);;Dumped SSU Results (*.ssu)")
         if filename is None or filename == "":
             return
         try:
-            progress_dialog = QtWidgets.QProgressDialog(
-                    self.tr("Saving the SSU results..."), self.tr("Cancel"),
-                    0, 100, self)
-            progress_dialog.setWindowTitle("QGrain")
-            progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
-            def callback(progress: float):
-                if progress_dialog.wasCanceled():
-                    raise StopIteration()
-                progress_dialog.setValue(int(progress*100))
-                QtCore.QCoreApplication.processEvents()
-            save_ssu(self.__results, filename, align_components, progress_callback=callback)
+            # Excel
+            if filename[-4:] == "xlsx":
+                progress_dialog = QtWidgets.QProgressDialog(
+                        self.tr("Saving the SSU results..."), self.tr("Cancel"),
+                        0, 100, self)
+                progress_dialog.setWindowTitle("QGrain")
+                progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
+                def callback(progress: float):
+                    if progress_dialog.wasCanceled():
+                        raise StopIteration()
+                    progress_dialog.setValue(int(progress*100))
+                    QtCore.QCoreApplication.processEvents()
+                save_ssu(self.__results, filename, align_components, progress_callback=callback, logger=self.logger)
+            else:
+                with open(filename, "wb") as f:
+                    pickle.dump(self.__results, f)
+                    self.logger.info("All SSU results have been dumped.")
+
         except Exception as e:
             self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
             self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
@@ -511,15 +503,6 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.logger.debug("Check if the proportion of any component is near zero.")
         self.ask_deal_outliers(outlier_results, outlier_indexes)
 
-    def try_summarize(self):
-        if self.n_results == 0:
-            self.show_warning(self.tr("There is no SSU result."))
-            return
-        elif self.n_results < 10:
-            self.show_warning(self.tr("The number of results is not enough."))
-            return
-        # TODO: Finish this function
-
     def changeEvent(self, event: QtCore.QEvent):
         if event.type() == QtCore.QEvent.LanguageChange:
             self.retranslate()
@@ -550,5 +533,4 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.check_skewness_action.setText(self.tr("Skewness"))
         self.check_kurtosis_action.setText(self.tr("Kurtosis"))
         self.check_proportion_action.setText(self.tr("Proportion"))
-        # self.try_summarize_action.setText(self.tr("Try Summarize"))
         self.update_page(self.page_index)

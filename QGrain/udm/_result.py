@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import copy
 import typing
 
 import numpy as np
@@ -10,30 +13,35 @@ from ._setting import UDMAlgorithmSetting
 
 
 class UDMResult:
-    def __init__(self, dataset: GrainSizeDataset,
+    def __init__(self,
+                 dataset: GrainSizeDataset,
                  kernel_type: KernelType,
                  n_components: int,
-                 params: np.ndarray,
+                 initial_parameters: np.ndarray,
+                 resolver_setting: UDMAlgorithmSetting,
                  distribution_loss_series: typing.Iterable[float],
                  component_loss_series: typing.Iterable[float],
-                 initial_params: np.ndarray = None,
-                 resolver_setting: UDMAlgorithmSetting = None,
-                 time_spent: float = None,
-                 history_params: typing.Iterable[np.ndarray] = None):
-        self.dataset = dataset
-        self.kernel_type = kernel_type
-        self.n_components = n_components
-        self.params = params
-        self.distribution_loss_series = distribution_loss_series
-        self.component_loss_series = component_loss_series
-        self.initial_params = initial_params
-        self.resolver_setting = resolver_setting
-        self.time_spent = time_spent
-        self.history_params = [params] if history_params is None else history_params
-        self._classes = np.expand_dims(np.expand_dims(self.dataset.classes_φ, axis=0), axis=0).repeat(self.n_samples, axis=0).repeat(self.n_components, axis=1)
-        self._interval = np.abs((self.dataset.classes_φ[0]-self.dataset.classes_φ[-1]) / (self.n_classes-1))
-        self._distribution_class = DISTRIBUTION_CLASS_MAP[DistributionType.__members__[self.kernel_type.name]]
-        self.update(params)
+                 time_spent: float,
+                 final_parameters: np.ndarray,
+                 history: typing.Iterable[np.ndarray]):
+        self.__dataset = dataset
+        self.__kernel_type = kernel_type
+        self.__n_components = n_components
+        self.__initial_parameters = initial_parameters
+        self.__resolver_setting = resolver_setting
+        self.__distribution_loss_series = distribution_loss_series
+        self.__component_loss_series = component_loss_series
+        self.__time_spent = time_spent
+        self.__final_parameters = final_parameters
+        self.__history = [final_parameters] if history is None else history
+        self.__classes = np.expand_dims(np.expand_dims(self.dataset.classes_φ, axis=0), axis=0).repeat(self.n_samples, axis=0).repeat(self.n_components, axis=1)
+        self.__interval = np.abs((self.dataset.classes_φ[0]-self.dataset.classes_φ[-1]) / (self.n_classes-1))
+        self.__distribution_class = DISTRIBUTION_CLASS_MAP[DistributionType.__members__[self.kernel_type.name]]
+        self.update(final_parameters)
+
+    @property
+    def dataset(self) -> GrainSizeDataset:
+        return self.__dataset
 
     @property
     def n_samples(self) -> int:
@@ -43,16 +51,63 @@ class UDMResult:
     def n_classes(self) -> int:
         return len(self.dataset.classes_μm)
 
-    def update(self, params: np.ndarray):
-        proportions, components, mvsk = self._distribution_class.interpret(params, self._classes, self._interval)
-        self.proportions = proportions
-        self.components = components
+    @property
+    def kernel_type(self) -> KernelType:
+        return self.__kernel_type
 
-    def clear_history(self):
-        self.history_params.clear()
-        self.history_params.append(self.params)
+    @property
+    def n_components(self) -> int:
+        return self.__n_components
+
+    @property
+    def initial_parameters(self) -> np.ndarray:
+        return self.__initial_parameters
+
+    @property
+    def resolver_setting(self) -> UDMAlgorithmSetting:
+        return self.__resolver_setting
+
+    @property
+    def proportions(self) -> np.ndarray:
+        return self.__proportions
+
+    @property
+    def components(self) -> np.ndarray:
+        return self.__components
+
+    @property
+    def distribution_loss_series(self) -> np.ndarray:
+        return self.__distribution_loss_series
+
+    @property
+    def component_loss_series(self) -> np.ndarray:
+        return self.__component_loss_series
+
+    @property
+    def final_parameters(self) -> np.ndarray:
+        return self.__final_parameters
+
+    @property
+    def time_spent(self) -> float:
+        return self.__time_spent
+
+    @property
+    def n_iterations(self) -> int:
+        return len(self.__history)
+
+    @property
+    def history(self) -> typing.Iterable[UDMResult]:
+        for parameters in self.__history:
+            copy_result = copy.copy(self)
+            self.update(parameters)
+            yield copy_result
+
+    def update(self, parameters: np.ndarray):
+        proportions, components, mvsk = self.__distribution_class.interpret(parameters, self.__classes, self.__interval)
+        self.__proportions = proportions
+        self.__components = components
 
     def get_distance(self, distance: str) -> float:
         distance_func = get_distance_function(distance)
-        X_hat = (self.proportions @ self.components).squeeze()
-        return distance_func(X_hat, self.dataset.distribution_matrix)
+        predict = (self.proportions @ self.components).squeeze()
+        return distance_func(predict, self.dataset.distribution_matrix)

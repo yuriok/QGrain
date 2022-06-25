@@ -7,7 +7,7 @@ class UDMAlgorithmSetting:
                  precision=4.0,
                  learning_rate=1e-2,
                  betas=(0.8, 0.5),
-                 constraint_level=3.0):
+                 constraint_level=2.0):
         assert isinstance(device, str)
         assert isinstance(pretrain_epochs, int)
         assert isinstance(min_epochs, int)
