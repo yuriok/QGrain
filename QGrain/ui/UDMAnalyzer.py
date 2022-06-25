@@ -17,7 +17,7 @@ from .UDMSettingDialog import UDMSettingDialog
 
 
 class UDMAnalyzer(QtWidgets.QWidget):
-    logger = logging.getLogger("QGrain")
+    logger = logging.getLogger("QGrain.UDMAnalyzer")
     SUPPORT_KERNELS = (
         KernelType.Normal,
         KernelType.SkewNormal,
@@ -242,7 +242,7 @@ class UDMAnalyzer(QtWidgets.QWidget):
                         raise StopIteration()
                     progress_dialog.setValue(int(progress*100))
                     QtCore.QCoreApplication.processEvents()
-                save_udm(result, filename, progress_callback=callback)
+                save_udm(result, filename, progress_callback=callback, logger=self.logger)
             # Binary File
             else:
                 with open(filename, "wb") as f:

@@ -31,7 +31,7 @@ from .UDMSettingDialog import UDMSettingDialog
 
 
 class MainWindow(QtWidgets.QMainWindow):
-    logger = logging.getLogger("QGrain")
+    logger = logging.getLogger("QGrain.MainWindow")
     def __init__(self):
         super().__init__()
         self.setWindowTitle("QGrain")
@@ -216,7 +216,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def on_save_statistic_clicked(self):
         if not self.__dataset.has_sample:
-            self.show_warning(self.tr("Dataset has not been loaded."))
+            self.logger.error("Dataset has not been loaded.")
+            self.show_error(self.tr("Dataset has not been loaded."))
             return
         filename, _ = self.file_dialog.getSaveFileName(
             self, self.tr("Save statistic result"),
@@ -234,7 +235,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     raise StopIteration()
                 progress_dialog.setValue(int(progress*100))
                 QtCore.QCoreApplication.processEvents()
-            save_statistic(self.__dataset, filename, progress_callback=callback)
+            save_statistic(self.__dataset, filename, progress_callback=callback, logger=self.logger)
         except Exception as e:
             self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
             self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
@@ -259,7 +260,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     raise StopIteration()
                 progress_dialog.setValue(int(progress*100))
                 QtCore.QCoreApplication.processEvents()
-            save_pca(self.__dataset, filename, progress_callback=callback)
+            save_pca(self.__dataset, filename, progress_callback=callback, logger=self.logger)
         except Exception as e:
             self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
             self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
@@ -272,6 +273,17 @@ class MainWindow(QtWidgets.QMainWindow):
         translator.load(os.path.join(QGRAIN_ROOT_PATH, "assets", language))
         app.installTranslator(translator)
         self.current_translator = translator
+
+    def changeEvent(self, event: QtCore.QEvent):
+        if event.type() == QtCore.QEvent.LanguageChange:
+            self.retranslate()
+
+    def closeEvent(self, event: QtGui.QCloseEvent):
+        res = self.close_msg.exec_()
+        if res == QtWidgets.QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
 
     def retranslate(self):
         self.setWindowTitle("QGrain")
@@ -309,18 +321,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tab_widget.setTabText(5, self.tr("EMMA"))
         self.tab_widget.setTabText(6, self.tr("UDM"))
         self.ssu_multicore_analyzer.retranslate()
-
-
-    def changeEvent(self, event: QtCore.QEvent):
-        if event.type() == QtCore.QEvent.LanguageChange:
-            self.retranslate()
-
-    def closeEvent(self, event: QtGui.QCloseEvent):
-        res = self.close_msg.exec_()
-        if res == QtWidgets.QMessageBox.Yes:
-            event.accept()
-        else:
-            event.ignore()
 
 
 EXTRA = {'font_family': 'Roboto,Arial,Helvetica,Tahoma,Verdana,Microsoft YaHei UI,SimSum'}

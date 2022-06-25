@@ -13,7 +13,7 @@ from ..model import GrainSizeDataset
 
 
 class LoadDatasetDialog(QtWidgets.QDialog):
-    logger = logging.getLogger("QGrain")
+    logger = logging.getLogger("QGrain.LoadDatasetDialog")
     dataset_loaded = QtCore.Signal(GrainSizeDataset)
     def __init__(self, parent=None):
         super().__init__(parent=parent, f=QtCore.Qt.Window)
@@ -159,6 +159,10 @@ class LoadDatasetDialog(QtWidgets.QDialog):
             self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
             self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
 
+    def changeEvent(self, event: QtCore.QEvent):
+        if event.type() == QtCore.QEvent.LanguageChange:
+            self.retranslate()
+
     def retranslate(self):
         self.setWindowTitle(self.tr("Dataset Loader"))
         if self.filename is None:
@@ -171,7 +175,3 @@ class LoadDatasetDialog(QtWidgets.QDialog):
         self.distribution_start_row_label.setText(self.tr("Distribution Start Row"))
         self.distribution_start_column_label.setText(self.tr("Distribution Start Column"))
         self.try_load_button.setText(self.tr("Try Load"))
-
-    def changeEvent(self, event: QtCore.QEvent):
-        if event.type() == QtCore.QEvent.LanguageChange:
-            self.retranslate()

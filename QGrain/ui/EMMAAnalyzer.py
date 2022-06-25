@@ -17,7 +17,7 @@ from .ParameterEditor import ParameterEditor
 
 
 class EMMAAnalyzer(QtWidgets.QWidget):
-    logger = logging.getLogger("QGrain")
+    logger = logging.getLogger("QGrain.EMMAAnalyzer")
     SUPPORT_KERNELS = (
         KernelType.Nonparametric,
         KernelType.Normal,
@@ -156,6 +156,7 @@ class EMMAAnalyzer(QtWidgets.QWidget):
 
     def on_try_fit_clicked(self):
         if self.__dataset is None:
+            self.logger.error("Dataset has not been loaded.")
             self.show_error(self.tr("Dataset has not been loaded."))
             return
         self.try_fit_button.setEnabled(False)
@@ -164,8 +165,10 @@ class EMMAAnalyzer(QtWidgets.QWidget):
         resolver_setting = self.setting_dialog.setting
         update_end_members = self.update_EMs_checkbox.isChecked()
         if self.parameter_editor.parameter_enabled:
+            self.logger.info("The parameters in Parameter Editor are enabled. They will be used preferentially!")
             kernel_type = KernelType.__members__[self.parameter_editor.distribution_type.name]
             parameters = self.parameter_editor.parameters[:-1, :].astype(np.float32)
+            self.logger.debug(f"Try to perform the EMMA algorithm. Kernel type: {kernel_type.name}. Number of end members: {self.parameter_editor.n_components}. Initial parameters: {parameters}. Algorithm settings: {resolver_setting}. Update the end members: {update_end_members}.")
             result = resolver.try_fit(
                 self.__dataset, kernel_type,
                 self.parameter_editor.n_components,
@@ -173,6 +176,7 @@ class EMMAAnalyzer(QtWidgets.QWidget):
                 parameters=parameters,
                 update_end_members=update_end_members)
         else:
+            self.logger.debug(f"Try to perform the EMMA algorithm. Kernel type: {self.kernel_type.name}. Number of end members: {self.n_members}. Algorithm settings: {resolver_setting}. Update the end members: {update_end_members}.")
             result = resolver.try_fit(
                 self.__dataset, self.kernel_type,
                 self.n_members,
@@ -212,18 +216,10 @@ class EMMAAnalyzer(QtWidgets.QWidget):
             self.show_button.setEnabled(False)
             self.save_button.setEnabled(False)
 
-    def on_try_summarize_clicked(self):
-        pass
-
     def on_show_clicked(self):
         result = self.selected_result
         if result is not None:
             self.result_chart.show_result(result)
-
-    def on_show_animation_clicked(self):
-        result = self.selected_result
-        if result is not None:
-            self.result_chart.animated(result)
 
     def load_result(self):
         filename, _  = self.file_dialog.getOpenFileName(
@@ -243,7 +239,8 @@ class EMMAAnalyzer(QtWidgets.QWidget):
 
     def save_selected_result(self):
         if self.n_results == 0:
-            self.show_warning(self.tr("There is no EMMA result."))
+            self.logger.error("There is no EMMA result.")
+            self.show_error(self.tr("There is no EMMA result."))
             return
         filename, _ = self.file_dialog.getSaveFileName(
             self, self.tr("Choose a filename to save the selected EMMA result"),
@@ -264,7 +261,7 @@ class EMMAAnalyzer(QtWidgets.QWidget):
                         raise StopIteration()
                     progress_dialog.setValue(int(progress*100))
                     QtCore.QCoreApplication.processEvents()
-                save_emma(result, filename, progress_callback=callback)
+                save_emma(result, filename, progress_callback=callback, logger=self.logger)
             # Binary File
             else:
                 with open(filename, "wb") as f:
