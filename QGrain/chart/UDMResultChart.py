@@ -236,15 +236,17 @@ class UDMResultChart(BaseChart):
         GSDs_axes.set_title("GSDs")
 
         loss_axes = plt.subplot(2, 2, 2)
-        loss_axes.plot(sum_loss_series, color=plt.get_cmap()(0), label="Sum")
-        loss_axes.plot(result.distribution_loss_series, color=plt.get_cmap()(1), label="GSDs")
-        loss_axes.plot(result.component_loss_series, color=plt.get_cmap()(2), label="Components")
+        sum_loss_line = loss_axes.plot(sum_loss_series, color=plt.get_cmap()(0), label="Sum")[0]
+        distribution_loss_line = loss_axes.plot(result.distribution_loss_series, color=plt.get_cmap()(1), label="GSDs")[0]
+        component_loss_line = loss_axes.plot(result.component_loss_series, color=plt.get_cmap()(2), label="Components")[0]
         loss_axes.set_xlim(iteration_indexes[0], iteration_indexes[-1])
         loss_axes.set_xlabel("Iteration")
         loss_axes.set_ylabel("Loss")
         loss_axes.set_title("Loss variation")
-        loss_axes.legend(loc="upper right", prop={"size": 8})
-
+        loss_axes.legend(
+            handles=[sum_loss_line, distribution_loss_line, component_loss_line],
+            labels=["Sum", "GSDs", "Components"],
+            loc="upper right", prop={"size": 8})
         component_axes = plt.subplot(2, 2, 3)
         mean, lower, upper = summarize(result.proportions, result.components, q=0.01)
         modes = [(i, result.dataset.classes_μm[np.unravel_index(np.argmax(mean[i]), mean[i].shape)]) for i in range(result.n_components)]
@@ -353,7 +355,8 @@ class UDMResultChart(BaseChart):
                     raise StopIteration()
                 progress.setValue((i+1)/n*100)
                 QtCore.QCoreApplication.processEvents()
-            self.show_animation(self.__last_result)
+            self.animated_action.setChecked(True)
+            self.update_chart()
             # plt.rcParams["savefig.dpi"] = 120.0
             if "*.gif" in format_str:
                 if not ImageMagickWriter.isAvailable():
