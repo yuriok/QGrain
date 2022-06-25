@@ -66,6 +66,18 @@ class MainWindow(QtWidgets.QMainWindow):
         dataset = self.dataset_generator.get_random_dataset(100)
         self.load_dataset_dialog.dataset_loaded.emit(dataset.dataset_to_fit)
         self.ssu_analyzer.on_try_fit_clicked()
+        from ..ssu import DistributionType, try_sample, SSUResult
+        import numpy as np
+        sample = dataset.samples[0]
+        initial_guess = dataset.params[0, 1:, :]
+        task_or_result = try_sample(
+            sample.sample_to_fit,
+            DistributionType.Normal,
+            dataset.n_components,
+            initial_guess=initial_guess)
+        assert isinstance(task_or_result, SSUResult)
+        self.parameter_editor.refer_ssu_result(task_or_result)
+        self.parameter_editor.enabled_checkbox.setChecked(True)
         self.emma_analyzer.on_try_fit_clicked()
         self.udm_analyzer.on_try_fit_clicked()
 
