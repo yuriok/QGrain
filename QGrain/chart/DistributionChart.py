@@ -40,11 +40,11 @@ class DistributionChart(BaseChart):
         self.menu.insertAction(self.save_figure_action, self.show_legend_action)
         self.show_legend_action.setCheckable(True)
         self.show_legend_action.setChecked(False)
-        self.show_animation_action = QtGui.QAction(self.tr("Show Animation")) # type: QtGui.QAction
-        self.show_animation_action.triggered.connect(self.update_chart)
-        self.menu.insertAction(self.save_figure_action, self.show_animation_action)
-        self.show_animation_action.setCheckable(True)
-        self.show_animation_action.setChecked(False)
+        self.animated_action = QtGui.QAction(self.tr("Animated")) # type: QtGui.QAction
+        self.animated_action.triggered.connect(self.update_chart)
+        self.menu.insertAction(self.save_figure_action, self.animated_action)
+        self.animated_action.setCheckable(True)
+        self.animated_action.setChecked(False)
         self.interval_menu = QtWidgets.QMenu(self.tr("Animation Interval")) # type: QtWidgets.QMenu
         self.menu.insertMenu(self.save_figure_action, self.interval_menu)
         self.interval_group = QtGui.QActionGroup(self.interval_menu)
@@ -104,8 +104,8 @@ class DistributionChart(BaseChart):
         return self.show_legend_action.isChecked()
 
     @property
-    def show_animation(self) -> bool:
-        return self.show_animation_action.isChecked()
+    def animated(self) -> bool:
+        return self.animated_action.isChecked()
 
     @property
     def animation_interval(self) -> int:
@@ -210,7 +210,7 @@ class DistributionChart(BaseChart):
                 loc="upper left", prop={"size": 8})
         self.canvas.draw()
 
-    def _show_animation(self, result: SSUResult):
+    def show_animation(self, result: SSUResult):
         if self.animation is not None:
             self.animation._stop()
             self.animation = None
@@ -283,8 +283,8 @@ class DistributionChart(BaseChart):
             repeat=self.repeat_animation, repeat_delay=3.0, save_count=result.n_iterations)
 
     def show_result(self, result: SSUResult):
-        if self.show_animation:
-            self._show_animation(result)
+        if self.animated:
+            self.show_animation(result)
         else:
             self.show_model(result.view_model)
         self.last_model = None
@@ -308,7 +308,7 @@ class DistributionChart(BaseChart):
                     raise StopIteration()
                 progress.setValue((i+1)/n*100)
                 QtCore.QCoreApplication.processEvents()
-            self._show_animation(self.last_result)
+            self.show_animation(self.last_result)
             # plt.rcParams["savefig.dpi"] = 120.0
             if "*.gif" in format_str:
                 if not ImageMagickWriter.isAvailable():
@@ -343,7 +343,7 @@ class DistributionChart(BaseChart):
             action.setText(name)
         self.show_mode_lines_action.setText(self.tr("Show Mode Lines"))
         self.show_legend_action.setText(self.tr("Show Legend"))
-        self.show_animation_action.setText(self.tr("Show Animation"))
+        self.animated_action.setText(self.tr("Animated"))
         self.interval_menu.setTitle(self.tr("Animation Interval"))
         for action, (interval, name) in zip(self.interval_actions, self.supported_intervals):
             action.setText(name)
