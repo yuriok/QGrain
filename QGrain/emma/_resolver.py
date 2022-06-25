@@ -51,7 +51,7 @@ class EMMAResolver:
                 kernel_type: KernelType,
                 n_members: int,
                 resolver_setting: EMMAAlgorithmSetting=None,
-                params=None,
+                parameters=None,
                 update_end_members = True):
         if resolver_setting is None:
             setting = EMMAAlgorithmSetting(max_epochs=2000, precision=6, learning_rate=5e-3)
@@ -61,7 +61,7 @@ class EMMAResolver:
 
         X = torch.from_numpy(dataset.distribution_matrix.astype(np.float32)).to(setting.device)
         classes_φ = dataset.classes_φ.astype(np.float32)
-        emma = EMMAModule(dataset.n_samples, n_members, classes_φ, kernel_type, params).to(setting.device)
+        emma = EMMAModule(dataset.n_samples, n_members, classes_φ, kernel_type, parameters).to(setting.device)
 
         distance_func = get_distance_func_by_name(setting.distance)
         optimizer = torch.optim.Adam(emma.parameters(), lr=setting.learning_rate, betas=setting.betas)
@@ -102,44 +102,16 @@ class EMMAResolver:
                 break
             if epochs > setting.max_epochs:
                 break
+        torch.cuda.synchronize()
         time_spent = time.time() - start
         result = EMMAResult(
             dataset,
             kernel_type,
             n_members,
+            parameters,
             setting,
             proportions.detach().cpu().numpy(),
             end_members.detach().cpu().numpy(),
             time_spent,
             history)
         return result
-
-    # def get_params(self, dataset: GrainSizeDataset,
-    #                classes_φ: np.ndarray, distributions: np.ndarray,
-    #                kernel_type: KernelType):
-    #     classes_μm = convert_φ_to_μm(classes_φ)
-    #     if kernel_type == KernelType.Nonparametric:
-    #         params = []
-    #         for distribution in distributions:
-    #             trans = interp1d(classes_φ, distribution, bounds_error=False, fill_value=0.0)
-    #             interp_distributions = trans(dataset.classes_φ)
-    #             params.append(interp_distributions)
-    #         params = np.log(np.array(params) + 1e-8)
-    #     else:
-    #         samples = [GrainSizeSample(f"EM{i+1}", classes_μm, classes_φ, distribution) for i, distribution in enumerate(distributions)]
-    #         distribution_type = DistributionType.__members__[kernel_type.name]
-    #         distribution_class = DISTRIBUTION_CLASS_MAP[distribution_type]
-    #         def get_x0(sample: GrainSizeSample):
-    #             statistics = logarithmic(sample.classes_φ, sample.distribution)
-    #             x0 = distribution_class.get_initial_guess(mean=statistics["mean"], std=1.0, skewness=0.0)
-    #             x0 = np.expand_dims(np.expand_dims(np.array(list(x0) + [1.0]), 0), -1)
-    #             return x0
-    #         resolver_setting = SSUAlgorithmSetting(try_GO=True, GO_max_niter=500, GO_success_niter=10, GO_step=0.1)
-    #         results = [try_sample(sample, distribution_type, 1, resolver_setting, get_x0(sample)) for sample in samples]
-    #         params = []
-    #         for result in results:
-    #             if result is None:
-    #                 raise ValueError("One of the end members is invalid.")
-    #             params.append(result.func_args)
-    #         params = np.concatenate(params, axis=2).squeeze(0)[:-1, :]
-    #     return params

@@ -89,7 +89,7 @@ class UDMSettingDialog(QtWidgets.QDialog):
         self.constraint_level_input = QtWidgets.QDoubleSpinBox()
         self.constraint_level_input.setDecimals(4)
         self.constraint_level_input.setRange(-10, 10.0)
-        self.constraint_level_input.setValue(3.0)
+        self.constraint_level_input.setValue(2.0)
         self.main_layout.addWidget(self.constraint_level_label, 8, 0)
         self.main_layout.addWidget(self.constraint_level_input, 8, 1)
 

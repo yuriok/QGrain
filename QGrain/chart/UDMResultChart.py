@@ -5,13 +5,26 @@ import numpy as np
 from matplotlib.animation import FFMpegWriter, FuncAnimation, ImageMagickWriter
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from ..emma import EMMAResult
 from ..statistic import convert_φ_to_μm
+from ..udm import UDMResult
 from .BaseChart import BaseChart
 from .config_matplotlib import normal_color
 
 
-class EMMAResultChart(BaseChart):
+def summarize(proportions: np.ndarray, components: np.ndarray, q=0.01):
+    n_samples, n_components, n_classes = components.shape
+    EM_mean = np.mean(np.expand_dims(proportions.squeeze(1), 2).repeat(n_classes, axis=2) * components, axis=0)
+    EM_mean /= np.expand_dims(np.sum(EM_mean, axis=1), axis=1).repeat(n_classes, axis=1)
+    EM_upper = np.zeros((n_components, n_classes))
+    EM_lower = np.zeros((n_components, n_classes))
+    for i in range(n_components):
+        key = np.greater(proportions[:, 0, i], 1e-3)
+        EM_upper[i] = np.quantile(components[:, i, :][key], q=1-q, axis=0)
+        EM_lower[i] = np.quantile(components[:, i, :][key], q=q, axis=0)
+    return EM_mean, EM_lower, EM_upper
+
+
+class UDMResultChart(BaseChart):
     N_DISPLAY_SAMPLES = 200
     def __init__(self, parent=None, figsize=(4, 6)):
         super().__init__(parent=parent, figsize=figsize)
@@ -28,19 +41,6 @@ class EMMAResultChart(BaseChart):
             self.scale_menu.addAction(scale_action)
             self.scale_actions.append(scale_action)
         self.scale_actions[0].setChecked(True)
-
-        self.distance_menu = QtWidgets.QMenu(self.tr("Distance Function")) # type: QtWidgets.QMenu
-        self.menu.insertMenu(self.save_figure_action, self.distance_menu)
-        self.distance_group = QtGui.QActionGroup(self.distance_menu)
-        self.distance_group.setExclusive(True)
-        self.distance_actions = [] # type: list[QtGui.QAction]
-        for key, name in self.supported_distances:
-            distance_action = self.distance_group.addAction(name) # type: QtGui.QAction
-            distance_action.setCheckable(True)
-            distance_action.triggered.connect(self.update_chart)
-            self.distance_menu.addAction(distance_action)
-            self.distance_actions.append(distance_action)
-        self.distance_actions[5].setChecked(True)
 
         self.animated_action = QtGui.QAction(self.tr("Animated")) # type: QtGui.QAction
         self.animated_action.triggered.connect(self.update_chart)
@@ -86,19 +86,6 @@ class EMMAResultChart(BaseChart):
         return scales
 
     @property
-    def supported_distances(self) -> typing.List[typing.Tuple[str, str]]:
-        distances = [
-            ("1-norm", self.tr("1 Norm")),
-            ("2-norm", self.tr("2 Norm")),
-            ("3-norm", self.tr("3 Norm")),
-            ("4-norm", self.tr("4 Norm")),
-            ("MSE", self.tr("Mean Squared Error")),
-            ("log10MSE", self.tr("Logarithmic Mean Squared Error")),
-            ("cosine", self.tr("Cosine Error")),
-            ("angular", self.tr("Angular Error"))]
-        return distances
-
-    @property
     def supported_intervals(self) -> typing.List[typing.Tuple[int, str]]:
         intervals = [(5, self.tr("5 Milliseconds")),
                      (10, self.tr("10 Milliseconds")),
@@ -112,13 +99,6 @@ class EMMAResultChart(BaseChart):
         for i, scale_action in enumerate(self.scale_actions):
             if scale_action.isChecked():
                 key, name = self.supported_scales[i]
-                return key
-
-    @property
-    def distance(self) -> str:
-        for i, distance_action in enumerate(self.distance_actions):
-            if distance_action.isChecked():
-                key, name = self.supported_distances[i]
                 return key
 
     @property
@@ -169,12 +149,13 @@ class EMMAResultChart(BaseChart):
         else:
             return False
 
-    def show_chart(self, result: EMMAResult):
-        classes = self.transfer(result.dataset.classes_φ)
+    def show_chart(self, result: UDMResult):
+        interval = max(1, result.n_samples//self.N_DISPLAY_SAMPLES)
         sample_indexes = np.linspace(1, result.n_samples, result.n_samples)
         iteration_indexes = np.linspace(1, result.n_iterations, result.n_iterations)
-        interval = max(1, result.n_samples // self.N_DISPLAY_SAMPLES)
+        classes = self.transfer(result.dataset.classes_φ)
         GSDs = result.dataset.distribution_matrix
+        sum_loss_series = result.distribution_loss_series + result.component_loss_series
 
         GSDs_axes = self.figure.add_subplot(2, 2, 1)
         for sample in result.dataset.samples[::interval]:
@@ -187,36 +168,44 @@ class EMMAResultChart(BaseChart):
         GSDs_axes.set_ylabel(self.ylabel)
         GSDs_axes.set_title("GSDs")
 
-        distance_axes = self.figure.add_subplot(2, 2, 2)
-        distance_axes.plot(iteration_indexes, result.get_distance_series(self.distance), c=normal_color())
-        distance_axes.set_xlim(iteration_indexes[0], iteration_indexes[-1])
-        distance_axes.set_xlabel("Iteration")
-        distance_axes.set_ylabel("Distance")
-        distance_axes.set_title("Distance variation")
+        loss_axes = plt.subplot(2, 2, 2)
+        loss_axes.plot(sum_loss_series, color=plt.get_cmap()(0), label="Sum")
+        loss_axes.plot(result.distribution_loss_series, color=plt.get_cmap()(1), label="GSDs")
+        loss_axes.plot(result.component_loss_series, color=plt.get_cmap()(2), label="Components")
+        loss_axes.set_xlim(iteration_indexes[0], iteration_indexes[-1])
+        loss_axes.set_xlabel("Iteration")
+        loss_axes.set_ylabel("Loss")
+        loss_axes.set_title("Loss variation")
+        loss_axes.legend(loc="upper right", prop={"size": 8})
 
-        # get the mode size of each end-members
-        modes = [(i, result.dataset.classes_μm[np.unravel_index(np.argmax(result.end_members[i]), result.end_members[i].shape)]) for i in range(result.n_members)]
+        component_axes = plt.subplot(2, 2, 3)
+        mean, lower, upper = summarize(result.proportions, result.components, q=0.01)
+        modes = [(i, result.dataset.classes_μm[np.unravel_index(np.argmax(mean[i]), mean[i].shape)]) for i in range(result.n_components)]
         # sort them by mode size
         modes.sort(key=lambda x: x[1])
-        end_member_axes = self.figure.add_subplot(2, 2, 3)
+        for i_c, (i, _) in enumerate(modes):
+            component_axes.plot(classes, mean[i], c=plt.get_cmap()(i_c), zorder=20+i_c)
+            component_axes.fill_between(
+                classes, lower[i], upper[i],
+                color=plt.get_cmap()(i_c),
+                alpha=0.2, lw=0.02, zorder=10+i_c)
         if self.xlog:
-            end_member_axes.set_xscale("log")
-        for i_em, (i, _) in enumerate(modes):
-            end_member_axes.plot(classes, result.end_members[i], c=plt.get_cmap()(i_em), label=f"EM{i_em+1}", zorder=10+i_em)
-        end_member_axes.set_xlim(classes[0], classes[-1])
-        end_member_axes.set_ylim(0.0, round(np.max(result.end_members)*1.2, 2))
-        end_member_axes.set_xlabel(self.xlabel)
-        end_member_axes.set_ylabel(self.ylabel)
-        end_member_axes.set_title("End members")
+            component_axes.set_xscale("log")
+        component_axes.set_xlim(classes[0], classes[-1])
+        component_axes.set_ylim(0.0, round(np.max(mean)*1.2, 2))
+        component_axes.set_xlabel(self.xlabel)
+        component_axes.set_ylabel(self.ylabel)
+        component_axes.set_title("Components")
 
-        proportion_axes = self.figure.add_subplot(2, 2, 4)
+        proportion_axes = plt.subplot(2, 2, 4)
         bottom = np.zeros(result.n_samples)
         for i_em, (i, _) in enumerate(modes):
             proportion_axes.bar(
                 sample_indexes[::interval],
-                result.proportions[:, i][::interval],
-                bottom=bottom[::interval], width=interval, color=plt.get_cmap()(i_em))
-            bottom += result.proportions[:, i]
+                result.proportions[:, 0, i][::interval],
+                bottom=bottom[::interval],
+                width=interval, color=plt.get_cmap()(i_em))
+            bottom += result.proportions[:, 0, i]
         proportion_axes.set_xlim(sample_indexes[0], sample_indexes[-1])
         proportion_axes.set_ylim(0.0, 1.0)
         proportion_axes.set_xlabel("Sample index")
@@ -225,14 +214,15 @@ class EMMAResultChart(BaseChart):
         self.figure.tight_layout()
         self.canvas.draw()
 
-    def show_animation(self, result: EMMAResult):
-        classes = self.transfer(result.dataset.classes_φ)
+    def show_animation(self, result: UDMResult):
+        interval = max(1, result.n_samples // self.N_DISPLAY_SAMPLES)
         sample_indexes = np.linspace(1, result.n_samples, result.n_samples)
         iteration_indexes = np.linspace(1, result.n_iterations, result.n_iterations)
-        distance_series = result.get_distance_series(self.distance)
-        min_distance, max_distance = np.min(distance_series), np.max(distance_series)
-        interval = max(1, result.n_samples // self.N_DISPLAY_SAMPLES)
+        classes = self.transfer(result.dataset.classes_φ)
         GSDs = result.dataset.distribution_matrix
+        sum_loss_series = result.distribution_loss_series + result.component_loss_series
+        distances = np.array([result.distribution_loss_series, result.component_loss_series, sum_loss_series])
+        min_distance, max_distance = np.min(distances), np.max(distances)
 
         GSDs_axes = self.figure.add_subplot(2, 2, 1)
         for sample in result.dataset.samples[::interval]:
@@ -245,63 +235,83 @@ class EMMAResultChart(BaseChart):
         GSDs_axes.set_ylabel(self.ylabel)
         GSDs_axes.set_title("GSDs")
 
-        distance_axes = self.figure.add_subplot(2, 2, 2)
-        distance_axes.plot(iteration_indexes, result.get_distance_series(self.distance), c=normal_color())
-        distance_axes.set_xlim(iteration_indexes[0], iteration_indexes[-1])
-        distance_axes.set_xlabel("Iteration")
-        distance_axes.set_ylabel("Distance")
-        distance_axes.set_title("Distance variation")
+        loss_axes = plt.subplot(2, 2, 2)
+        loss_axes.plot(sum_loss_series, color=plt.get_cmap()(0), label="Sum")
+        loss_axes.plot(result.distribution_loss_series, color=plt.get_cmap()(1), label="GSDs")
+        loss_axes.plot(result.component_loss_series, color=plt.get_cmap()(2), label="Components")
+        loss_axes.set_xlim(iteration_indexes[0], iteration_indexes[-1])
+        loss_axes.set_xlabel("Iteration")
+        loss_axes.set_ylabel("Loss")
+        loss_axes.set_title("Loss variation")
+        loss_axes.legend(loc="upper right", prop={"size": 8})
 
-        # get the mode size of each end-members
-        modes = [(i, result.dataset.classes_μm[np.unravel_index(np.argmax(result.end_members[i]), result.end_members[i].shape)]) for i in range(result.n_members)]
+        component_axes = plt.subplot(2, 2, 3)
+        mean, lower, upper = summarize(result.proportions, result.components, q=0.01)
+        modes = [(i, result.dataset.classes_μm[np.unravel_index(np.argmax(mean[i]), mean[i].shape)]) for i in range(result.n_components)]
         # sort them by mode size
         modes.sort(key=lambda x: x[1])
-        end_member_axes = self.figure.add_subplot(2, 2, 3)
         if self.xlog:
-            end_member_axes.set_xscale("log")
-        end_member_axes.set_xlim(classes[0], classes[-1])
-        end_member_axes.set_ylim(0.0, round(np.max(result.end_members)*1.2, 2))
-        end_member_axes.set_xlabel(self.xlabel)
-        end_member_axes.set_ylabel(self.ylabel)
-        end_member_axes.set_title("End members")
+            component_axes.set_xscale("log")
+        component_axes.set_xlim(classes[0], classes[-1])
+        component_axes.set_ylim(0.0, round(np.max(mean)*1.2, 2))
+        component_axes.set_xlabel(self.xlabel)
+        component_axes.set_ylabel(self.ylabel)
+        component_axes.set_title("Components")
 
-        proportion_axes = self.figure.add_subplot(2, 2, 4)
+        proportion_axes = plt.subplot(2, 2, 4)
         proportion_axes.set_xlim(sample_indexes[0], sample_indexes[-1])
         proportion_axes.set_ylim(0.0, 1.0)
         proportion_axes.set_xlabel("Sample index")
         proportion_axes.set_ylabel("Proportion")
         proportion_axes.set_title("Proportions")
-
         # self.figure.tight_layout()
         # self.canvas.draw()
+
         def init():
-            self.iteration_line = distance_axes.plot([1, 1], [min_distance, max_distance], c=normal_color())[0]
-            self.end_member_curves = []
-            for i_em, (index, _) in enumerate(modes):
-                end_member_curve = end_member_axes.plot(classes, result.end_members[index], c=plt.get_cmap()(i_em), label=f"EM{i_em+1}")[0]
-                self.end_member_curves.append(end_member_curve)
+            self.iteration_line = loss_axes.plot([1, 1], [min_distance, max_distance], c=normal_color())[0]
+            self.component_curves = []
+            self.component_shadows = []
+            mean, lower, upper = summarize(result.proportions, result.components, q=0.01)
+            for i_c, (i, _) in enumerate(modes):
+                component_curve = component_axes.plot(classes, mean[i], c=plt.get_cmap()(i_c), zorder=20+i_c)[0]
+                component_shadow = component_axes.fill_between(
+                    classes, lower[i], upper[i],
+                    color=plt.get_cmap()(i_c),
+                    alpha=0.2, lw=0.02, zorder=10+i_c)
+                self.component_curves.append(component_curve)
+                self.component_shadows.append(component_shadow)
+
             bottom = np.zeros(result.n_samples)
             self.proportion_bars = []
             self.patches = []
             for i_em, (index, _) in enumerate(modes):
-                bar = proportion_axes.bar(sample_indexes[::interval], result.proportions[:, index][::interval], bottom=bottom[::interval], width=interval, color=plt.get_cmap()(i_em))
+                bar = proportion_axes.bar(
+                    sample_indexes[::interval],
+                    result.proportions[:, 0, index][::interval],
+                    bottom=bottom[::interval],
+                    width=interval, color=plt.get_cmap()(i_em))
                 self.proportion_bars.append(bar)
                 self.patches.extend(bar.patches)
-                bottom += result.proportions[:, index]
-            return self.iteration_line, *(self.end_member_curves + self.patches)
+                bottom += result.proportions[:, 0, index]
+            return self.iteration_line, *(self.component_curves + self.component_shadows + self.patches)
 
-        def animate(args: typing.Tuple[int, EMMAResult]):
+        def animate(args: typing.Tuple[int, UDMResult]):
             iteration, current = args
+            mean, lower, upper = summarize(current.proportions, current.components, q=0.01)
             self.iteration_line.set_xdata([iteration, iteration])
             for i_em, (index, _) in enumerate(modes):
-                self.end_member_curves[i_em].set_ydata(current.end_members[index])
+                self.component_curves[i_em].set_ydata(mean[index])
+                verts_lower = np.concatenate([np.expand_dims(classes, axis=1), np.expand_dims(lower[i_em], axis=1)], axis=1)
+                verts_upper = np.concatenate([np.expand_dims(classes[::-1], axis=1), np.expand_dims(upper[i_em][::-1], axis=1)], axis=1)
+                verts = np.concatenate([verts_lower, verts_upper], axis=0)
+                self.component_shadows[i_em].set_verts([verts])
             bottom = np.zeros(current.n_samples)
             for i_em, (index, _) in enumerate(modes):
-                for rect, height, y in zip(self.proportion_bars[i_em].patches, current.proportions[:, index][::interval], bottom[::interval]):
+                for rect, height, y in zip(self.proportion_bars[i_em].patches, current.proportions[:, 0, index][::interval], bottom[::interval]):
                     rect.set_height(height)
                     rect.set_y(y)
-                bottom += current.proportions[:, index]
-            return self.iteration_line, *(self.end_member_curves + self.patches)
+                bottom += current.proportions[:, 0, index]
+            return self.iteration_line, *(self.component_curves + self.component_shadows + self.patches)
 
         self.__animation = FuncAnimation(
             self.figure, animate, init_func=init,
@@ -309,7 +319,7 @@ class EMMAResultChart(BaseChart):
             blit=True, repeat=self.repeat_animation,
             repeat_delay=3.0, save_count=result.n_iterations)
 
-    def show_result(self, result: EMMAResult):
+    def show_result(self, result: UDMResult):
         self.__last_result = result
         self.figure.clear()
         if self.__animation is not None:
@@ -327,7 +337,7 @@ class EMMAResultChart(BaseChart):
     def save_animation(self):
         if self.__last_result is not None:
             filename, format_str  = self.file_dialog.getSaveFileName(
-                self, self.tr("Choose a filename to save the animation of this EMMA result"),
+                self, self.tr("Choose a filename to save the animation of this UDM result"),
                 None, "MPEG-4 Video File (*.mp4);;Graphics Interchange Format (*.gif)")
             if filename is None or filename == "":
                 return
@@ -343,7 +353,7 @@ class EMMAResultChart(BaseChart):
                     raise StopIteration()
                 progress.setValue((i+1)/n*100)
                 QtCore.QCoreApplication.processEvents()
-            self.animated(self.__last_result)
+            self.show_animation(self.__last_result)
             # plt.rcParams["savefig.dpi"] = 120.0
             if "*.gif" in format_str:
                 if not ImageMagickWriter.isAvailable():
@@ -367,9 +377,6 @@ class EMMAResultChart(BaseChart):
         super().retranslate()
         self.scale_menu.setTitle(self.tr("Scale"))
         for action, (key, name) in zip(self.scale_actions, self.supported_scales):
-            action.setText(name)
-        self.distance_menu.setTitle(self.tr("Distance Function"))
-        for action, (key, name) in zip(self.distance_actions, self.supported_distances):
             action.setText(name)
         self.animated_action.setText(self.tr("Animated"))
         self.interval_menu.setTitle(self.tr("Animation Interval"))

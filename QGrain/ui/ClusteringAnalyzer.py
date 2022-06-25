@@ -8,7 +8,7 @@ from scipy.cluster.hierarchy import fcluster, linkage
 from ..chart.HierarchicalChart import HierarchicalChart
 from ..io import save_clustering
 from ..model import GrainSizeDataset
-from sklearn.decomposition import PCA
+
 
 class ClusteringAnalyzer(QtWidgets.QWidget):
     logger = logging.getLogger("QGrain")
@@ -138,7 +138,7 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
             self.show_error(self.tr("The linkage method is not compatible with the distance metric."))
             return
 
-    def on_save_clicked(self):
+    def save_result(self):
         if self.__last_result is None:
             self.show_warning(self.tr("The clustering algorithm has not been performed."))
             return
