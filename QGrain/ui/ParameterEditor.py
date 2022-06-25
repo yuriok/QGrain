@@ -110,7 +110,6 @@ class ParameterComponent(QtWidgets.QWidget):
 
 
 class ParameterEditor(QtWidgets.QDialog):
-    logger = logging.getLogger("QGrain")
     SUPPORT_DISTRIBUTIONS = (
         DistributionType.Normal,
         DistributionType.SkewNormal,
@@ -218,20 +217,6 @@ class ParameterEditor(QtWidgets.QDialog):
                     parameters.append(component.parameters)
         parameters = np.array(parameters).T
         return parameters
-
-    def show_message(self, title: str, message: str):
-        self.normal_msg.setWindowTitle(title)
-        self.normal_msg.setText(message)
-        self.normal_msg.exec_()
-
-    def show_info(self, message: str):
-        self.show_message(self.tr("Info"), message)
-
-    def show_warning(self, message: str):
-        self.show_message(self.tr("Warning"), message)
-
-    def show_error(self, message: str):
-        self.show_message(self.tr("Error"), message)
 
     def _clear_components(self):
         for param_holder, param_layout, components in self.component_sets:

@@ -26,11 +26,12 @@ from .PCAAnalyzer import PCAAnalyzer
 from .SSUAnalyzer import SSUAnalyzer
 from .SSUMulticoreAnalyzer import SSUMulticoreAnalyzer
 from .SSUSettingDialog import SSUSettingDialog
+from .UDMAnalyzer import UDMAnalyzer
 from .UDMSettingDialog import UDMSettingDialog
 
 
 class MainWindow(QtWidgets.QMainWindow):
-    logger = logging.getLogger("QGrain")
+    logger = logging.getLogger("QGrain.MainWindow")
     def __init__(self):
         super().__init__()
         self.setWindowTitle("QGrain")
@@ -50,6 +51,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.load_dataset_dialog.dataset_loaded.connect(self.clustering_analyzer.on_dataset_loaded)
         self.load_dataset_dialog.dataset_loaded.connect(self.ssu_analyzer.on_dataset_loaded)
         self.load_dataset_dialog.dataset_loaded.connect(self.emma_analyzer.on_dataset_loaded)
+        self.load_dataset_dialog.dataset_loaded.connect(self.udm_analyzer.on_dataset_loaded)
         self.log_dialog = LogDialog(self)
         self.about_dialog = AboutDialog(self)
         self.file_dialog = QtWidgets.QFileDialog(parent=self)
@@ -65,6 +67,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.load_dataset_dialog.dataset_loaded.emit(dataset.dataset_to_fit)
         self.ssu_analyzer.on_try_fit_clicked()
         self.emma_analyzer.on_try_fit_clicked()
+        self.udm_analyzer.on_try_fit_clicked()
 
     def init_ui(self):
         self.tab_widget = QtWidgets.QTabWidget(self)
@@ -82,9 +85,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tab_widget.addTab(self.ssu_analyzer, self.tr("SSU"))
         self.emma_analyzer = EMMAAnalyzer(self.emma_setting_dialog, self.parameter_editor)
         self.tab_widget.addTab(self.emma_analyzer, self.tr("EMMA"))
-        self.udm_panel = QtWidgets.QWidget()
-        self.tab_widget.addTab(self.udm_panel, self.tr("UDM"))
-
+        self.udm_analyzer = UDMAnalyzer(self.udm_setting_dialog, self.parameter_editor)
+        self.tab_widget.addTab(self.udm_analyzer, self.tr("UDM"))
         self.init_menus()
 
     def init_menus(self):
@@ -92,12 +94,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.open_menu = self.menuBar().addMenu(self.tr("Open")) # type: QtWidgets.QMenu
         self.open_dataset_action = self.open_menu.addAction(self.tr("Grain Size Dataset")) # type: QtGui.QAction
         self.open_dataset_action.triggered.connect(lambda: self.load_dataset_dialog.show())
-        self.load_emma_result_action = self.open_menu.addAction(self.tr("EMMA Results")) # type: QtGui.QAction
-        self.load_emma_result_action.triggered.connect(self.emma_analyzer.load_results)
         self.load_ssu_result_action = self.open_menu.addAction(self.tr("SSU Results")) # type: QtGui.QAction
         self.load_ssu_result_action.triggered.connect(self.ssu_analyzer.result_view.load_results)
         self.load_ssu_reference_action = self.open_menu.addAction(self.tr("SSU References")) # type: QtGui.QAction
         self.load_ssu_reference_action.triggered.connect(self.ssu_analyzer.reference_view.load_references)
+        self.load_emma_result_action = self.open_menu.addAction(self.tr("EMMA Result")) # type: QtGui.QAction
+        self.load_emma_result_action.triggered.connect(self.emma_analyzer.load_result)
+        self.load_udm_result_action = self.open_menu.addAction(self.tr("UDM Result")) # type: QtGui.QAction
+        self.load_udm_result_action.triggered.connect(self.udm_analyzer.load_result)
 
         # Save
         self.save_menu = self.menuBar().addMenu(self.tr("Save")) # type: QtWidgets.QMenu
@@ -106,17 +110,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.save_pca_action = self.save_menu.addAction(self.tr("PCA Result")) # type: QtGui.QAction
         self.save_pca_action.triggered.connect(self.on_save_pca_clicked)
         self.save_clustering_action = self.save_menu.addAction(self.tr("Clustering Result")) # type: QtGui.QAction
-        self.save_clustering_action.triggered.connect(self.clustering_analyzer.on_save_clicked)
-        self.dump_emma_result_action = self.save_menu.addAction(self.tr("EMMA Results (Dumped)")) # type: QtGui.QAction
-        self.dump_emma_result_action.triggered.connect(self.emma_analyzer.load_results)
-        self.save_emma_result_action = self.save_menu.addAction(self.tr("EMMA Result (Excel)")) # type: QtGui.QAction
+        self.save_clustering_action.triggered.connect(self.clustering_analyzer.save_result)
+        self.save_ssu_result_action = self.save_menu.addAction(self.tr("SSU Results")) # type: QtGui.QAction
+        self.save_ssu_result_action.triggered.connect(self.ssu_analyzer.result_view.save_results)
+        self.save_ssu_reference_action = self.save_menu.addAction(self.tr("SSU References")) # type: QtGui.QAction
+        self.save_ssu_reference_action.triggered.connect(self.ssu_analyzer.reference_view.dump_references)
+        self.save_emma_result_action = self.save_menu.addAction(self.tr("EMMA Result")) # type: QtGui.QAction
         self.save_emma_result_action.triggered.connect(self.emma_analyzer.save_selected_result)
-        self.dump_ssu_result_action = self.save_menu.addAction(self.tr("SSU Results (Dumped)")) # type: QtGui.QAction
-        self.dump_ssu_result_action.triggered.connect(self.ssu_analyzer.result_view.load_results)
-        self.dump_ssu_reference_action = self.save_menu.addAction(self.tr("SSU References (Dumped)")) # type: QtGui.QAction
-        self.dump_ssu_reference_action.triggered.connect(self.ssu_analyzer.reference_view.load_references)
-        self.save_ssu_result_action = self.save_menu.addAction(self.tr("SSU Results (Excel)")) # type: QtGui.QAction
-        self.save_ssu_result_action.triggered.connect(lambda: self.ssu_analyzer.result_view.on_save_excel_clicked(False))
+        self.save_udm_result_action = self.save_menu.addAction(self.tr("UDM Result")) # type: QtGui.QAction
+        self.save_udm_result_action.triggered.connect(self.udm_analyzer.save_selected_result)
 
         # Config
         self.config_menu = self.menuBar().addMenu(self.tr("Config")) # type: QtWidgets.QMenu
@@ -214,7 +216,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def on_save_statistic_clicked(self):
         if not self.__dataset.has_sample:
-            self.show_warning(self.tr("Dataset has not been loaded."))
+            self.logger.error("Dataset has not been loaded.")
+            self.show_error(self.tr("Dataset has not been loaded."))
             return
         filename, _ = self.file_dialog.getSaveFileName(
             self, self.tr("Save statistic result"),
@@ -232,7 +235,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     raise StopIteration()
                 progress_dialog.setValue(int(progress*100))
                 QtCore.QCoreApplication.processEvents()
-            save_statistic(self.__dataset, filename, progress_callback=callback)
+            save_statistic(self.__dataset, filename, progress_callback=callback, logger=self.logger)
         except Exception as e:
             self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
             self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
@@ -257,7 +260,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     raise StopIteration()
                 progress_dialog.setValue(int(progress*100))
                 QtCore.QCoreApplication.processEvents()
-            save_pca(self.__dataset, filename, progress_callback=callback)
+            save_pca(self.__dataset, filename, progress_callback=callback, logger=self.logger)
         except Exception as e:
             self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
             self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
@@ -271,6 +274,17 @@ class MainWindow(QtWidgets.QMainWindow):
         app.installTranslator(translator)
         self.current_translator = translator
 
+    def changeEvent(self, event: QtCore.QEvent):
+        if event.type() == QtCore.QEvent.LanguageChange:
+            self.retranslate()
+
+    def closeEvent(self, event: QtGui.QCloseEvent):
+        res = self.close_msg.exec_()
+        if res == QtWidgets.QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
+
     def retranslate(self):
         self.setWindowTitle("QGrain")
         self.close_msg.setWindowTitle(self.tr("Warning"))
@@ -278,17 +292,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.open_menu.setTitle((self.tr("Open")))
         self.save_menu.setTitle(self.tr("Save"))
         self.open_dataset_action.setText(self.tr("Grain Size Dataset"))
-        self.load_emma_result_action.setText(self.tr("EMMA Results"))
         self.load_ssu_result_action.setText(self.tr("SSU Results"))
         self.load_ssu_reference_action.setText(self.tr("SSU References"))
+        self.load_emma_result_action.setText(self.tr("EMMA Result"))
+        self.load_udm_result_action.setText(self.tr("UDM Result"))
         self.save_statistic_action.setText(self.tr("Statistic Result"))
         self.save_pca_action.setText(self.tr("PCA Result"))
         self.save_clustering_action.setText(self.tr("Clustering Result"))
-        self.dump_emma_result_action.setText(self.tr("EMMA Results (Dumped)"))
-        self.save_emma_result_action.setText(self.tr("EMMA Result (Excel)"))
-        self.dump_ssu_result_action.setText(self.tr("SSU Results (Dumped)"))
-        self.dump_ssu_reference_action.setText(self.tr("SSU References (Dumped)"))
-        self.save_ssu_result_action.setText(self.tr("SSU Results (Excel)"))
+        self.save_ssu_result_action.setText(self.tr("SSU Results"))
+        self.save_ssu_reference_action.setText(self.tr("SSU References"))
+        self.save_emma_result_action.setText(self.tr("EMMA Result"))
+        self.save_udm_result_action.setText(self.tr("UDM Result"))
         self.config_menu.setTitle(self.tr("Config"))
         self.config_ssu_action.setText(self.tr("SSU Settings"))
         self.config_emma_action.setText(self.tr("EMMA Settings"))
@@ -307,18 +321,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tab_widget.setTabText(5, self.tr("EMMA"))
         self.tab_widget.setTabText(6, self.tr("UDM"))
         self.ssu_multicore_analyzer.retranslate()
-
-
-    def changeEvent(self, event: QtCore.QEvent):
-        if event.type() == QtCore.QEvent.LanguageChange:
-            self.retranslate()
-
-    def closeEvent(self, event: QtGui.QCloseEvent):
-        res = self.close_msg.exec_()
-        if res == QtWidgets.QMessageBox.Yes:
-            event.accept()
-        else:
-            event.ignore()
 
 
 EXTRA = {'font_family': 'Roboto,Arial,Helvetica,Tahoma,Verdana,Microsoft YaHei UI,SimSum'}

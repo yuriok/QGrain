@@ -10,12 +10,11 @@ SOURCES=C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\__main__.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\chart\DistanceCurveChart.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\chart\DistributionChart.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\chart\EMMAResultChart.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\chart\EMMASummaryChart.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\chart\Frequency3DChart.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\chart\FrequencyCurveChart.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\chart\HierarchicalChart.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\chart\PCAResultChart.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\chart\SSUTypicalComponentChart.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\chart\UDMResultChart.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\emma\_distance.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\emma\_kernel.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\emma\_resolver.py\
@@ -46,6 +45,7 @@ SOURCES=C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\__main__.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\LogDialog.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\MainWindow.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\ParameterEditor.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\ParameterTable.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\PCAAnalyzer.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\SSUAnalyzer.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ui\SSUMulticoreAnalyzer.py\

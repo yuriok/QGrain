@@ -134,7 +134,7 @@ class GeneratorComponent(QtWidgets.QWidget):
 
 
 class DatasetGenerator(QtWidgets.QWidget):
-    logger = logging.getLogger("QGrain")
+    logger = logging.getLogger("QGrain.DatasetGenerator")
 
     SUPPORT_DISTRIBUTIONS = (
         DistributionType.Normal,
@@ -362,6 +362,7 @@ class DatasetGenerator(QtWidgets.QWidget):
         if filename is None or filename == "":
             return
         try:
+            self.logger.debug(f"Generate a dataset with the parameters: {self.func_kwargs}.")
             self.generate_button.setEnabled(False)
             n_samples = self.n_samples_input.value()
             dataset = self.get_random_dataset(n_samples)
@@ -375,7 +376,7 @@ class DatasetGenerator(QtWidgets.QWidget):
                     raise StopIteration()
                 progress_dialog.setValue(int(progress*100))
                 QtCore.QCoreApplication.processEvents()
-            save_artificial_dataset(dataset, filename, progress_callback=callback)
+            save_artificial_dataset(dataset, filename, progress_callback=callback, logger=self.logger)
         except Exception as e:
             self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
             self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
