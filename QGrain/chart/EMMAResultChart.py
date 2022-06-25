@@ -343,6 +343,7 @@ class EMMAResultChart(BaseChart):
                     raise StopIteration()
                 progress.setValue((i+1)/n*100)
                 QtCore.QCoreApplication.processEvents()
+
             self.animated_action.setChecked(True)
             self.update_chart()
             # plt.rcParams["savefig.dpi"] = 120.0
