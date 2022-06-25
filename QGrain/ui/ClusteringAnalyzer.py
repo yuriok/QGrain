@@ -11,7 +11,7 @@ from ..model import GrainSizeDataset
 
 
 class ClusteringAnalyzer(QtWidgets.QWidget):
-    logger = logging.getLogger("QGrain")
+    logger = logging.getLogger("QGrain.ClusteringAnalyzer")
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.init_ui()
@@ -124,23 +124,24 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
     def perform(self):
         try:
             if self.__last_result is not None:
+                self.logger.debug("The clustering algorithm has been performed on this dataset, use previous result to avoid the repetitive computation.")
                 linkage_method, distance, linkage_matrix = self.__last_result
                 if linkage_method == self.linkage_method and distance == self.distance:
                     self.chart.show_result(linkage_matrix, p=self.p)
                     return
-            # pca = PCA(n_components=5)
-            # transformed = pca.fit_transform(self.__distribution_matrix)
-            # linkage_matrix = linkage(transformed, method=self.linkage_method, metric=self.distance)
+            self.logger.debug(f"Calculate the linkage matrix with the method ({self.linkage_method}) and metric ({self.distance}).")
             linkage_matrix = linkage(self.__distribution_matrix, method=self.linkage_method, metric=self.distance)
             self.__last_result = (self.linkage_method, self.distance, linkage_matrix)
             self.chart.show_result(linkage_matrix, p=self.p)
         except ValueError as e:
+            self.logger.error("The linkage method is not compatible with the distance metric.")
             self.show_error(self.tr("The linkage method is not compatible with the distance metric."))
             return
 
     def save_result(self):
         if self.__last_result is None:
-            self.show_warning(self.tr("The clustering algorithm has not been performed."))
+            self.logger.error("The clustering algorithm has not been performed.")
+            self.show_error(self.tr("The clustering algorithm has not been performed."))
             return
         filename, _ = self.file_dialog.getSaveFileName(
             None, self.tr("Choose a filename to save the clustering result"),
@@ -150,6 +151,7 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
         try:
             linkage_method, distance, linkage_matrix = self.__last_result
             flags = fcluster(linkage_matrix, self.n_clusters, criterion="maxclust")
+            self.logger.debug(f"Try to save the clustering result. Linkage method: {linkage_method}. Metric: {distance}. Number of clusters: {self.n_clusters}.")
             progress_dialog = QtWidgets.QProgressDialog(
                 self.tr("Saving clustering result..."), self.tr("Cancel"),
                 0, 100, self)
@@ -160,7 +162,7 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
                     raise StopIteration()
                 progress_dialog.setValue(int(progress*100))
                 QtCore.QCoreApplication.processEvents()
-            save_clustering(self.__dataset, flags, filename, progress_callback=callback)
+            save_clustering(self.__dataset, flags, filename, progress_callback=callback, logger=self.logger)
         except Exception as e:
             self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
             self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))

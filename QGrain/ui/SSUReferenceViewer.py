@@ -16,7 +16,7 @@ from ..ssu import SSUResult, built_in_distances, get_distance_function
 
 class SSUReferenceViewer(QtWidgets.QWidget):
     PAGE_ROWS = 20
-    logger = logging.getLogger("QGrain")
+    logger = logging.getLogger("QGrain.SSUReferenceViewer")
     result_displayed = QtCore.Signal(SSUResult, bool)
     def __init__(self, parent=None):
         super().__init__(parent=parent)
