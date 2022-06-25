@@ -3,13 +3,9 @@ import typing
 
 import numpy as np
 import torch
-from scipy.interpolate import interp1d
 
 from ..emma import KERNEL_CLASS_MAP, KernelType, Proportion
-from ..model import GrainSizeDataset, GrainSizeSample
-from ..ssu import (DISTRIBUTION_CLASS_MAP, DistributionType,
-                   SSUAlgorithmSetting, try_sample)
-from ..statistic import convert_φ_to_μm, logarithmic
+from ..model import GrainSizeDataset
 from ._result import UDMResult
 from ._setting import UDMAlgorithmSetting
 
@@ -20,7 +16,7 @@ class UDMModule(torch.nn.Module):
                  n_components: int,
                  classes_φ: np.ndarray,
                  kernel_type: KernelType,
-                 params: np.ndarray = None):
+                 parameters: np.ndarray = None):
         super().__init__()
         self.n_samples = n_samples
         self.n_components = n_components
@@ -30,7 +26,7 @@ class UDMModule(torch.nn.Module):
         self.kernel_type = kernel_type
         kernel_class = KERNEL_CLASS_MAP[kernel_type]
         self.proportions = Proportion(n_samples, n_components)
-        self.components = kernel_class(n_samples, self.n_components, self.n_classes, params)
+        self.components = kernel_class(n_samples, self.n_components, self.n_classes, parameters)
 
     def forward(self):
         # n_samples x 1 x n_members
@@ -47,9 +43,8 @@ class UDMResolver:
     def try_fit(self, dataset: GrainSizeDataset,
                 kernel_type: KernelType,
                 n_components: int,
-                initial_params: np.ndarray = None,
                 resolver_setting: UDMAlgorithmSetting = None,
-                save_history = False):
+                parameters: np.ndarray = None):
         if resolver_setting is None:
             s = UDMAlgorithmSetting()
         else:
@@ -58,13 +53,13 @@ class UDMResolver:
 
         X = torch.from_numpy(dataset.distribution_matrix.astype(np.float32)).to(s.device)
         classes_φ = dataset.classes_φ.astype(np.float32)
-        udm = UDMModule(dataset.n_samples, n_components, classes_φ, kernel_type, initial_params).to(s.device)
+        udm = UDMModule(dataset.n_samples, n_components, classes_φ, kernel_type, parameters).to(s.device)
         optimizer = torch.optim.Adam(udm.parameters(), lr=s.learning_rate, betas=s.betas)
 
         start = time.time()
         distribution_loss_series = []
         component_loss_series = []
-        history_params = []
+        history = []
         udm.components.requires_grad = False
         udm.components.params.requires_grad = False
         for pretrain_epoch in range(s.pretrain_epochs):
@@ -73,14 +68,11 @@ class UDMResolver:
             distribution_loss = torch.log10(torch.mean(torch.square(X - X_hat)))
             distribution_loss_series.append(distribution_loss.item())
             component_loss_series.append(0.0)
-            print(f"Pretrain Stage -- Epoch {pretrain_epoch}, GSD Loss {distribution_loss.item():0.4f}")
             optimizer.zero_grad()
             distribution_loss.backward()
             optimizer.step()
-
-            if save_history:
-                params = torch.cat([udm.components.params, udm.proportions.params], dim=1).detach().cpu().numpy()
-                history_params.append(params)
+            params = torch.cat([udm.components.params, udm.proportions.params], dim=1).detach().cpu().numpy()
+            history.append(params)
 
         udm.components.requires_grad = True
         udm.components.params.requires_grad = True
@@ -92,15 +84,12 @@ class UDMResolver:
             component_loss = torch.mean(torch.std(components, dim=0))
             loss = distribution_loss + (10**s.constraint_level) * component_loss
             distribution_loss_series.append(distribution_loss.item())
-            component_loss_series.append(component_loss.item())
-            print(f"Training -- Epoch {epoch}, GSD Loss {distribution_loss.item():0.4f}, Component Loss {component_loss.item(): 0.4f}")
+            component_loss_series.append((10**s.constraint_level) * component_loss.item())
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-
-            if save_history:
-                params = torch.cat([udm.components.params, udm.proportions.params], dim=1).detach().cpu().numpy()
-                history_params.append(params)
+            params = torch.cat([udm.components.params, udm.proportions.params], dim=1).detach().cpu().numpy()
+            history.append(params)
 
             if np.isnan(loss.item()):
                 break
@@ -110,14 +99,16 @@ class UDMResolver:
                 if delta_loss < 10**(-s.precision):
                     break
 
+        torch.cuda.synchronize()
         time_spent = time.time() - start
-        params = torch.cat([udm.components.params, udm.proportions.params], dim=1).detach().cpu().numpy()
+        final_params = torch.cat([udm.components.params, udm.proportions.params], dim=1).detach().cpu().numpy()
         result = UDMResult(
             dataset, kernel_type, n_components,
-            params,
-            distribution_loss_series,
-            component_loss_series,
-            initial_params=initial_params,
-            resolver_setting=resolver_setting,
-            time_spent=time_spent)
+            parameters,
+            resolver_setting,
+            np.array(distribution_loss_series),
+            np.array(component_loss_series),
+            time_spent,
+            final_params,
+            history)
         return result
