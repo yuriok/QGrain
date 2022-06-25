@@ -298,6 +298,7 @@ class DistributionChart(BaseChart):
             if filename is None or filename == "":
                 return
             progress = QtWidgets.QProgressDialog(self)
+            progress.setWindowTitle("QGrain")
             progress.setRange(0, 100)
             progress.setLabelText(self.tr("Saving Animation [{0} Frames]").format(self.last_result.n_iterations))
             canceled = False
