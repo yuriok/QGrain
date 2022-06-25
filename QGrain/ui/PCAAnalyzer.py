@@ -38,7 +38,7 @@ class PCAAnalyzer(QtWidgets.QWidget):
 
     def on_dataset_loaded(self, dataset: GrainSizeDataset):
         self.__dataset = dataset
-        self.chart.show_dataset(dataset)
+        self.chart.show_dataset(self.__dataset)
 
     def changeEvent(self, event: QtCore.QEvent):
         if event.type() == QtCore.QEvent.LanguageChange:

@@ -16,7 +16,7 @@ from .ParameterTable import ParameterTable
 
 class SSUResultViewer(QtWidgets.QWidget):
     PAGE_ROWS = 20
-    logger = logging.getLogger("QGrain")
+    logger = logging.getLogger("QGrain.SSUResultViewer")
     result_marked = QtCore.Signal(SSUResult)
     result_displayed = QtCore.Signal(SSUResult)
     result_referred = QtCore.Signal(SSUResult)
@@ -364,7 +364,7 @@ class SSUResultViewer(QtWidgets.QWidget):
                         raise StopIteration()
                     progress_dialog.setValue(int(progress*100))
                     QtCore.QCoreApplication.processEvents()
-                save_ssu(self.__results, filename, align_components, progress_callback=callback)
+                save_ssu(self.__results, filename, align_components, progress_callback=callback, logger=self.logger)
             else:
                 with open(filename, "wb") as f:
                     pickle.dump(self.__results, f)
