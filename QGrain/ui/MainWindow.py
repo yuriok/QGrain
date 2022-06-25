@@ -133,12 +133,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.save_udm_result_action.triggered.connect(self.udm_analyzer.save_selected_result)
 
         # Config
-        self.config_menu = self.menuBar().addMenu(self.tr("Config")) # type: QtWidgets.QMenu
-        self.config_ssu_action = self.config_menu.addAction(self.tr("SSU Settings")) # type: QtGui.QAction
+        self.config_menu = self.menuBar().addMenu(self.tr("Configure")) # type: QtWidgets.QMenu
+        self.config_ssu_action = self.config_menu.addAction(self.tr("SSU Algorithm")) # type: QtGui.QAction
         self.config_ssu_action.triggered.connect(self.ssu_setting_dialog.show)
-        self.config_emma_action = self.config_menu.addAction(self.tr("EMMA Settings")) # type: QtGui.QAction
+        self.config_emma_action = self.config_menu.addAction(self.tr("EMMA Algorithm")) # type: QtGui.QAction
         self.config_emma_action.triggered.connect(self.emma_setting_dialog.show)
-        self.config_udm_action = self.config_menu.addAction(self.tr("UDM Settings")) # type: QtGui.QAction
+        self.config_udm_action = self.config_menu.addAction(self.tr("UDM Algorithm")) # type: QtGui.QAction
         self.config_udm_action.triggered.connect(self.udm_setting_dialog.show)
 
         # Experimental
@@ -315,10 +315,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.save_ssu_reference_action.setText(self.tr("SSU References"))
         self.save_emma_result_action.setText(self.tr("EMMA Result"))
         self.save_udm_result_action.setText(self.tr("UDM Result"))
-        self.config_menu.setTitle(self.tr("Config"))
-        self.config_ssu_action.setText(self.tr("SSU Settings"))
-        self.config_emma_action.setText(self.tr("EMMA Settings"))
-        self.config_udm_action.setText(self.tr("UDM Settings"))
+        self.config_menu.setTitle(self.tr("Configure"))
+        self.config_ssu_action.setText(self.tr("SSU Algorithm"))
+        self.config_emma_action.setText(self.tr("EMMA Algorithm"))
+        self.config_udm_action.setText(self.tr("UDM Algorithm"))
         self.experimental_menu.setTitle(self.tr("Experimental"))
         self.ssu_fit_all_action.setText(self.tr("Perform SSU For All Samples"))
         self.language_menu.setTitle(self.tr("Language"))
