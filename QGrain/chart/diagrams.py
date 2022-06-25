@@ -63,6 +63,8 @@ class DiagramChart(BaseChart):
                      append=False, c="#ffffff00",
                      marker=".", ms=8, mfc="red", mew=0.0,
                      **kwargs):
+        if len(samples) == 0:
+            return
         if not append:
             self.axes.clear()
             self.draw_base()

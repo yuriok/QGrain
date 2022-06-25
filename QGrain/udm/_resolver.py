@@ -99,13 +99,14 @@ class UDMResolver:
                 if delta_loss < 10**(-s.precision):
                     break
 
-        torch.cuda.synchronize()
+        if s.device == "cuda":
+            torch.cuda.synchronize()
         time_spent = time.time() - start
         final_params = torch.cat([udm.components.params, udm.proportions.params], dim=1).detach().cpu().numpy()
         result = UDMResult(
             dataset, kernel_type, n_components,
             parameters,
-            resolver_setting,
+            s,
             np.array(distribution_loss_series),
             np.array(component_loss_series),
             time_spent,
