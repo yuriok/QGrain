@@ -401,7 +401,7 @@ def setup_app():
     # app.setApplicationDisplayName(f"QGrain ({QGRAIN_VERSION})")
     app.setApplicationVersion(QGRAIN_VERSION)
     from qt_material import apply_stylesheet
-    apply_stylesheet(app, theme='dark_cyan.xml', invert_secondary=False, extra=EXTRA)
+    apply_stylesheet(app, theme="light_cyan.xml", invert_secondary=True, extra=EXTRA)
     setup_matplotlib()
     setup_language(app, "en")
     return app, splash
