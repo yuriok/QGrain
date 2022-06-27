@@ -151,13 +151,9 @@ class DistributionChart(BaseChart):
         else:
             return False
 
-    @property
-    def repeat(self) -> bool:
-        return self.repeat_check_box.isChecked()
-
     def show_menu(self, pos: QtCore.QPoint):
-        self.save_figure_action.setEnabled(self.last_model is not None)
-        self.save_animation_action.setEnabled(self.last_result is not None)
+        self.save_figure_action.setEnabled(self.last_model is not None or (self.last_result is not None and not self.animated))
+        self.save_animation_action.setEnabled(self.last_result is not None and self.animated)
         self.menu.popup(QtGui.QCursor.pos())
 
     def show_model(self, model: SSUViewModel, quick=False):
@@ -231,7 +227,7 @@ class DistributionChart(BaseChart):
         self.axes.set_ylim(0.0, round(np.max(first.target)*1.2, 2))
         self.figure.tight_layout()
         # self.canvas.draw()
-        def common(model):
+        def common(model: SSUViewModel):
             modes_φ = [model.classes_φ[np.unravel_index(np.argmax(distribution), distribution.shape)] for distribution in model.distributions]
             if self.show_mode_lines:
                 if hasattr(self, "vlines"):
