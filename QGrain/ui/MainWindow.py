@@ -234,7 +234,17 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         udm_result = self.udm_analyzer.selected_result
         assert udm_result is not None
-        ssu_results = udm_result.convert_to_ssu_results()
+        progress_dialog = QtWidgets.QProgressDialog(
+            self.tr("Converting UDM result to SSU results..."), self.tr("Cancel"),
+            0, 100, self)
+        progress_dialog.setWindowTitle("QGrain")
+        progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
+        def callback(progress: float):
+            if progress_dialog.wasCanceled():
+                raise StopIteration()
+            progress_dialog.setValue(int(progress*100))
+            QtCore.QCoreApplication.processEvents()
+        ssu_results = udm_result.convert_to_ssu_results(callback)
         self.ssu_analyzer.result_view.add_results(ssu_results)
 
     def on_save_statistic_clicked(self):
