@@ -44,7 +44,7 @@ class UDMResolver:
                 kernel_type: KernelType,
                 n_components: int,
                 resolver_setting: UDMAlgorithmSetting = None,
-                parameters: np.ndarray = None):
+                parameters: np.ndarray = None) -> UDMResult:
         if resolver_setting is None:
             s = UDMAlgorithmSetting()
         else:
@@ -83,6 +83,10 @@ class UDMResolver:
             distribution_loss = torch.log10(torch.mean(torch.square(X_hat - X)))
             component_loss = torch.mean(torch.std(components, dim=0))
             loss = distribution_loss + (10**s.constraint_level) * component_loss
+
+            if np.isnan(loss.item()):
+                break
+
             distribution_loss_series.append(distribution_loss.item())
             component_loss_series.append((10**s.constraint_level) * component_loss.item())
             optimizer.zero_grad()
@@ -90,9 +94,6 @@ class UDMResolver:
             optimizer.step()
             params = torch.cat([udm.components.params, udm.proportions.params], dim=1).detach().cpu().numpy()
             history.append(params)
-
-            if np.isnan(loss.item()):
-                break
 
             if epoch > s.min_epochs:
                 delta_loss = np.mean(distribution_loss_series[-100:-80])-np.mean(distribution_loss_series[-20:])
