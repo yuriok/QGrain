@@ -109,6 +109,8 @@ class UDMResult:
 
     def update(self, parameters: np.ndarray):
         proportions, components, mvsk = self.__distribution_class.interpret(parameters, self.__classes, self.__interval)
+        proportions[np.logical_or(np.isnan(proportions), np.isinf(proportions))] = 0.0
+        components[np.logical_or(np.isnan(components), np.isinf(components))] = 0.0
         self.__proportions = proportions
         self.__components = components
 
