@@ -341,6 +341,7 @@ class DatasetGenerator(QtWidgets.QWidget):
     def on_distribution_type_changed(self, _):
         self._clear_components()
         self._add_components()
+        self.on_n_components_changed(self.n_components)
 
     def on_preview_clicked(self):
         if self.update_timer.isActive():
