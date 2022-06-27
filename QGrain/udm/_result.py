@@ -117,7 +117,7 @@ class UDMResult:
         predict = (self.proportions @ self.components).squeeze()
         return distance_func(predict, self.dataset.distribution_matrix)
 
-    def convert_to_ssu_results(self) -> typing.List[SSUResult]:
+    def convert_to_ssu_results(self, progress_callback: typing.Callable = None) -> typing.List[SSUResult]:
         results = []
         weight = np.ones((1, self.n_components))
         initial_guess = np.concatenate([self.initial_parameters, weight], axis=0).astype(np.float64)
@@ -131,6 +131,11 @@ class UDMResult:
                 resolver_setting=None,
                 initial_guess=initial_guess)
             func_args=np.expand_dims(self.final_parameters[i], axis=0)
-            result = SSUResult(task, func_args, time_spent=time_spent)
+            history = [np.expand_dims(self.__history[j][i], axis=0) for j in range(self.n_iterations)]
+            result = SSUResult(task, func_args, history=history, time_spent=time_spent)
             results.append(result)
+            if progress_callback is not None:
+                progress_callback(i / self.n_samples)
+        if progress_callback is not None:
+            progress_callback(1.0)
         return results
