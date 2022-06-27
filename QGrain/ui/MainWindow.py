@@ -304,6 +304,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def closeEvent(self, event: QtGui.QCloseEvent):
         res = self.close_msg.exec_()
         if res == QtWidgets.QMessageBox.Yes:
+            self.ssu_analyzer.async_worker.working_thread.terminate()
             event.accept()
         else:
             event.ignore()
