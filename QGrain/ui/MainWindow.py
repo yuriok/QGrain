@@ -173,7 +173,7 @@ class MainWindow(QtWidgets.QMainWindow):
             action.triggered.connect(lambda checked=False, theme=theme, invert_secondary=invert_secondary: apply_stylesheet(app, theme=theme, invert_secondary=invert_secondary, extra=EXTRA))
             self.theme_menu.addAction(action)
             self.theme_actions.append(action)
-            if theme == "dark_cyan.xml":
+            if theme == "light_cyan.xml":
                 action.setChecked(True)
         # Log
         self.log_action = QtGui.QAction(self.tr("Log"))
