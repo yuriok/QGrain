@@ -104,7 +104,7 @@ class CumulativeCurveChart(BaseChart):
                     self.axes.set_xlim(x[0], x[-1])
                     self.axes.set_ylim(0.0, 1.0)
             cumulative_frequency = get_cumulative_frequency(sample.distribution)
-            self.axes.plot(x, cumulative_frequency, c=normal_color())
+            self.axes.plot(x, cumulative_frequency, c=normal_color(), label=sample.name)
         self.figure.tight_layout()
         self.canvas.draw()
 
