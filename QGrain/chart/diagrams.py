@@ -37,6 +37,10 @@ class DiagramChart(BaseChart):
     def labels(self):
         pass
 
+    @property
+    def n_batchs(self) -> int:
+        return len(self.__sample_batchses)
+
     def plot_legend(self):
         pass
 
@@ -47,11 +51,11 @@ class DiagramChart(BaseChart):
 
         for sand, clay, kwargs in self.lines:
             x, y = self.trans_pos(sand, clay)
-            self.axes.plot(x, y, **kwargs)
+            self.axes.plot(x, y, **kwargs, label="_")
 
         for (sand, clay), text, kwargs in self.labels:
             x, y = self.trans_pos(sand, clay)
-            self.axes.text(x, y, text, color=normal_color(), **kwargs)
+            self.axes.text(x, y, text, color=normal_color(), **kwargs, label="_")
 
         self.plot_legend()
         self.figure.tight_layout()
@@ -71,7 +75,7 @@ class DiagramChart(BaseChart):
             self.__sample_batchses.clear()
         a, b = self.convert_samples(samples)
         x, y = self.trans_pos(a, b)
-        self.axes.plot(x, y, c=c, marker=marker, ms=ms, mfc=mfc, mew=mew, **kwargs)
+        self.axes.plot(x, y, c=c, marker=marker, ms=ms, mfc=mfc, mew=mew, **kwargs, label=f"batch_{self.n_batchs}")
         self.canvas.draw()
         plot_kwargs = dict(c=c, marker=marker, ms=ms, mfc=mfc, mew=mew)
         plot_kwargs.update(kwargs)
@@ -81,10 +85,10 @@ class DiagramChart(BaseChart):
         self.figure.clear()
         self.axes = self.figure.subplots()
         self.draw_base()
-        for samples, plot_kwargs in self.__sample_batchses:
+        for i, (samples, plot_kwargs) in enumerate(self.__sample_batchses):
             a, b = self.convert_samples(samples)
             x, y = self.trans_pos(a, b)
-            self.axes.plot(x, y, **plot_kwargs)
+            self.axes.plot(x, y, **plot_kwargs, label=f"batch_{i}")
         self.canvas.draw()
 
 

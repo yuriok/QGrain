@@ -14,7 +14,7 @@ class DistanceCurveChart(BaseChart):
 
     def show_distance_series(self, series: typing.Iterable[float], ylabel: str, title: str = ""):
         self.axes.clear()
-        self.axes.plot(series)
+        self.axes.plot(series, label="series")
         self.axes.set_xlabel("Iteration index")
         self.axes.set_ylabel(ylabel)
         self.axes.set_title(title)

@@ -169,13 +169,18 @@ class DistributionChart(BaseChart):
             self.axes.set_title(model.title)
             self.axes.set_xlabel(self.xlabel)
             self.axes.set_ylabel(self.ylabel)
-            self.target_line = self.axes.plot(x, model.target, c="#ffffff00", marker=".", ms=8, mfc=normal_color(), mew=0.0)[0]
+            self.target_line = self.axes.plot(
+                x, model.target,
+                c="#ffffff00",
+                marker=".", ms=8,
+                mfc=normal_color(), mec=normal_color(),
+                label="target")[0]
             self.axes.set_xlim(x[0], x[-1])
             self.axes.set_ylim(0.0, round(np.max(model.target)*1.2, 2))
-            self.mixed_line = self.axes.plot(x, model.mixed, c=normal_color())[0]
+            self.mixed_line = self.axes.plot(x, model.mixed, c=normal_color(), label="mixed")[0]
             self.component_lines = []
             for i, (distribution, proportion) in enumerate(zip(model.distributions, model.proportions)):
-                component = self.axes.plot(x, distribution*proportion, c=plt.get_cmap()(i))[0]
+                component = self.axes.plot(x, distribution*proportion, c=plt.get_cmap()(i), label=f"C{i+1}")[0]
                 self.component_lines.append(component)
             self.figure.tight_layout()
         else:
@@ -222,7 +227,12 @@ class DistributionChart(BaseChart):
         self.axes.set_title(first.title)
         self.axes.set_xlabel(self.xlabel)
         self.axes.set_ylabel(self.ylabel)
-        self.target_line = self.axes.plot(x, first.target, c="#ffffff00", marker=".", ms=8, mfc=normal_color(), mew=0.0)[0]
+        self.target_line = self.axes.plot(
+            x, first.target,
+            c="#ffffff00",
+            marker=".", ms=8,
+            mfc=normal_color(), mec=normal_color(),
+            label="target")[0]
         self.axes.set_xlim(x[0], x[-1])
         self.axes.set_ylim(0.0, round(np.max(first.target)*1.2, 2))
         self.figure.tight_layout()
@@ -250,8 +260,8 @@ class DistributionChart(BaseChart):
                     loc="upper left", prop={"size": 8})
         def init():
             model = first
-            self.mixed_line = self.axes.plot(x, model.mixed, c=normal_color())[0]
-            self.component_lines = [self.axes.plot(x, distribution*proportion, c=plt.get_cmap()(i))[0] for i, (distribution, proportion) in enumerate(zip(model.distributions, model.proportions))]
+            self.mixed_line = self.axes.plot(x, model.mixed, c=normal_color(), label="mixed")[0]
+            self.component_lines = [self.axes.plot(x, distribution*proportion, c=plt.get_cmap()(i), label=f"C{i+1}")[0] for i, (distribution, proportion) in enumerate(zip(model.distributions, model.proportions))]
             common(model)
             check_artists = [self.mixed_line]
             check_artists.extend(self.component_lines)
