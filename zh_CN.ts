@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="zh_CN">
+<!DOCTYPE TS><TS version="1.1" language="zh_CN">
 <context>
     <name>AboutDialog</name>
     <message>
@@ -185,67 +184,67 @@
 <context>
     <name>DatasetGenerator</name>
     <message>
-        <location filename="QGrain/ui/DatasetGenerator.py" line="425"/>
+        <location filename="QGrain/ui/DatasetGenerator.py" line="426"/>
         <source>Distribution Type</source>
         <translation>分布类型</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/DatasetGenerator.py" line="434"/>
+        <location filename="QGrain/ui/DatasetGenerator.py" line="435"/>
         <source>Preview</source>
         <translation>预览</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/DatasetGenerator.py" line="429"/>
+        <location filename="QGrain/ui/DatasetGenerator.py" line="430"/>
         <source>Data Precision</source>
         <translation>数据精度</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/DatasetGenerator.py" line="435"/>
+        <location filename="QGrain/ui/DatasetGenerator.py" line="436"/>
         <source>Generate</source>
         <translation>生成</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/DatasetGenerator.py" line="432"/>
+        <location filename="QGrain/ui/DatasetGenerator.py" line="433"/>
         <source>Stop</source>
         <translation>停止</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/DatasetGenerator.py" line="360"/>
+        <location filename="QGrain/ui/DatasetGenerator.py" line="361"/>
         <source>Choose a filename to save the generated dataset</source>
         <translation>选择一个文件名来保存生成的数据集</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/DatasetGenerator.py" line="398"/>
+        <location filename="QGrain/ui/DatasetGenerator.py" line="399"/>
         <source>Artificial Sample</source>
         <translation>生成的样本</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/DatasetGenerator.py" line="426"/>
+        <location filename="QGrain/ui/DatasetGenerator.py" line="427"/>
         <source>Minimum Size [{0}]</source>
         <translation>最小粒级 [{0}]</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/DatasetGenerator.py" line="427"/>
+        <location filename="QGrain/ui/DatasetGenerator.py" line="428"/>
         <source>Maximum Size [{0}]</source>
         <translation>最大粒级 [{0}]</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/DatasetGenerator.py" line="422"/>
+        <location filename="QGrain/ui/DatasetGenerator.py" line="423"/>
         <source>Control</source>
         <translation>控制</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/DatasetGenerator.py" line="424"/>
+        <location filename="QGrain/ui/DatasetGenerator.py" line="425"/>
         <source>Number of Components</source>
         <translation>组分的数量</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/DatasetGenerator.py" line="428"/>
+        <location filename="QGrain/ui/DatasetGenerator.py" line="429"/>
         <source>Number of Classes</source>
         <translation>粒级的数量</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/DatasetGenerator.py" line="430"/>
+        <location filename="QGrain/ui/DatasetGenerator.py" line="431"/>
         <source>Number of Samples</source>
         <translation>样本的数量</translation>
     </message>
@@ -265,17 +264,17 @@
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/DatasetGenerator.py" line="370"/>
+        <location filename="QGrain/ui/DatasetGenerator.py" line="371"/>
         <source>Saving artificial dataset...</source>
         <translation>正在保存人造数据集...</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/DatasetGenerator.py" line="370"/>
+        <location filename="QGrain/ui/DatasetGenerator.py" line="371"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/DatasetGenerator.py" line="382"/>
+        <location filename="QGrain/ui/DatasetGenerator.py" line="383"/>
         <source>An unknown exception was raised. Please check the logs for more details.</source>
         <translation>出现了一个未知的异常。请检查日志以获取更多的信息。</translation>
     </message>
@@ -291,22 +290,22 @@
 <context>
     <name>DistributionChart</name>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="342"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="338"/>
         <source>Scale</source>
         <translation>标尺</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="348"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="344"/>
         <source>Animation Interval</source>
         <translation>动画间隔</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="351"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="347"/>
         <source>Repeat Animation</source>
         <translation>循环播放</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="352"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="348"/>
         <source>Save Animation</source>
         <translation>保存动画</translation>
     </message>
@@ -356,42 +355,42 @@
         <translation>60 毫秒</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="303"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="299"/>
         <source>Saving Animation [{0} Frames]</source>
         <translation>正在保存动画 [共 {0} 帧]</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="323"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="319"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="317"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="313"/>
         <source>ImageMagick is not installed, please download and install it from its offical website (https://imagemagick.org/index.php).</source>
         <translation>尚未安装ImageMagick，请从它的官网下载并安装它 (https://imagemagick.org/index.php)。</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="324"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="320"/>
         <source>FFMpeg is not installed, please download and install it from its offical website (https://ffmpeg.org/).</source>
         <translation>尚未安装FFMpeg，请从它的官网下载并安装它 （https://ffmpeg.org/）。</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="296"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="292"/>
         <source>Choose a filename to save the animation of this SSU result</source>
         <translation>选取一个文件来保存该SSU结果的动画</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="345"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="341"/>
         <source>Show Mode Lines</source>
         <translation>显示峰值线</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="346"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="342"/>
         <source>Show Legend</source>
         <translation>显示图例</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/DistributionChart.py" line="347"/>
+        <location filename="QGrain/chart/DistributionChart.py" line="343"/>
         <source>Animated</source>
         <translation>动画</translation>
     </message>
@@ -527,47 +526,47 @@
         <translation>线性</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/EMMAResultChart.py" line="370"/>
+        <location filename="QGrain/chart/EMMAResultChart.py" line="375"/>
         <source>Scale</source>
         <translation>标尺</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/EMMAResultChart.py" line="337"/>
+        <location filename="QGrain/chart/EMMAResultChart.py" line="342"/>
         <source>Saving Animation [{0} Frames]</source>
         <translation>正在保存动画 [共 {0} 帧]</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/EMMAResultChart.py" line="359"/>
+        <location filename="QGrain/chart/EMMAResultChart.py" line="364"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/EMMAResultChart.py" line="353"/>
+        <location filename="QGrain/chart/EMMAResultChart.py" line="358"/>
         <source>ImageMagick is not installed, please download and install it from its offical website (https://imagemagick.org/index.php).</source>
         <translation>尚未安装ImageMagick，请从它的官网下载并安装它 (https://imagemagick.org/index.php)。</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/EMMAResultChart.py" line="360"/>
+        <location filename="QGrain/chart/EMMAResultChart.py" line="365"/>
         <source>FFMpeg is not installed, please download and install it from its offical website (https://ffmpeg.org/).</source>
         <translation>尚未安装FFMpeg，请从它的官网下载并安装它 （https://ffmpeg.org/）。</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/EMMAResultChart.py" line="373"/>
+        <location filename="QGrain/chart/EMMAResultChart.py" line="378"/>
         <source>Distance Function</source>
         <translation>距离函数</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/EMMAResultChart.py" line="377"/>
+        <location filename="QGrain/chart/EMMAResultChart.py" line="382"/>
         <source>Animation Interval</source>
         <translation>动画间隔</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/EMMAResultChart.py" line="380"/>
+        <location filename="QGrain/chart/EMMAResultChart.py" line="385"/>
         <source>Repeat Animation</source>
         <translation>循环播放</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/EMMAResultChart.py" line="381"/>
+        <location filename="QGrain/chart/EMMAResultChart.py" line="386"/>
         <source>Save Animation</source>
         <translation>保存动画</translation>
     </message>
@@ -642,12 +641,12 @@
         <translation>60 毫秒</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/EMMAResultChart.py" line="330"/>
+        <location filename="QGrain/chart/EMMAResultChart.py" line="335"/>
         <source>Choose a filename to save the animation of this EMMA result</source>
         <translation>选取一个文件来保存该EMMA结果的动画</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/EMMAResultChart.py" line="376"/>
+        <location filename="QGrain/chart/EMMAResultChart.py" line="381"/>
         <source>Animated</source>
         <translation>动画</translation>
     </message>
@@ -905,7 +904,7 @@ Deviation</source>
     </message>
     <message>
         <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="390"/>
-        <source>Method of Statistic Moments</source>
+        <source>Method of Statistical Moments</source>
         <translation>统计参数法</translation>
     </message>
     <message>
@@ -1034,11 +1033,6 @@ Deviation</source>
         <translation>所有峰值 [{0}]</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="196"/>
-        <source>By clicking the option at menu bar, you can save the statistic parameters and classification groups to a Excel file (Menu -&gt; Save -&gt; Statistic Result).</source>
-        <translation>通过点击菜单栏里的选项，你可以保存统计学参数和分组情况到Excel文件中 (菜单 -&gt; 保存 -&gt; 统计学结果)。</translation>
-    </message>
-    <message>
         <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="273"/>
         <source>Mean Description</source>
         <translation>均值的描述</translation>
@@ -1102,6 +1096,11 @@ Deviation</source>
         <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="434"/>
         <source>Append All</source>
         <translation>追加所有</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/GrainSizeDatasetViewer.py" line="196"/>
+        <source>By clicking the option at menu bar, you can save the statistical parameters and classification groups to a Excel file (Menu -&gt; Save -&gt; Statistical Result).</source>
+        <translation>通过点击菜单栏中的选项，你可以保存统计学参数和分类群组到一个Excel文件 (菜单 -&gt; 保存 -&gt; 统计学结果)。</translation>
     </message>
 </context>
 <context>
@@ -1226,37 +1225,37 @@ Deviation</source>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="313"/>
+        <location filename="QGrain/ui/MainWindow.py" line="324"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="315"/>
+        <location filename="QGrain/ui/MainWindow.py" line="326"/>
         <source>Open</source>
         <translation>打开</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="317"/>
+        <location filename="QGrain/ui/MainWindow.py" line="328"/>
         <source>Grain Size Dataset</source>
         <translation>粒度数据集</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="316"/>
+        <location filename="QGrain/ui/MainWindow.py" line="327"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="336"/>
+        <location filename="QGrain/ui/MainWindow.py" line="347"/>
         <source>Language</source>
         <translation>语言</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="337"/>
+        <location filename="QGrain/ui/MainWindow.py" line="348"/>
         <source>Theme</source>
         <translation>主题</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="339"/>
+        <location filename="QGrain/ui/MainWindow.py" line="350"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
@@ -1271,152 +1270,137 @@ Deviation</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="268"/>
+        <location filename="QGrain/ui/MainWindow.py" line="278"/>
         <source>Dataset has not been loaded.</source>
         <translation>数据集尚未被加载。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="314"/>
+        <location filename="QGrain/ui/MainWindow.py" line="325"/>
         <source>Closing this window will terminate all running tasks, are you sure to close it?</source>
         <translation>关闭该窗口将会终止所有运行中的任务，你确定要关闭它吗？</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="322"/>
-        <source>Statistic Result</source>
-        <translation>统计学结果</translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/MainWindow.py" line="340"/>
+        <location filename="QGrain/ui/MainWindow.py" line="351"/>
         <source>Generator</source>
         <translation>Generator</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="342"/>
+        <location filename="QGrain/ui/MainWindow.py" line="353"/>
         <source>PCA</source>
         <translation>PCA</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="343"/>
+        <location filename="QGrain/ui/MainWindow.py" line="354"/>
         <source>Clustering</source>
         <translation>Clustering</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="344"/>
+        <location filename="QGrain/ui/MainWindow.py" line="355"/>
         <source>SSU</source>
         <translation>SSU</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="345"/>
+        <location filename="QGrain/ui/MainWindow.py" line="356"/>
         <source>EMMA</source>
         <translation>EMMA</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="346"/>
+        <location filename="QGrain/ui/MainWindow.py" line="357"/>
         <source>UDM</source>
         <translation>UDM</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="323"/>
+        <location filename="QGrain/ui/MainWindow.py" line="334"/>
         <source>PCA Result</source>
         <translation>PCA结果</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="324"/>
+        <location filename="QGrain/ui/MainWindow.py" line="335"/>
         <source>Clustering Result</source>
         <translation>聚类分析结果</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="338"/>
+        <location filename="QGrain/ui/MainWindow.py" line="349"/>
         <source>Log</source>
         <translation>日志</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="246"/>
-        <source>Save statistic result</source>
-        <translation>保存统计学分析结果</translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/MainWindow.py" line="252"/>
-        <source>Saving statistic result...</source>
-        <translation>正在保存统计学分析结果...</translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/MainWindow.py" line="277"/>
+        <location filename="QGrain/ui/MainWindow.py" line="287"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="289"/>
+        <location filename="QGrain/ui/MainWindow.py" line="299"/>
         <source>An unknown exception was raised. Please check the logs for more details.</source>
         <translation>出现了一个未知的异常。请检查日志以获取更多的信息。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="271"/>
+        <location filename="QGrain/ui/MainWindow.py" line="281"/>
         <source>Save PCA result</source>
         <translation>保存PCA结果</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="277"/>
+        <location filename="QGrain/ui/MainWindow.py" line="287"/>
         <source>Saving PCA result...</source>
         <translation>正在保存PCA结果...</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="325"/>
+        <location filename="QGrain/ui/MainWindow.py" line="336"/>
         <source>SSU Results</source>
         <translation>SSU结果</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="326"/>
+        <location filename="QGrain/ui/MainWindow.py" line="337"/>
         <source>SSU References</source>
         <translation>SSU参考结果</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="333"/>
+        <location filename="QGrain/ui/MainWindow.py" line="344"/>
         <source>Experimental</source>
         <translation>实验性</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="334"/>
+        <location filename="QGrain/ui/MainWindow.py" line="345"/>
         <source>Perform SSU For All Samples</source>
         <translation>为所有样本执行SSU算法</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="341"/>
+        <location filename="QGrain/ui/MainWindow.py" line="352"/>
         <source>Statistics</source>
         <translation>Statistics</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="327"/>
+        <location filename="QGrain/ui/MainWindow.py" line="338"/>
         <source>EMMA Result</source>
         <translation>EMMA结果</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="328"/>
+        <location filename="QGrain/ui/MainWindow.py" line="339"/>
         <source>UDM Result</source>
         <translation>UDM结果</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="329"/>
+        <location filename="QGrain/ui/MainWindow.py" line="340"/>
         <source>Configure</source>
         <translation>配置</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="330"/>
+        <location filename="QGrain/ui/MainWindow.py" line="341"/>
         <source>SSU Algorithm</source>
         <translation>SSU算法</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="331"/>
+        <location filename="QGrain/ui/MainWindow.py" line="342"/>
         <source>EMMA Algorithm</source>
         <translation>EMMA算法</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="332"/>
+        <location filename="QGrain/ui/MainWindow.py" line="343"/>
         <source>UDM Algorithm</source>
         <translation>UDM算法</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="335"/>
+        <location filename="QGrain/ui/MainWindow.py" line="346"/>
         <source>Convert UDM Result To SSU Results</source>
         <translation>将UDM结果转换为SSU结果</translation>
     </message>
@@ -1424,6 +1408,26 @@ Deviation</source>
         <location filename="QGrain/ui/MainWindow.py" line="233"/>
         <source>There is no UDM result.</source>
         <translation>UDM结果不存在。</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/MainWindow.py" line="333"/>
+        <source>Statistical Result</source>
+        <translation>统计学结果</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/MainWindow.py" line="238"/>
+        <source>Converting UDM result to SSU results...</source>
+        <translation>正在将UDM结果转换为SSU结果...</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/MainWindow.py" line="256"/>
+        <source>Save statistical result</source>
+        <translation>保存统计学结果</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/MainWindow.py" line="262"/>
+        <source>Saving statistical result...</source>
+        <translation>正在保存统计学结果...</translation>
     </message>
 </context>
 <context>
@@ -2307,27 +2311,27 @@ Deviation</source>
 <context>
     <name>UDMResultChart</name>
     <message>
-        <location filename="QGrain/chart/UDMResultChart.py" line="381"/>
+        <location filename="QGrain/chart/UDMResultChart.py" line="386"/>
         <source>Scale</source>
         <translation>标尺</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/UDMResultChart.py" line="384"/>
+        <location filename="QGrain/chart/UDMResultChart.py" line="389"/>
         <source>Animated</source>
         <translation>动画</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/UDMResultChart.py" line="385"/>
+        <location filename="QGrain/chart/UDMResultChart.py" line="390"/>
         <source>Animation Interval</source>
         <translation>动画间隔</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/UDMResultChart.py" line="388"/>
+        <location filename="QGrain/chart/UDMResultChart.py" line="393"/>
         <source>Repeat Animation</source>
         <translation>循环播放</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/UDMResultChart.py" line="389"/>
+        <location filename="QGrain/chart/UDMResultChart.py" line="394"/>
         <source>Save Animation</source>
         <translation>保存动画</translation>
     </message>
@@ -2377,27 +2381,27 @@ Deviation</source>
         <translation>60 毫秒</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/UDMResultChart.py" line="342"/>
+        <location filename="QGrain/chart/UDMResultChart.py" line="347"/>
         <source>Choose a filename to save the animation of this UDM result</source>
         <translation>选取一个文件来保存该UDM结果的动画</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/UDMResultChart.py" line="349"/>
+        <location filename="QGrain/chart/UDMResultChart.py" line="354"/>
         <source>Saving Animation [{0} Frames]</source>
         <translation>正在保存动画 [共 {0} 帧]</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/UDMResultChart.py" line="370"/>
+        <location filename="QGrain/chart/UDMResultChart.py" line="375"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/UDMResultChart.py" line="364"/>
+        <location filename="QGrain/chart/UDMResultChart.py" line="369"/>
         <source>ImageMagick is not installed, please download and install it from its offical website (https://imagemagick.org/index.php).</source>
         <translation>尚未安装ImageMagick，请从它的官网下载并安装它 (https://imagemagick.org/index.php)。</translation>
     </message>
     <message>
-        <location filename="QGrain/chart/UDMResultChart.py" line="371"/>
+        <location filename="QGrain/chart/UDMResultChart.py" line="376"/>
         <source>FFMpeg is not installed, please download and install it from its offical website (https://ffmpeg.org/).</source>
         <translation>尚未安装FFMpeg，请从它的官网下载并安装它 （https://ffmpeg.org/）。</translation>
     </message>

@@ -9,7 +9,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from scipy.stats import pearsonr
 
 from ..ssu import SSUResult, SSUViewModel
-from ..statistic import convert_φ_to_μm, get_mode
+from ..statistics import convert_φ_to_μm, get_mode
 from .BaseChart import BaseChart
 from .config_matplotlib import normal_color
 

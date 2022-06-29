@@ -14,7 +14,7 @@ from ..artificial._generator import ArtificialDataset
 from ..emma import EMMAResult
 from ..model import GrainSizeDataset, GrainSizeSample
 from ..ssu import DISTRIBUTION_CLASS_MAP, SSUResult, DistributionType
-from ..statistic._GRADISTAT import _get_all_scales, get_all_statistic, logarithmic
+from ..statistics._GRADISTAT import _get_all_scales, get_all_statistics, logarithmic
 from ..udm import UDMAlgorithmSetting, UDMResult
 from ._use_excel import column_to_char, prepare_styles
 
@@ -250,7 +250,7 @@ def save_dataset(
     logger.info(f"The dataset has been saved to the Excel file: [{filename}].")
 
 
-def save_statistic(
+def save_statistics(
         dataset: GrainSizeDataset,
         filename: str,
         progress_callback: typing.Callable = None,
@@ -260,13 +260,13 @@ def save_statistic(
         logger = logging.getLogger("QGrain")
     else:
         assert isinstance(logger, logging.Logger)
-    logger.debug("Start to save statistic result.")
+    logger.debug("Start to save statistical result.")
     # Calculate
-    logger.debug("Calculating the statistic parameters and classification groups of all samples.")
-    all_statistics = []
+    logger.debug("Calculating the statistical parameters and classification groups of all samples.")
+    all_sample_statistics = []
     for i, sample in enumerate(dataset.samples):
-        sample_statistics = get_all_statistic(sample.classes_μm, sample.classes_φ, sample.distribution)
-        all_statistics.append(sample_statistics)
+        sample_statistics = get_all_statistics(sample.classes_μm, sample.classes_φ, sample.distribution)
+        all_sample_statistics.append(sample_statistics)
         if progress_callback is not None:
             progress = (i / dataset.n_samples) * 0.4
             progress_callback(progress)
@@ -276,10 +276,10 @@ def save_statistic(
     readme_text = \
         """
         It contanins 6 sheets.
-            1-5. The previous five sheets stores the statistic parameters of five computational methods, respectively.
+            1-5. The previous five sheets stores the statistical parameters of five computational methods, respectively.
             6. The last sheet puts the proportions of different size scales and the classification groups.
 
-        The statistic formulas are referred to Blott & Pye (2001)'s work.
+        The statistical formulas are referred to Blott & Pye (2001)'s work.
         The classification of GSDs is referred to Folk (1954)'s and Blott & Pye (2012)'s scheme.
 
         References:
@@ -356,7 +356,7 @@ def save_statistic(
         for col, (func, name, width) in enumerate(keys, 1):
             write(0, col, name, style="header")
             ws.column_dimensions[column_to_char(col)].width = width
-        for i_sample, (sample, sample_statistics) in enumerate(zip(dataset.samples, all_statistics)):
+        for i_sample, (sample, sample_statistics) in enumerate(zip(dataset.samples, all_sample_statistics)):
             row = i_sample + 1
             if row % 2 == 0:
                 style = "normal_dark"
@@ -374,7 +374,7 @@ def save_statistic(
     wb.close()
     if progress_callback is not None:
         progress_callback(1.0)
-    logger.info(f"The statistic result has been saved to the Excel file: [{filename}].")
+    logger.info(f"The statistical result has been saved to the Excel file: [{filename}].")
 
 
 def save_pca(
@@ -768,7 +768,7 @@ def save_ssu(
         It contanins [max number of components + 4] sheets:
         1. The first sheet is used to put the grain size distributions of corresponding samples.
         2. The second sheet is used to put the fitting information and resolved parameters of SSU results.
-        3. The third sheet stores the statistic parameters of all components.
+        3. The third sheet stores the statistical parameters of all components.
         4. The fouth sheet is used to put the distributions of unmixed components and the sum.
         5. Other sheets severally store the distributions of each component group.
 
@@ -824,8 +824,8 @@ def save_ssu(
         if progress_callback is not None:
             progress_callback(i / dataset.n_samples * 0.1 + 0.1)
 
-    logger.debug("Creating the `Statistic Moments` sheet.")
-    ws = wb.create_sheet("Statistic Moments")
+    logger.debug("Creating the `Statistical Moments` sheet.")
+    ws = wb.create_sheet("Statistical Moments")
     write(0, 0, "Sample Name", style="header")
     ws.merge_cells(start_row=1, start_column=1, end_row=2, end_column=1)
     ws.column_dimensions[column_to_char(0)].width = 16
@@ -854,7 +854,7 @@ def save_ssu(
         write(row, 0, result.sample.name, style=style)
         for component in result.components:
             index = flags[flag_index]
-            s = get_all_statistic(result.classes_μm, result.classes_φ, component.distribution)
+            s = get_all_statistics(result.classes_μm, result.classes_φ, component.distribution)
             write(row, index*len(sub_headers)+1, component.proportion, style=style)
             write(row, index*len(sub_headers)+2, s["logarithmic"]["mean"], style=style)
             write(row, index*len(sub_headers)+3, s["geometric"]["mean"], style=style)
@@ -949,7 +949,7 @@ def save_udm(
         It contanins [number of components + 4] sheets:
         1. The first sheet is used to put the grain size distributions of corresponding samples.
         2. The second sheet is used to put the resolved parameters of all samples.
-        3. The third sheet stores the statistic parameters of all components.
+        3. The third sheet stores the statistical parameters of all components.
         4. The fouth sheet is used to put the distributions of unmixed components and the sum.
         5. Other sheets severally store the distributions of each component group.
 
@@ -1036,8 +1036,8 @@ def save_udm(
         if progress_callback is not None:
             progress_callback(i / result.n_samples * 0.1 + 0.1)
 
-    logger.debug("Creating the `Statistic Moments` sheet.")
-    ws = wb.create_sheet("Statistic Moments")
+    logger.debug("Creating the `Statistical Moments` sheet.")
+    ws = wb.create_sheet("Statistical Moments")
     write(0, 0, "Sample Name", style="header")
     ws.merge_cells(start_row=1, start_column=1, end_row=2, end_column=1)
     ws.column_dimensions[column_to_char(0)].width = 16
@@ -1066,7 +1066,7 @@ def save_udm(
         write(row, 0, sample.name, style=style)
         for j in range(result.n_components):
             true_index = sort_map[j]
-            s = get_all_statistic(result.dataset.classes_μm, result.dataset.classes_φ, result.components[i, true_index])
+            s = get_all_statistics(result.dataset.classes_μm, result.dataset.classes_φ, result.components[i, true_index])
             write(row, true_index*len(sub_headers)+1, result.proportions[i, 0, true_index] * 100, style=style)
             write(row, true_index*len(sub_headers)+2, s["logarithmic"]["mean"], style=style)
             write(row, true_index*len(sub_headers)+3, s["geometric"]["mean"], style=style)

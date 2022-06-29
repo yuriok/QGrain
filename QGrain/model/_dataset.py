@@ -5,7 +5,7 @@ from uuid import UUID, uuid4
 
 import numpy as np
 
-from ..statistic import get_interval_φ
+from ..statistics import get_interval_φ
 
 
 class ClassesNotIncrementalError(Exception):

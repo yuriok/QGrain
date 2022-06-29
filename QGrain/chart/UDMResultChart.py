@@ -5,7 +5,7 @@ import numpy as np
 from matplotlib.animation import FFMpegWriter, FuncAnimation, ImageMagickWriter
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from ..statistic import convert_φ_to_μm
+from ..statistics import convert_φ_to_μm
 from ..udm import UDMResult
 from .BaseChart import BaseChart
 from .config_matplotlib import normal_color

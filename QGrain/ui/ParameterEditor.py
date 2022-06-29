@@ -6,7 +6,7 @@ from PySide6 import QtCore, QtWidgets
 
 from ..chart.DistributionChart import DistributionChart
 from ..ssu import DISTRIBUTION_CLASS_MAP, DistributionType, SSUResult, SSUViewModel
-from ..statistic import get_interval_φ
+from ..statistics import get_interval_φ
 
 
 class ParameterComponent(QtWidgets.QWidget):

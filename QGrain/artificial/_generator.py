@@ -4,7 +4,7 @@ import numpy as np
 
 from ..model import GrainSizeDataset, GrainSizeSample
 from ..ssu import DISTRIBUTION_CLASS_MAP, DistributionType, SSUViewModel
-from ..statistic import convert_μm_to_φ, convert_φ_to_μm
+from ..statistics import convert_μm_to_φ, convert_φ_to_μm
 
 
 class ArtificialComponent:
