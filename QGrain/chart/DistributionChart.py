@@ -19,7 +19,7 @@ class DistributionChart(BaseChart):
         self.axes = self.figure.subplots() # type: plt.Axes
 
         self.scale_menu = QtWidgets.QMenu(self.tr("Scale")) # type: QtWidgets.QMenu
-        self.menu.insertMenu(self.save_figure_action, self.scale_menu)
+        self.menu.insertMenu(self.edit_figure_action, self.scale_menu)
         self.scale_group = QtGui.QActionGroup(self.scale_menu)
         self.scale_group.setExclusive(True)
         self.scale_actions = [] # type: list[QtGui.QAction]
@@ -32,21 +32,21 @@ class DistributionChart(BaseChart):
         self.scale_actions[0].setChecked(True)
         self.show_mode_lines_action = QtGui.QAction(self.tr("Show Mode Lines")) # type: QtGui.QAction
         self.show_mode_lines_action.triggered.connect(self.update_chart)
-        self.menu.insertAction(self.save_figure_action, self.show_mode_lines_action)
+        self.menu.insertAction(self.edit_figure_action, self.show_mode_lines_action)
         self.show_mode_lines_action.setCheckable(True)
         self.show_mode_lines_action.setChecked(False)
         self.show_legend_action = QtGui.QAction(self.tr("Show Legend")) # type: QtGui.QAction
         self.show_legend_action.triggered.connect(self.update_chart)
-        self.menu.insertAction(self.save_figure_action, self.show_legend_action)
+        self.menu.insertAction(self.edit_figure_action, self.show_legend_action)
         self.show_legend_action.setCheckable(True)
         self.show_legend_action.setChecked(False)
         self.animated_action = QtGui.QAction(self.tr("Animated")) # type: QtGui.QAction
         self.animated_action.triggered.connect(self.update_chart)
-        self.menu.insertAction(self.save_figure_action, self.animated_action)
+        self.menu.insertAction(self.edit_figure_action, self.animated_action)
         self.animated_action.setCheckable(True)
         self.animated_action.setChecked(False)
         self.interval_menu = QtWidgets.QMenu(self.tr("Animation Interval")) # type: QtWidgets.QMenu
-        self.menu.insertMenu(self.save_figure_action, self.interval_menu)
+        self.menu.insertMenu(self.edit_figure_action, self.interval_menu)
         self.interval_group = QtGui.QActionGroup(self.interval_menu)
         self.interval_group.setExclusive(True)
         self.interval_actions = [] # type: list[QtGui.QAction]
@@ -59,7 +59,7 @@ class DistributionChart(BaseChart):
         self.interval_actions[3].setChecked(True)
         self.repeat_animation_action = QtGui.QAction(self.tr("Repeat Animation")) # type: QtGui.QAction
         self.repeat_animation_action.triggered.connect(self.update_chart)
-        self.menu.insertAction(self.save_figure_action, self.repeat_animation_action)
+        self.menu.insertAction(self.edit_figure_action, self.repeat_animation_action)
         self.repeat_animation_action.setCheckable(True)
         self.repeat_animation_action.setChecked(False)
         self.save_animation_action = QtGui.QAction(self.tr("Save Animation")) # type: QtGui.QAction

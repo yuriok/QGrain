@@ -17,7 +17,7 @@ class FrequencyCurveChart(BaseChart):
         self.axes = self.figure.subplots()
 
         self.scale_menu = QtWidgets.QMenu(self.tr("Scale")) # type: QtWidgets.QMenu
-        self.menu.insertMenu(self.save_figure_action, self.scale_menu)
+        self.menu.insertMenu(self.edit_figure_action, self.scale_menu)
         self.scale_group = QtGui.QActionGroup(self.scale_menu)
         self.scale_group.setExclusive(True)
         self.scale_actions = [] # type: list[QtGui.QAction]
