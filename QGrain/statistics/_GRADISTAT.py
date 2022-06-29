@@ -2,14 +2,14 @@ import string
 import typing
 
 import numpy as np
-from QGrain.statistic._base import *
+from QGrain.statistics._base import *
 
 
-# The following five formulas of calculating the statistic parameters referred to Blott & Pye (2001)'s work
+# The following five formulas of calculating the statistical parameters referred to Blott & Pye (2001)'s work
 # DOI: 10.1002/esp.261
 def arithmetic(classes_μm: np.ndarray, frequency: np.ndarray) -> dict:
     """
-    Calculate the basic statistic parameters, follow the "arithmetic method of moments" in Blott & Pye (2001).
+    Calculate the basic statistical parameters, follow the "arithmetic method of moments" in Blott & Pye (2001).
 
     ## Parameters
 
@@ -20,8 +20,8 @@ def arithmetic(classes_μm: np.ndarray, frequency: np.ndarray) -> dict:
 
     ## Returns
 
-    statistic: `dict(mean=..., std=..., skewness=..., kurtosis=...)`
-        The `dict` which contains the basic statistic parameters.
+    statistics: `dict(mean=..., std=..., skewness=..., kurtosis=...)`
+        The `dict` which contains the basic statistical parameters.
 
     """
     mean = np.sum(classes_μm * frequency)
@@ -32,7 +32,7 @@ def arithmetic(classes_μm: np.ndarray, frequency: np.ndarray) -> dict:
 
 def geometric(classes_μm: np.ndarray, frequency: np.ndarray) -> dict:
     """
-    Calculate the basic statistic parameters, follow the "geometric method of moments" in Blott & Pye (2001).
+    Calculate the basic statistical parameters, follow the "geometric method of moments" in Blott & Pye (2001).
 
     ## Parameters
 
@@ -43,8 +43,8 @@ def geometric(classes_μm: np.ndarray, frequency: np.ndarray) -> dict:
 
     ## Returns
 
-    statistic: `dict(mean=..., std=..., skewness=..., kurtosis=..., std_description=..., skewness_description=..., kurtosis_description=...)`
-        The `dict` which contains the basic statistic parameters and corresponding descriptions.
+    statistics: `dict(mean=..., std=..., skewness=..., kurtosis=..., std_description=..., skewness_description=..., kurtosis_description=...)`
+        The `dict` which contains the basic statistical parameters and corresponding descriptions.
 
     """
     mean = np.exp(np.sum(frequency * np.log(classes_μm)))
@@ -99,7 +99,7 @@ def geometric(classes_μm: np.ndarray, frequency: np.ndarray) -> dict:
 
 def logarithmic(classes_φ: np.ndarray, frequency: np.ndarray) -> dict:
     """
-    Calculate the basic statistic parameters, follow the "logarithmic method of moments" in Blott & Pye (2001).
+    Calculate the basic statistical parameters, follow the "logarithmic method of moments" in Blott & Pye (2001).
 
     ## Parameters
 
@@ -110,8 +110,8 @@ def logarithmic(classes_φ: np.ndarray, frequency: np.ndarray) -> dict:
 
     ## Returns
 
-    statistic: `dict(mean=..., std=..., skewness=..., kurtosis=..., std_description=..., skewness_description=..., kurtosis_description=...)`
-        The `dict` which contains the basic statistic parameters and corresponding descriptions.
+    statistics: `dict(mean=..., std=..., skewness=..., kurtosis=..., std_description=..., skewness_description=..., kurtosis_description=...)`
+        The `dict` which contains the basic statistical parameters and corresponding descriptions.
 
     """
     mean = np.sum(classes_φ * frequency)
@@ -166,17 +166,17 @@ def logarithmic(classes_φ: np.ndarray, frequency: np.ndarray) -> dict:
 
 def logarithmic_FW57(reverse_phi_ppf) -> dict:
     """
-    Calculate the basic statistic parameters, follow the "logarithmic (original) Folk & Ward (1957) graphical measures" in Blott & Pye (2001).
+    Calculate the basic statistical parameters, follow the "logarithmic (original) Folk & Ward (1957) graphical measures" in Blott & Pye (2001).
 
     ## Parameters
 
     reverse_phi_ppf: `scipy.interpolate.interp1d`
-        A `interp1d` object returned by `get_reverse_phi_ppf` function in `QGrain.statistic._base`
+        A `interp1d` object returned by `get_reverse_phi_ppf` function in `QGrain.statistics._base`
 
     ## Returns
 
-    statistic: `dict(mean=..., std=..., skewness=..., kurtosis=..., std_description=..., skewness_description=..., kurtosis_description=...)`
-        The `dict` which contains the basic statistic parameters and corresponding descriptions.
+    statistics: `dict(mean=..., std=..., skewness=..., kurtosis=..., std_description=..., skewness_description=..., kurtosis_description=...)`
+        The `dict` which contains the basic statistical parameters and corresponding descriptions.
 
     """
     _ppf = reverse_phi_ppf
@@ -239,17 +239,17 @@ def logarithmic_FW57(reverse_phi_ppf) -> dict:
 
 def geometric_FW57(reverse_phi_ppf) -> dict:
     """
-    Calculate the basic statistic parameters, follow the "geometric (modified) Folk & Ward (1957) graphical measures" in Blott & Pye (2001).
+    Calculate the basic statistical parameters, follow the "geometric (modified) Folk & Ward (1957) graphical measures" in Blott & Pye (2001).
 
     ## Parameters
 
     reverse_phi_ppf: `scipy.interpolate.interp1d`
-        A `interp1d` object returned by `get_reverse_phi_ppf` function in `QGrain.statistic._base`
+        A `interp1d` object returned by `get_reverse_phi_ppf` function in `QGrain.statistics._base`
 
     ## Returns
 
-    statistic: `dict(mean=..., std=..., skewness=..., kurtosis=..., std_description=..., skewness_description=..., kurtosis_description=...)`
-        The `dict` which contains the basic statistic parameters and corresponding descriptions.
+    statistics: `dict(mean=..., std=..., skewness=..., kurtosis=..., std_description=..., skewness_description=..., kurtosis_description=...)`
+        The `dict` which contains the basic statistical parameters and corresponding descriptions.
 
     """
     _ppf = reverse_phi_ppf
@@ -814,12 +814,12 @@ def get_group_BP12(classes_φ: np.ndarray, frequency: np.ndarray) \
         sand, silt, clay = get_SSC_proportion(classes_φ, frequency)
         return get_SSC_group_BP12(sand, silt, clay)
 
-def get_statistic(classes_μm: np.ndarray,
+def get_statistics(classes_μm: np.ndarray,
                   classes_φ: np.ndarray,
                   frequency: np.ndarray,
                   is_geometric=False, is_FW57=False) -> dict:
     """
-    Get the statistic parameters of a grain size distribution.
+    Get the statistical parameters of a grain size distribution.
 
     ## Parameters
 
@@ -832,40 +832,40 @@ def get_statistic(classes_μm: np.ndarray,
     is_geometric: `bool` (default `False`)
         If `True` the grain size unit is μm, else it's φ.
     is_FW57: `bool` (default `False`)
-        If `True` it will use Folk & Ward (1957)'s graphical method, else it will use the method of statistic moments.
+        If `True` it will use Folk & Ward (1957)'s graphical method, else it will use the method of statistical moments.
 
     ## Returns
-    statistic: `dict`
-        The `dict` contains these statistic parameters, including `mean`, `std`, `skewness`, `kurtosis`, `mode`, `modes`, `median`, `mean_description`, `std_description`, `skewness_description`, `kurtosis_description`.
+    statistics: `dict`
+        The `dict` contains these statistical parameters, including `mean`, `std`, `skewness`, `kurtosis`, `mode`, `modes`, `median`, `mean_description`, `std_description`, `skewness_description`, `kurtosis_description`.
 
     """
     reverse_phi_ppf = get_reverse_phi_ppf(classes_φ, frequency)
     median_φ = reverse_phi_ppf(0.5).max()
     if is_geometric:
         if is_FW57:
-            statistic = geometric_FW57(reverse_phi_ppf)
+            statistics = geometric_FW57(reverse_phi_ppf)
         else:
-            statistic = geometric(classes_μm, frequency)
-        mean_φ = convert_μm_to_φ(statistic["mean"])
-        statistic["median"] = convert_φ_to_μm(median_φ)
+            statistics = geometric(classes_μm, frequency)
+        mean_φ = convert_μm_to_φ(statistics["mean"])
+        statistics["median"] = convert_φ_to_μm(median_φ)
     else:
         if is_FW57:
-            statistic = logarithmic_FW57(reverse_phi_ppf)
+            statistics = logarithmic_FW57(reverse_phi_ppf)
         else:
-            statistic = logarithmic(classes_φ, frequency)
-        mean_φ = statistic["mean"]
-        statistic["median"] = median_φ
+            statistics = logarithmic(classes_φ, frequency)
+        mean_φ = statistics["mean"]
+        statistics["median"] = median_φ
     mean_description = string.capwords(" ".join(scale_description(mean_φ))).strip()
-    statistic["mean_description"] = mean_description
-    statistic["mode"] = get_mode(classes_μm, classes_φ, frequency, is_geometric=is_geometric)
-    statistic["modes"] = get_modes(classes_μm, classes_φ, frequency, is_geometric=is_geometric)[0]
-    return statistic
+    statistics["mean_description"] = mean_description
+    statistics["mode"] = get_mode(classes_μm, classes_φ, frequency, is_geometric=is_geometric)
+    statistics["modes"] = get_modes(classes_μm, classes_φ, frequency, is_geometric=is_geometric)[0]
+    return statistics
 
-def get_all_statistic(classes_μm: np.ndarray,
+def get_all_statistics(classes_μm: np.ndarray,
                       classes_φ: np.ndarray,
                       frequency: np.ndarray):
     """
-    Get all statistic parameters and classification groups of a grain size distribution.
+    Get all statistical parameters and classification groups of a grain size distribution.
 
     ## Parameters
 
@@ -877,16 +877,16 @@ def get_all_statistic(classes_μm: np.ndarray,
         The frequency values of grain size classes. Note that the sum of frequencies should be `1.0`.
 
     ## Returns
-    all_statistic: `dict`
-        The `dict` contains these statistic parameters all methods, including `arithmetic`, `geometric`, `logarithmic`, `geometric_FW57`, `logarithmic_FW57`; and the proportions of different grades, including `GSM_proportion`, `SSC_proportion`, `BGSSC_proportion`, `proportion`; and the classification groups, including `group_Folk54` and `group_BP12`.
+    all_statistics: `dict`
+        The `dict` contains these statistical parameters all methods, including `arithmetic`, `geometric`, `logarithmic`, `geometric_FW57`, `logarithmic_FW57`; and the proportions of different grades, including `GSM_proportion`, `SSC_proportion`, `BGSSC_proportion`, `proportion`; and the classification groups, including `group_Folk54` and `group_BP12`.
 
     """
     result = {}
     result["arithmetic"] = arithmetic(classes_μm, frequency)
-    result["geometric"] = get_statistic(classes_μm, classes_φ, frequency, is_geometric=True, is_FW57=False)
-    result["logarithmic"] = get_statistic(classes_μm, classes_φ, frequency, is_geometric=False, is_FW57=False)
-    result["geometric_FW57"] = get_statistic(classes_μm, classes_φ, frequency, is_geometric=True, is_FW57=True)
-    result["logarithmic_FW57"] = get_statistic(classes_μm, classes_φ, frequency, is_geometric=False, is_FW57=True)
+    result["geometric"] = get_statistics(classes_μm, classes_φ, frequency, is_geometric=True, is_FW57=False)
+    result["logarithmic"] = get_statistics(classes_μm, classes_φ, frequency, is_geometric=False, is_FW57=False)
+    result["geometric_FW57"] = get_statistics(classes_μm, classes_φ, frequency, is_geometric=True, is_FW57=True)
+    result["logarithmic_FW57"] = get_statistics(classes_μm, classes_φ, frequency, is_geometric=False, is_FW57=True)
     result["GSM_proportion"] = get_GSM_proportion(classes_φ, frequency)
     result["SSC_proportion"] = get_SSC_proportion(classes_φ, frequency)
     result["BGSSC_proportion"] = get_BGSSC_proportion(classes_φ, frequency)

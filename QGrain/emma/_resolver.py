@@ -8,7 +8,7 @@ from scipy.interpolate import interp1d
 from ..model import GrainSizeDataset, GrainSizeSample
 from ..ssu import (DISTRIBUTION_CLASS_MAP, DistributionType,
                    SSUAlgorithmSetting, try_sample)
-from ..statistic import convert_φ_to_μm, logarithmic
+from ..statistics import convert_φ_to_μm, logarithmic
 from ._distance import get_distance_func_by_name
 from ._kernel import KERNEL_CLASS_MAP, KernelType, Proportion
 from ._result import EMMAResult

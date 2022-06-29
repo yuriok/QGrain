@@ -5,7 +5,7 @@ import numpy as np
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from ..model import GrainSizeSample
-from ..statistic import convert_φ_to_μm
+from ..statistics import convert_φ_to_μm
 from .BaseChart import BaseChart
 from .config_matplotlib import normal_color
 

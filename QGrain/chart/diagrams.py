@@ -10,7 +10,7 @@ import typing
 import numpy as np
 
 from ..model import GrainSizeSample
-from ..statistic import get_GSM_proportion, get_SSC_proportion
+from ..statistics import get_GSM_proportion, get_SSC_proportion
 from .BaseChart import BaseChart
 from .config_matplotlib import normal_color
 

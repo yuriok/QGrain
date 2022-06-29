@@ -11,7 +11,7 @@ from qt_material import apply_stylesheet, list_themes
 
 from .. import QGRAIN_ROOT_PATH, QGRAIN_VERSION
 from ..chart import setup_matplotlib
-from ..io import save_pca, save_statistic
+from ..io import save_pca, save_statistics
 from ..model import GrainSizeDataset
 from .AboutDialog import AboutDialog
 from .ClusteringAnalyzer import ClusteringAnalyzer
@@ -117,8 +117,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Save
         self.save_menu = self.menuBar().addMenu(self.tr("Save")) # type: QtWidgets.QMenu
-        self.save_statistic_action = self.save_menu.addAction(self.tr("Statistic Result")) # type: QtGui.QAction
-        self.save_statistic_action.triggered.connect(self.on_save_statistic_clicked)
+        self.save_statistics_action = self.save_menu.addAction(self.tr("Statistical Result")) # type: QtGui.QAction
+        self.save_statistics_action.triggered.connect(self.on_save_statistics_clicked)
         self.save_pca_action = self.save_menu.addAction(self.tr("PCA Result")) # type: QtGui.QAction
         self.save_pca_action.triggered.connect(self.on_save_pca_clicked)
         self.save_clustering_action = self.save_menu.addAction(self.tr("Clustering Result")) # type: QtGui.QAction
@@ -247,19 +247,19 @@ class MainWindow(QtWidgets.QMainWindow):
         ssu_results = udm_result.convert_to_ssu_results(callback)
         self.ssu_analyzer.result_view.add_results(ssu_results)
 
-    def on_save_statistic_clicked(self):
+    def on_save_statistics_clicked(self):
         if not self.__dataset.has_sample:
             self.logger.error("Dataset has not been loaded.")
             self.show_error(self.tr("Dataset has not been loaded."))
             return
         filename, _ = self.file_dialog.getSaveFileName(
-            self, self.tr("Save statistic result"),
+            self, self.tr("Save statistical result"),
             None, "Microsoft Excel (*.xlsx)")
         if filename is None or filename == "":
             return
         try:
             progress_dialog = QtWidgets.QProgressDialog(
-                self.tr("Saving statistic result..."), self.tr("Cancel"),
+                self.tr("Saving statistical result..."), self.tr("Cancel"),
                 0, 100, self)
             progress_dialog.setWindowTitle("QGrain")
             progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
@@ -268,7 +268,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     raise StopIteration()
                 progress_dialog.setValue(int(progress*100))
                 QtCore.QCoreApplication.processEvents()
-            save_statistic(self.__dataset, filename, progress_callback=callback, logger=self.logger)
+            save_statistics(self.__dataset, filename, progress_callback=callback, logger=self.logger)
         except Exception as e:
             self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
             self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
@@ -330,7 +330,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.load_ssu_reference_action.setText(self.tr("SSU References"))
         self.load_emma_result_action.setText(self.tr("EMMA Result"))
         self.load_udm_result_action.setText(self.tr("UDM Result"))
-        self.save_statistic_action.setText(self.tr("Statistic Result"))
+        self.save_statistics_action.setText(self.tr("Statistical Result"))
         self.save_pca_action.setText(self.tr("PCA Result"))
         self.save_clustering_action.setText(self.tr("Clustering Result"))
         self.save_ssu_result_action.setText(self.tr("SSU Results"))

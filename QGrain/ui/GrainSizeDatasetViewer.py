@@ -11,7 +11,7 @@ from ..chart.diagrams import *
 from ..chart.Frequency3DChart import Frequency3DChart
 from ..chart.FrequencyCurveChart import FrequencyCurveChart
 from ..model import GrainSizeDataset, GrainSizeSample
-from ..statistic import get_all_statistic
+from ..statistics import get_all_statistics
 
 
 class GrainSizeDatasetViewer(QtWidgets.QWidget):
@@ -66,7 +66,7 @@ class GrainSizeDatasetViewer(QtWidgets.QWidget):
         self.geometric_checkbox.setChecked(True)
         self.geometric_checkbox.stateChanged.connect(self.on_is_geometric_changed)
         self.main_layout.addWidget(self.geometric_checkbox, 2, 0)
-        self.FW57_checkbox = QtWidgets.QCheckBox(self.tr("Method of Statistic Moments"))
+        self.FW57_checkbox = QtWidgets.QCheckBox(self.tr("Method of Statistical Moments"))
         self.FW57_checkbox.setChecked(False)
         self.FW57_checkbox.stateChanged.connect(self.on_is_FW57_changed)
         self.main_layout.addWidget(self.FW57_checkbox, 2, 1)
@@ -193,7 +193,7 @@ class GrainSizeDatasetViewer(QtWidgets.QWidget):
     def tips(self) -> typing.List[str]:
         tips = [
             self.tr("By clicking the option at menu bar, you can load the grain size distributions (Menu -> Open -> Grain Size Dataset)."),
-            self.tr("By clicking the option at menu bar, you can save the statistic parameters and classification groups to a Excel file (Menu -> Save -> Statistic Result)."),
+            self.tr("By clicking the option at menu bar, you can save the statistical parameters and classification groups to a Excel file (Menu -> Save -> Statistical Result)."),
             self.tr("By right clicking at the table region, you can open the menu to draw charts.")]
         return tips
 
@@ -216,7 +216,7 @@ class GrainSizeDatasetViewer(QtWidgets.QWidget):
         if state == QtCore.Qt.Checked:
             self.FW57_checkbox.setText(self.tr("Method of Folk and Ward (1957)"))
         else:
-            self.FW57_checkbox.setText(self.tr("Method of Statistic Moments"))
+            self.FW57_checkbox.setText(self.tr("Method of Statistical Moments"))
         self.update_page(self.page_index)
 
     @property
@@ -303,7 +303,7 @@ class GrainSizeDatasetViewer(QtWidgets.QWidget):
         self.data_table.horizontalHeader().setDefaultAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.TextWordWrap)
         self.data_table.setVerticalHeaderLabels([sample.name for sample in self.__dataset.samples[start: end]])
         for row, sample in enumerate(self.__dataset.samples[start: end]):
-            statistic = get_all_statistic(sample.classes_μm, sample.classes_φ, sample.distribution)
+            statistics = get_all_statistics(sample.classes_μm, sample.classes_φ, sample.distribution)
             if self.is_geometric:
                 if self.is_FW57:
                     sub_key = "geometric_FW57"
@@ -315,7 +315,7 @@ class GrainSizeDatasetViewer(QtWidgets.QWidget):
                 else:
                     sub_key = "logarithmic"
             for col, (in_sub, key) in enumerate(col_keys):
-                value = statistic[sub_key][key] if in_sub else statistic[key]
+                value = statistics[sub_key][key] if in_sub else statistics[key]
                 if key == "modes":
                     write(row, col, ", ".join([f"{m:0.2f}" for m in value]))
                 elif key[-11:] == "_proportion":
@@ -387,7 +387,7 @@ class GrainSizeDatasetViewer(QtWidgets.QWidget):
         if self.is_FW57:
             self.FW57_checkbox.setText(self.tr("Method of Folk and Ward (1957)"))
         else:
-            self.FW57_checkbox.setText(self.tr("Method of Statistic Moments"))
+            self.FW57_checkbox.setText(self.tr("Method of Statistical Moments"))
         for i, (_, description) in enumerate(self.supported_proportions):
             self.proportion_combo_box.setItemText(i, description)
 

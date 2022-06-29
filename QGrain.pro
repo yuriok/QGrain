@@ -30,8 +30,8 @@ SOURCES=C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\__main__.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ssu\_resolver.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ssu\_result.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ssu\_task.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\statistic\_base.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\statistic\_GRADISTAT.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\statistics\_base.py\
+    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\statistics\_GRADISTAT.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\udm\_resolver.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\udm\_result.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\udm\_setting.py\
