@@ -30,7 +30,7 @@ class UDMResultChart(BaseChart):
         super().__init__(parent=parent, figsize=figsize)
         # self.axes = self.figure.subplots()
         self.scale_menu = QtWidgets.QMenu(self.tr("Scale")) # type: QtWidgets.QMenu
-        self.menu.insertMenu(self.save_figure_action, self.scale_menu)
+        self.menu.insertMenu(self.edit_figure_action, self.scale_menu)
         self.scale_group = QtGui.QActionGroup(self.scale_menu)
         self.scale_group.setExclusive(True)
         self.scale_actions = [] # type: list[QtGui.QAction]
@@ -44,12 +44,12 @@ class UDMResultChart(BaseChart):
 
         self.animated_action = QtGui.QAction(self.tr("Animated")) # type: QtGui.QAction
         self.animated_action.triggered.connect(self.update_chart)
-        self.menu.insertAction(self.save_figure_action, self.animated_action)
+        self.menu.insertAction(self.edit_figure_action, self.animated_action)
         self.animated_action.setCheckable(True)
         self.animated_action.setChecked(False)
 
         self.interval_menu = QtWidgets.QMenu(self.tr("Animation Interval")) # type: QtWidgets.QMenu
-        self.menu.insertMenu(self.save_figure_action, self.interval_menu)
+        self.menu.insertMenu(self.edit_figure_action, self.interval_menu)
         self.interval_group = QtGui.QActionGroup(self.interval_menu)
         self.interval_group.setExclusive(True)
         self.interval_actions = [] # type: list[QtGui.QAction]
@@ -63,7 +63,7 @@ class UDMResultChart(BaseChart):
 
         self.repeat_action = QtGui.QAction(self.tr("Repeat Animation")) # type: QtGui.QAction
         self.repeat_action.triggered.connect(self.update_chart)
-        self.menu.insertAction(self.save_figure_action, self.repeat_action)
+        self.menu.insertAction(self.edit_figure_action, self.repeat_action)
         self.repeat_action.setCheckable(True)
         self.repeat_action.setChecked(False)
 

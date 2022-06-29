@@ -22,6 +22,8 @@ class BaseChart(QtWidgets.QWidget):
         self.menu.setShortcutAutoRepeat(True)
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.show_menu)
+        self.edit_figure_action = self.menu.addAction(self.tr("Edit Figure"))
+        self.edit_figure_action.triggered.connect(lambda: self.toolbar.edit_parameters())
         self.save_figure_action = self.menu.addAction(self.tr("Save Figure"))
         self.save_figure_action.triggered.connect(lambda: self.toolbar.save_figure())
         self.normal_msg = QtWidgets.QMessageBox(parent=self)
@@ -47,6 +49,7 @@ class BaseChart(QtWidgets.QWidget):
         pass
 
     def retranslate(self):
+        self.edit_figure_action.setText(self.tr("Edit Figure"))
         self.save_figure_action.setText(self.tr("Save Figure"))
 
     def changeEvent(self, event: QtCore.QEvent):
