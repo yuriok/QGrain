@@ -150,6 +150,7 @@ class UDMResultChart(BaseChart):
             return False
 
     def show_menu(self, pos: QtCore.QPoint):
+        self.edit_figure_action.setEnabled(self.__last_result is not None and not self.animated)
         self.save_figure_action.setEnabled(self.__last_result is not None and not self.animated)
         self.save_animation_action.setEnabled(self.__last_result is not None and self.animated)
         self.menu.popup(QtGui.QCursor.pos())
