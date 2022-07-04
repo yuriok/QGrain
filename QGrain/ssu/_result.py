@@ -7,7 +7,7 @@ from scipy.stats import norm
 
 from ..model import GrainSizeSample
 from ._distance import get_distance_function
-from ._distribution import DISTRIBUTION_CLASS_MAP, DistributionType
+from ._distribution import DistributionType, get_distribution
 from ._task import SSUTask
 
 
@@ -103,7 +103,7 @@ class SSUResult:
 
     def update(self, func_args: typing.Iterable[float]):
         self.__func_args = func_args
-        distribution_class = DISTRIBUTION_CLASS_MAP[self.distribution_type]
+        distribution_class = get_distribution(self.distribution_type)
         classes = np.expand_dims(np.expand_dims(self.sample.classes_φ, 0), 0).repeat(1, 0).repeat(self.n_components, 1)
         if np.any(np.isnan(func_args)):
             self.__distribution = np.full_like(self.sample.distribution, fill_value=np.nan)

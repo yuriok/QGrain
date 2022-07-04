@@ -7,9 +7,7 @@ import numpy as np
 
 from ..emma import KernelType
 from ..model import GrainSizeDataset
-from ..ssu import (DISTRIBUTION_CLASS_MAP, DistributionType, GeneralWeibull,
-                   Normal, SkewNormal, SSUResult, SSUTask, Weibull,
-                   get_distance_function)
+from ..ssu import DistributionType, SSUResult, SSUTask, get_distance_function, get_distribution
 from ._setting import UDMAlgorithmSetting
 
 
@@ -37,7 +35,7 @@ class UDMResult:
         self.__history = [final_parameters] if history is None else history
         self.__classes = np.expand_dims(np.expand_dims(self.dataset.classes_φ, axis=0), axis=0).repeat(self.n_samples, axis=0).repeat(self.n_components, axis=1)
         self.__interval = np.abs((self.dataset.classes_φ[0]-self.dataset.classes_φ[-1]) / (self.n_classes-1))
-        self.__distribution_class = DISTRIBUTION_CLASS_MAP[DistributionType.__members__[self.kernel_type.name]]
+        self.__distribution_class = get_distribution(DistributionType.__members__[self.kernel_type.name])
         self.update(final_parameters)
 
     @property
