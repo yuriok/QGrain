@@ -210,7 +210,7 @@ class SSUResultViewer(QtWidgets.QWidget):
             write(row, 2, result.n_iterations)
             write(row, 3, result.time_spent)
             write(row, 4, self.distance_function(result.sample.distribution, result.distribution))
-            has_ref = result.task.initial_guess is not None
+            has_ref = result.task.initial_parameters is not None
             write(row, 5, self.tr("Yes") if has_ref else self.tr("No"))
 
         self.data_table.resizeColumnsToContents()

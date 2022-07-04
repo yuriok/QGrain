@@ -44,15 +44,15 @@ def check_minimizer(minimizer):
 
 
 class SSUAlgorithmSetting:
-    def __init__(self,
-                 distance: str="log10MSE",
-                 minimizer: str="SLSQP",
-                 try_GO: bool=False,
-                 GO_max_niter: int=100,
-                 GO_success_niter: int=5, # GO - Global Optimization
-                 GO_step: float=0.1,
-                 GO_minimizer_max_niter: int=500,
-                 LO_max_niter: int=1000):
+    def __init__(
+            self, distance: str = "log10MSE",
+            minimizer: str = "SLSQP",
+            try_GO: bool = False,
+            GO_max_niter: int = 100,
+            GO_success_niter: int = 5,  # GO - Global Optimization
+            GO_step: float = 0.1,
+            GO_minimizer_max_niter: int = 500,
+            LO_max_niter: int = 1000):
         # validation
         check_distance(distance)
         check_minimizer(minimizer)
@@ -106,10 +106,10 @@ class BasicResolver:
     def on_exception_raised_while_fitting(self, exception: Exception):
         pass
 
-    def local_iteration_callback(self, fitted_params: typing.Iterable[float]):
+    def local_iteration_callback(self, parameters: typing.Iterable[float]):
         pass
 
-    def global_iteration_callback(self, fitted_params: typing.Iterable[float], function_value: float, accept: bool):
+    def global_iteration_callback(self, parameters: typing.Iterable[float], function_value: float, accept: bool):
         pass
 
     def on_fitting_succeeded(self, algorithm_result: OptimizeResult, fitting_result: SSUResult):
@@ -142,20 +142,20 @@ class BasicResolver:
         self.on_fitting_started()
 
         def closure(x):
-            x = x.reshape((1, distribution_class.N_PARAMS+1, task.n_components))
+            x = x.reshape((1, distribution_class.N_PARAMETERS+1, task.n_components))
             proportions, components, (m, v, s, k) = distribution_class.interpret(x, classes, task.sample.interval_φ)
             pred_distribution = (proportions[0] @ components[0]).squeeze()
             distance = distance_func(pred_distribution, task.sample.distribution)
             return distance
 
         def local_callback(x, *addtional):
-            x = x.reshape((1, distribution_class.N_PARAMS+1, task.n_components))
+            x = x.reshape((1, distribution_class.N_PARAMETERS+1, task.n_components))
             history.append(x)
             self.local_iteration_callback(x)
 
-        initial_guess = task.initial_guess
-        if task.initial_guess is None:
-            initial_guess = np.expand_dims(distribution_class.get_defaults(task.n_components), 0)
+        initial_parameters = task.initial_parameters
+        if task.initial_parameters is None:
+            initial_parameters = np.expand_dims(distribution_class.get_defaults(task.n_components), 0)
 
         GO_options = {"maxiter": setting.GO_minimizer_max_niter, "disp": False}
         LO_options = {"maxiter": setting.LO_max_niter, "disp": False}
@@ -166,7 +166,7 @@ class BasicResolver:
                      callback=local_callback,
                      options=GO_options)
             GO_result = \
-                basinhopping(closure, x0=initial_guess,
+                basinhopping(closure, x0=initial_parameters,
                             minimizer_kwargs=GO_minimizer_kwargs,
                             callback=self.global_iteration_callback,
                             niter_success=setting.GO_success_niter,
@@ -176,7 +176,7 @@ class BasicResolver:
             if GO_result.lowest_optimization_result.success or \
                     GO_result.lowest_optimization_result.status == 9:
                 self.on_global_fitting_succeeded(GO_result)
-                initial_guess = GO_result.x
+                initial_parameters = GO_result.x
             else:
                 self.on_global_fitting_failed(GO_result)
                 self.on_fitting_finished()
@@ -185,7 +185,7 @@ class BasicResolver:
         LO_result = minimize(
             closure,
             method=setting.minimizer,
-            x0=initial_guess,
+            x0=initial_parameters,
             callback=local_callback,
             options=LO_options) # type: OptimizeResult
         # Judge if the final fitting succeed
@@ -193,8 +193,8 @@ class BasicResolver:
             finish_time = time.time()
             self.on_fitting_finished()
             time_spent = finish_time - start_time
-            func_args = np.reshape(LO_result.x, (1, distribution_class.N_PARAMS+1, task.n_components))
-            fitting_result = SSUResult(task, func_args, history=history, time_spent=time_spent)
+            parameters = np.reshape(LO_result.x, (1, distribution_class.N_PARAMETERS+1, task.n_components))
+            fitting_result = SSUResult(task, parameters, history=history, time_spent=time_spent)
             self.on_fitting_succeeded(LO_result, fitting_result)
             return LO_result.message, fitting_result
         else:
@@ -251,8 +251,8 @@ def try_sample(
         distribution_type: DistributionType,
         n_components: int,
         resolver_setting: SSUAlgorithmSetting = None,
-        initial_guess=None):
-    task = SSUTask(sample, distribution_type, n_components, resolver_setting, initial_guess)
+        initial_parameters=None):
+    task = SSUTask(sample, distribution_type, n_components, resolver_setting, initial_parameters)
     resolver = BasicResolver()
     message, result = resolver.try_fit(task)
     return result
@@ -263,11 +263,11 @@ def try_dataset(
         distribution_type: DistributionType,
         n_components: int,
         resolver_setting: SSUAlgorithmSetting = None,
-        initial_guess: np.ndarray = None,
+        initial_parameters: np.ndarray = None,
         n_processes: int = 1):
     multiprocessing.freeze_support()
     pool = multiprocessing.Pool(n_processes)
-    tasks = [SSUTask(sample, distribution_type, n_components, resolver_setting, initial_guess) for sample in dataset.samples]
+    tasks = [SSUTask(sample, distribution_type, n_components, resolver_setting, initial_parameters) for sample in dataset.samples]
     def run_task(task: SSUTask):
         resolver = BasicResolver()
         message, result = resolver.try_fit(task)

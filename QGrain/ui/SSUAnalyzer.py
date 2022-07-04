@@ -152,7 +152,7 @@ class SSUAnalyzer(QtWidgets.QWidget):
                 self.parameter_editor.distribution_type,
                 self.parameter_editor.n_components,
                 resolver_setting=setting,
-                initial_guess=self.parameter_editor.parameters
+                initial_parameters=self.parameter_editor.parameters
             )
         else:
             query = self.reference_view.query_reference(sample) # type: SSUResult
@@ -162,7 +162,7 @@ class SSUAnalyzer(QtWidgets.QWidget):
                     query.distribution_type,
                     query.n_components,
                     resolver_setting=setting,
-                    initial_guess=query.func_args)
+                    initial_parameters=query.parameters)
             else:
                 task = SSUTask(
                     sample,

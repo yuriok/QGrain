@@ -37,7 +37,7 @@ class ParameterTable(QtWidgets.QDialog):
             self.main_layout.addWidget(component_name, row, 0)
             for j in range(len(parameter_names)):
                 col = j+1
-                parameter = QtWidgets.QLabel(f"{result.components[i].component_args[j]:.4f}")
+                parameter = QtWidgets.QLabel(f"{result.components[i].parameters[j]:.4f}")
                 self.main_layout.addWidget(parameter, row, col)
 
     def changeEvent(self, event: QtCore.QEvent):

@@ -8,10 +8,10 @@ from ..statistics import convert_μm_to_φ, convert_φ_to_μm
 
 
 class ArtificialComponent:
-    def __init__(self,
-                 distribution: np.ndarray,
-                 proportion: float,
-                 moments: typing.Tuple[float, float, float, float]):
+    def __init__(
+            self, distribution: np.ndarray,
+            proportion: float,
+            moments: typing.Tuple[float, float, float, float]):
         self.__distribution = distribution
         self.__proportion = proportion
         m, v, s, k = moments
@@ -31,14 +31,14 @@ class ArtificialComponent:
 
 
 class ArtificialSample:
-    def __init__(self,
-                 name: str,
-                 classes_μm: np.ndarray,
-                 classes_φ: np.ndarray,
-                 distribution: np.ndarray,
-                 components: typing.Iterable[np.ndarray],
-                 proportions: typing.Iterable[float],
-                 moments: typing.Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]):
+    def __init__(
+            self, name: str,
+            classes_μm: np.ndarray,
+            classes_φ: np.ndarray,
+            distribution: np.ndarray,
+            components: typing.Iterable[np.ndarray],
+            proportions: typing.Iterable[float],
+            moments: typing.Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]):
         self.__name = name
         self.__classes_μm = classes_μm
         self.__classes_φ = classes_φ
@@ -97,20 +97,20 @@ class ArtificialSample:
 
 
 class ArtificialDataset:
-    def __init__(self,
-                 target: typing.Iterable[typing.Iterable[typing.Tuple[float, float]]],
-                 distribution_type: DistributionType,
-                 n_samples: int,
-                 params: np.ndarray = None,
-                 min_μm=0.02, max_μm=2000.0, n_classes=101,
-                 precision=4, noise=5):
+    def __init__(
+            self, target: typing.Iterable[typing.Iterable[typing.Tuple[float, float]]],
+            distribution_type: DistributionType,
+            n_samples: int,
+            parameters: np.ndarray = None,
+            min_μm=0.02, max_μm=2000.0, n_classes=101,
+            precision=4, noise=5):
         # do validations
-        if params is None:
-            params = get_params(target, n_samples)
+        if parameters is None:
+            parameters = get_parameters(target, n_samples)
         else:
-            assert isinstance(params, np.ndarray)
-            assert params.ndim == 3
-            assert params.shape[0] == n_samples
+            assert isinstance(parameters, np.ndarray)
+            assert parameters.ndim == 3
+            assert parameters.shape[0] == n_samples
         assert isinstance(min_μm, (int, float))
         assert isinstance(max_μm, (int, float))
         assert isinstance(n_classes, int)
@@ -125,8 +125,8 @@ class ArtificialDataset:
         # prepare data
         self.__target = target
         self.__distribution_type = distribution_type
-        self.__params = params
-        self.__n_samples, self.__n_params, self.__n_components = params.shape
+        self.__parameters = parameters
+        self.__n_samples, self.__n_parameters, self.__n_components = parameters.shape
         self.__n_classes = n_classes
         self.__min_μm, self.__max_μm = min_μm, max_μm
         self.__min_φ, self.__max_φ = convert_μm_to_φ(min_μm), convert_μm_to_φ(max_μm)
@@ -138,7 +138,7 @@ class ArtificialDataset:
 
         classes = np.expand_dims(np.expand_dims(self.classes_φ, 0), 0).repeat(self.n_samples, 0).repeat(self.n_components, 1)
         distribution_class = get_distribution(distribution_type)
-        proportions, components, (m, v, s, k) = distribution_class.interpret(params, classes, self.interval_φ)
+        proportions, components, (m, v, s, k) = distribution_class.interpret(parameters, classes, self.interval_φ)
         noise = np.random.randn(self.n_samples, self.n_classes) * (10**(-self.noise))
         distributions = np.round((proportions @ components).squeeze(1) + noise, decimals=self.precision)
         self.__proportions = proportions
@@ -177,6 +177,10 @@ class ArtificialDataset:
         return self.__n_classes
 
     @property
+    def n_parameters(self) -> int:
+        return self.__n_parameters
+
+    @property
     def min_μm(self) -> float:
         return self.__min_μm
 
@@ -213,8 +217,8 @@ class ArtificialDataset:
         return self.__precision
 
     @property
-    def params(self) -> np.ndarray:
-        return self.__params
+    def parameters(self) -> np.ndarray:
+        return self.__parameters
 
     @property
     def samples(self) -> typing.List[ArtificialSample]:
@@ -240,16 +244,16 @@ class ArtificialDataset:
         return self.__components
 
 
-def get_params(
-    target: typing.Iterable[typing.Iterable[typing.Tuple[float, float]]],
-    n_samples: int):
+def get_parameters(
+        target: typing.Iterable[typing.Iterable[typing.Tuple[float, float]]],
+        n_samples: int):
     n_components = len(target)
-    n_params = len(target[0])
-    params = np.random.randn(n_samples, n_params, n_components)
+    n_parameters = len(target[0])
+    parameters = np.random.randn(n_samples, n_parameters, n_components)
     for component_i, sub_target in enumerate(target):
         for param_i, (mean, std) in enumerate(sub_target):
-            params[:, param_i, component_i] = params[:, param_i, component_i] * std + mean
-    return params
+            parameters[:, param_i, component_i] = parameters[:, param_i, component_i] * std + mean
+    return parameters
 
 
 def get_dataset(
@@ -263,7 +267,7 @@ def get_dataset(
         noise=5):
     dataset = ArtificialDataset(
         target, distribution_type,
-        n_samples, params=None,
+        n_samples, parameters=None,
         min_μm=min_μm, max_μm=max_μm, n_classes=n_classes,
         precision=precision, noise=noise)
     return dataset
@@ -279,7 +283,7 @@ def get_sample(
         noise=5):
     dataset = ArtificialDataset(
         target, distribution_type,
-        1, params=None,
+        1, parameters=None,
         min_μm=min_μm, max_μm=max_μm, n_classes=n_classes,
         precision=precision, noise=noise)
     sample=dataset.samples[0]
@@ -294,10 +298,10 @@ def get_mean_sample(
         n_classes=101,
         precision=4,
         noise=5):
-    params = np.expand_dims(np.array([[mean for (mean, std) in comp] for comp in target]).T, 0)
+    parameters = np.expand_dims(np.array([[mean for (mean, std) in comp] for comp in target]).T, 0)
     dataset = ArtificialDataset(
         target, distribution_type,
-        1, params=params,
+        1, parameters=parameters,
         min_μm=min_μm, max_μm=max_μm, n_classes=n_classes,
         precision=precision, noise=noise)
     sample=dataset.samples[0]

@@ -11,8 +11,8 @@ from ..io import save_artificial_dataset
 
 class GeneratorComponent(QtWidgets.QWidget):
     NORMAL_SETTINGS = dict(
-        n_params = 3,
-        param_names=("Location", "Scale", "Weight"),
+        n_parameters = 3,
+        parameter_names=("Location", "Scale", "Weight"),
         mean_ranges=((-15.0, 15.0), (0.01, 100.0), (0.0, 10.0)),
         mean_defaults=(5.0, 1.0, 1.0),
         mean_steps=(0.1, 0.1, 0.1),
@@ -21,8 +21,8 @@ class GeneratorComponent(QtWidgets.QWidget):
         std_steps=(0.1, 0.1, 0.1))
 
     SKEW_NORMAL_SETTINGS = dict(
-        n_params = 4,
-        param_names=("Shape", "Location", "Scale", "Weight"),
+        n_parameters = 4,
+        parameter_names=("Shape", "Location", "Scale", "Weight"),
         mean_ranges=((-100.0, 100.0), (-15.0, 15.0), (0.01, 100.0), (0.0, 10.0)),
         mean_defaults=(0.0, 5.0, 1.0, 1.0),
         mean_steps=(0.1, 0.1, 0.1, 0.1),
@@ -31,8 +31,8 @@ class GeneratorComponent(QtWidgets.QWidget):
         std_steps=(0.1, 0.1, 0.1, 0.1))
 
     WEIBULL_SETTINGS = dict(
-        n_params = 3,
-        param_names=("Shape", "Scale", "Weight"),
+        n_parameters = 3,
+        parameter_names=("Shape", "Scale", "Weight"),
         mean_ranges=((-500.0, 500.0), (0.01, 500.0), (0.0, 10.0)),
         mean_defaults=(3.6, 1.0, 1.0),
         mean_steps=(0.1, 0.1, 0.1),
@@ -41,8 +41,8 @@ class GeneratorComponent(QtWidgets.QWidget):
         std_steps=(0.1, 0.1, 0.1))
 
     GENERAL_WEIBULL_SETTINGS = dict(
-        n_params = 4,
-        param_names=("Shape", "Location", "Scale", "Weight"),
+        n_parameters = 4,
+        parameter_names=("Shape", "Location", "Scale", "Weight"),
         mean_ranges=((-500.0, 500.0), (-500.0, 500.0), (0.01, 500.0), (0.0, 10.0)),
         mean_defaults=(3.6, 5.0, 1.0, 1.0),
         mean_steps=(0.1, 0.1, 0.1, 0.1),
@@ -87,8 +87,8 @@ class GeneratorComponent(QtWidgets.QWidget):
         self.group_layout.addWidget(self.name_label, 0, 0)
         self.group_layout.addWidget(self.mean_label, 0, 1)
         self.group_layout.addWidget(self.std_label, 0, 2)
-        for i in range(settings["n_params"]):
-            label = QtWidgets.QLabel(self.tr(settings["param_names"][i]))
+        for i in range(settings["n_parameters"]):
+            label = QtWidgets.QLabel(self.tr(settings["parameter_names"][i]))
             label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
             mean_input = QtWidgets.QDoubleSpinBox()
             mean_input.setRange(*settings["mean_ranges"][i])
@@ -129,7 +129,7 @@ class GeneratorComponent(QtWidgets.QWidget):
         self.mean_label.setText(self.tr("Mean"))
         self.std_label.setText(self.tr("Standard\nDeviation"))
         settings = self.SETTING_MAP[self.__distribution_type]
-        for param_name, (param_label, _, _) in zip(settings["param_names"], self.widgets):
+        for param_name, (param_label, _, _) in zip(settings["parameter_names"], self.widgets):
             param_label.setText(self.tr(param_name))
 
 
