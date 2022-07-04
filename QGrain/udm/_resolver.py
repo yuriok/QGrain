@@ -1,3 +1,4 @@
+import logging
 import time
 import typing
 
@@ -37,6 +38,7 @@ class UDMModule(torch.nn.Module):
 
 
 class UDMResolver:
+    logger = logging.getLogger("QGrain.UDMResolver")
     def __init__(self):
         pass
 
@@ -85,6 +87,7 @@ class UDMResolver:
             loss = distribution_loss + (10**s.constraint_level) * component_loss
 
             if np.isnan(loss.item()):
+                self.logger.warning("Loss is NaN, training terminated.")
                 break
 
             distribution_loss_series.append(distribution_loss.item())
