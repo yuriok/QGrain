@@ -174,7 +174,7 @@ class UDMResultChart(BaseChart):
         GSDs_axes.set_ylabel(self.ylabel)
         GSDs_axes.set_title("GSDs")
 
-        loss_axes = plt.subplot(2, 2, 2)
+        loss_axes = self.figure.add_subplot(2, 2, 2)
         loss_axes.plot(sum_loss_series, color=plt.get_cmap()(0), label="Sum")
         loss_axes.plot(result.distribution_loss_series, color=plt.get_cmap()(1), label="GSDs")
         loss_axes.plot(result.component_loss_series, color=plt.get_cmap()(2), label="Components")
@@ -184,7 +184,7 @@ class UDMResultChart(BaseChart):
         loss_axes.set_title("Loss variation")
         loss_axes.legend(loc="upper right", prop={"size": 8})
 
-        component_axes = plt.subplot(2, 2, 3)
+        component_axes = self.figure.add_subplot(2, 2, 3)
         mean, lower, upper = summarize(result.proportions, result.components, q=0.01)
         modes = [(i, result.dataset.classes_μm[np.unravel_index(np.argmax(mean[i]), mean[i].shape)]) for i in range(result.n_components)]
         # sort them by mode size
@@ -203,7 +203,7 @@ class UDMResultChart(BaseChart):
         component_axes.set_ylabel(self.ylabel)
         component_axes.set_title("Components")
 
-        proportion_axes = plt.subplot(2, 2, 4)
+        proportion_axes = self.figure.add_subplot(2, 2, 4)
         bottom = np.zeros(result.n_samples)
         for i_em, (i, _) in enumerate(modes):
             proportion_axes.bar(
@@ -241,7 +241,7 @@ class UDMResultChart(BaseChart):
         GSDs_axes.set_ylabel(self.ylabel)
         GSDs_axes.set_title("GSDs")
 
-        loss_axes = plt.subplot(2, 2, 2)
+        loss_axes = self.figure.add_subplot(2, 2, 2)
         sum_loss_line = loss_axes.plot(sum_loss_series, color=plt.get_cmap()(0), label="Sum")[0]
         distribution_loss_line = loss_axes.plot(result.distribution_loss_series, color=plt.get_cmap()(1), label="GSDs")[0]
         component_loss_line = loss_axes.plot(result.component_loss_series, color=plt.get_cmap()(2), label="Components")[0]
@@ -253,7 +253,7 @@ class UDMResultChart(BaseChart):
             handles=[sum_loss_line, distribution_loss_line, component_loss_line],
             labels=["Sum", "GSDs", "Components"],
             loc="upper right", prop={"size": 8})
-        component_axes = plt.subplot(2, 2, 3)
+        component_axes = self.figure.add_subplot(2, 2, 3)
         mean, lower, upper = summarize(result.proportions, result.components, q=0.01)
         modes = [(i, result.dataset.classes_μm[np.unravel_index(np.argmax(mean[i]), mean[i].shape)]) for i in range(result.n_components)]
         # sort them by mode size
@@ -266,7 +266,7 @@ class UDMResultChart(BaseChart):
         component_axes.set_ylabel(self.ylabel)
         component_axes.set_title("Components")
 
-        proportion_axes = plt.subplot(2, 2, 4)
+        proportion_axes = self.figure.add_subplot(2, 2, 4)
         proportion_axes.set_xlim(sample_indexes[0], sample_indexes[-1])
         proportion_axes.set_ylim(0.0, 1.0)
         proportion_axes.set_xlabel("Sample index")
