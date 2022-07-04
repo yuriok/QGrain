@@ -54,10 +54,6 @@ class Normal:
         defaults[2] = np.random.random((n_components,)) * 0.1 + 2.0
         return defaults
 
-    @staticmethod
-    def get_initial_guess(mean: float, std: float, skewness: float=0.0) -> np.ndarray:
-        return np.array([mean, std])
-
 
 class SkewNormal:
     NAME = "Skew Normal"
@@ -90,16 +86,6 @@ class SkewNormal:
         defaults[3] = np.random.random((n_components,)) * 0.1 + 2.0
         return defaults
 
-    @staticmethod
-    def get_initial_guess(mean: float, std: float, skewness: float=0.0) -> np.ndarray:
-        x0 = [np.random.rand()*0.1, mean, std]
-        def closure(args):
-            m, v, s, k = skewnorm.stats(*args, moments="mvsk")
-            errors = (mean-m)**2 + (std-np.sqrt(v))**2 + (skewness-k)**2
-            return errors
-        res = minimize(closure, x0=x0)
-        return res.x
-
 
 class Weibull:
     NAME = "Weibull"
@@ -128,16 +114,6 @@ class Weibull:
         defaults[1] = np.random.random((n_components,)) * 0.1 + 3.0
         defaults[2] = np.random.random((n_components,)) * 0.1 + 2.0
         return defaults
-
-    @staticmethod
-    def get_initial_guess(mean: float, std: float, skewness: float=0.0) -> np.ndarray:
-        x0 = [np.random.rand()*0.1+3.0, np.random.rand()*0.1+3.0]
-        def closure(args):
-            m, v, s, k = weibull_min.stats(args[0], scale=args[1], moments="mvsk")
-            errors = (mean-m)**2 + (std-np.sqrt(v))**2 + (skewness-k)**2
-            return errors
-        res = minimize(closure, x0=x0)
-        return res.x
 
 
 class GeneralWeibull:
@@ -170,16 +146,6 @@ class GeneralWeibull:
         defaults[2] = np.random.random((n_components,)) * 0.1 + 3.0
         defaults[3] = np.random.random((n_components,)) * 0.1 + 2.0
         return defaults
-
-    @staticmethod
-    def get_initial_guess(mean: float, std: float, skewness: float=0.0) -> np.ndarray:
-        x0 = [np.random.rand()*0.1+3.0, np.random.rand()*0.1+mean-2.0, np.random.rand()*0.1+3.0]
-        def closure(args):
-            m, v, s, k = weibull_min.stats(*args, moments="mvsk")
-            errors = (mean-m)**2 + (std-np.sqrt(v))**2 + (skewness-k)**2
-            return errors
-        res = minimize(closure, x0=x0)
-        return res.x
 
 
 DISTRIBUTION_CLASS_MAP = {
