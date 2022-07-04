@@ -244,7 +244,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 raise StopIteration()
             progress_dialog.setValue(int(progress*100))
             QtCore.QCoreApplication.processEvents()
-        ssu_results = udm_result.convert_to_ssu_results(callback)
+        ssu_results = udm_result.to_ssu_results(callback)
         self.ssu_analyzer.result_view.add_results(ssu_results)
 
     def on_save_statistics_clicked(self):
