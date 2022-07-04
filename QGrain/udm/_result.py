@@ -12,17 +12,17 @@ from ._setting import UDMAlgorithmSetting
 
 
 class UDMResult:
-    def __init__(self,
-                 dataset: GrainSizeDataset,
-                 kernel_type: KernelType,
-                 n_components: int,
-                 initial_parameters: np.ndarray,
-                 resolver_setting: UDMAlgorithmSetting,
-                 distribution_loss_series: typing.Iterable[float],
-                 component_loss_series: typing.Iterable[float],
-                 time_spent: float,
-                 final_parameters: np.ndarray,
-                 history: typing.Iterable[np.ndarray]):
+    def __init__(
+            self, dataset: GrainSizeDataset,
+            kernel_type: KernelType,
+            n_components: int,
+            initial_parameters: np.ndarray,
+            resolver_setting: UDMAlgorithmSetting,
+            distribution_loss_series: typing.Iterable[float],
+            component_loss_series: typing.Iterable[float],
+            time_spent: float,
+            final_parameters: np.ndarray,
+            history: typing.Iterable[np.ndarray]):
         self.__dataset = dataset
         self.__kernel_type = kernel_type
         self.__n_components = n_components
@@ -120,7 +120,7 @@ class UDMResult:
     def to_ssu_results(self, progress_callback: typing.Callable = None) -> typing.List[SSUResult]:
         results = []
         weight = np.ones((1, self.n_components))
-        initial_guess = np.concatenate([self.initial_parameters, weight], axis=0).astype(np.float64)
+        initial_parameters = np.concatenate([self.initial_parameters, weight], axis=0).astype(np.float64)
         time_spent = self.time_spent / self.n_samples
         for i in range(self.n_samples):
             sample = self.dataset.samples[i]
@@ -129,10 +129,10 @@ class UDMResult:
                 self.distribution_type,
                 self.n_components,
                 resolver_setting=None,
-                initial_guess=initial_guess)
-            func_args=np.expand_dims(self.final_parameters[i], axis=0)
+                initial_parameters=initial_parameters)
+            parameters=np.expand_dims(self.final_parameters[i], axis=0)
             history = [np.expand_dims(self.__history[j][i], axis=0) for j in range(self.n_iterations)]
-            result = SSUResult(task, func_args, history=history, time_spent=time_spent)
+            result = SSUResult(task, parameters, history=history, time_spent=time_spent)
             results.append(result)
             if progress_callback is not None:
                 progress_callback(i / self.n_samples)

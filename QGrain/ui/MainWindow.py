@@ -69,12 +69,12 @@ class MainWindow(QtWidgets.QMainWindow):
         from ..ssu import DistributionType, try_sample, SSUResult
         import numpy as np
         sample = dataset.samples[0]
-        initial_guess = dataset.params[0, 1:, :]
+        initial_parameters = dataset.parameters[0, 1:, :]
         task_or_result = try_sample(
             sample.sample_to_fit,
             DistributionType.Normal,
             dataset.n_components,
-            initial_guess=initial_guess)
+            initial_parameters=initial_parameters)
         assert isinstance(task_or_result, SSUResult)
         self.parameter_editor.refer_ssu_result(task_or_result)
         self.parameter_editor.enabled_checkbox.setChecked(True)

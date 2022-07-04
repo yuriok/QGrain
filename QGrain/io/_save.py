@@ -121,30 +121,30 @@ def save_artificial_dataset(
         cell.style = style
 
     distribution_class = get_distribution(dataset.distribution_type)
-    param_names = list(distribution_class.PARAM_NAMES) + ["Weight"]
-    n_params = distribution_class.N_PARAMS + 1
+    parameter_names = list(distribution_class.PARAMETER_NAMES) + ["Weight"]
+    n_parameters = distribution_class.N_PARAMETERS + 1
     if dataset.target is not None:
         logger.debug("Creating the `Random Settings` sheet.")
         ws = wb.create_sheet("Random Settings")
         write(0, 0, "Parameter", style="header")
         ws.merge_cells(start_row=1, start_column=1, end_row=2, end_column=1)
-        for i_param, param_name in enumerate(param_names):
+        for i_param, param_name in enumerate(parameter_names):
             write(0, i_param*2+1, param_name, style="header")
             ws.merge_cells(start_row=1, start_column=i_param*2+2, end_row=1, end_column=i_param*2+3)
         ws.column_dimensions[column_to_char(0)].width = 16
-        for col in range(1, n_params*2+1):
+        for col in range(1, n_parameters*2+1):
             ws.column_dimensions[column_to_char(col)].width = 16
             if col % 2 == 0:
                 write(1, col, "Standard deviation", style="header")
             else:
                 write(1, col, "Mean", style="header")
-        for row, comp_params in enumerate(dataset.target, 2):
+        for row, component_parameters in enumerate(dataset.target, 2):
             if row % 2 == 1:
                 style = "normal_dark"
             else:
                 style = "normal_light"
             write(row, 0, f"Component{row-1}", style=style)
-            for i, (mean, std) in enumerate(comp_params):
+            for i, (mean, std) in enumerate(component_parameters):
                 write(row, i*2+1, mean, style=style)
                 write(row, i*2+2, std, style=style)
     else:
@@ -176,11 +176,11 @@ def save_artificial_dataset(
     ws.merge_cells(start_row=1, start_column=1, end_row=2, end_column=1)
     ws.column_dimensions[column_to_char(0)].width = 24
     for i in range(dataset.n_components):
-        write(0, n_params*i+1, f"Component{i+1}", style="header")
-        ws.merge_cells(start_row=1, start_column=n_params*i+2, end_row=1, end_column=n_params*(i+1)+1)
-        for j, header_name in enumerate(param_names):
-            write(1, n_params*i+1+j, header_name, style="header")
-            ws.column_dimensions[column_to_char(n_params*i+1+j)].width = 16
+        write(0, n_parameters*i+1, f"Component{i+1}", style="header")
+        ws.merge_cells(start_row=1, start_column=n_parameters*i+2, end_row=1, end_column=n_parameters*(i+1)+1)
+        for j, header_name in enumerate(parameter_names):
+            write(1, n_parameters*i+1+j, header_name, style="header")
+            ws.column_dimensions[column_to_char(n_parameters*i+1+j)].width = 16
     for i in range(dataset.n_samples):
         row = i + 2
         if row % 2 == 1:
@@ -189,8 +189,8 @@ def save_artificial_dataset(
             style = "normal_light"
         write(row, 0, dataset.samples[i].name, style=style)
         for j in range(dataset.n_components):
-            for k in range(n_params):
-                write(row, n_params*j+k+1, dataset.params[i, k, j], style=style)
+            for k in range(n_parameters):
+                write(row, n_parameters*j+k+1, dataset.parameters[i, k, j], style=style)
 
         if progress_callback is not None:
             progress_callback(1/dataset.n_samples*0.2 + 0.2)
@@ -817,8 +817,8 @@ def save_ssu(
         write(row, 1, result.distribution_type.name, style=style)
         write(row, 2, result.n_components, style=style)
         write(row, 3, "Default" if result.task.resolver_setting is None else result.task.resolver_setting.__str__(), style=style)
-        write(row, 4, "None" if result.task.initial_guess is None else result.task.initial_guess.__str__(), style=style)
-        write(row, 5, result.func_args.__str__(), style=style)
+        write(row, 4, "None" if result.task.initial_parameters is None else result.task.initial_parameters.__str__(), style=style)
+        write(row, 5, result.parameters.__str__(), style=style)
         write(row, 6, result.time_spent, style=style)
         write(row, 7, result.n_iterations, style=style)
         write(row, 8, result.get_distance("log10MSE"), style=style)
@@ -1009,7 +1009,7 @@ def save_udm(
     headers = []
     distribution_type = DistributionType._member_map_[result.kernel_type.name]
     distribution_class = get_distribution(distribution_type)
-    sub_headers = (*distribution_class.PARAM_NAMES, "Weight")
+    sub_headers = (*distribution_class.PARAMETER_NAMES, "Weight")
     for i in range(result.n_components):
         write(0, i*len(sub_headers)+1, f"C{i+1}", style="header")
         ws.merge_cells(start_row=1, start_column=i*len(sub_headers)+2, end_row=1, end_column=(i+1)*len(sub_headers)+1)

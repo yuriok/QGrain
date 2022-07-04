@@ -11,29 +11,29 @@ from ..statistics import get_interval_φ
 
 class ParameterComponent(QtWidgets.QWidget):
     NORMAL_SETTINGS = dict(
-        n_params = 3,
-        param_names=("Location", "Scale", "Weight"),
+        n_parameters = 3,
+        parameter_names=("Location", "Scale", "Weight"),
         ranges=((-15.0, 15.0), (0.01, 100.0), (0.0, 10.0)),
         defaults=(5.0, 1.0, 1.0),
         steps=(0.1, 0.1, 0.1))
 
     SKEW_NORMAL_SETTINGS = dict(
-        n_params = 4,
-        param_names=("Shape", "Location", "Scale", "Weight"),
+        n_parameters = 4,
+        parameter_names=("Shape", "Location", "Scale", "Weight"),
         ranges=((-100.0, 100.0), (-15.0, 15.0), (0.01, 100.0), (0.0, 10.0)),
         defaults=(0.0, 5.0, 1.0, 1.0),
         steps=(0.1, 0.1, 0.1, 0.1))
 
     WEIBULL_SETTINGS = dict(
-        n_params = 3,
-        param_names=("Shape", "Scale", "Weight"),
+        n_parameters = 3,
+        parameter_names=("Shape", "Scale", "Weight"),
         ranges=((-2000.0, 2000.0), (0.01, 2000.0), (0.0, 10.0)),
         defaults=(3.6, 1.0, 1.0),
         steps=(0.1, 0.1, 0.1))
 
     GENERAL_WEIBULL_SETTINGS = dict(
-        n_params = 4,
-        param_names=("Shape", "Location", "Scale", "Weight"),
+        n_parameters = 4,
+        parameter_names=("Shape", "Location", "Scale", "Weight"),
         ranges=((-2000.0, 2000.0), (-2000.0, 2000.0), (0.01, 2000.0), (0.0, 10.0)),
         defaults=(3.6, 5.0, 1.0, 1.0),
         steps=(0.1, 0.1, 0.1, 0.1))
@@ -71,8 +71,8 @@ class ParameterComponent(QtWidgets.QWidget):
         self.value_label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
         self.group_layout.addWidget(self.name_label, 0, 0)
         self.group_layout.addWidget(self.value_label, 0, 1)
-        for i in range(settings["n_params"]):
-            label = QtWidgets.QLabel(self.tr(settings["param_names"][i]))
+        for i in range(settings["n_parameters"]):
+            label = QtWidgets.QLabel(self.tr(settings["parameter_names"][i]))
             label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
             input = QtWidgets.QDoubleSpinBox()
             input.setRange(*settings["ranges"][i])
@@ -105,7 +105,7 @@ class ParameterComponent(QtWidgets.QWidget):
     def retranslate(self):
         self.value_label.setText(self.tr("Value"))
         settings = self.SETTING_MAP[self.__distribution_type]
-        for param_name, (param_label, _) in zip(settings["param_names"], self.widgets):
+        for param_name, (param_label, _) in zip(settings["parameter_names"], self.widgets):
             param_label.setText(self.tr(param_name))
 
 
@@ -306,7 +306,7 @@ class ParameterEditor(QtWidgets.QDialog):
                 if component.isEnabled():
                     enabled_components.append(component)
         for result_component, component in zip(result.components, enabled_components):
-            component.set_parameters(result_component.component_args)
+            component.set_parameters(result_component.parameters)
         self.update_chart()
         self.update_cache()
 

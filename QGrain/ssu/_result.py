@@ -3,7 +3,6 @@ import typing
 from uuid import UUID, uuid4
 
 import numpy as np
-from scipy.stats import norm
 
 from ..model import GrainSizeSample
 from ._distance import get_distance_function
@@ -12,9 +11,10 @@ from ._task import SSUTask
 
 
 class SSUViewModel:
-    def __init__(self, classes_φ, target,
-                 mixed, distributions, proportions,
-                 component_prefix="C", title="", **kwargs):
+    def __init__(
+            self, classes_φ, target,
+            mixed, distributions, proportions,
+            component_prefix="C", title="", **kwargs):
         self.classes_φ = classes_φ
         self.mixed = mixed
         self.distributions = distributions
@@ -29,36 +29,24 @@ class SSUViewModel:
         return len(self.distributions)
 
 
-class SSUComponentResult:
-    def __init__(self, distribution: np.ndarray,
-                 proportion: float,
-                 moments: typing.Tuple[float, float, float, float],
-                 component_args: np.ndarray):
-        assert proportion is not None and np.isreal(proportion)
-        # iteration may pass invalid proportion value
-        # assert proportion >= 0.0 and proportion <= 1.0
-        self.update(distribution, proportion, moments, component_args)
+class SSUResultComponent:
+    def __init__(
+            self, distribution: np.ndarray,
+            proportion: float,
+            moments: typing.Tuple[float, float, float, float],
+            parameters: np.ndarray):
+        self.update(distribution, proportion, moments, parameters)
 
-    def update(self, distribution: np.ndarray,
-               proportion: float,
-               moments: typing.Tuple[float, float, float, float],
-               component_args: np.ndarray):
+    def update(
+            self, distribution: np.ndarray,
+            proportion: float,
+            moments: typing.Tuple[float, float, float, float],
+            parameters: np.ndarray):
         self.__distribution = distribution
         self.__proportion = proportion
         m, v, s, k = moments
         self.__moments = dict(mean=m, std=np.sqrt(v), skewness=s, kurtosis=k)
-        self.__component_args = component_args
-        values_to_check = [self.__proportion]
-        values_to_check.extend(self.__distribution)
-        keys = ["mean", "std", "skewness", "kurtosis"]
-        for key in keys:
-            values_to_check.append(self.__moments[key])
-        values_to_check = np.array(values_to_check)
-        # if any value is nan of inf, this result is invalid
-        if np.any(np.isnan(values_to_check) | np.isinf(values_to_check)):
-            self.__is_valid = False
-        else:
-            self.__is_valid = True
+        self.__parameters = parameters
 
     @property
     def proportion(self) -> float:
@@ -73,62 +61,57 @@ class SSUComponentResult:
         return self.__moments
 
     @property
-    def component_args(self) -> np.ndarray:
-        return self.__component_args
-
-    @property
-    def is_valid(self) -> bool:
-        return self.__is_valid
+    def parameters(self) -> np.ndarray:
+        return self.__parameters
 
 
 class SSUResult:
     """
-    The class to represent the fitting result of each sample.
+    This class represents the SSU result of each sample.
     """
-    def __init__(self, task: SSUTask,
-                 func_args: typing.Iterable[float],
-                 history: typing.List[np.ndarray] = None,
-                 time_spent = None):
+
+    def __init__(
+            self, task: SSUTask,
+            parameters: typing.Iterable[float],
+            history: typing.List[np.ndarray] = None,
+            time_spent=None):
         # add uuid to manage data
         self.__uuid = uuid4()
         self.__task = task
         self.__distribution_type = task.distribution_type
         self.__n_components = task.n_components
         self.__sample = task.sample
-        self.__func_args = func_args
-        self.__history = [func_args] if history is None else history
-        self.__components = [] # type: typing.List[SSUComponentResult]
+        self.__parameters = parameters
+        self.__history = [parameters] if history is None else history
+        self.__components = [] # type: typing.List[SSUResultComponent]
         self.__time_spent = time_spent
-        self.update(func_args)
+        self.update(parameters)
 
-    def update(self, func_args: typing.Iterable[float]):
-        self.__func_args = func_args
-        distribution_class = get_distribution(self.distribution_type)
+    def update(self, parameters: typing.Iterable[float]):
+        self.__parameters = parameters
         classes = np.expand_dims(np.expand_dims(self.sample.classes_φ, 0), 0).repeat(1, 0).repeat(self.n_components, 1)
-        if np.any(np.isnan(func_args)):
-            self.__distribution = np.full_like(self.sample.distribution, fill_value=np.nan)
+        if np.any(np.isnan(parameters)):
+            self.__distribution = None
             self.__is_valid = False
         else:
-            proportions, components, (m, v, s, k) = distribution_class.interpret(func_args, classes, self.__sample.interval_φ)
+            proportions, components, (m, v, s, k) = get_distribution(self.distribution_type).interpret(parameters, classes, self.__sample.interval_φ)
             proportions, components, (m, v, s, k) = proportions[0], components[0], (m[0], v[0], s[0], k[0])
             distribution = (proportions @ components)[0]
             self.__distribution = distribution
             if len(self.__components) == 0:
                 for i in range(self.n_components):
-                    component_result = SSUComponentResult(components[i], proportions[0][i], (m[i], v[i], s[i], k[i]), func_args[0, :, i])
+                    component_result = SSUResultComponent(components[i], proportions[0][i], (m[i], v[i], s[i], k[i]), parameters[0, :, i])
                     self.__components.append(component_result)
             else:
                 for i in range(self.n_components):
-                    self.__components[i].update(components[i], proportions[0][i], (m[i], v[i], s[i], k[i]), func_args[0, :, i])
+                    self.__components[i].update(components[i], proportions[0][i], (m[i], v[i], s[i], k[i]), parameters[0, :, i])
             # sort by mean φ values
             # reverse is necessary
             self.__components.sort(key=lambda component: component.moments["mean"], reverse=True)
 
             self.__is_valid = True
-            if np.any(np.isnan(self.__distribution) | np.isinf(self.__distribution)):
-                self.__is_valid = False
-            for component in self.__components:
-                if not component.is_valid:
+            for values in [proportions, components, distribution, m, v, s, k]:
+                if np.any(np.logical_or(np.isnan(values), np.isinf(values))):
                     self.__is_valid = False
                     break
 
@@ -153,8 +136,8 @@ class SSUResult:
         return self.__task
 
     @property
-    def func_args(self) -> np.ndarray:
-        return self.__func_args
+    def parameters(self) -> np.ndarray:
+        return self.__parameters
 
     @property
     def distribution_type(self) -> DistributionType:
@@ -169,7 +152,7 @@ class SSUResult:
         return self.__distribution
 
     @property
-    def components(self) -> typing.List[SSUComponentResult]:
+    def components(self) -> typing.List[SSUResultComponent]:
         return self.__components
 
     @property
@@ -179,8 +162,8 @@ class SSUResult:
     @property
     def history(self):
         copy_result = copy.deepcopy(self)
-        for func_args in self.__history:
-            copy_result.update(func_args)
+        for parameters in self.__history:
+            copy_result.update(parameters)
             yield copy_result
 
     def get_distance(self, distance: str):
