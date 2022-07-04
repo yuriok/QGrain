@@ -3,7 +3,7 @@ import typing
 import numpy as np
 
 from ..model import GrainSizeDataset, GrainSizeSample
-from ..ssu import DISTRIBUTION_CLASS_MAP, DistributionType, SSUViewModel
+from ..ssu import DistributionType, SSUViewModel, get_distribution
 from ..statistics import convert_μm_to_φ, convert_φ_to_μm
 
 
@@ -137,7 +137,7 @@ class ArtificialDataset:
         self.__noise = noise
 
         classes = np.expand_dims(np.expand_dims(self.classes_φ, 0), 0).repeat(self.n_samples, 0).repeat(self.n_components, 1)
-        distribution_class = DISTRIBUTION_CLASS_MAP[distribution_type]
+        distribution_class = get_distribution(distribution_type)
         proportions, components, (m, v, s, k) = distribution_class.interpret(params, classes, self.interval_φ)
         noise = np.random.randn(self.n_samples, self.n_classes) * (10**(-self.noise))
         distributions = np.round((proportions @ components).squeeze(1) + noise, decimals=self.precision)

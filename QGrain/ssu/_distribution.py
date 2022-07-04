@@ -148,8 +148,14 @@ class GeneralWeibull:
         return defaults
 
 
-DISTRIBUTION_CLASS_MAP = {
-    DistributionType.Normal: Normal,
-    DistributionType.SkewNormal: SkewNormal,
-    DistributionType.Weibull: Weibull,
-    DistributionType.GeneralWeibull: GeneralWeibull}
+def get_distribution(distribution_type: DistributionType):
+    if distribution_type == DistributionType.Normal:
+        return Normal
+    elif distribution_type == DistributionType.SkewNormal:
+        return SkewNormal
+    elif distribution_type == DistributionType.Weibull:
+        return Weibull
+    elif distribution_type == DistributionType.GeneralWeibull:
+        return GeneralWeibull
+    else:
+        raise NotImplementedError(distribution_type)

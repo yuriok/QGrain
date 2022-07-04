@@ -2,7 +2,7 @@ __all__ = ["Reference"]
 
 import numpy as np
 
-from ._distribution import DISTRIBUTION_CLASS_MAP, DistributionType
+from ._distribution import get_distribution, DistributionType
 
 
 class Reference:
@@ -13,7 +13,7 @@ class Reference:
         assert isinstance(params, np.ndarray)
         assert params.ndim == 2
         n_params, n_components = params.shape
-        assert n_params == DISTRIBUTION_CLASS_MAP[distribution_type].N_PARAMS
+        assert n_params == get_distribution(distribution_type).N_PARAMS
         self.__distribution_type = distribution_type
         self.__params = params
         self.__n_components = n_components

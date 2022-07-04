@@ -5,7 +5,7 @@ import numpy as np
 from PySide6 import QtCore, QtWidgets
 
 from ..chart.DistributionChart import DistributionChart
-from ..ssu import DISTRIBUTION_CLASS_MAP, DistributionType, SSUResult, SSUViewModel
+from ..ssu import DistributionType, SSUResult, SSUViewModel, get_distribution
 from ..statistics import get_interval_φ
 
 
@@ -289,7 +289,7 @@ class ParameterEditor(QtWidgets.QDialog):
         self.__target = target
 
     def update_chart(self):
-        distribution_class = DISTRIBUTION_CLASS_MAP[self.distribution_type]
+        distribution_class = get_distribution(self.distribution_type)
         classes = np.expand_dims(np.expand_dims(self.__classes_φ, axis=0), axis=0).repeat(self.n_components, axis=1)
         proportions, components, mvsk = distribution_class.interpret(np.expand_dims(self.parameters, axis=0), classes, self.__interval_φ)
         mixed = (proportions @ components).squeeze()

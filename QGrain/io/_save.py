@@ -13,7 +13,7 @@ from .. import QGRAIN_VERSION
 from ..artificial._generator import ArtificialDataset
 from ..emma import EMMAResult
 from ..model import GrainSizeDataset, GrainSizeSample
-from ..ssu import DISTRIBUTION_CLASS_MAP, SSUResult, DistributionType
+from ..ssu import DistributionType, SSUResult, get_distribution
 from ..statistics._GRADISTAT import _get_all_scales, get_all_statistics, logarithmic
 from ..udm import UDMAlgorithmSetting, UDMResult
 from ._use_excel import column_to_char, prepare_styles
@@ -120,8 +120,9 @@ def save_artificial_dataset(
         cell = ws.cell(row+1, col+1, value=value)
         cell.style = style
 
-    param_names = list(DISTRIBUTION_CLASS_MAP[dataset.distribution_type].PARAM_NAMES) + ["Weight"]
-    n_params = DISTRIBUTION_CLASS_MAP[dataset.distribution_type].N_PARAMS + 1
+    distribution_class = get_distribution(dataset.distribution_type)
+    param_names = list(distribution_class.PARAM_NAMES) + ["Weight"]
+    n_params = distribution_class.N_PARAMS + 1
     if dataset.target is not None:
         logger.debug("Creating the `Random Settings` sheet.")
         ws = wb.create_sheet("Random Settings")
@@ -1007,7 +1008,7 @@ def save_udm(
     ws.column_dimensions[column_to_char(0)].width = 16
     headers = []
     distribution_type = DistributionType._member_map_[result.kernel_type.name]
-    distribution_class = DISTRIBUTION_CLASS_MAP[distribution_type]
+    distribution_class = get_distribution(distribution_type)
     sub_headers = (*distribution_class.PARAM_NAMES, "Weight")
     for i in range(result.n_components):
         write(0, i*len(sub_headers)+1, f"C{i+1}", style="header")

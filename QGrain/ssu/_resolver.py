@@ -10,7 +10,7 @@ from scipy.optimize import OptimizeResult, basinhopping, minimize
 
 from ..model import GrainSizeDataset, GrainSizeSample
 from ._distance import get_distance_function
-from ._distribution import DISTRIBUTION_CLASS_MAP, DistributionType
+from ._distribution import DistributionType, get_distribution
 from ._result import SSUResult
 from ._task import SSUTask
 
@@ -135,7 +135,7 @@ class BasicResolver:
             assert isinstance(task.resolver_setting, SSUAlgorithmSetting)
             setting = task.resolver_setting
         classes = np.expand_dims(np.expand_dims(task.sample.classes_φ, 0), 0).repeat(task.n_components, 1)
-        distribution_class = DISTRIBUTION_CLASS_MAP[task.distribution_type]
+        distribution_class = get_distribution(task.distribution_type)
         distance_func = get_distance_function(setting.distance)
 
         start_time = time.time()
