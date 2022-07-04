@@ -163,7 +163,6 @@ class DistributionChart(BaseChart):
             self.animation._stop()
             self.animation = None
         if not quick:
-            self.last_result = None
             self.last_model = model
             self.axes.clear()
             x = self.transfer(model.classes_φ)
@@ -216,9 +215,7 @@ class DistributionChart(BaseChart):
         if self.animation is not None:
             self.animation._stop()
             self.animation = None
-        self.last_model = None
         self.last_result = result
-
         models = iter(result.view_models)
         first = next(models)
         x = self.transfer(first.classes_φ)
@@ -294,7 +291,6 @@ class DistributionChart(BaseChart):
             self.show_animation(result)
         else:
             self.show_model(result.view_model)
-        self.last_model = None
         self.last_result = result
 
     def save_animation(self):
@@ -339,10 +335,10 @@ class DistributionChart(BaseChart):
     def update_chart(self):
         self.figure.clear()
         self.axes = self.figure.subplots()
-        if self.last_model is not None:
-            self.show_model(self.last_model)
-        elif self.last_result is not None:
+        if self.last_result is not None:
             self.show_result(self.last_result)
+        elif self.last_model is not None:
+            self.show_model(self.last_model)
 
     def retranslate(self):
         super().retranslate()
