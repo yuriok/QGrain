@@ -3,14 +3,10 @@ import typing
 
 import numpy as np
 import torch
-from scipy.interpolate import interp1d
 
-from ..model import GrainSizeDataset, GrainSizeSample
-from ..ssu import (DISTRIBUTION_CLASS_MAP, DistributionType,
-                   SSUAlgorithmSetting, try_sample)
-from ..statistics import convert_φ_to_μm, logarithmic
+from ..model import GrainSizeDataset
 from ._distance import get_distance_func_by_name
-from ._kernel import KERNEL_CLASS_MAP, KernelType, Proportion
+from ._kernel import KernelType, ProportionModule, get_kernel
 from ._result import EMMAResult
 from ._setting import EMMAAlgorithmSetting
 
@@ -21,23 +17,22 @@ class EMMAModule(torch.nn.Module):
                  n_members: int,
                  classes_φ: np.ndarray,
                  kernel_type: KernelType,
-                 params: np.ndarray = None):
+                 parameters: np.ndarray = None):
         super().__init__()
         self.n_samples = n_samples
         self.n_members = n_members
         self.n_classes = len(classes_φ)
-        self.interval = np.abs((classes_φ[0]-classes_φ[-1]) / (classes_φ.shape[0]-1))
-        self.classes = torch.nn.Parameter(torch.from_numpy(classes_φ).repeat(1, n_members, 1), requires_grad=False)
+        self.__interval = np.abs((classes_φ[0]-classes_φ[-1]) / (classes_φ.shape[0]-1))
+        self.__classes = torch.nn.Parameter(torch.from_numpy(classes_φ).repeat(1, n_members, 1), requires_grad=False)
         self.kernel_type = kernel_type
-        kernel_class = KERNEL_CLASS_MAP[kernel_type]
-        self.proportions = Proportion(n_samples, n_members)
-        self.end_members = kernel_class(1, self.n_members, self.n_classes, params)
+        self.proportions = ProportionModule(n_samples, n_members)
+        self.end_members = get_kernel(kernel_type, 1, self.n_members, self.n_classes, parameters)
 
-    def forward(self):
+    def forward(self) -> typing.Tuple[torch.Tensor, torch.Tensor]:
         # n_samples x n_members
         proportions = self.proportions().squeeze(1)
         # n_members x n_classes
-        end_members = self.end_members(self.classes, self.interval).squeeze(0)
+        end_members = self.end_members(self.__classes, self.__interval).squeeze(0)
         # n_samples x n_classes
         # distributions = proportions @ end_members
         return proportions, end_members
@@ -68,9 +63,7 @@ class EMMAResolver:
         loss_series = []
         history = []
         start = time.time()
-
-        emma.end_members.requires_grad = False
-        emma.end_members.params.requires_grad = False
+        emma.end_members.requires_grad_(False)
         for pretrain_epoch in range(s.pretrain_epochs):
             proportions, end_members = emma()
             X_hat = proportions @ end_members
@@ -80,9 +73,7 @@ class EMMAResolver:
             loss.backward()
             optimizer.step()
             history.append((proportions.detach().cpu().numpy(), end_members.detach().cpu().numpy()))
-
-        emma.end_members.requires_grad = update_end_members
-        emma.end_members.params.requires_grad = update_end_members
+        emma.end_members.requires_grad_(update_end_members)
         epochs = 0
         while True:
             # train

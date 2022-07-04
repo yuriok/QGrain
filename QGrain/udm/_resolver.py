@@ -5,7 +5,7 @@ import typing
 import numpy as np
 import torch
 
-from ..emma import KERNEL_CLASS_MAP, KernelType, Proportion
+from ..emma import KernelType, ProportionModule, get_kernel
 from ..model import GrainSizeDataset
 from ._result import UDMResult
 from ._setting import UDMAlgorithmSetting
@@ -22,19 +22,22 @@ class UDMModule(torch.nn.Module):
         self.n_samples = n_samples
         self.n_components = n_components
         self.n_classes = len(classes_φ)
-        self.interval = np.abs((classes_φ[0]-classes_φ[-1]) / (classes_φ.shape[0]-1))
-        self.classes = torch.nn.Parameter(torch.from_numpy(classes_φ).repeat(n_samples, n_components, 1), requires_grad=False)
+        self.__interval = np.abs((classes_φ[0]-classes_φ[-1]) / (classes_φ.shape[0]-1))
+        self.__classes = torch.nn.Parameter(torch.from_numpy(classes_φ).repeat(n_samples, n_components, 1), requires_grad=False)
         self.kernel_type = kernel_type
-        kernel_class = KERNEL_CLASS_MAP[kernel_type]
-        self.proportions = Proportion(n_samples, n_components)
-        self.components = kernel_class(n_samples, self.n_components, self.n_classes, parameters)
+        self.proportions = ProportionModule(n_samples, n_components)
+        self.components = get_kernel(kernel_type, n_samples, self.n_components, self.n_classes, parameters)
 
-    def forward(self):
+    def forward(self) -> typing.Tuple[torch.Tensor, torch.Tensor]:
         # n_samples x 1 x n_members
         proportions = self.proportions()
         # n_samples x n_members x n_classes
-        components = self.components(self.classes, self.interval)
+        components = self.components(self.__classes, self.__interval)
         return proportions, components
+
+    @property
+    def all_parameters(self) -> np.ndarray:
+        return torch.cat([self.components._params, self.proportions._params], dim=1).detach().cpu().numpy()
 
 
 class UDMResolver:
@@ -62,8 +65,7 @@ class UDMResolver:
         distribution_loss_series = []
         component_loss_series = []
         history = []
-        udm.components.requires_grad = False
-        udm.components.params.requires_grad = False
+        udm.components.requires_grad_(False)
         for pretrain_epoch in range(s.pretrain_epochs):
             proportions, components = udm()
             X_hat = (proportions @ components).squeeze(1)
@@ -71,13 +73,12 @@ class UDMResolver:
             distribution_loss_series.append(distribution_loss.item())
             component_loss_series.append(0.0)
             optimizer.zero_grad()
+            torch.nn.utils.clip_grad_norm_(udm.parameters(), 1e-1)
             distribution_loss.backward()
             optimizer.step()
-            params = torch.cat([udm.components.params, udm.proportions.params], dim=1).detach().cpu().numpy()
-            history.append(params)
+            history.append(udm.all_parameters)
 
-        udm.components.requires_grad = True
-        udm.components.params.requires_grad = True
+        udm.components.requires_grad_(True)
         for epoch in range(s.max_epochs):
             # train
             proportions, components = udm()
@@ -94,9 +95,9 @@ class UDMResolver:
             component_loss_series.append((10**s.constraint_level) * component_loss.item())
             optimizer.zero_grad()
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(udm.parameters(), 1e-1)
             optimizer.step()
-            params = torch.cat([udm.components.params, udm.proportions.params], dim=1).detach().cpu().numpy()
-            history.append(params)
+            history.append(udm.all_parameters)
 
             if epoch > s.min_epochs:
                 delta_loss = np.mean(distribution_loss_series[-100:-80])-np.mean(distribution_loss_series[-20:])
@@ -106,7 +107,6 @@ class UDMResolver:
         if s.device == "cuda":
             torch.cuda.synchronize()
         time_spent = time.time() - start
-        final_params = torch.cat([udm.components.params, udm.proportions.params], dim=1).detach().cpu().numpy()
         result = UDMResult(
             dataset, kernel_type, n_components,
             parameters,
@@ -114,6 +114,6 @@ class UDMResolver:
             np.array(distribution_loss_series),
             np.array(component_loss_series),
             time_spent,
-            final_params,
+            udm.all_parameters,
             history)
         return result

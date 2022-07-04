@@ -119,7 +119,7 @@ class UDMResult:
         predict = (self.proportions @ self.components).squeeze()
         return distance_func(predict, self.dataset.distribution_matrix)
 
-    def convert_to_ssu_results(self, progress_callback: typing.Callable = None) -> typing.List[SSUResult]:
+    def to_ssu_results(self, progress_callback: typing.Callable = None) -> typing.List[SSUResult]:
         results = []
         weight = np.ones((1, self.n_components))
         initial_guess = np.concatenate([self.initial_parameters, weight], axis=0).astype(np.float64)
