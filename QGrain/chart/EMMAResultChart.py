@@ -7,7 +7,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from ..emma import EMMAResult
 from ..statistics import convert_φ_to_μm
-from .BaseChart import BaseChart
+from .BaseChart import BaseChart, get_image_by_proportions
 from .config_matplotlib import normal_color
 
 
@@ -212,18 +212,14 @@ class EMMAResultChart(BaseChart):
         end_member_axes.set_title("End members")
 
         proportion_axes = self.figure.add_subplot(2, 2, 4)
-        bottom = np.zeros(result.n_samples)
-        for i in range(result.n_members):
-            proportion_axes.bar(
-                sample_indexes[::interval],
-                result.proportions[:, i][::interval],
-                bottom=bottom[::interval], width=interval, color=plt.get_cmap()(i))
-            bottom += result.proportions[:, i]
-        proportion_axes.set_xlim(sample_indexes[0], sample_indexes[-1])
-        proportion_axes.set_ylim(0.0, 1.0)
+        image = get_image_by_proportions(result.proportions, resolution=100)
+        proportion_axes.imshow(image, plt.get_cmap(), aspect="auto", vmin=0, vmax=9)
+        proportion_axes.set_xlim(0, result.n_samples-1)
+        proportion_axes.set_ylim(0.0, 100.0)
         proportion_axes.set_xlabel("Sample index")
-        proportion_axes.set_ylabel("Proportion")
+        proportion_axes.set_ylabel("Proportion [%]")
         proportion_axes.set_title("Proportions")
+
         self.figure.tight_layout()
         self.canvas.draw()
 
@@ -264,10 +260,10 @@ class EMMAResultChart(BaseChart):
         end_member_axes.set_title("End members")
 
         proportion_axes = self.figure.add_subplot(2, 2, 4)
-        proportion_axes.set_xlim(sample_indexes[0], sample_indexes[-1])
-        proportion_axes.set_ylim(0.0, 1.0)
+        proportion_axes.set_xlim(0, result.n_samples-1)
+        proportion_axes.set_ylim(0.0, 100.0)
         proportion_axes.set_xlabel("Sample index")
-        proportion_axes.set_ylabel("Proportion")
+        proportion_axes.set_ylabel("Proportion [%]")
         proportion_axes.set_title("Proportions")
 
         # self.figure.tight_layout()
@@ -278,28 +274,18 @@ class EMMAResultChart(BaseChart):
             for i in range(result.n_members):
                 end_member_curve = end_member_axes.plot(classes, result.end_members[i], c=plt.get_cmap()(i), label=f"EM{i+1}")[0]
                 self.end_member_curves.append(end_member_curve)
-            bottom = np.zeros(result.n_samples)
-            self.proportion_bars = []
-            self.patches = []
-            for i in range(result.n_members):
-                bar = proportion_axes.bar(sample_indexes[::interval], result.proportions[:, i][::interval], bottom=bottom[::interval], width=interval, color=plt.get_cmap()(i))
-                self.proportion_bars.append(bar)
-                self.patches.extend(bar.patches)
-                bottom += result.proportions[:, i]
-            return self.iteration_line, *(self.end_member_curves + self.patches)
+            image = get_image_by_proportions(result.proportions, resolution=100)
+            self.proportion_image = proportion_axes.imshow(image, plt.get_cmap(), aspect="auto", vmin=0, vmax=9)
+            return self.iteration_line, self.proportion_image, *self.end_member_curves
 
         def animate(args: typing.Tuple[int, EMMAResult]):
             iteration, current = args
             self.iteration_line.set_xdata([iteration, iteration])
             for i in range(current.n_members):
                 self.end_member_curves[i].set_ydata(current.end_members[i])
-            bottom = np.zeros(current.n_samples)
-            for i in range(current.n_members):
-                for rect, height, y in zip(self.proportion_bars[i].patches, current.proportions[:, i][::interval], bottom[::interval]):
-                    rect.set_height(height)
-                    rect.set_y(y)
-                bottom += current.proportions[:, i]
-            return self.iteration_line, *(self.end_member_curves + self.patches)
+            image = get_image_by_proportions(current.proportions, resolution=100)
+            self.proportion_image.set_data(image)
+            return self.iteration_line, self.proportion_image, *self.end_member_curves
 
         self.__animation = FuncAnimation(
             self.figure, animate, init_func=init,
