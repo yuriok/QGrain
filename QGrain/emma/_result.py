@@ -32,7 +32,7 @@ class EMMAResult:
         self.__history = history
         modes = [(i, dataset.classes_μm[np.unravel_index(np.argmax(end_members[i]), end_members[i].shape)]) for i in range(n_members)]
         modes.sort(key=lambda x: x[1])
-        self.__sorted_indexes = (i for i, _ in modes)
+        self.__sorted_indexes = tuple([i for i, _ in modes])
         self._sort()
 
     @property
