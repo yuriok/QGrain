@@ -42,12 +42,14 @@ class EMMAResolver:
     def __init__(self):
         pass
 
-    def try_fit(self, dataset: GrainSizeDataset,
-                kernel_type: KernelType,
-                n_members: int,
-                resolver_setting: EMMAAlgorithmSetting=None,
-                parameters=None,
-                update_end_members = True):
+    def try_fit(
+            self, dataset: GrainSizeDataset,
+            kernel_type: KernelType,
+            n_members: int,
+            resolver_setting: EMMAAlgorithmSetting = None,
+            parameters=None,
+            update_end_members=True,
+            callback: typing.Callable = None):
         if resolver_setting is None:
             s = EMMAAlgorithmSetting(max_epochs=2000, precision=6, learning_rate=5e-3)
         else:
@@ -64,6 +66,7 @@ class EMMAResolver:
         history = []
         start = time.time()
         emma.end_members.requires_grad_(False)
+        max_total_epochs = s.pretrain_epochs + s.max_epochs
         for pretrain_epoch in range(s.pretrain_epochs):
             proportions, end_members = emma()
             X_hat = proportions @ end_members
@@ -71,28 +74,34 @@ class EMMAResolver:
             loss_series.append(loss.item())
             optimizer.zero_grad()
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(emma.parameters(), 1e-1)
             optimizer.step()
             history.append((proportions.detach().cpu().numpy(), end_members.detach().cpu().numpy()))
+            if callback is not None:
+                callback(pretrain_epoch / max_total_epochs)
+
         emma.end_members.requires_grad_(update_end_members)
-        epochs = 0
-        while True:
+        for epoch in range(s.max_epochs):
             # train
             proportions, end_members = emma()
             X_hat = proportions @ end_members
             loss = distance_func(X_hat, X)
+            if np.isnan(loss.item()):
+                self.logger.warning("Loss is NaN, training terminated.")
+                break
             loss_series.append(loss.item())
             optimizer.zero_grad()
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(emma.parameters(), 1e-1)
             optimizer.step()
             history.append((proportions.detach().cpu().numpy(), end_members.detach().cpu().numpy()))
-            epochs += 1
-            if epochs < s.min_epochs:
-                continue
-            delta_loss = np.mean(loss_series[-100:-80])-np.mean(loss_series[-20:])
-            if delta_loss < 10**(-s.precision):
-                break
-            if epochs > s.max_epochs:
-                break
+            if callback is not None:
+                callback((s.pretrain_epochs+epoch) / max_total_epochs)
+            if epoch > s.min_epochs:
+                delta_loss = np.mean(loss_series[-100:-80])-np.mean(loss_series[-20:])
+                if delta_loss < 10**(-s.precision):
+                    break
+
         if resolver_setting.device == "cuda":
             torch.cuda.synchronize()
         time_spent = time.time() - start
@@ -106,4 +115,6 @@ class EMMAResolver:
             end_members.detach().cpu().numpy(),
             time_spent,
             history)
+        if callback is not None:
+            callback(1.0)
         return result
