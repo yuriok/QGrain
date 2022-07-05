@@ -28,7 +28,7 @@ class UDMSettingDialog(QtWidgets.QDialog):
         self.pretrain_epochs_label = QtWidgets.QLabel(self.tr("Pretrain Epochs"))
         self.pretrain_epochs_label.setToolTip(self.tr("The number of epochs before formal training. The pretrain process only update the proportions of end members."))
         self.pretrain_epochs_input = QtWidgets.QSpinBox()
-        self.pretrain_epochs_input.setRange(10, 100000)
+        self.pretrain_epochs_input.setRange(0, 100000)
         self.pretrain_epochs_input.setValue(200)
         self.main_layout.addWidget(self.pretrain_epochs_label, 1, 0)
         self.main_layout.addWidget(self.pretrain_epochs_input, 1, 1)
