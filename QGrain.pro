@@ -26,7 +26,6 @@ SOURCES=C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\__main__.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\model\_dataset.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ssu\_distance.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ssu\_distribution.py\
-    C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ssu\_reference.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ssu\_resolver.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ssu\_result.py\
     C:\Users\yurio\OneDrive\Codes\QGrain\QGrain\ssu\_task.py\
