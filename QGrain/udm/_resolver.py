@@ -45,11 +45,13 @@ class UDMResolver:
     def __init__(self):
         pass
 
-    def try_fit(self, dataset: GrainSizeDataset,
-                kernel_type: KernelType,
-                n_components: int,
-                resolver_setting: UDMAlgorithmSetting = None,
-                parameters: np.ndarray = None) -> UDMResult:
+    def try_fit(
+            self, dataset: GrainSizeDataset,
+            kernel_type: KernelType,
+            n_components: int,
+            resolver_setting: UDMAlgorithmSetting = None,
+            parameters: np.ndarray = None,
+            callback: typing.Callable = None) -> UDMResult:
         if resolver_setting is None:
             s = UDMAlgorithmSetting()
         else:
@@ -66,6 +68,7 @@ class UDMResolver:
         component_loss_series = []
         history = []
         udm.components.requires_grad_(False)
+        max_total_epochs = s.pretrain_epochs + s.max_epochs
         for pretrain_epoch in range(s.pretrain_epochs):
             proportions, components = udm()
             X_hat = (proportions @ components).squeeze(1)
@@ -77,6 +80,8 @@ class UDMResolver:
             distribution_loss.backward()
             optimizer.step()
             history.append(udm.all_parameters)
+            if callback is not None:
+                callback(pretrain_epoch / max_total_epochs)
 
         udm.components.requires_grad_(True)
         for epoch in range(s.max_epochs):
@@ -86,11 +91,9 @@ class UDMResolver:
             distribution_loss = torch.log10(torch.mean(torch.square(X_hat - X)))
             component_loss = torch.mean(torch.std(components, dim=0))
             loss = distribution_loss + (10**s.constraint_level) * component_loss
-
             if np.isnan(loss.item()):
                 self.logger.warning("Loss is NaN, training terminated.")
                 break
-
             distribution_loss_series.append(distribution_loss.item())
             component_loss_series.append((10**s.constraint_level) * component_loss.item())
             optimizer.zero_grad()
@@ -98,7 +101,8 @@ class UDMResolver:
             torch.nn.utils.clip_grad_norm_(udm.parameters(), 1e-1)
             optimizer.step()
             history.append(udm.all_parameters)
-
+            if callback is not None:
+                callback((s.pretrain_epochs+epoch) / max_total_epochs)
             if epoch > s.min_epochs:
                 delta_loss = np.mean(distribution_loss_series[-100:-80])-np.mean(distribution_loss_series[-20:])
                 if delta_loss < 10**(-s.precision):
@@ -116,4 +120,6 @@ class UDMResolver:
             time_spent,
             udm.all_parameters,
             history)
+        if callback is not None:
+            callback(1.0)
         return result

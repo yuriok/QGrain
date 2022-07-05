@@ -155,23 +155,50 @@ class UDMAnalyzer(QtWidgets.QWidget):
         self.edit_parameter_button.setEnabled(False)
         resolver = UDMResolver()
         resolver_setting = self.setting_dialog.setting
-        if self.parameter_editor.parameter_enabled:
-            kernel_type = KernelType.__members__[self.parameter_editor.distribution_type.name]
-            parameters = self.parameter_editor.parameters[:-1, :].astype(np.float32)
-            result = resolver.try_fit(
-                self.__dataset, kernel_type,
-                self.parameter_editor.n_components,
-                resolver_setting=resolver_setting,
-                parameters=parameters)
-        else:
-            result = resolver.try_fit(
-                self.__dataset, self.kernel_type,
-                self.n_members,
-                resolver_setting=resolver_setting)
-        self.add_results([result])
-        self.result_chart.show_result(result)
-        self.try_fit_button.setEnabled(True)
-        self.edit_parameter_button.setEnabled(True)
+
+        progress_dialog = QtWidgets.QProgressDialog(
+            self.tr("Performing UDM algorithm..."), self.tr("Cancel"),
+            0, 100, self)
+        progress_dialog.setWindowTitle("QGrain")
+        progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
+        def callback(progress: float):
+            if progress_dialog.wasCanceled():
+                raise StopIteration()
+            progress_dialog.setValue(int(progress*100))
+            QtCore.QCoreApplication.processEvents()
+        try:
+            if self.parameter_editor.parameter_enabled:
+                self.logger.info("The parameters in Parameter Editor are enabled. They will be used preferentially!")
+                kernel_type = KernelType.__members__[self.parameter_editor.distribution_type.name]
+                parameters = self.parameter_editor.parameters[:-1, :].astype(np.float32)
+                self.logger.debug(f"Try to perform the UDM algorithm. Kernel type: {kernel_type.name}. Number of components: {self.parameter_editor.n_components}. Initial parameters: {parameters}. Algorithm settings: {resolver_setting}.")
+                result = resolver.try_fit(
+                    self.__dataset, kernel_type,
+                    self.parameter_editor.n_components,
+                    resolver_setting=resolver_setting,
+                    parameters=parameters,
+                    callback=callback)
+                self.add_results([result])
+                self.result_chart.show_result(result)
+            else:
+                self.logger.debug(f"Try to perform the UDM algorithm. Kernel type: {self.kernel_type.name}. Number of end members: {self.n_members}. Algorithm settings: {resolver_setting}.")
+                result = resolver.try_fit(
+                    self.__dataset, self.kernel_type,
+                    self.n_members,
+                    resolver_setting=resolver_setting,
+                    callback=callback)
+                self.add_results([result])
+                self.result_chart.show_result(result)
+        except StopIteration as e:
+            self.logger.info("Performing task was canceled.")
+            progress_dialog.close()
+        except Exception as e:
+            progress_dialog.close()
+            self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
+            self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
+        finally:
+            self.try_fit_button.setEnabled(True)
+            self.edit_parameter_button.setEnabled(True)
 
     def get_result_name(self, result: UDMResult):
         return f"{result.n_components} {result.kernel_type.value}"
