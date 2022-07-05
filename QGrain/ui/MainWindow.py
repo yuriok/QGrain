@@ -393,7 +393,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.experimental_menu.setTitle(self.tr("Experimental"))
         self.ssu_fit_all_action.setText(self.tr("Perform SSU For All Samples"))
         self.convert_udm_to_ssu_action.setText(self.tr("Convert UDM Result To SSU Results"))
-        self.save_all_ssu_figures_action.setText(self.tr("Save Figures Of All SSU Results"))
+        self.save_all_ssu_figures_action.setText(self.tr("Save Figures For All SSU Results"))
         self.language_menu.setTitle(self.tr("Language"))
         self.theme_menu.setTitle(self.tr("Theme"))
         self.log_action.setText(self.tr("Log"))
