@@ -1,6 +1,7 @@
-__all__ = ["BaseChart"]
+__all__ = ["BaseChart", "get_image_by_proportions"]
 
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT as NavigationToolbar
 from PySide6 import QtCore, QtGui, QtWidgets
@@ -66,3 +67,24 @@ class BaseChart(QtWidgets.QWidget):
 
         elif event.type() == QtCore.QEvent.LanguageChange:
             self.retranslate()
+
+
+def get_image_by_proportions(proportions: np.ndarray, resolution: int=100) -> np.ndarray:
+    n_samples, n_components = proportions.shape
+    index = np.repeat(np.expand_dims(np.linspace(0.0, 1.0, resolution), axis=0), n_samples, axis=0)
+    image = np.zeros((n_samples, resolution))
+
+    bound = np.ones((n_samples, n_components+1))
+    bound[:, 0] = 0.0
+    bottom = np.zeros(n_samples)
+    for i in range(n_components):
+        bottom += proportions[:, i]
+        bound[:, i+1] = bottom
+    bound[:, -1] = 1.0
+
+    for i in range(n_components):
+        lower = np.repeat(np.expand_dims(bound[:, i], axis=1), resolution, axis=1)
+        upper = np.repeat(np.expand_dims(bound[:, i+1], axis=1), resolution, axis=1)
+        key = np.logical_and(np.greater_equal(index, lower), np.less_equal(index, upper))
+        image[key] = i
+    return image.T
