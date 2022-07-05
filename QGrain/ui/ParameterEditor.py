@@ -5,7 +5,7 @@ import numpy as np
 from PySide6 import QtCore, QtWidgets
 
 from ..chart.DistributionChart import DistributionChart
-from ..ssu import DistributionType, SSUResult, SSUViewModel, get_distribution
+from ..ssu import DistributionType, SSUResult, SSUViewModel, get_distribution, sort_parameters
 from ..statistics import get_interval_φ
 
 
@@ -215,8 +215,10 @@ class ParameterEditor(QtWidgets.QDialog):
             for component in components:
                 if component.isEnabled():
                     parameters.append(component.parameters)
-        parameters = np.array(parameters).T
-        return parameters
+        parameters = np.expand_dims(np.array(parameters).T, axis=0)
+        classes = np.expand_dims(np.expand_dims(self.__classes_φ, axis=0), axis=0).repeat(self.n_components, axis=1)
+        sorted_parameters = sort_parameters(self.distribution_type, parameters, classes, self.__interval_φ)
+        return sorted_parameters[0]
 
     def _clear_components(self):
         for param_holder, param_layout, components in self.component_sets:

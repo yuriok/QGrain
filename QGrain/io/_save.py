@@ -598,12 +598,7 @@ def save_emma(
         logger = logging.getLogger("QGrain")
     else:
         assert isinstance(logger, logging.Logger)
-
     logger.debug("Start to save EMMA result.")
-    # get the mode size of each end-members
-    modes = [(i, result.dataset.classes_μm[np.unravel_index(np.argmax(result.end_members[i]), result.end_members[i].shape)]) for i in range(result.n_members)]
-    # sort them by mode size
-    modes.sort(key=lambda x: x[1])
 
     wb = openpyxl.Workbook()
     prepare_styles(wb)
@@ -669,14 +664,14 @@ def save_emma(
     for col, value in enumerate(result.dataset.classes_μm, 1):
         write(0, col, value, style="header")
         ws.column_dimensions[column_to_char(col)].width = 10
-    for i, (index, _) in enumerate(modes):
+    for i in range(result.n_members):
         row = i + 1
         if row % 2 == 0:
             style = "normal_dark"
         else:
             style = "normal_light"
         write(row, 0, f"EM{i+1}", style=style)
-        for col, value in enumerate(result.end_members[index], 1):
+        for col, value in enumerate(result.end_members[i], 1):
             write(row, col, value, style=style)
 
     logger.debug("Creating the `Proportions of End Members` sheet.")
@@ -693,8 +688,8 @@ def save_emma(
         else:
             style = "normal_light"
         write(row, 0, result.dataset.samples[i].name, style=style)
-        for col, (index, _) in enumerate(modes, 1):
-            write(row, col, sample_proportions[index], style=style)
+        for i in range(result.n_members):
+            write(row, col, sample_proportions[i], style=style)
         if progress_callback is not None:
             progress_callback(i / result.n_samples * 0.6 + 0.4)
 
@@ -1017,10 +1012,6 @@ def save_udm(
     for col, value in enumerate(headers, 1):
         write(1, col, value, style="header")
         ws.column_dimensions[column_to_char(col)].width = 10
-    mean = np.mean(result.components, axis=0)
-    modes = [(i, result.dataset.classes_μm[np.unravel_index(np.argmax(mean[i]), mean[i].shape)]) for i in range(result.n_components)]
-    modes.sort(key=lambda x: x[1])
-    sort_map = {i_c: i for i_c, (i, _) in enumerate(modes)}
     for i, sample in enumerate(result.dataset.samples):
         row = i + 2
         if row % 2 == 0:
@@ -1029,10 +1020,9 @@ def save_udm(
             style = "normal_dark"
         write(row, 0, sample.name, style=style)
         for j in range(result.n_components):
-            true_index = sort_map[j]
             for k in range(len(sub_headers)):
                 col = j * len(sub_headers) + k + 1
-                value = result.final_parameters[i, k, true_index]
+                value = result.final_parameters[i, k, j]
                 write(row, col, value, style=style)
         if progress_callback is not None:
             progress_callback(i / result.n_samples * 0.1 + 0.1)
@@ -1066,15 +1056,14 @@ def save_udm(
             style = "normal_dark"
         write(row, 0, sample.name, style=style)
         for j in range(result.n_components):
-            true_index = sort_map[j]
-            s = get_all_statistics(result.dataset.classes_μm, result.dataset.classes_φ, result.components[i, true_index])
-            write(row, true_index*len(sub_headers)+1, result.proportions[i, 0, true_index] * 100, style=style)
-            write(row, true_index*len(sub_headers)+2, s["logarithmic"]["mean"], style=style)
-            write(row, true_index*len(sub_headers)+3, s["geometric"]["mean"], style=style)
-            write(row, true_index*len(sub_headers)+4, s["logarithmic"]["std"], style=style)
-            write(row, true_index*len(sub_headers)+5, s["geometric"]["std"], style=style)
-            write(row, true_index*len(sub_headers)+6, s["logarithmic"]["skewness"], style=style)
-            write(row, true_index*len(sub_headers)+7, s["logarithmic"]["kurtosis"], style=style)
+            s = get_all_statistics(result.dataset.classes_μm, result.dataset.classes_φ, result.components[i, j])
+            write(row, j*len(sub_headers)+1, result.proportions[i, 0, j] * 100, style=style)
+            write(row, j*len(sub_headers)+2, s["logarithmic"]["mean"], style=style)
+            write(row, j*len(sub_headers)+3, s["geometric"]["mean"], style=style)
+            write(row, j*len(sub_headers)+4, s["logarithmic"]["std"], style=style)
+            write(row, j*len(sub_headers)+5, s["geometric"]["std"], style=style)
+            write(row, j*len(sub_headers)+6, s["logarithmic"]["skewness"], style=style)
+            write(row, j*len(sub_headers)+7, s["logarithmic"]["kurtosis"], style=style)
         if progress_callback is not None:
             progress_callback(i / result.n_samples * 0.1 + 0.2)
 
@@ -1098,8 +1087,7 @@ def save_udm(
         ws.merge_cells(start_row=row+1, start_column=1, end_row=row+result.n_components+1, end_column=1)
         for j in range(result.n_components):
             write(row, 1, f"C{j+1}", style=style)
-            true_index = sort_map[j]
-            for col, value in enumerate(result.components[i, true_index]*result.proportions[i, 0, true_index], 2):
+            for col, value in enumerate(result.components[i, j]*result.proportions[i, 0, j], 2):
                 write(row, col, value, style=style)
             row += 1
         write(row, 1, "Sum", style=style)
@@ -1117,7 +1105,6 @@ def save_udm(
         for col, value in enumerate(result.dataset.classes_μm, 1):
             write(0, col, value, style="header")
             ws.column_dimensions[column_to_char(col)].width = 10
-        true_index = sort_map[j]
         for i, sample in enumerate(result.dataset.samples):
             row = i + 1
             if row % 2 == 0:
@@ -1125,7 +1112,7 @@ def save_udm(
             else:
                 style = "normal_light"
             write(row, 0, sample.name, style=style)
-            for col, value in enumerate(result.components[i, true_index], 1):
+            for col, value in enumerate(result.components[i, j], 1):
                 write(row, col, value, style=style)
             if progress_callback is not None:
                 progress_callback(((i / result.n_samples) + j) / result.n_components * 0.5 + 0.5)

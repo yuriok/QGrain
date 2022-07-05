@@ -186,15 +186,12 @@ class UDMResultChart(BaseChart):
 
         component_axes = self.figure.add_subplot(2, 2, 3)
         mean, lower, upper = summarize(result.proportions, result.components, q=0.01)
-        modes = [(i, result.dataset.classes_μm[np.unravel_index(np.argmax(mean[i]), mean[i].shape)]) for i in range(result.n_components)]
-        # sort them by mode size
-        modes.sort(key=lambda x: x[1])
-        for i_c, (i, _) in enumerate(modes):
-            component_axes.plot(classes, mean[i], c=plt.get_cmap()(i_c), zorder=20+i_c)
+        for i in range(result.n_components):
+            component_axes.plot(classes, mean[i], c=plt.get_cmap()(i), zorder=20+i)
             component_axes.fill_between(
                 classes, lower[i], upper[i],
-                color=plt.get_cmap()(i_c),
-                alpha=0.2, lw=0.02, zorder=10+i_c)
+                color=plt.get_cmap()(i),
+                alpha=0.2, lw=0.02, zorder=10+i)
         if self.xlog:
             component_axes.set_xscale("log")
         component_axes.set_xlim(classes[0], classes[-1])
@@ -205,12 +202,12 @@ class UDMResultChart(BaseChart):
 
         proportion_axes = self.figure.add_subplot(2, 2, 4)
         bottom = np.zeros(result.n_samples)
-        for i_em, (i, _) in enumerate(modes):
+        for i in range(result.n_components):
             proportion_axes.bar(
                 sample_indexes[::interval],
                 result.proportions[:, 0, i][::interval],
                 bottom=bottom[::interval],
-                width=interval, color=plt.get_cmap()(i_em))
+                width=interval, color=plt.get_cmap()(i))
             bottom += result.proportions[:, 0, i]
         proportion_axes.set_xlim(sample_indexes[0], sample_indexes[-1])
         proportion_axes.set_ylim(0.0, 1.0)
@@ -255,9 +252,6 @@ class UDMResultChart(BaseChart):
             loc="upper right", prop={"size": 8})
         component_axes = self.figure.add_subplot(2, 2, 3)
         mean, lower, upper = summarize(result.proportions, result.components, q=0.01)
-        modes = [(i, result.dataset.classes_μm[np.unravel_index(np.argmax(mean[i]), mean[i].shape)]) for i in range(result.n_components)]
-        # sort them by mode size
-        modes.sort(key=lambda x: x[1])
         if self.xlog:
             component_axes.set_xscale("log")
         component_axes.set_xlim(classes[0], classes[-1])
@@ -280,45 +274,45 @@ class UDMResultChart(BaseChart):
             self.component_curves = []
             self.component_shadows = []
             mean, lower, upper = summarize(result.proportions, result.components, q=0.01)
-            for i_c, (i, _) in enumerate(modes):
-                component_curve = component_axes.plot(classes, mean[i], c=plt.get_cmap()(i_c), zorder=20+i_c)[0]
+            for i in range(result.n_components):
+                component_curve = component_axes.plot(classes, mean[i], c=plt.get_cmap()(i), zorder=20+i)[0]
                 component_shadow = component_axes.fill_between(
                     classes, lower[i], upper[i],
-                    color=plt.get_cmap()(i_c),
-                    alpha=0.2, lw=0.02, zorder=10+i_c)
+                    color=plt.get_cmap()(i),
+                    alpha=0.2, lw=0.02, zorder=10+i)
                 self.component_curves.append(component_curve)
                 self.component_shadows.append(component_shadow)
 
             bottom = np.zeros(result.n_samples)
             self.proportion_bars = []
             self.patches = []
-            for i_em, (index, _) in enumerate(modes):
+            for i in range(result.n_components):
                 bar = proportion_axes.bar(
                     sample_indexes[::interval],
-                    result.proportions[:, 0, index][::interval],
+                    result.proportions[:, 0, i][::interval],
                     bottom=bottom[::interval],
-                    width=interval, color=plt.get_cmap()(i_em))
+                    width=interval, color=plt.get_cmap()(i))
                 self.proportion_bars.append(bar)
                 self.patches.extend(bar.patches)
-                bottom += result.proportions[:, 0, index]
+                bottom += result.proportions[:, 0, i]
             return self.iteration_line, *(self.component_curves + self.component_shadows + self.patches)
 
         def animate(args: typing.Tuple[int, UDMResult]):
             iteration, current = args
             mean, lower, upper = summarize(current.proportions, current.components, q=0.01)
             self.iteration_line.set_xdata([iteration, iteration])
-            for i_em, (index, _) in enumerate(modes):
-                self.component_curves[i_em].set_ydata(mean[index])
-                verts_lower = np.concatenate([np.expand_dims(classes, axis=1), np.expand_dims(lower[i_em], axis=1)], axis=1)
-                verts_upper = np.concatenate([np.expand_dims(classes[::-1], axis=1), np.expand_dims(upper[i_em][::-1], axis=1)], axis=1)
+            for i in range(current.n_components):
+                self.component_curves[i].set_ydata(mean[i])
+                verts_lower = np.concatenate([np.expand_dims(classes, axis=1), np.expand_dims(lower[i], axis=1)], axis=1)
+                verts_upper = np.concatenate([np.expand_dims(classes[::-1], axis=1), np.expand_dims(upper[i][::-1], axis=1)], axis=1)
                 verts = np.concatenate([verts_lower, verts_upper], axis=0)
-                self.component_shadows[i_em].set_verts([verts])
+                self.component_shadows[i].set_verts([verts])
             bottom = np.zeros(current.n_samples)
-            for i_em, (index, _) in enumerate(modes):
-                for rect, height, y in zip(self.proportion_bars[i_em].patches, current.proportions[:, 0, index][::interval], bottom[::interval]):
+            for i in range(current.n_components):
+                for rect, height, y in zip(self.proportion_bars[i].patches, current.proportions[:, 0, i][::interval], bottom[::interval]):
                     rect.set_height(height)
                     rect.set_y(y)
-                bottom += current.proportions[:, 0, index]
+                bottom += current.proportions[:, 0, i]
             return self.iteration_line, *(self.component_curves + self.component_shadows + self.patches)
 
         self.__animation = FuncAnimation(

@@ -200,15 +200,11 @@ class EMMAResultChart(BaseChart):
         distance_axes.set_ylabel("Distance")
         distance_axes.set_title("Distance variation")
 
-        # get the mode size of each end-members
-        modes = [(i, result.dataset.classes_μm[np.unravel_index(np.argmax(result.end_members[i]), result.end_members[i].shape)]) for i in range(result.n_members)]
-        # sort them by mode size
-        modes.sort(key=lambda x: x[1])
         end_member_axes = self.figure.add_subplot(2, 2, 3)
         if self.xlog:
             end_member_axes.set_xscale("log")
-        for i_em, (i, _) in enumerate(modes):
-            end_member_axes.plot(classes, result.end_members[i], c=plt.get_cmap()(i_em), label=f"EM{i_em+1}", zorder=10+i_em)
+        for i in range(result.n_members):
+            end_member_axes.plot(classes, result.end_members[i], c=plt.get_cmap()(i), label=f"EM{i+1}", zorder=10+i)
         end_member_axes.set_xlim(classes[0], classes[-1])
         end_member_axes.set_ylim(0.0, round(np.max(result.end_members)*1.2, 2))
         end_member_axes.set_xlabel(self.xlabel)
@@ -217,11 +213,11 @@ class EMMAResultChart(BaseChart):
 
         proportion_axes = self.figure.add_subplot(2, 2, 4)
         bottom = np.zeros(result.n_samples)
-        for i_em, (i, _) in enumerate(modes):
+        for i in range(result.n_members):
             proportion_axes.bar(
                 sample_indexes[::interval],
                 result.proportions[:, i][::interval],
-                bottom=bottom[::interval], width=interval, color=plt.get_cmap()(i_em))
+                bottom=bottom[::interval], width=interval, color=plt.get_cmap()(i))
             bottom += result.proportions[:, i]
         proportion_axes.set_xlim(sample_indexes[0], sample_indexes[-1])
         proportion_axes.set_ylim(0.0, 1.0)
@@ -258,10 +254,6 @@ class EMMAResultChart(BaseChart):
         distance_axes.set_ylabel("Distance")
         distance_axes.set_title("Distance variation")
 
-        # get the mode size of each end-members
-        modes = [(i, result.dataset.classes_μm[np.unravel_index(np.argmax(result.end_members[i]), result.end_members[i].shape)]) for i in range(result.n_members)]
-        # sort them by mode size
-        modes.sort(key=lambda x: x[1])
         end_member_axes = self.figure.add_subplot(2, 2, 3)
         if self.xlog:
             end_member_axes.set_xscale("log")
@@ -283,30 +275,30 @@ class EMMAResultChart(BaseChart):
         def init():
             self.iteration_line = distance_axes.plot([1, 1], [min_distance, max_distance], c=normal_color())[0]
             self.end_member_curves = []
-            for i_em, (index, _) in enumerate(modes):
-                end_member_curve = end_member_axes.plot(classes, result.end_members[index], c=plt.get_cmap()(i_em), label=f"EM{i_em+1}")[0]
+            for i in range(result.n_members):
+                end_member_curve = end_member_axes.plot(classes, result.end_members[i], c=plt.get_cmap()(i), label=f"EM{i+1}")[0]
                 self.end_member_curves.append(end_member_curve)
             bottom = np.zeros(result.n_samples)
             self.proportion_bars = []
             self.patches = []
-            for i_em, (index, _) in enumerate(modes):
-                bar = proportion_axes.bar(sample_indexes[::interval], result.proportions[:, index][::interval], bottom=bottom[::interval], width=interval, color=plt.get_cmap()(i_em))
+            for i in range(result.n_members):
+                bar = proportion_axes.bar(sample_indexes[::interval], result.proportions[:, i][::interval], bottom=bottom[::interval], width=interval, color=plt.get_cmap()(i))
                 self.proportion_bars.append(bar)
                 self.patches.extend(bar.patches)
-                bottom += result.proportions[:, index]
+                bottom += result.proportions[:, i]
             return self.iteration_line, *(self.end_member_curves + self.patches)
 
         def animate(args: typing.Tuple[int, EMMAResult]):
             iteration, current = args
             self.iteration_line.set_xdata([iteration, iteration])
-            for i_em, (index, _) in enumerate(modes):
-                self.end_member_curves[i_em].set_ydata(current.end_members[index])
+            for i in range(current.n_members):
+                self.end_member_curves[i].set_ydata(current.end_members[i])
             bottom = np.zeros(current.n_samples)
-            for i_em, (index, _) in enumerate(modes):
-                for rect, height, y in zip(self.proportion_bars[i_em].patches, current.proportions[:, index][::interval], bottom[::interval]):
+            for i in range(current.n_members):
+                for rect, height, y in zip(self.proportion_bars[i].patches, current.proportions[:, i][::interval], bottom[::interval]):
                     rect.set_height(height)
                     rect.set_y(y)
-                bottom += current.proportions[:, index]
+                bottom += current.proportions[:, i]
             return self.iteration_line, *(self.end_member_curves + self.patches)
 
         self.__animation = FuncAnimation(
