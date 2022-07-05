@@ -30,6 +30,10 @@ class EMMAResult:
         self.__end_members = end_members
         self.__time_spent = time_spent
         self.__history = history
+        modes = [(i, dataset.classes_μm[np.unravel_index(np.argmax(end_members[i]), end_members[i].shape)]) for i in range(n_members)]
+        modes.sort(key=lambda x: x[1])
+        self.__sorted_indexes = (i for i, _ in modes)
+        self._sort()
 
     @property
     def dataset(self) -> GrainSizeDataset:
@@ -81,7 +85,17 @@ class EMMAResult:
             copy_result = copy.copy(self)
             copy_result.__proportions = fractions
             copy_result.__end_members = end_members
+            copy_result._sort()
             yield copy_result
+
+    def _sort(self):
+        proportions = np.zeros_like(self.__proportions)
+        end_members = np.zeros_like(self.__end_members)
+        for i, j in enumerate(self.__sorted_indexes):
+            proportions[:, i] = self.__proportions[:, j]
+            end_members[i, :] = self.__end_members[j, :]
+        self.__proportions = proportions
+        self.__end_members = end_members
 
     def get_distance(self, distance: str) -> float:
         distance_func = get_distance_function(distance)

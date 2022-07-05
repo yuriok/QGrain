@@ -7,7 +7,7 @@ import numpy as np
 
 from ..emma import KernelType
 from ..model import GrainSizeDataset
-from ..ssu import DistributionType, SSUResult, SSUTask, get_distance_function, get_distribution
+from ..ssu import DistributionType, SSUResult, SSUTask, get_distance_function, get_distribution, get_sorted_indexes
 from ._setting import UDMAlgorithmSetting
 
 
@@ -35,7 +35,7 @@ class UDMResult:
         self.__history = [final_parameters] if history is None else history
         self.__classes = np.expand_dims(np.expand_dims(self.dataset.classes_φ, axis=0), axis=0).repeat(self.n_samples, axis=0).repeat(self.n_components, axis=1)
         self.__interval = np.abs((self.dataset.classes_φ[0]-self.dataset.classes_φ[-1]) / (self.n_classes-1))
-        self.__distribution_class = get_distribution(DistributionType.__members__[self.kernel_type.name])
+        self.__sorted_indexes = get_sorted_indexes(self.distribution_type, final_parameters, self.__classes, self.__interval)
         self.update(final_parameters)
 
     @property
@@ -106,7 +106,11 @@ class UDMResult:
             yield copy_result
 
     def update(self, parameters: np.ndarray):
-        proportions, components, mvsk = self.__distribution_class.interpret(parameters, self.__classes, self.__interval)
+        sorted_parameters = np.zeros_like(parameters)
+        for i, j in enumerate(self.__sorted_indexes):
+            sorted_parameters[:, :, i] = parameters[:, :, j]
+        distribution_class = get_distribution(DistributionType.__members__[self.kernel_type.name])
+        proportions, components, mvsk = distribution_class.interpret(sorted_parameters, self.__classes, self.__interval)
         proportions[np.logical_or(np.isnan(proportions), np.isinf(proportions))] = 0.0
         components[np.logical_or(np.isnan(components), np.isinf(components))] = 0.0
         self.__proportions = proportions
