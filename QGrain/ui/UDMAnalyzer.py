@@ -252,7 +252,11 @@ class UDMAnalyzer(QtWidgets.QWidget):
                 with open(filename, "wb") as f:
                     pickle.dump(self.selected_result, f)
                     self.logger.info("The selected UDM result has been dumped.")
+        except StopIteration as e:
+            self.logger.info("Saving task was canceled.")
+            progress_dialog.close()
         except Exception as e:
+            progress_dialog.close()
             self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
             self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
 
