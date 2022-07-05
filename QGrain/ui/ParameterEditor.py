@@ -209,7 +209,7 @@ class ParameterEditor(QtWidgets.QDialog):
         return self.enabled_checkbox.isChecked()
 
     @property
-    def parameters(self):
+    def parameters(self) -> np.ndarray:
         parameters = []
         for _, _, components in self.component_sets:
             for component in components:

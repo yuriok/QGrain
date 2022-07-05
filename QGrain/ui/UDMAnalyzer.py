@@ -171,7 +171,7 @@ class UDMAnalyzer(QtWidgets.QWidget):
                 self.logger.info("The parameters in Parameter Editor are enabled. They will be used preferentially!")
                 kernel_type = KernelType.__members__[self.parameter_editor.distribution_type.name]
                 parameters = self.parameter_editor.parameters[:-1, :].astype(np.float32)
-                self.logger.debug(f"Try to perform the UDM algorithm. Kernel type: {kernel_type.name}. Number of components: {self.parameter_editor.n_components}. Initial parameters: {parameters}. Algorithm settings: {resolver_setting}.")
+                self.logger.debug(f"Try to perform the UDM algorithm. Kernel type: {kernel_type.name}. Number of components: {self.parameter_editor.n_components}. Initial parameters: {parameters.tolist()}. Algorithm settings: {resolver_setting}.")
                 result = resolver.try_fit(
                     self.__dataset, kernel_type,
                     self.parameter_editor.n_components,
