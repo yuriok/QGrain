@@ -152,6 +152,10 @@ class SSUResultViewer(QtWidgets.QWidget):
         return indexes
 
     @property
+    def all_results(self) -> typing.List[SSUResult]:
+        return self.__results.copy()
+
+    @property
     def auto_show_selected(self) -> bool:
         return self.auto_show_selected_action.isChecked()
 

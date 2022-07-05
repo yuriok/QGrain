@@ -147,6 +147,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ssu_fit_all_action.triggered.connect(self.ssu_fit_all_samples)
         self.convert_udm_to_ssu_action = self.experimental_menu.addAction(self.tr("Convert UDM Result To SSU Results")) # type: QtGui.QAction
         self.convert_udm_to_ssu_action.triggered.connect(self.convert_udm_to_ssu)
+        self.save_all_ssu_figures_action = self.experimental_menu.addAction(self.tr("Save Figures For All SSU Results")) # type: QtGui.QAction
+        self.save_all_ssu_figures_action.triggered.connect(self.save_all_ssu_figure)
+
 
         # Language
         self.language_menu = self.menuBar().addMenu(self.tr("Language")) # type: QtWidgets.QMenu
@@ -247,6 +250,44 @@ class MainWindow(QtWidgets.QMainWindow):
         ssu_results = udm_result.to_ssu_results(callback)
         self.ssu_analyzer.result_view.add_results(ssu_results)
 
+    def save_all_ssu_figure(self):
+        if self.ssu_analyzer.result_view.n_results == 0:
+            self.logger.error("There is no SSU result.")
+            self.show_error(self.tr("There is no SSU result."))
+            return
+        directory = self.file_dialog.getExistingDirectory(
+            self, self.tr("Choose a directory to save the figures for all SSU results"),
+            None, QtWidgets.QFileDialog.ShowDirsOnly)
+        if directory is None or directory == "":
+            return
+
+        try:
+            progress_dialog = QtWidgets.QProgressDialog(
+                self.tr("Saving the figures for all SSU results..."), self.tr("Cancel"),
+                0, 100, self)
+            progress_dialog.setWindowTitle("QGrain")
+            progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
+            def callback(progress: float):
+                if progress_dialog.wasCanceled():
+                    raise StopIteration()
+                progress_dialog.setValue(int(progress*100))
+                QtCore.QCoreApplication.processEvents()
+            all_results = self.ssu_analyzer.result_view.all_results
+            for i, result in enumerate(all_results):
+                self.ssu_analyzer.result_chart.show_model(result.view_model)
+                image = self.ssu_analyzer.result_chart.grab()
+                filename = os.path.join(directory, f"{i}.png")
+                image.save(filename)
+                callback(i/len(all_results))
+            callback(1.0)
+        except StopIteration as e:
+            self.logger.info("Saving task was canceled.")
+            progress_dialog.close()
+        except Exception as e:
+            progress_dialog.close()
+            self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
+            self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
+
     def on_save_statistics_clicked(self):
         if not self.__dataset.has_sample:
             self.logger.error("Dataset has not been loaded.")
@@ -344,6 +385,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.experimental_menu.setTitle(self.tr("Experimental"))
         self.ssu_fit_all_action.setText(self.tr("Perform SSU For All Samples"))
         self.convert_udm_to_ssu_action.setText(self.tr("Convert UDM Result To SSU Results"))
+        self.save_all_ssu_figures_action.setText(self.tr("Save Figures Of All SSU Results"))
         self.language_menu.setTitle(self.tr("Language"))
         self.theme_menu.setTitle(self.tr("Theme"))
         self.log_action.setText(self.tr("Log"))
