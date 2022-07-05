@@ -1,4 +1,4 @@
-QGRAIN_VERSION = "0.4.0.5"
+QGRAIN_VERSION = "0.4.0.6"
 
 import os
 
