@@ -5,7 +5,7 @@ from uuid import UUID, uuid4
 
 import numpy as np
 
-from ..statistics import get_interval_φ
+from ..statistics import interval_phi
 
 
 class ClassesNotIncrementalError(Exception):
@@ -75,7 +75,7 @@ class GrainSizeSample:
 
     @property
     def interval_φ(self) -> float:
-        return get_interval_φ(self.classes_φ)
+        return interval_phi(self.classes_φ)
 
     @property
     def distribution(self) -> np.ndarray:
@@ -117,7 +117,7 @@ class GrainSizeDataset:
 
     @property
     def interval_φ(self) -> float:
-        return get_interval_φ(self.classes_φ)
+        return interval_phi(self.classes_φ)
 
     @property
     def samples(self) -> typing.List[GrainSizeSample]:

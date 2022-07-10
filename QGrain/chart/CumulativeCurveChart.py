@@ -5,7 +5,7 @@ import numpy as np
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from ..model import GrainSizeSample
-from ..statistics import convert_φ_to_μm, get_cumulative_frequency
+from ..statistics import to_microns, to_cumulative
 from .BaseChart import BaseChart
 from .config_matplotlib import normal_color
 
@@ -49,13 +49,13 @@ class CumulativeCurveChart(BaseChart):
     @property
     def transfer(self) -> typing.Callable:
         if self.scale == "log-linear":
-            return lambda classes_φ: convert_φ_to_μm(classes_φ)
+            return lambda classes_φ: to_microns(classes_φ)
         elif self.scale == "log":
-            return lambda classes_φ: np.log(convert_φ_to_μm(classes_φ))
+            return lambda classes_φ: np.log(to_microns(classes_φ))
         elif self.scale == "phi":
             return lambda classes_φ: classes_φ
         elif self.scale == "linear":
-            return lambda classes_φ: convert_φ_to_μm(classes_φ)
+            return lambda classes_φ: to_microns(classes_φ)
 
     @property
     def xlabel(self) -> str:
@@ -103,7 +103,7 @@ class CumulativeCurveChart(BaseChart):
                     self.axes.set_ylabel(self.ylabel)
                     self.axes.set_xlim(x[0], x[-1])
                     self.axes.set_ylim(0.0, 1.0)
-            cumulative_frequency = get_cumulative_frequency(sample.distribution)
+            cumulative_frequency = to_cumulative(sample.distribution)
             self.axes.plot(x, cumulative_frequency, c=normal_color(), label=sample.name)
         self.figure.tight_layout()
         self.canvas.draw()
