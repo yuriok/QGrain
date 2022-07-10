@@ -6,7 +6,7 @@ PRO_FILENAME = r"./QGrain.pro"
 PRO_TEMPLATE = \
 """
 SOURCES={0}
-TRANSLATIONS=en.ts zh_CN.ts
+TRANSLATIONS=zh_CN.xml
 CODECFORTR=UTF-8
 """
 
