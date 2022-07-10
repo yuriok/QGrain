@@ -10,7 +10,7 @@ from PySide6 import QtCore, QtWidgets
 
 from ..chart.UDMResultChart import UDMResultChart
 from ..io import save_udm
-from ..models import GrainSizeDataset
+from ..models import Dataset
 from ..udm import KernelType, UDMResolver, UDMResult
 from .ParameterEditor import ParameterEditor
 from .UDMSettingDialog import UDMSettingDialog
@@ -32,7 +32,7 @@ class UDMAnalyzer(QtWidgets.QWidget):
         self.parameter_editor = parameter_editor
         self.init_ui()
         self.normal_msg = QtWidgets.QMessageBox(self)
-        self.__dataset = None # type: GrainSizeDataset
+        self.__dataset = None # type: Dataset
         self.__result_list = [] # type: list[UDMResult]
         self.file_dialog = QtWidgets.QFileDialog(parent=self)
 
@@ -135,16 +135,16 @@ class UDMAnalyzer(QtWidgets.QWidget):
         if self.n_results > 0:
             return self.__result_list[self.selected_index]
 
-    def on_dataset_loaded(self, dataset: GrainSizeDataset):
+    def on_dataset_loaded(self, dataset: Dataset):
         self.__dataset = dataset
         self.try_fit_button.setEnabled(True)
         self.edit_parameter_button.setEnabled(True)
 
     def on_edit_parameter_clicked(self):
         if self.__dataset is not None:
-            target = np.mean(self.__dataset.distribution_matrix, axis=0)
+            target = np.mean(self.__dataset.distributions, axis=0)
             target = target / np.sum(target)
-            self.parameter_editor.setup_target(self.__dataset.classes_μm, target)
+            self.parameter_editor.setup_target(self.__dataset.classes, target)
         self.parameter_editor.show()
 
     def on_try_fit_clicked(self):

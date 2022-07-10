@@ -4,7 +4,7 @@ import numpy as np
 from PySide6 import QtCore, QtWidgets
 
 from ..chart.DistributionChart import DistributionChart
-from ..models import GrainSizeDataset
+from ..models import Dataset
 from ..ssu import AsyncWorker, DistributionType, SSUResult, SSUTask
 from .ParameterEditor import ParameterEditor
 from .SSUReferenceViewer import SSUReferenceViewer
@@ -129,9 +129,9 @@ class SSUAnalyzer(QtWidgets.QWidget):
     def show_error(self, message: str):
         self.show_message(self.tr("Error"), message)
 
-    def on_dataset_loaded(self, dataset: GrainSizeDataset):
+    def on_dataset_loaded(self, dataset: Dataset):
         self.__dataset = dataset
-        self.sample_index_input.setRange(1, dataset.n_samples)
+        self.sample_index_input.setRange(1, len(dataset))
         self.sample_index_input.setValue(1)
         self.on_sample_index_changed(1)
         self.sample_index_input.setEnabled(True)
@@ -209,7 +209,7 @@ class SSUAnalyzer(QtWidgets.QWidget):
         if self.__dataset is not None:
             sample_index = self.sample_index_input.value()-1
             sample = self.__dataset.samples[sample_index]
-            self.parameter_editor.setup_target(sample.classes_μm, sample.distribution)
+            self.parameter_editor.setup_target(sample.classes, sample.distribution)
         self.parameter_editor.show()
         self.parameter_editor.update_chart()
 

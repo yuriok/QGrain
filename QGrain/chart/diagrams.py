@@ -9,7 +9,7 @@ import typing
 
 import numpy as np
 
-from ..models import GrainSizeSample
+from ..models import Sample
 from ..statistics import proportions_gsm, proportions_ssc
 from .BaseChart import BaseChart
 from .config_matplotlib import normal_color
@@ -60,10 +60,10 @@ class DiagramChart(BaseChart):
         self.plot_legend()
         self.figure.tight_layout()
 
-    def convert_samples(self, samples: typing.List[GrainSizeSample]):
+    def convert_samples(self, samples: typing.List[Sample]):
         pass
 
-    def show_samples(self, samples: typing.List[GrainSizeSample],
+    def show_samples(self, samples: typing.List[Sample],
                      append=False, c="#ffffff00",
                      marker=".", ms=8, mfc="red", mew=0.0,
                      **kwargs):
@@ -179,11 +179,11 @@ class Folk54GSMDiagramChart(DiagramChart):
         assert not np.any(np.isnan(x))
         return x, y
 
-    def convert_samples(self, samples: typing.List[GrainSizeSample]):
+    def convert_samples(self, samples: typing.List[Sample]):
         sand = []
         gravel = []
         for i, sample in enumerate(samples):
-            gravel_i, sand_i, mud_i = proportions_gsm(sample.classes_φ, sample.distribution)
+            gravel_i, sand_i, mud_i = proportions_gsm(sample.classes_phi, sample.distribution)
             sand.append(sand_i)
             gravel.append(gravel_i)
         return sand, gravel
@@ -263,11 +263,11 @@ class Folk54SSCDiagramChart(DiagramChart):
         assert not np.any(np.isnan(x))
         return x, y
 
-    def convert_samples(self, samples: typing.List[GrainSizeSample]):
+    def convert_samples(self, samples: typing.List[Sample]):
         silt = []
         sand = []
         for i, sample in enumerate(samples):
-            sand_i, silt_i, clay_i = proportions_ssc(sample.classes_φ, sample.distribution)
+            sand_i, silt_i, clay_i = proportions_ssc(sample.classes_phi, sample.distribution)
             silt.append(silt_i)
             sand.append(sand_i)
         return silt, sand
@@ -519,11 +519,11 @@ class BP12GSMDiagramChart(DiagramChart):
         x = 0.5*b + a
         return x, y
 
-    def convert_samples(self, samples: typing.List[GrainSizeSample]):
+    def convert_samples(self, samples: typing.List[Sample]):
         sand = []
         gravel = []
         for i, sample in enumerate(samples):
-            gravel_i, sand_i, mud_i = proportions_gsm(sample.classes_φ, sample.distribution)
+            gravel_i, sand_i, mud_i = proportions_gsm(sample.classes_phi, sample.distribution)
             sand.append(sand_i)
             gravel.append(gravel_i)
         return sand, gravel
@@ -776,11 +776,11 @@ class BP12SSCDiagramChart(DiagramChart):
             y = y0-span - row*(row_h+span)
             self.axes.text(x, y, text, ha="left", va="top", fontsize="x-small", color=normal_color())
 
-    def convert_samples(self, samples: typing.List[GrainSizeSample]):
+    def convert_samples(self, samples: typing.List[Sample]):
         silt = []
         sand = []
         for i, sample in enumerate(samples):
-            sand_i, silt_i, clay_i = proportions_ssc(sample.classes_φ, sample.distribution)
+            sand_i, silt_i, clay_i = proportions_ssc(sample.classes_phi, sample.distribution)
             silt.append(silt_i)
             sand.append(sand_i)
 

@@ -159,8 +159,8 @@ class UDMResultChart(BaseChart):
         interval = max(1, result.n_samples//self.N_DISPLAY_SAMPLES)
         sample_indexes = np.linspace(1, result.n_samples, result.n_samples)
         iteration_indexes = np.linspace(1, result.n_iterations, result.n_iterations)
-        classes = self.transfer(result.dataset.classes_φ)
-        GSDs = result.dataset.distribution_matrix
+        classes = self.transfer(result.dataset.classes_phi)
+        GSDs = result.dataset.distributions
         sum_loss_series = result.distribution_loss_series + result.component_loss_series
 
         GSDs_axes = self.figure.add_subplot(2, 2, 1)
@@ -216,8 +216,8 @@ class UDMResultChart(BaseChart):
         interval = max(1, result.n_samples // self.N_DISPLAY_SAMPLES)
         sample_indexes = np.linspace(1, result.n_samples, result.n_samples)
         iteration_indexes = np.linspace(1, result.n_iterations, result.n_iterations)
-        classes = self.transfer(result.dataset.classes_φ)
-        GSDs = result.dataset.distribution_matrix
+        classes = self.transfer(result.dataset.classes_phi)
+        GSDs = result.dataset.distributions
         sum_loss_series = result.distribution_loss_series + result.component_loss_series
         distances = np.array([result.distribution_loss_series, result.component_loss_series, sum_loss_series])
         min_distance, max_distance = np.min(distances), np.max(distances)

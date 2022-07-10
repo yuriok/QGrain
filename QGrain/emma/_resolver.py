@@ -4,7 +4,7 @@ import typing
 import numpy as np
 import torch
 
-from ..models import GrainSizeDataset
+from ..models import Dataset
 from ._distance import get_distance_func_by_name
 from ._kernel import KernelType, ProportionModule, get_kernel
 from ._result import EMMAResult
@@ -43,7 +43,7 @@ class EMMAResolver:
         pass
 
     def try_fit(
-            self, dataset: GrainSizeDataset,
+            self, dataset: Dataset,
             kernel_type: KernelType,
             n_members: int,
             resolver_setting: EMMAAlgorithmSetting = None,
@@ -56,9 +56,9 @@ class EMMAResolver:
             assert isinstance(resolver_setting, EMMAAlgorithmSetting)
             s = resolver_setting
 
-        X = torch.from_numpy(dataset.distribution_matrix.astype(np.float32)).to(s.device)
-        classes_φ = dataset.classes_φ.astype(np.float32)
-        emma = EMMAModule(dataset.n_samples, n_members, classes_φ, kernel_type, parameters).to(s.device)
+        X = torch.from_numpy(dataset.distributions.astype(np.float32)).to(s.device)
+        classes_φ = dataset.classes_phi.astype(np.float32)
+        emma = EMMAModule(len(dataset), n_members, classes_φ, kernel_type, parameters).to(s.device)
 
         distance_func = get_distance_func_by_name(s.distance)
         optimizer = torch.optim.Adam(emma.parameters(), lr=s.learning_rate, betas=s.betas)

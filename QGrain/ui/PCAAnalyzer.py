@@ -5,7 +5,7 @@ import typing
 from PySide6 import QtCore, QtWidgets
 
 from ..chart.PCAResultChart import PCAResultChart
-from ..models import GrainSizeDataset
+from ..models import Dataset
 
 
 class PCAAnalyzer(QtWidgets.QWidget):
@@ -36,7 +36,7 @@ class PCAAnalyzer(QtWidgets.QWidget):
     def show_error(self, message: str):
         self.show_message(self.tr("Error"), message)
 
-    def on_dataset_loaded(self, dataset: GrainSizeDataset):
+    def on_dataset_loaded(self, dataset: Dataset):
         self.__dataset = dataset
         self.chart.show_dataset(self.__dataset)
 

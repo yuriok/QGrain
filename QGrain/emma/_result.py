@@ -5,14 +5,14 @@ import typing
 
 import numpy as np
 
-from ..models import GrainSizeDataset
+from ..models import Dataset
 from ..ssu import get_distance_function
 from ._kernel import KernelType
 from ._setting import EMMAAlgorithmSetting
 
 
 class EMMAResult:
-    def __init__(self, dataset: GrainSizeDataset,
+    def __init__(self, dataset: Dataset,
                  kernel_type: KernelType,
                  n_members: int,
                  initial_parameters: np.ndarray,
@@ -30,22 +30,22 @@ class EMMAResult:
         self.__end_members = end_members
         self.__time_spent = time_spent
         self.__history = history
-        modes = [(i, dataset.classes_μm[np.unravel_index(np.argmax(end_members[i]), end_members[i].shape)]) for i in range(n_members)]
+        modes = [(i, dataset.classes[np.unravel_index(np.argmax(end_members[i]), end_members[i].shape)]) for i in range(n_members)]
         modes.sort(key=lambda x: x[1])
         self.__sorted_indexes = tuple([i for i, _ in modes])
         self._sort()
 
     @property
-    def dataset(self) -> GrainSizeDataset:
+    def dataset(self) -> Dataset:
         return self.__dataset
 
     @property
     def n_samples(self) -> int:
-        return self.dataset.n_samples
+        return len(self.dataset)
 
     @property
     def n_classes(self) -> int:
-        return len(self.__dataset.classes_φ)
+        return len(self.__dataset.classes_phi)
 
     @property
     def kernel_type(self) -> KernelType:
@@ -100,14 +100,14 @@ class EMMAResult:
     def get_distance(self, distance: str) -> float:
         distance_func = get_distance_function(distance)
         predict = self.__proportions @ self.__end_members
-        return distance_func(predict, self.__dataset.distribution_matrix)
+        return distance_func(predict, self.__dataset.distributions)
 
     def get_distance_series(self, distance: str) -> np.ndarray:
         distances = []
         distance_func = get_distance_function(distance)
         for fractions, end_members in self.__history:
             predict = fractions @ end_members
-            distance = distance_func(predict, self.__dataset.distribution_matrix)
+            distance = distance_func(predict, self.__dataset.distributions)
             distances.append(distance)
         distances = np.array(distances)
         return distances
@@ -115,11 +115,11 @@ class EMMAResult:
     def get_class_wise_distances(self, distance: str) -> np.ndarray:
         distance_func = get_distance_function(distance)
         predict = self.__proportions @ self.__end_members
-        distances = distance_func(predict, self.__dataset.distribution_matrix, axis=0)
+        distances = distance_func(predict, self.__dataset.distributions, axis=0)
         return distances
 
     def get_sample_wise_distances(self, distance: str) -> np.ndarray:
         distance_func = get_distance_function(distance)
         predict = self.__proportions @ self.__end_members
-        distances = distance_func(predict, self.__dataset.distribution_matrix, axis=1)
+        distances = distance_func(predict, self.__dataset.distributions, axis=1)
         return distances
