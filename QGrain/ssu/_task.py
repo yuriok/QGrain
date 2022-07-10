@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from ..model import GrainSizeSample
+from ..models import GrainSizeSample
 from ._distribution import DistributionType
 
 

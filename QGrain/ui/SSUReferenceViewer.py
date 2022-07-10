@@ -10,7 +10,7 @@ import numpy as np
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from ..chart.DistanceCurveChart import DistanceCurveChart
-from ..model import GrainSizeSample
+from ..models import GrainSizeSample
 from ..ssu import SSUResult, built_in_distances, get_distance_function
 
 
@@ -337,7 +337,7 @@ class SSUReferenceViewer(QtWidgets.QWidget):
 
     def find_similar(self, target: GrainSizeSample, ref_results: typing.List[SSUResult]):
         assert len(ref_results) != 0
-        # sample_moments = logarithmic(sample.classes_φ, sample.distribution)
+        # sample_moments = logarithmic(sample.classes_phi, sample.distribution)
         # keys_to_check = ["mean", "std", "skewness", "kurtosis"]
 
         start_time = time.time()

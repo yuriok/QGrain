@@ -7,7 +7,7 @@ from scipy.cluster.hierarchy import fcluster, linkage
 
 from ..chart.HierarchicalChart import HierarchicalChart
 from ..io import save_clustering
-from ..model import GrainSizeDataset
+from ..models import GrainSizeDataset
 
 
 class ClusteringAnalyzer(QtWidgets.QWidget):

@@ -9,7 +9,7 @@ import xlrd
 from PySide6 import QtCore, QtWidgets
 
 from ..io import *
-from ..model import GrainSizeDataset
+from ..models import GrainSizeDataset
 
 
 class LoadDatasetDialog(QtWidgets.QDialog):

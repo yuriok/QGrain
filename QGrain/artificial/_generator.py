@@ -2,7 +2,7 @@ import typing
 
 import numpy as np
 
-from ..model import GrainSizeDataset, GrainSizeSample
+from ..models import GrainSizeDataset, GrainSizeSample
 from ..ssu import DistributionType, SSUViewModel, get_distribution
 from ..statistics import to_phi, to_microns
 

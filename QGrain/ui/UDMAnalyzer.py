@@ -10,7 +10,7 @@ from PySide6 import QtCore, QtWidgets
 
 from ..chart.UDMResultChart import UDMResultChart
 from ..io import save_udm
-from ..model import GrainSizeDataset
+from ..models import GrainSizeDataset
 from ..udm import KernelType, UDMResolver, UDMResult
 from .ParameterEditor import ParameterEditor
 from .UDMSettingDialog import UDMSettingDialog

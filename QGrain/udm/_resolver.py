@@ -6,7 +6,7 @@ import numpy as np
 import torch
 
 from ..emma import KernelType, ProportionModule, get_kernel
-from ..model import GrainSizeDataset
+from ..models import GrainSizeDataset
 from ._result import UDMResult
 from ._setting import UDMAlgorithmSetting
 

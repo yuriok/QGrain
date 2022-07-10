@@ -8,7 +8,7 @@ import numpy as np
 import openpyxl
 import xlrd
 
-from ..model import GrainSizeDataset
+from ..models import GrainSizeDataset
 
 
 class DataLayoutError(Exception):

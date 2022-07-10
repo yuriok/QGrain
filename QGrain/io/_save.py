@@ -10,9 +10,9 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 
 from .. import QGRAIN_VERSION
-from ..artificial._generator import ArtificialDataset
+from ..artificial import ArtificialDataset
 from ..emma import EMMAResult
-from ..model import GrainSizeDataset, GrainSizeSample
+from ..models import GrainSizeDataset, GrainSizeSample
 from ..ssu import DistributionType, SSUResult, get_distribution
 from ..statistics import _all_scales, all_statistics, logarithmic
 from ..udm import UDMAlgorithmSetting, UDMResult
@@ -327,9 +327,9 @@ def save_statistics(
             return keys
         elif method == "proportion_and_classification":
             keys = [
-                (lambda s: ", ".join([f"{p*100:0.4f}" for p in s["GSM_proportion"]]), "(Gravel, Sand, Mud) Proportions [%]", large_width),
-                (lambda s: ", ".join([f"{p*100:0.4f}" for p in s["SSC_proportion"]]), "(Sand, Silt, Clay) Proportions [%]", large_width),
-                (lambda s: ", ".join([f"{p*100:0.4f}" for p in s["BGSSC_proportion"]]), "(Boulder, Gravel, Sand, Silt, Clay) Proportions [%]", large_width),
+                (lambda s: ", ".join([f"{p*100:0.4f}" for p in s["proportions_GSM"]]), "(Gravel, Sand, Mud) Proportions [%]", large_width),
+                (lambda s: ", ".join([f"{p*100:0.4f}" for p in s["proportions_SSC"]]), "(Sand, Silt, Clay) Proportions [%]", large_width),
+                (lambda s: ", ".join([f"{p*100:0.4f}" for p in s["proportions_BGSSC"]]), "(Boulder, Gravel, Sand, Silt, Clay) Proportions [%]", large_width),
                 (lambda s: s["group_Folk54"], "Group (Folk, 1954)", median_width),
                 (lambda s: s["group_BP12"], "Group (Blott & Pye, 2012)", large_width),
                 (lambda s: s["group_BP12_symbol"], "Group Symbol (Blott & Pye, 2012)", median_width)]

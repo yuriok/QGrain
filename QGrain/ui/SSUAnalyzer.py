@@ -4,7 +4,7 @@ import numpy as np
 from PySide6 import QtCore, QtWidgets
 
 from ..chart.DistributionChart import DistributionChart
-from ..model import GrainSizeDataset
+from ..models import GrainSizeDataset
 from ..ssu import AsyncWorker, DistributionType, SSUResult, SSUTask
 from .ParameterEditor import ParameterEditor
 from .SSUReferenceViewer import SSUReferenceViewer

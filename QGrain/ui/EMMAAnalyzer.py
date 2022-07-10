@@ -11,7 +11,7 @@ from PySide6 import QtCore, QtWidgets
 from ..chart.EMMAResultChart import EMMAResultChart
 from ..emma import EMMAResolver, EMMAResult, KernelType
 from ..io import save_emma
-from ..model import GrainSizeDataset
+from ..models import GrainSizeDataset
 from .EMMASettingDialog import EMMASettingDialog
 from .ParameterEditor import ParameterEditor
 

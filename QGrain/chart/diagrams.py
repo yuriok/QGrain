@@ -9,7 +9,7 @@ import typing
 
 import numpy as np
 
-from ..model import GrainSizeSample
+from ..models import GrainSizeSample
 from ..statistics import proportions_gsm, proportions_ssc
 from .BaseChart import BaseChart
 from .config_matplotlib import normal_color

@@ -12,7 +12,7 @@ from qt_material import apply_stylesheet, list_themes
 from .. import QGRAIN_ROOT_PATH, QGRAIN_VERSION
 from ..chart import setup_matplotlib
 from ..io import save_pca, save_statistics
-from ..model import GrainSizeDataset
+from ..models import GrainSizeDataset
 from .AboutDialog import AboutDialog
 from .ClusteringAnalyzer import ClusteringAnalyzer
 from .DatasetGenerator import DatasetGenerator

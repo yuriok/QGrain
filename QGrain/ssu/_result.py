@@ -4,7 +4,7 @@ from uuid import UUID, uuid4
 
 import numpy as np
 
-from ..model import GrainSizeSample
+from ..models import GrainSizeSample
 from ._distance import get_distance_function
 from ._distribution import DistributionType, get_distribution
 from ._task import SSUTask
