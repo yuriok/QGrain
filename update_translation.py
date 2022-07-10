@@ -12,13 +12,13 @@ CODECFORTR=UTF-8
 
 def update_qt_pro():
     sources = []
-    for root, _, filenames in os.walk("./QGrain"):
+    for root, _, filenames in os.walk(r".\QGrain"):
         for filename in filenames:
             pure_name, extension = os.path.splitext(filename)
             if extension == ".py":
                 if pure_name == "__init__":
                     continue
-                sources.append(os.path.abspath(os.path.join(root, filename)))
+                sources.append(os.path.join(root, filename))
 
     text = "\\\n    ".join(sources)
     with open(PRO_FILENAME, "w") as f:
