@@ -7,7 +7,7 @@ from scipy.cluster.hierarchy import fcluster, linkage
 
 from ..chart.HierarchicalChart import HierarchicalChart
 from ..io import save_clustering
-from ..models import GrainSizeDataset
+from ..models import Dataset
 
 
 class ClusteringAnalyzer(QtWidgets.QWidget):
@@ -107,16 +107,16 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
     def n_clusters(self) -> int:
         return self.n_clusers_input.value()
 
-    def on_dataset_loaded(self, dataset: GrainSizeDataset):
-        if dataset is None or not dataset.has_sample:
+    def on_dataset_loaded(self, dataset: Dataset):
+        if dataset is None:
             return
         self.__dataset = dataset
-        self.__distribution_matrix = dataset.distribution_matrix
+        self.__distribution_matrix = dataset.distributions
         self.__last_result = None
 
-        self.p_input.setMaximum(dataset.n_samples)
-        self.n_clusers_input.setMaximum(dataset.n_samples-1)
-        if dataset.n_samples > 20:
+        self.p_input.setMaximum(len(dataset))
+        self.n_clusers_input.setMaximum(len(dataset)-1)
+        if len(dataset) > 20:
             self.p_input.setValue(10)
 
         self.perform()

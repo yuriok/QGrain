@@ -1,12 +1,12 @@
 from uuid import uuid4
 
-from ..models import GrainSizeSample
+from ..models import Sample
 from ._distribution import DistributionType
 
 
 class SSUTask:
     def __init__(
-            self, sample: GrainSizeSample,
+            self, sample: Sample,
             distribution_type: DistributionType,
             n_components: int,
             resolver_setting=None,

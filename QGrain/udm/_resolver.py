@@ -6,7 +6,7 @@ import numpy as np
 import torch
 
 from ..emma import KernelType, ProportionModule, get_kernel
-from ..models import GrainSizeDataset
+from ..models import Dataset
 from ._result import UDMResult
 from ._setting import UDMAlgorithmSetting
 
@@ -46,7 +46,7 @@ class UDMResolver:
         pass
 
     def try_fit(
-            self, dataset: GrainSizeDataset,
+            self, dataset: Dataset,
             kernel_type: KernelType,
             n_components: int,
             resolver_setting: UDMAlgorithmSetting = None,
@@ -58,9 +58,9 @@ class UDMResolver:
             assert isinstance(resolver_setting, UDMAlgorithmSetting)
             s = resolver_setting
 
-        X = torch.from_numpy(dataset.distribution_matrix.astype(np.float32)).to(s.device)
-        classes_φ = dataset.classes_φ.astype(np.float32)
-        udm = UDMModule(dataset.n_samples, n_components, classes_φ, kernel_type, parameters).to(s.device)
+        X = torch.from_numpy(dataset.distributions.astype(np.float32)).to(s.device)
+        classes_φ = dataset.classes_phi.astype(np.float32)
+        udm = UDMModule(len(dataset), n_components, classes_φ, kernel_type, parameters).to(s.device)
         optimizer = torch.optim.Adam(udm.parameters(), lr=s.learning_rate, betas=s.betas)
 
         start = time.time()

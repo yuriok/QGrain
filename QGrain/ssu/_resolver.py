@@ -8,7 +8,7 @@ import numpy as np
 from PySide6.QtCore import QObject, Qt, QThread, Signal, Slot
 from scipy.optimize import OptimizeResult, basinhopping, minimize
 
-from ..models import GrainSizeDataset, GrainSizeSample
+from ..models import Dataset, Sample
 from ._distance import get_distance_function
 from ._distribution import DistributionType, get_distribution
 from ._result import SSUResult
@@ -134,7 +134,7 @@ class BasicResolver:
         else:
             assert isinstance(task.resolver_setting, SSUAlgorithmSetting)
             setting = task.resolver_setting
-        classes = np.expand_dims(np.expand_dims(task.sample.classes_φ, 0), 0).repeat(task.n_components, 1)
+        classes = np.expand_dims(np.expand_dims(task.sample.classes_phi, 0), 0).repeat(task.n_components, 1)
         distribution_class = get_distribution(task.distribution_type)
         distance_func = get_distance_function(setting.distance)
 
@@ -143,7 +143,7 @@ class BasicResolver:
 
         def closure(x):
             x = x.reshape((1, distribution_class.N_PARAMETERS+1, task.n_components))
-            proportions, components, (m, v, s, k) = distribution_class.interpret(x, classes, task.sample.interval_φ)
+            proportions, components, (m, v, s, k) = distribution_class.interpret(x, classes, task.sample.interval_phi)
             pred_distribution = (proportions[0] @ components[0]).squeeze()
             distance = distance_func(pred_distribution, task.sample.distribution)
             return distance
@@ -247,7 +247,7 @@ class AsyncWorker(QObject):
 
 
 def try_sample(
-        sample: GrainSizeSample,
+        sample: Sample,
         distribution_type: DistributionType,
         n_components: int,
         resolver_setting: SSUAlgorithmSetting = None,
@@ -259,7 +259,7 @@ def try_sample(
 
 
 def try_dataset(
-        dataset: GrainSizeDataset,
+        dataset: Dataset,
         distribution_type: DistributionType,
         n_components: int,
         resolver_setting: SSUAlgorithmSetting = None,

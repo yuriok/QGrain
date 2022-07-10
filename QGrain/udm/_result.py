@@ -6,14 +6,14 @@ import typing
 import numpy as np
 
 from ..emma import KernelType
-from ..models import GrainSizeDataset
+from ..models import Dataset
 from ..ssu import DistributionType, SSUResult, SSUTask, get_distance_function, get_distribution, get_sorted_indexes
 from ._setting import UDMAlgorithmSetting
 
 
 class UDMResult:
     def __init__(
-            self, dataset: GrainSizeDataset,
+            self, dataset: Dataset,
             kernel_type: KernelType,
             n_components: int,
             initial_parameters: np.ndarray,
@@ -33,22 +33,22 @@ class UDMResult:
         self.__time_spent = time_spent
         self.__final_parameters = final_parameters
         self.__history = [final_parameters] if history is None else history
-        self.__classes = np.expand_dims(np.expand_dims(self.dataset.classes_φ, axis=0), axis=0).repeat(self.n_samples, axis=0).repeat(self.n_components, axis=1)
-        self.__interval = np.abs((self.dataset.classes_φ[0]-self.dataset.classes_φ[-1]) / (self.n_classes-1))
+        self.__classes = np.expand_dims(np.expand_dims(self.dataset.classes_phi, axis=0), axis=0).repeat(self.n_samples, axis=0).repeat(self.n_components, axis=1)
+        self.__interval = np.abs((self.dataset.classes_phi[0] - self.dataset.classes_phi[-1]) / (self.n_classes - 1))
         self.__sorted_indexes = get_sorted_indexes(self.distribution_type, final_parameters, self.__classes, self.__interval)
         self.update(final_parameters)
 
     @property
-    def dataset(self) -> GrainSizeDataset:
+    def dataset(self) -> Dataset:
         return self.__dataset
 
     @property
     def n_samples(self) -> int:
-        return self.dataset.n_samples
+        return len(self.dataset)
 
     @property
     def n_classes(self) -> int:
-        return len(self.dataset.classes_μm)
+        return len(self.dataset.classes)
 
     @property
     def kernel_type(self) -> KernelType:
@@ -119,7 +119,7 @@ class UDMResult:
     def get_distance(self, distance: str) -> float:
         distance_func = get_distance_function(distance)
         predict = (self.proportions @ self.components).squeeze()
-        return distance_func(predict, self.dataset.distribution_matrix)
+        return distance_func(predict, self.dataset.distributions)
 
     def to_ssu_results(self, progress_callback: typing.Callable = None) -> typing.List[SSUResult]:
         results = []

@@ -1,3 +1,3 @@
 from ._use_excel import *
-from ._load import *
+from .load_dataset import *
 from ._save import *

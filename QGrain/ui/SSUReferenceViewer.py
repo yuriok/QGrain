@@ -10,7 +10,7 @@ import numpy as np
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from ..chart.DistanceCurveChart import DistanceCurveChart
-from ..models import GrainSizeSample
+from ..models import Sample
 from ..ssu import SSUResult, built_in_distances, get_distance_function
 
 
@@ -335,7 +335,7 @@ class SSUReferenceViewer(QtWidgets.QWidget):
             pickle.dump(self.__fitting_results, f)
         self.logger.info("The SSU results have been dumped.")
 
-    def find_similar(self, target: GrainSizeSample, ref_results: typing.List[SSUResult]):
+    def find_similar(self, target: Sample, ref_results: typing.List[SSUResult]):
         assert len(ref_results) != 0
         # sample_moments = logarithmic(sample.classes_phi, sample.distribution)
         # keys_to_check = ["mean", "std", "skewness", "kurtosis"]
@@ -344,7 +344,7 @@ class SSUReferenceViewer(QtWidgets.QWidget):
         from scipy.interpolate import interp1d
         min_distance = 1e100
         min_result = None
-        trans_func = interp1d(target.classes_φ, target.distribution, bounds_error=False, fill_value=0.0)
+        trans_func = interp1d(target.classes_phi, target.distribution, bounds_error=False, fill_value=0.0)
         for result in ref_results:
             trans_dist = trans_func(result.classes_φ)
             distance = self.distance_function(result.distribution, trans_dist)
@@ -354,7 +354,7 @@ class SSUReferenceViewer(QtWidgets.QWidget):
         # self.logger.debug(f"It took {time.time()-start_time:0.4f} s to query the reference from {len(ref_results)} results.")
         return min_result
 
-    def query_reference(self, sample: GrainSizeSample):
+    def query_reference(self, sample: Sample):
         if len(self.__reference_map) == 0:
             # self.logger.debug("Try to query the reference, but there is no result that has been marked as the reference.")
             return None

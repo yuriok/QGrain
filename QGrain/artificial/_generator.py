@@ -2,7 +2,7 @@ import typing
 
 import numpy as np
 
-from ..models import GrainSizeDataset, GrainSizeSample
+from ..models import Dataset, Sample
 from ..ssu import DistributionType, SSUViewModel, get_distribution
 from ..statistics import to_phi, to_microns
 
@@ -81,7 +81,7 @@ class ArtificialSample:
 
     @property
     def sample_to_fit(self):
-        sample = GrainSizeSample(self.name, self.classes_μm, self.classes_φ, self.distribution)
+        sample = Sample(self.name, self.classes_μm, self.classes_φ, self.distribution)
         return sample
 
     @property
@@ -229,10 +229,9 @@ class ArtificialDataset:
         return self.__distributions
 
     @property
-    def dataset_to_fit(self) -> GrainSizeDataset:
-        dataset = GrainSizeDataset()
-        sample_names = [f"AS{i+1}" for i in range(self.n_samples)]
-        dataset.add_batch(self.classes_μm, sample_names, self.distributions)
+    def dataset_to_fit(self) -> Dataset:
+        sample_names = [f"AS{i + 1}" for i in range(self.n_samples)]
+        dataset = Dataset("Artificial Dataset", sample_names, self.classes_μm, self.distributions)
         return dataset
 
     @property

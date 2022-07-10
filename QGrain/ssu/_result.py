@@ -4,7 +4,7 @@ from uuid import UUID, uuid4
 
 import numpy as np
 
-from ..models import GrainSizeSample
+from ..models import Sample
 from ._distance import get_distance_function
 from ._distribution import DistributionType, get_distribution
 from ._task import SSUTask
@@ -89,12 +89,12 @@ class SSUResult:
 
     def update(self, parameters: typing.Iterable[float]):
         self.__parameters = parameters
-        classes = np.expand_dims(np.expand_dims(self.sample.classes_φ, 0), 0).repeat(1, 0).repeat(self.n_components, 1)
+        classes = np.expand_dims(np.expand_dims(self.sample.classes_phi, 0), 0).repeat(1, 0).repeat(self.n_components, 1)
         if np.any(np.isnan(parameters)):
             self.__distribution = None
             self.__is_valid = False
         else:
-            proportions, components, (m, v, s, k) = get_distribution(self.distribution_type).interpret(parameters, classes, self.__sample.interval_φ)
+            proportions, components, (m, v, s, k) = get_distribution(self.distribution_type).interpret(parameters, classes, self.__sample.interval_phi)
             proportions, components, (m, v, s, k) = proportions[0], components[0], (m[0], v[0], s[0], k[0])
             distribution = (proportions @ components)[0]
             self.__distribution = distribution
@@ -120,16 +120,16 @@ class SSUResult:
         return self.__uuid
 
     @property
-    def sample(self) -> GrainSizeSample:
+    def sample(self) -> Sample:
         return self.__sample
 
     @property
     def classes_μm(self) -> np.ndarray:
-        return self.__sample.classes_μm
+        return self.__sample.classes
 
     @property
     def classes_φ(self) -> np.ndarray:
-        return self.__sample.classes_φ
+        return self.__sample.classes_phi
 
     @property
     def task(self) -> SSUTask:
@@ -190,7 +190,7 @@ class SSUResult:
         distributions = [component.distribution for component in self.components]
         proportions = [comp.proportion for comp in self.components]
         return SSUViewModel(
-            self.sample.classes_φ, self.sample.distribution,
+            self.sample.classes_phi, self.sample.distribution,
             self.distribution, distributions, proportions,
             component_prefix="C", title=self.sample.name)
 

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from ..models import GrainSizeSample
+from ..models import Sample
 from ..statistics import to_microns, to_cumulative
 from .BaseChart import BaseChart
 from .config_matplotlib import normal_color
@@ -81,7 +81,7 @@ class Frequency3DChart(BaseChart):
         self.figure.add_axes(self.axes)
         self.show_samples(self.last_samples, append=False)
 
-    def show_samples(self, samples: typing.Iterable[GrainSizeSample], append=False):
+    def show_samples(self, samples: typing.Iterable[Sample], append=False):
         if len(samples) == 0:
             return
         append = append and len(self.last_samples) != 0
@@ -97,7 +97,7 @@ class Frequency3DChart(BaseChart):
             record_samples.append(sample)
             sample_distributions.append(sample.distribution)
         Z = np.array(sample_distributions)
-        x = self.transfer(record_samples[0].classes_φ)
+        x = self.transfer(record_samples[0].classes_phi)
         y = np.linspace(1, len(Z), len(Z))
         X, Y = np.meshgrid(x, y)
         self.axes.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap="binary")

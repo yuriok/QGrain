@@ -176,11 +176,11 @@ class EMMAResultChart(BaseChart):
         self.menu.popup(QtGui.QCursor.pos())
 
     def show_chart(self, result: EMMAResult):
-        classes = self.transfer(result.dataset.classes_φ)
+        classes = self.transfer(result.dataset.classes_phi)
         sample_indexes = np.linspace(1, result.n_samples, result.n_samples)
         iteration_indexes = np.linspace(1, result.n_iterations, result.n_iterations)
         interval = max(1, result.n_samples // self.N_DISPLAY_SAMPLES)
-        GSDs = result.dataset.distribution_matrix
+        GSDs = result.dataset.distributions
 
         GSDs_axes = self.figure.add_subplot(2, 2, 1)
         for sample in result.dataset.samples[::interval]:
@@ -224,13 +224,13 @@ class EMMAResultChart(BaseChart):
         self.canvas.draw()
 
     def show_animation(self, result: EMMAResult):
-        classes = self.transfer(result.dataset.classes_φ)
+        classes = self.transfer(result.dataset.classes_phi)
         sample_indexes = np.linspace(1, result.n_samples, result.n_samples)
         iteration_indexes = np.linspace(1, result.n_iterations, result.n_iterations)
         distance_series = result.get_distance_series(self.distance)
         min_distance, max_distance = np.min(distance_series), np.max(distance_series)
         interval = max(1, result.n_samples // self.N_DISPLAY_SAMPLES)
-        GSDs = result.dataset.distribution_matrix
+        GSDs = result.dataset.distributions
 
         GSDs_axes = self.figure.add_subplot(2, 2, 1)
         for sample in result.dataset.samples[::interval]:

@@ -1,229 +1,225 @@
 from __future__ import annotations
 
-import typing
-from uuid import UUID, uuid4
-
 import numpy as np
-
+from typing import *
 from ..statistics import interval_phi
 
 
-class ClassesNotIncrementalError(Exception):
-    """Raises while the array of grain size classes is not incremental.
-
-    It's just an ASSUMPTION for the convenience of coding.
+def _incremental(classes: Sequence[int | float]) -> Tuple[bool, int | None]:
     """
-    pass
+    Check if the series of grain size classes is incremental.
+
+    ## Parameters
+
+    classes: The grain size classes.
+
+    ## Returns
+
+    is_incremental: If the series of classes is incremental.
+
+    error_index: If it is incremental, return `None`, else return the index of first invalid value.
+    """
+    classes = tuple(classes)
+    for i, (left, right) in enumerate(zip(classes[:-1], classes[1:])):
+        if left >= right:
+            return False, i
+    else:
+        return True, None
 
 
-class ClassesNotMatchError(Exception):
-    """Raises while the grain size classes of a new batch of sample data are not equal to the existing classes."""
-    pass
+def _error_text(array: np.ndarray, index: int):
+    w = 3
+    l, r = max(index - w, 0), min(index + w, len(array))
+    l_header = [] if l == 0 else ["..."]
+    r_header = [] if r == len(array) else ["..."]
+    indicator = [""] * len(array)
+    indicator[index] = "↑"
+    indicator[min(index + 1, len(array) - 1)] = "↑"
+    error_text = "\n".join(
+        ["\t".join(["Index   "] + l_header + [f"{i:<10}" for i in range(len(array))[l:r]] + r_header),
+         "\t".join(["Value   "] + l_header + [f"{f'{v:.4f}':<10}" for v in array[l:r]] + r_header),
+         "\t".join(["Position"] + l_header + [f"{s:<10}" for s in indicator[l:r]] + r_header)])
+    return error_text
 
 
-class NaNError(Exception):
-    """Raises while there is at least one NaN value in the array."""
-    pass
+def validate_classes(classes: Sequence[float]) -> Tuple[bool, np.ndarray | str]:
+    """
+    Check if the series of grain size classes is valid.
+
+    ## Parameters
+
+    classes: The grain size classes.
+
+    ## Returns
+
+    is_valid: If the series of classes is valid.
+
+    array_or_msg: If it is valid, return a new numpy array, else return the error message.
+    """
+    if classes is None:
+        return False, "The passed `classes` can not be `None`."
+    array: np.ndarray = np.array(classes, dtype=np.float32)
+    if array.ndim != 1:
+        return False, "The passed `classes` should be one-dimensional."
+    if len(array) == 0:
+        return False, "The passed `classes` can not be empty."
+    indices = np.arange(len(array))
+    nan_indices: np.ndarray = indices[np.isnan(array)]
+    if len(nan_indices) > 0:
+        return False, (f"There is at least one NaN value in the series of grain size classes. "
+                       f"Check the index(es): {', '.join(nan_indices.astype(str))}.")
+    incremental, index = _incremental(array)
+    if not incremental:
+        error_text = _error_text(array, index)
+        return False, f"The series of grain size classes is not incremental.\n{error_text}"
+    classes_phi = -np.log2(array / 1000)
+    mean_interval = interval_phi(classes_phi)
+    intervals = classes_phi[:-1] - classes_phi[1:]
+    absolute_errors = np.abs(intervals - mean_interval)
+    index = np.argmax(absolute_errors)
+    if absolute_errors[index] > 0.05:
+        error_text = _error_text(array, index)
+        return False, (f"The grain size classes are not evenly spaced on a log scale. "
+                       f"The max absolute error of intervals is {absolute_errors[index]} phi.\n{error_text}")
+    return True, array
 
 
-class ArrayEmptyError(Exception):
-    """Raises while the length of array is 0."""
-    pass
+def validate_distributions(distributions: Sequence[Sequence[float]]) -> Tuple[bool, np.ndarray | str]:
+    if distributions is None:
+        return False, "The passed `distributions` can not be `None`."
+    array = np.array(distributions, dtype=np.float32)
+    if array.ndim != 2:
+        return False, "The passed `distributions` should be two-dimensional."
+    n_samples, n_classes = array.shape
+    if n_samples == 0 or n_classes == 0:
+        return False, "The passed `distribution` can not be empty."
+    cols, rows = np.meshgrid(np.arange(n_classes), np.arange(n_samples))
+    nan_keys = np.isnan(array)
+    cells = [f"({row}, {col})" for row, col in zip(rows[nan_keys], cols[nan_keys])]
+    if len(cells) > 0:
+        return False, (f"There is at least one NaN value in the passed `distributions`. "
+                       f"See the cell(s): {', '.join(cells)}")
+    rows = np.arange(n_samples)
+    summed = np.sum(array, axis=1)
+    valid = (np.greater(summed, 0.95) & np.less(summed, 1.05)) | (np.greater(summed, 95) & np.less(summed, 105))
+    invalid_rows = rows[np.logical_not(valid)]
+    if len(invalid_rows) > 0:
+        return False, (f"There is at least one distribution which has the sum not equal to 1 or 100. "
+                       f"Check the following row(s): {', '.join(invalid_rows.astype(str))}.")
+    array = array / np.sum(array, axis=1, keepdims=True)
+    return True, array
 
 
-class SampleNameEmptyError(Exception):
-    """Raises while the name of sample is empty."""
-    pass
+class Sample:
+    __slots__ = ("_name", "_classes", "_classes_phi", "_distribution")
 
-
-class DistributionSumError(Exception):
-    """Raises while the sum of distribution values is not equal to 1 or 100."""
-    pass
-
-
-class SampleNotFountError(Exception):
-    """Raises while the sample is not found in this dataset."""
-    pass
-
-
-class GrainSizeSample:
     def __init__(self, name: str,
-                 classes_μm: np.ndarray,
-                 classes_φ: np.ndarray,
+                 classes: np.ndarray,
+                 classes_phi: np.ndarray,
                  distribution: np.ndarray):
-        self.__uuid = uuid4()
-        self.__name = name
-        self.__classes_μm = classes_μm
-        self.__classes_φ = classes_φ
-        self.__distribution = distribution
+        self._name = name
+        self._classes = classes
+        self._classes_phi = classes_phi
+        self._distribution = distribution
 
-    @property
-    def uuid(self) -> UUID:
-        return self.__uuid
+    def __repr__(self):
+        return f"Sample({self._name})"
 
     @property
     def name(self) -> str:
-        return self.__name
+        return self._name
 
     @property
-    def classes_μm(self) -> np.ndarray:
-        return self.__classes_μm
+    def classes(self) -> np.ndarray:
+        return self._classes
 
     @property
-    def classes_φ(self) -> np.ndarray:
-        return self.__classes_φ
+    def classes_phi(self) -> np.ndarray:
+        return self._classes_phi
 
     @property
-    def interval_φ(self) -> float:
-        return interval_phi(self.classes_φ)
+    def interval_phi(self) -> float:
+        return interval_phi(self.classes_phi)
 
     @property
     def distribution(self) -> np.ndarray:
-        return self.__distribution
+        return self._distribution
 
 
-class GrainSizeDataset:
-    def __init__(self):
-        self.__classes_μm = None # type: np.ndarray
-        self.__classes_φ = None # type: np.ndarray
-        self.__id_table = {} # type: dict[UUID, GrainSizeSample]
-        self.__samples = [] # type: list[GrainSizeSample]
+class Dataset:
+    def __init__(self, name: str, sample_names: Sequence[str],
+                 classes: Sequence[int | float], distributions: Sequence[Sequence[int | float]]):
+        assert isinstance(name, str)
+        if len(name) == 0:
+            raise ValueError("The name of dataset can not be empty.")
+        for sample_name in sample_names:
+            assert isinstance(sample_name, str)
+            if len(sample_name) == 0:
+                raise ValueError("The name of sample can not be empty.")
+        valid, array_or_msg = validate_classes(classes)
+        if not valid:
+            raise ValueError(array_or_msg)
+        self._classes = array_or_msg
+        valid, array_or_msg = validate_distributions(distributions)
+        if not valid:
+            raise ValueError(array_or_msg)
+        self._distributions = array_or_msg
+        self._name = name
+        self._classes_phi = -np.log2(self._classes / 1000)
+        self._sample_names = list(sample_names)
+
+    def __repr__(self) -> str:
+        return f"Dataset({self._name})"
+
+    def __len__(self) -> int:
+        return len(self._sample_names)
+
+    def __iter__(self):
+        for i in range(len(self._sample_names)):
+            yield self._get_sample(i)
+
+    def __getitem__(self, key) -> Union[Sample, Sequence[Sample]]:
+        if isinstance(key, int):
+            return self._get_sample(key)
+        elif isinstance(key, slice):
+            return [self._get_sample(index) for index in np.arange(len(self._sample_names))[key]]
+        else:
+            raise TypeError(f"Sample indices must be integers or slices, not {type(key)}.")
 
     @property
-    def n_samples(self) -> int:
-        return len(self.__samples)
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def sample_names(self) -> List[str]:
+        return self._sample_names.copy()
+
+    @property
+    def samples(self) -> List[Sample]:
+        return list(iter(self))
 
     @property
     def n_classes(self) -> int:
-        if self.__classes_μm is None:
-            return 0
-        else:
-            return len(self.__classes_μm)
+        return len(self._classes)
 
     @property
-    def has_sample(self) -> bool:
-        if self.n_samples == 0:
-            return False
-        else:
-            return True
+    def classes(self) -> np.ndarray:
+        return self._classes
 
     @property
-    def classes_μm(self) -> np.ndarray:
-        return self.__classes_μm
+    def classes_phi(self) -> np.ndarray:
+        return self._classes_phi
 
     @property
-    def classes_φ(self) -> np.ndarray:
-        return self.__classes_φ
+    def interval_phi(self) -> float:
+        return interval_phi(self.classes_phi)
 
     @property
-    def interval_φ(self) -> float:
-        return interval_phi(self.classes_φ)
+    def distributions(self) -> np.ndarray:
+        return self._distributions
 
-    @property
-    def samples(self) -> typing.List[GrainSizeSample]:
-        return self.__samples.copy()
-
-    @property
-    def distribution_matrix(self) -> np.ndarray:
-        distributions = [sample.distribution for sample in self.samples]
-        matrix = np.array(distributions)
-        return matrix
-
-    @staticmethod
-    def is_incremental(nums: np.ndarray) -> bool:
-        """Returns `True` while the array is incremental.
-        This method is used to validate the array of grain size classes."""
-        # for i in range(1, len(nums)):
-        #     if nums[i] <= nums[i-1]:
-        #         return False
-        # return True
-        return np.all(np.less(nums[:-1], nums[1:]))
-
-    @staticmethod
-    def validate_classes_μm(classes: np.ndarray):
-        assert classes is not None
-        assert type(classes) == np.ndarray
-        assert classes.dtype == np.float64
-        if len(classes) == 0:
-            raise ArrayEmptyError("The array of grain size classes is empty.")
-        if np.any(np.isnan(classes)):
-            raise NaNError("There is at least one NaN value in grain size classes.")
-        # It may raises when the users select a wrong data file.
-        if not GrainSizeDataset.is_incremental(classes):
-            raise ClassesNotIncrementalError("The array of grain size classes is not incremental.")
-
-    @staticmethod
-    def validate_sample_name(sample_name: str):
-        assert sample_name is not None
-        assert type(sample_name) == str
-        if sample_name == "":
-            raise SampleNameEmptyError("Sample name is empty.")
-
-    @staticmethod
-    def validate_distribution(distribution: np.ndarray):
-        assert distribution is not None
-        assert type(distribution) == np.ndarray
-        assert distribution.dtype == np.float64
-        if len(distribution) == 0:
-            raise ArrayEmptyError("The array of distribution of this sample is empty.")
-        if np.any(np.isnan(distribution)):
-            raise NaNError("There is at least one NaN value in the distribution.")
-        # Check if the sum is close to 1 or 100 (some users may use percentage).
-        s = np.sum(distribution)
-        if (s > 0.95 and s < 1.05):
-            pass
-        elif (s > 95 and s < 105):
-            # If the sum is close to 100, make it close to 1.
-            np.true_divide(distribution, 100.0, out=distribution)
-        else:
-            raise DistributionSumError("Distribution of this sample not sum equal to 1 or 100.")
-
-    @staticmethod
-    def are_classes_match(classes_a: np.ndarray, classes_b: np.ndarray):
-        if len(classes_a) != len(classes_b):
-            return False
-        equal_res = np.equal(classes_a, classes_b)
-        if not np.all(equal_res):
-            return False
-        return True
-
-    def add_batch(self, classes_μm: np.ndarray,
-                  names: typing.List[str],
-                  distributions: typing.List[np.ndarray],
-                  need_validation: bool = True):
-        self.validate_classes_μm(classes_μm)
-        # If there is any sample already, it's necessary to check the consistency of classes.
-        if self.has_sample:
-            if not self.are_classes_match(self.classes_μm, classes_μm):
-                raise ClassesNotMatchError(self.classes_μm, classes_μm)
-        assert len(names) == len(distributions)
-
-        self.__classes_μm = classes_μm
-        self.__classes_φ = -np.log2(classes_μm/1000.0)
-        # use temp to implement roll-back
-        temp_table = {}
-        temp_list = []
-        for name, distribution in zip(names, distributions):
-            assert len(distribution) == len(classes_μm)
-            if need_validation:
-                self.validate_sample_name(name)
-                self.validate_distribution(distribution)
-            sample = GrainSizeSample(name, self.classes_μm, self.classes_φ, distribution)
-            temp_table.update({sample.uuid: sample})
-            temp_list.append(sample)
-        # if no exception raised, the codes below will be executed
-        self.__id_table.update(temp_table)
-        self.__samples.extend(temp_list)
-
-    def combine(self, another_dataset: GrainSizeDataset):
-        if self.are_classes_match(self.classes_μm, another_dataset.classes_μm):
-            self.__id_table.update(another_dataset.__id_table)
-            self.__samples.extend(another_dataset.__samples)
-        else:
-            raise ClassesNotMatchError(self.classes_μm, another_dataset.classes_μm)
-
-    def get_sample_by_id(self, uuid: UUID):
-        if uuid in self.__id_table:
-            return self.__id_table[uuid]
-        else:
-            raise SampleNotFountError("There is no sample with this id.", uuid)
+    def _get_sample(self, index: int) -> Sample:
+        name = self._sample_names[index]
+        distribution = self._distributions[index]
+        sample = Sample(name, self._classes, self._classes_phi, distribution)
+        return sample

@@ -8,7 +8,7 @@ import psutil
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from ..chart.config_matplotlib import backgroud_color
-from ..io import GrainSizeDataset
+from ..io import Dataset
 from ..ssu import BasicResolver, DistributionType, SSUResult, SSUTask
 
 

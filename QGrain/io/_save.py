@@ -12,7 +12,7 @@ from sklearn.decomposition import PCA
 from .. import QGRAIN_VERSION
 from ..artificial import ArtificialDataset
 from ..emma import EMMAResult
-from ..models import GrainSizeDataset, GrainSizeSample
+from ..models import Dataset, Sample
 from ..ssu import DistributionType, SSUResult, get_distribution
 from ..statistics import _all_scales, all_statistics, logarithmic
 from ..udm import UDMAlgorithmSetting, UDMResult
@@ -21,13 +21,6 @@ from ._use_excel import column_to_char, prepare_styles
 SMALL_WIDTH = 12
 MEDIAN_WIDTH = 24
 LARGE_WIDTH = 48
-
-
-def _check_dataset(dataset: GrainSizeDataset):
-    if dataset is None:
-        raise ValueError("The dataset is `None`.")
-    elif not dataset.has_sample:
-        raise ValueError("There is no sample in this dataset.")
 
 
 def _write_readme_sheet(ws: Worksheet, text: str):
@@ -52,7 +45,7 @@ def _write_readme_sheet(ws: Worksheet, text: str):
 
 def _write_dataset_sheet(
         ws: Worksheet,
-        dataset: GrainSizeDataset,
+        dataset: Dataset,
         progress_callback: typing.Callable = None):
     def write(row, col, value, style="normal_light"):
         cell = ws.cell(row+1, col+1, value=value)
@@ -61,11 +54,11 @@ def _write_dataset_sheet(
     ws.title = "GSDs"
     write(0, 0, "Sample Name", style="header")
     ws.column_dimensions[column_to_char(0)].width = 24
-    for col, value in enumerate(dataset.classes_μm, 1):
+    for col, value in enumerate(dataset.classes, 1):
         write(0, col, value, style="header")
         ws.column_dimensions[column_to_char(col)].width = 10
 
-    for i_sample, sample in enumerate(dataset.samples):
+    for i_sample, sample in enumerate(dataset):
         row = i_sample + 1
         if row % 2 == 0:
             style = "normal_dark"
@@ -75,7 +68,7 @@ def _write_dataset_sheet(
         for col, value in enumerate(sample.distribution, 1):
             write(row, col, value, style=style)
         if progress_callback is not None:
-            progress = i_sample / dataset.n_samples
+            progress = i_sample / len(dataset)
             progress_callback(progress)
 
 
@@ -113,7 +106,7 @@ def save_artificial_dataset(
             dataset.n_classes,
             dataset.precision,
             dataset.noise,
-            dataset.n_samples)
+            len(dataset))
     _write_readme_sheet(wb.active, readme_text)
 
     def write(row, col, value, style="normal_light"):
@@ -157,7 +150,7 @@ def save_artificial_dataset(
     for col, value in enumerate(dataset.classes_μm, 1):
         write(0, col, value, style="header")
         ws.column_dimensions[column_to_char(col)].width = 10
-    for i, sample in enumerate(dataset.samples):
+    for i, sample in enumerate(dataset):
         row = i + 1
         if row % 2 == 0:
             style = "normal_dark"
@@ -168,7 +161,7 @@ def save_artificial_dataset(
             write(row, col, value, style=style)
 
         if progress_callback is not None:
-            progress_callback(i / dataset.n_samples * 0.2)
+            progress_callback(i / len(dataset) * 0.2)
 
     logger.debug("Creating the `Parameters` sheet.")
     ws = wb.create_sheet("Parameters")
@@ -181,19 +174,19 @@ def save_artificial_dataset(
         for j, header_name in enumerate(parameter_names):
             write(1, n_parameters*i+1+j, header_name, style="header")
             ws.column_dimensions[column_to_char(n_parameters*i+1+j)].width = 16
-    for i in range(dataset.n_samples):
+    for i in range(len(dataset)):
         row = i + 2
         if row % 2 == 1:
             style = "normal_dark"
         else:
             style = "normal_light"
-        write(row, 0, dataset.samples[i].name, style=style)
+        write(row, 0, dataset[i].name, style=style)
         for j in range(dataset.n_components):
             for k in range(n_parameters):
                 write(row, n_parameters*j+k+1, dataset.parameters[i, k, j], style=style)
 
         if progress_callback is not None:
-            progress_callback(1/dataset.n_samples*0.2 + 0.2)
+            progress_callback(1/len(dataset)*0.2 + 0.2)
 
     for i in range(dataset.n_components):
         logger.debug(f"Creating the `C{i+1}` sheet.")
@@ -203,7 +196,7 @@ def save_artificial_dataset(
         for col, value in enumerate(dataset.classes_μm, 1):
             write(0, col, value, style="header")
             ws.column_dimensions[column_to_char(col)].width = 10
-        for row, sample in enumerate(dataset.samples, 1):
+        for row, sample in enumerate(dataset, 1):
             if row % 2 == 0:
                 style = "normal_dark"
             else:
@@ -213,7 +206,7 @@ def save_artificial_dataset(
                 write(row, col, value, style=style)
 
         if progress_callback is not None:
-            progress_callback(((i*dataset.n_samples + row) / dataset.n_samples*dataset.n_components) * 0.6 + 0.4)
+            progress_callback(((i*len(dataset) + row) / len(dataset)*dataset.n_components) * 0.6 + 0.4)
     wb.save(filename)
     wb.close()
     if progress_callback is not None:
@@ -222,11 +215,11 @@ def save_artificial_dataset(
 
 
 def save_dataset(
-        dataset: GrainSizeDataset,
+        dataset: Dataset,
         filename: str,
         progress_callback: typing.Callable = None,
         logger: logging.Logger = None):
-    _check_dataset(dataset)
+    assert dataset is not None
     if logger is None:
         logger = logging.getLogger("QGrain")
     else:
@@ -237,7 +230,7 @@ def save_dataset(
     logger.debug("Creating the `README` sheet.")
     readme_text = \
         """
-        It only contanins one sheet which stores the grain size distributions.
+        It only contains one sheet which stores the grain size distributions.
         """
     _write_readme_sheet(wb.active, readme_text)
     logger.debug("Creating the `GSDs` sheet.")
@@ -252,11 +245,11 @@ def save_dataset(
 
 
 def save_statistics(
-        dataset: GrainSizeDataset,
+        dataset: Dataset,
         filename: str,
         progress_callback: typing.Callable = None,
         logger: logging.Logger = None):
-    _check_dataset(dataset)
+    assert dataset is not None
     if logger is None:
         logger = logging.getLogger("QGrain")
     else:
@@ -265,11 +258,11 @@ def save_statistics(
     # Calculate
     logger.debug("Calculating the statistical parameters and classification groups of all samples.")
     all_sample_statistics = []
-    for i, sample in enumerate(dataset.samples):
-        sample_statistics = all_statistics(sample.classes_μm, sample.classes_φ, sample.distribution)
+    for i, sample in enumerate(dataset):
+        sample_statistics = all_statistics(sample.classes, sample.classes_phi, sample.distribution)
         all_sample_statistics.append(sample_statistics)
         if progress_callback is not None:
-            progress = (i / dataset.n_samples) * 0.4
+            progress = (i / len(dataset)) * 0.4
             progress_callback(progress)
     wb = openpyxl.Workbook()
     prepare_styles(wb)
@@ -357,7 +350,7 @@ def save_statistics(
         for col, (func, name, width) in enumerate(keys, 1):
             write(0, col, name, style="header")
             ws.column_dimensions[column_to_char(col)].width = width
-        for i_sample, (sample, sample_statistics) in enumerate(zip(dataset.samples, all_sample_statistics)):
+        for i_sample, (sample, sample_statistics) in enumerate(zip(dataset, all_sample_statistics)):
             row = i_sample + 1
             if row % 2 == 0:
                 style = "normal_dark"
@@ -368,7 +361,7 @@ def save_statistics(
                 value = func(sample_statistics)
                 write(row, col, value, style=style)
             if progress_callback is not None:
-                progress = 0.5 + ((i_sample / dataset.n_samples) + i_method) / len(methods) * 0.5
+                progress = 0.5 + ((i_sample / len(dataset)) + i_method) / len(methods) * 0.5
                 progress_callback(progress)
     logger.debug("Saving the workbook to file.")
     wb.save(filename)
@@ -379,11 +372,11 @@ def save_statistics(
 
 
 def save_pca(
-        dataset: GrainSizeDataset,
+        dataset: Dataset,
         filename: str,
         progress_callback: typing.Callable = None,
         logger: logging.Logger = None):
-    _check_dataset(dataset)
+    assert dataset is not None
     if logger is None:
         logger = logging.getLogger("QGrain")
     else:
@@ -392,7 +385,7 @@ def save_pca(
     # Calculate
     logger.debug("Performing the PCA algorithm to this dataset. The number of PCs is set to 10.")
     pca = PCA(n_components=10)
-    transformed = pca.fit_transform(dataset.distribution_matrix)
+    transformed = pca.fit_transform(dataset.distributions)
     components = pca.components_
     ratios = pca.explained_variance_ratio_
 
@@ -426,7 +419,7 @@ def save_pca(
     ws = wb.create_sheet("Distributions of PCs")
     write(0, 0, "PC", style="header")
     ws.column_dimensions[column_to_char(0)].width = 16
-    for col, value in enumerate(dataset.classes_μm, 1):
+    for col, value in enumerate(dataset.classes, 1):
         write(0, col, value, style="header")
         ws.column_dimensions[column_to_char(col)].width = 10
     for i, component in enumerate(components):
@@ -453,11 +446,11 @@ def save_pca(
             style = "normal_dark"
         else:
             style = "normal_light"
-        write(row, 0, dataset.samples[row-1].name, style=style)
+        write(row, 0, dataset[row-1].name, style=style)
         for col, value in enumerate(varations, 1):
             write(row, col, value, style=style)
         if progress_callback is not None:
-            progress_callback(row / dataset.n_samples * 0.7 + 0.3)
+            progress_callback(row / len(dataset) * 0.7 + 0.3)
 
     wb.save(filename)
     wb.close()
@@ -467,12 +460,12 @@ def save_pca(
 
 
 def save_clustering(
-        dataset: GrainSizeDataset,
+        dataset: Dataset,
         flags: typing.Iterable[int],
         filename: str,
         progress_callback: typing.Callable = None,
         logger: logging.Logger = None):
-    _check_dataset(dataset)
+    assert dataset is not None
     if logger is None:
         logger = logging.getLogger("QGrain")
     else:
@@ -480,13 +473,13 @@ def save_clustering(
     logger.debug("Start to save clustering result.")
     flag_set = set(flags)
     n_clusters = len(flag_set)
-    typical_samples = [] # type: list[GrainSizeSample]
+    typical_samples = [] # type: list[Sample]
     temp_flag_set = set()
     for i, flag in enumerate(flags):
         if len(temp_flag_set) == n_clusters:
             break
         if flag not in temp_flag_set:
-            typical_samples.append(dataset.samples[i])
+            typical_samples.append(dataset[i])
             temp_flag_set.add(flag)
 
     wb = openpyxl.Workbook()
@@ -522,7 +515,7 @@ def save_clustering(
     write(0, 1, "Cluster Flags", style="header")
     ws.column_dimensions[column_to_char(0)].width = 16
     ws.column_dimensions[column_to_char(1)].width = 16
-    for i, (sample, flag) in enumerate(zip(dataset.samples, flags)):
+    for i, (sample, flag) in enumerate(zip(dataset, flags)):
         row = i + 1
         if row % 2 == 0:
             style = "normal_dark"
@@ -532,15 +525,15 @@ def save_clustering(
         write(row, 1, flag, style=style)
         if progress_callback is not None:
             if n_clusters <= 100:
-                progress_callback(i / dataset.n_samples * 0.1 + 0.2)
+                progress_callback(i / len(dataset) * 0.1 + 0.2)
             else:
-                progress_callback(i / dataset.n_samples * 0.4 + 0.2)
+                progress_callback(i / len(dataset) * 0.4 + 0.2)
 
     logger.debug("Creating the `Typical Samples of Clusters` sheet.")
     ws = wb.create_sheet("Typical Samples of Clusters")
     write(0, 0, "Sample Name", style="header")
     ws.column_dimensions[column_to_char(0)].width = 16
-    for col, value in enumerate(dataset.classes_μm, 1):
+    for col, value in enumerate(dataset.classes, 1):
         write(0, col, value, style="header")
         ws.column_dimensions[column_to_char(col)].width = 10
     for i, sample in enumerate(typical_samples):
@@ -554,21 +547,21 @@ def save_clustering(
             write(row, col, value, style=style)
         if progress_callback is not None:
             if n_clusters <= 100:
-                progress_callback(i / dataset.n_samples * 0.1 + 0.3)
+                progress_callback(i / len(dataset) * 0.1 + 0.3)
             else:
-                progress_callback(i / dataset.n_samples * 0.4 + 0.6)
+                progress_callback(i / len(dataset) * 0.4 + 0.6)
 
     if n_clusters <= 100:
         for flag in flag_set:
             samples = []
-            for sample, in_this_cluster in zip(dataset.samples, np.equal(flags, flag)):
+            for sample, in_this_cluster in zip(dataset, np.equal(flags, flag)):
                 if in_this_cluster:
                     samples.append(sample)
             logger.debug(f"Creating the `Cluster{flag}` sheet.")
             ws = wb.create_sheet(f"Cluster{flag}")
             write(0, 0, "Sample Name", style="header")
             ws.column_dimensions[column_to_char(0)].width = 16
-            for col, value in enumerate(dataset.classes_μm, 1):
+            for col, value in enumerate(dataset.classes, 1):
                 write(0, col, value, style="header")
                 ws.column_dimensions[column_to_char(col)].width = 10
             for i, sample in enumerate(samples):
@@ -581,7 +574,7 @@ def save_clustering(
                 for col, value in enumerate(sample.distribution, 1):
                     write(row, col, value, style=style)
                 if progress_callback is not None:
-                    progress_callback(i / dataset.n_samples / n_clusters * 0.6 + 0.4)
+                    progress_callback(i / len(dataset) / n_clusters * 0.6 + 0.4)
 
     wb.save(filename)
     wb.close()
@@ -661,7 +654,7 @@ def save_emma(
     ws = wb.create_sheet("Distributions of End Members")
     write(0, 0, "End Member", style="header")
     ws.column_dimensions[column_to_char(0)].width = 16
-    for col, value in enumerate(result.dataset.classes_μm, 1):
+    for col, value in enumerate(result.dataset.classes, 1):
         write(0, col, value, style="header")
         ws.column_dimensions[column_to_char(col)].width = 10
     for i in range(result.n_members):
@@ -687,7 +680,7 @@ def save_emma(
             style = "normal_dark"
         else:
             style = "normal_light"
-        write(row, 0, result.dataset.samples[i].name, style=style)
+        write(row, 0, result.dataset[i].name, style=style)
         for i in range(result.n_members):
             write(row, col, sample_proportions[i], style=style)
         if progress_callback is not None:
@@ -711,12 +704,10 @@ def save_ssu(
         assert isinstance(logger, logging.Logger)
     logger.debug("Start to save SSU results.")
     # pack the GSDs of samples to the dataset
-    dataset = GrainSizeDataset()
-    dataset.add_batch(
+    dataset = Dataset(
+        "GSDs", [result.sample.name for result in results],
         results[0].classes_μm,
-        [result.sample.name for result in results],
-        [result.sample.distribution for result in results],
-        need_validation=False)
+        [result.sample.distribution for result in results])
     max_n_components = max(Counter([result.n_components for result in results]).keys())
 
     # prepare flags
@@ -750,7 +741,7 @@ def save_ssu(
         for target_flag in flag_set:
             for i, flag in enumerate(flags):
                 if flag == target_flag:
-                    picked.append((target_flag, logarithmic(dataset.classes_φ, stacked_components[i])["mean"]))
+                    picked.append((target_flag, logarithmic(dataset.classes_phi, stacked_components[i])["mean"]))
                     break
         picked.sort(key=lambda x: x[1])
         flag_map = {flag: index for index, (flag, _) in enumerate(picked)}
@@ -818,7 +809,7 @@ def save_ssu(
         write(row, 7, result.n_iterations, style=style)
         write(row, 8, result.get_distance("log10MSE"), style=style)
         if progress_callback is not None:
-            progress_callback(i / dataset.n_samples * 0.1 + 0.1)
+            progress_callback(i / len(dataset) * 0.1 + 0.1)
 
     logger.debug("Creating the `Statistical Moments` sheet.")
     ws = wb.create_sheet("Statistical Moments")
@@ -860,14 +851,14 @@ def save_ssu(
             write(row, index*len(sub_headers)+7, s["logarithmic"]["kurtosis"], style=style)
             flag_index += 1
         if progress_callback is not None:
-            progress_callback(i / dataset.n_samples * 0.1 + 0.2)
+            progress_callback(i / len(dataset) * 0.1 + 0.2)
 
     logger.debug("Creating the `Unmixed Components` sheet.")
     ws = wb.create_sheet("Unmixed Components")
     ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=2)
     write(0, 0, "Sample Name", style="header")
     ws.column_dimensions[column_to_char(0)].width = 16
-    for col, value in enumerate(dataset.classes_μm, 2):
+    for col, value in enumerate(dataset.classes, 2):
         write(0, col, value, style="header")
         ws.column_dimensions[column_to_char(col)].width = 10
     row = 1
@@ -888,7 +879,7 @@ def save_ssu(
             write(row, col, value, style=style)
         row += 1
         if progress_callback is not None:
-            progress_callback(i / dataset.n_samples * 0.2 + 0.3)
+            progress_callback(i / len(dataset) * 0.2 + 0.3)
 
     logger.debug("Creating separate sheets for all components.")
     ws_dict = {}
@@ -897,7 +888,7 @@ def save_ssu(
         ws = wb.create_sheet(f"C{flag+1}")
         write(0, 0, "Sample Name", style="header")
         ws.column_dimensions[column_to_char(0)].width = 16
-        for col, value in enumerate(dataset.classes_μm, 1):
+        for col, value in enumerate(dataset.classes, 1):
             write(0, col, value, style="header")
             ws.column_dimensions[column_to_char(col)].width = 10
         ws_dict[flag] = ws
@@ -918,7 +909,7 @@ def save_ssu(
                 write(row, col, value, style=style)
             flag_index += 1
         if progress_callback is not None:
-            progress_callback(i / dataset.n_samples * 0.5 + 0.5)
+            progress_callback(i / len(dataset) * 0.5 + 0.5)
 
     wb.save(filename)
     wb.close()
@@ -1012,7 +1003,7 @@ def save_udm(
     for col, value in enumerate(headers, 1):
         write(1, col, value, style="header")
         ws.column_dimensions[column_to_char(col)].width = 10
-    for i, sample in enumerate(result.dataset.samples):
+    for i, sample in enumerate(result.dataset):
         row = i + 2
         if row % 2 == 0:
             style = "normal_light"
@@ -1048,7 +1039,7 @@ def save_udm(
         write(1, col, value, style="header")
         ws.column_dimensions[column_to_char(col)].width = 10
 
-    for i, sample in enumerate(result.dataset.samples):
+    for i, sample in enumerate(result.dataset):
         row = i + 2
         if row % 2 == 0:
             style = "normal_light"
@@ -1056,7 +1047,7 @@ def save_udm(
             style = "normal_dark"
         write(row, 0, sample.name, style=style)
         for j in range(result.n_components):
-            s = all_statistics(result.dataset.classes_μm, result.dataset.classes_φ, result.components[i, j])
+            s = all_statistics(result.dataset.classes, result.dataset.classes_phi, result.components[i, j])
             write(row, j*len(sub_headers)+1, result.proportions[i, 0, j] * 100, style=style)
             write(row, j*len(sub_headers)+2, s["logarithmic"]["mean"], style=style)
             write(row, j*len(sub_headers)+3, s["geometric"]["mean"], style=style)
@@ -1072,13 +1063,13 @@ def save_udm(
     ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=2)
     write(0, 0, "Sample Name", style="header")
     ws.column_dimensions[column_to_char(0)].width = 16
-    for col, value in enumerate(result.dataset.classes_μm, 2):
+    for col, value in enumerate(result.dataset.classes, 2):
         write(0, col, value, style="header")
         ws.column_dimensions[column_to_char(col)].width = 10
 
     predict = result.proportions @ result.components
     row = 1
-    for i, sample in enumerate(result.dataset.samples):
+    for i, sample in enumerate(result.dataset):
         if i % 2 == 0:
             style = "normal_light"
         else:
@@ -1102,10 +1093,10 @@ def save_udm(
         ws = wb.create_sheet(f"C{j+1}")
         write(0, 0, "Sample Name", style="header")
         ws.column_dimensions[column_to_char(0)].width = 16
-        for col, value in enumerate(result.dataset.classes_μm, 1):
+        for col, value in enumerate(result.dataset.classes, 1):
             write(0, col, value, style="header")
             ws.column_dimensions[column_to_char(col)].width = 10
-        for i, sample in enumerate(result.dataset.samples):
+        for i, sample in enumerate(result.dataset):
             row = i + 1
             if row % 2 == 0:
                 style = "normal_dark"

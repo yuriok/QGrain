@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from ..models import GrainSizeSample
+from ..models import Sample
 from ..statistics import to_microns, to_cumulative
 from .BaseChart import BaseChart
 from .config_matplotlib import normal_color
@@ -84,7 +84,7 @@ class CumulativeCurveChart(BaseChart):
         self.axes = self.figure.subplots()
         self.show_samples(self.__last_samples, append=False)
 
-    def show_samples(self, samples: typing.Iterable[GrainSizeSample], append=False):
+    def show_samples(self, samples: typing.Iterable[Sample], append=False):
         if len(samples) == 0:
             return
         append = append and len(self.__last_samples) != 0
@@ -94,7 +94,7 @@ class CumulativeCurveChart(BaseChart):
         for i, sample in enumerate(samples):
             self.__last_samples.append(sample)
             if i == 0:
-                x = self.transfer(sample.classes_φ)
+                x = self.transfer(sample.classes_phi)
                 if not append:
                     if self.xlog:
                         self.axes.set_xscale("log")
