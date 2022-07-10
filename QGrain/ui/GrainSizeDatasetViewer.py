@@ -11,7 +11,7 @@ from ..chart.diagrams import *
 from ..chart.Frequency3DChart import Frequency3DChart
 from ..chart.FrequencyCurveChart import FrequencyCurveChart
 from ..model import GrainSizeDataset, GrainSizeSample
-from ..statistics import get_all_statistics
+from ..statistics import all_statistics
 
 
 class GrainSizeDatasetViewer(QtWidgets.QWidget):
@@ -222,9 +222,9 @@ class GrainSizeDatasetViewer(QtWidgets.QWidget):
     @property
     def supported_proportions(self) -> typing.Tuple[typing.Tuple[str, str]]:
         result = (
-            ("GSM_proportion", self.tr("Gravel, Sand, Mud")),
-            ("SSC_proportion", self.tr("Sand, Silt, Clay")),
-            ("BGSSC_proportion", self.tr("Boulder, Gravel, Sand, Silt, Clay")))
+            ("proportions_GSM", self.tr("Gravel, Sand, Mud")),
+            ("proportions_SSC", self.tr("Sand, Silt, Clay")),
+            ("proportions_BGSSC", self.tr("Boulder, Gravel, Sand, Silt, Clay")))
         return result
 
     @property
@@ -303,7 +303,7 @@ class GrainSizeDatasetViewer(QtWidgets.QWidget):
         self.data_table.horizontalHeader().setDefaultAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.TextWordWrap)
         self.data_table.setVerticalHeaderLabels([sample.name for sample in self.__dataset.samples[start: end]])
         for row, sample in enumerate(self.__dataset.samples[start: end]):
-            statistics = get_all_statistics(sample.classes_μm, sample.classes_φ, sample.distribution)
+            statistics = all_statistics(sample.classes_μm, sample.classes_φ, sample.distribution)
             if self.is_geometric:
                 if self.is_FW57:
                     sub_key = "geometric_FW57"
@@ -318,7 +318,7 @@ class GrainSizeDatasetViewer(QtWidgets.QWidget):
                 value = statistics[sub_key][key] if in_sub else statistics[key]
                 if key == "modes":
                     write(row, col, ", ".join([f"{m:0.2f}" for m in value]))
-                elif key[-11:] == "_proportion":
+                elif key[:11] == "proportions":
                     write(row, col, ", ".join([f"{p*100:0.2f}" for p in value]))
                 else:
                     write(row, col, value)

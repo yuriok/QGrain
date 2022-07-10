@@ -10,7 +10,7 @@ import typing
 import numpy as np
 
 from ..model import GrainSizeSample
-from ..statistics import get_GSM_proportion, get_SSC_proportion
+from ..statistics import proportions_gsm, proportions_ssc
 from .BaseChart import BaseChart
 from .config_matplotlib import normal_color
 
@@ -183,7 +183,7 @@ class Folk54GSMDiagramChart(DiagramChart):
         sand = []
         gravel = []
         for i, sample in enumerate(samples):
-            gravel_i, sand_i, mud_i = get_GSM_proportion(sample.classes_φ, sample.distribution)
+            gravel_i, sand_i, mud_i = proportions_gsm(sample.classes_φ, sample.distribution)
             sand.append(sand_i)
             gravel.append(gravel_i)
         return sand, gravel
@@ -267,7 +267,7 @@ class Folk54SSCDiagramChart(DiagramChart):
         silt = []
         sand = []
         for i, sample in enumerate(samples):
-            sand_i, silt_i, clay_i = get_SSC_proportion(sample.classes_φ, sample.distribution)
+            sand_i, silt_i, clay_i = proportions_ssc(sample.classes_φ, sample.distribution)
             silt.append(silt_i)
             sand.append(sand_i)
         return silt, sand
@@ -523,7 +523,7 @@ class BP12GSMDiagramChart(DiagramChart):
         sand = []
         gravel = []
         for i, sample in enumerate(samples):
-            gravel_i, sand_i, mud_i = get_GSM_proportion(sample.classes_φ, sample.distribution)
+            gravel_i, sand_i, mud_i = proportions_gsm(sample.classes_φ, sample.distribution)
             sand.append(sand_i)
             gravel.append(gravel_i)
         return sand, gravel
@@ -780,7 +780,7 @@ class BP12SSCDiagramChart(DiagramChart):
         silt = []
         sand = []
         for i, sample in enumerate(samples):
-            sand_i, silt_i, clay_i = get_SSC_proportion(sample.classes_φ, sample.distribution)
+            sand_i, silt_i, clay_i = proportions_ssc(sample.classes_φ, sample.distribution)
             silt.append(silt_i)
             sand.append(sand_i)
 

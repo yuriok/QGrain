@@ -5,7 +5,7 @@ import numpy as np
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from ..model import GrainSizeSample
-from ..statistics import convert_φ_to_μm
+from ..statistics import to_microns
 from .BaseChart import BaseChart
 from .config_matplotlib import normal_color
 
@@ -50,13 +50,13 @@ class FrequencyCurveChart(BaseChart):
     @property
     def transfer(self) -> typing.Callable:
         if self.scale == "log-linear":
-            return lambda classes_φ: convert_φ_to_μm(classes_φ)
+            return lambda classes_φ: to_microns(classes_φ)
         elif self.scale == "log":
-            return lambda classes_φ: np.log(convert_φ_to_μm(classes_φ))
+            return lambda classes_φ: np.log(to_microns(classes_φ))
         elif self.scale == "phi":
             return lambda classes_φ: classes_φ
         elif self.scale == "linear":
-            return lambda classes_φ: convert_φ_to_μm(classes_φ)
+            return lambda classes_φ: to_microns(classes_φ)
 
     @property
     def xlabel(self) -> str:

@@ -9,7 +9,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from scipy.stats import pearsonr
 
 from ..ssu import SSUResult, SSUViewModel
-from ..statistics import convert_φ_to_μm, get_mode
+from ..statistics import to_microns, mode
 from .BaseChart import BaseChart
 from .config_matplotlib import normal_color
 
@@ -121,13 +121,13 @@ class DistributionChart(BaseChart):
     @property
     def transfer(self) -> typing.Callable:
         if self.scale == "log-linear":
-            return lambda classes_φ: convert_φ_to_μm(classes_φ)
+            return lambda classes_φ: to_microns(classes_φ)
         elif self.scale == "log":
-            return lambda classes_φ: np.log(convert_φ_to_μm(classes_φ))
+            return lambda classes_φ: np.log(to_microns(classes_φ))
         elif self.scale == "phi":
             return lambda classes_φ: classes_φ
         elif self.scale == "linear":
-            return lambda classes_φ: convert_φ_to_μm(classes_φ)
+            return lambda classes_φ: to_microns(classes_φ)
 
     @property
     def xlabel(self) -> str:
@@ -203,7 +203,7 @@ class DistributionChart(BaseChart):
             handles.extend(self.component_lines)
             labels = ["Target", f"Mixed ($R^2$={r2:.2f})"]
             for i, (mode_φ, proportion) in enumerate(zip(modes_φ, model.proportions)):
-                mode_μm = convert_φ_to_μm(mode_φ)
+                mode_μm = to_microns(mode_φ)
                 label = f"{model.component_prefix}{i+1} ({mode_μm:.2f} μm, {proportion:.2%})"
                 labels.append(label)
             self.legend = self.axes.legend(
@@ -250,7 +250,7 @@ class DistributionChart(BaseChart):
                 handles.extend(self.component_lines)
                 labels = ["Target", f"Mixed ($R^2$={r2:.2f})"]
                 for i, (mode_φ, proportion) in enumerate(zip(modes_φ, model.proportions)):
-                    mode_μm = convert_φ_to_μm(mode_φ)
+                    mode_μm = to_microns(mode_φ)
                     label = f"{model.component_prefix}{i+1} ({mode_μm:.2f} μm, {proportion:.2%})"
                     labels.append(label)
                 self.legend = self.axes.legend(

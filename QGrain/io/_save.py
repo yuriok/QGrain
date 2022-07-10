@@ -14,7 +14,7 @@ from ..artificial._generator import ArtificialDataset
 from ..emma import EMMAResult
 from ..model import GrainSizeDataset, GrainSizeSample
 from ..ssu import DistributionType, SSUResult, get_distribution
-from ..statistics._GRADISTAT import _get_all_scales, get_all_statistics, logarithmic
+from ..statistics import _all_scales, all_statistics, logarithmic
 from ..udm import UDMAlgorithmSetting, UDMResult
 from ._use_excel import column_to_char, prepare_styles
 
@@ -266,7 +266,7 @@ def save_statistics(
     logger.debug("Calculating the statistical parameters and classification groups of all samples.")
     all_sample_statistics = []
     for i, sample in enumerate(dataset.samples):
-        sample_statistics = get_all_statistics(sample.classes_μm, sample.classes_φ, sample.distribution)
+        sample_statistics = all_statistics(sample.classes_μm, sample.classes_φ, sample.distribution)
         all_sample_statistics.append(sample_statistics)
         if progress_callback is not None:
             progress = (i / dataset.n_samples) * 0.4
@@ -333,9 +333,9 @@ def save_statistics(
                 (lambda s: s["group_Folk54"], "Group (Folk, 1954)", median_width),
                 (lambda s: s["group_BP12"], "Group (Blott & Pye, 2012)", large_width),
                 (lambda s: s["group_BP12_symbol"], "Group Symbol (Blott & Pye, 2012)", median_width)]
-            all_scales = _get_all_scales()
+            all_scales = _all_scales()
             for scale in all_scales:
-                func = lambda s, scale=scale: s["proportion"][scale] * 100.0
+                func = lambda s, scale=scale: s["proportions"][scale] * 100.0
                 name = string.capwords(" ".join(scale)) + " Proportion [%]"
                 keys.append((func, name, small_width))
             return keys
@@ -850,7 +850,7 @@ def save_ssu(
         write(row, 0, result.sample.name, style=style)
         for component in result.components:
             index = flags[flag_index]
-            s = get_all_statistics(result.classes_μm, result.classes_φ, component.distribution)
+            s = all_statistics(result.classes_μm, result.classes_φ, component.distribution)
             write(row, index*len(sub_headers)+1, component.proportion, style=style)
             write(row, index*len(sub_headers)+2, s["logarithmic"]["mean"], style=style)
             write(row, index*len(sub_headers)+3, s["geometric"]["mean"], style=style)
@@ -1056,7 +1056,7 @@ def save_udm(
             style = "normal_dark"
         write(row, 0, sample.name, style=style)
         for j in range(result.n_components):
-            s = get_all_statistics(result.dataset.classes_μm, result.dataset.classes_φ, result.components[i, j])
+            s = all_statistics(result.dataset.classes_μm, result.dataset.classes_φ, result.components[i, j])
             write(row, j*len(sub_headers)+1, result.proportions[i, 0, j] * 100, style=style)
             write(row, j*len(sub_headers)+2, s["logarithmic"]["mean"], style=style)
             write(row, j*len(sub_headers)+3, s["geometric"]["mean"], style=style)

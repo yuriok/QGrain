@@ -6,7 +6,7 @@ from PySide6 import QtCore, QtWidgets
 
 from ..chart.DistributionChart import DistributionChart
 from ..ssu import DistributionType, SSUResult, SSUViewModel, get_distribution, sort_parameters
-from ..statistics import get_interval_φ
+from ..statistics import interval_phi
 
 
 class ParameterComponent(QtWidgets.QWidget):
@@ -125,7 +125,7 @@ class ParameterEditor(QtWidgets.QDialog):
         self.__cache_dict = {}
         self.__classes_μm = np.logspace(0, 5, 101) * 0.02
         self.__classes_φ = -np.log2(self.__classes_μm/1000.0)
-        self.__interval_φ = get_interval_φ(self.__classes_φ)
+        self.__interval_φ = interval_phi(self.__classes_φ)
         self.__target = None
         self.init_ui()
         self.switch_preset(0)
@@ -287,7 +287,7 @@ class ParameterEditor(QtWidgets.QDialog):
     def setup_target(self, classes_μm: np.ndarray, target: np.ndarray):
         self.__classes_μm = classes_μm
         self.__classes_φ = -np.log2(classes_μm/1000.0)
-        self.__interval_φ = get_interval_φ(self.__classes_φ)
+        self.__interval_φ = interval_phi(self.__classes_φ)
         self.__target = target
 
     def update_chart(self):

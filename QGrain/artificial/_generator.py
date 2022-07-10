@@ -4,7 +4,7 @@ import numpy as np
 
 from ..model import GrainSizeDataset, GrainSizeSample
 from ..ssu import DistributionType, SSUViewModel, get_distribution
-from ..statistics import convert_μm_to_φ, convert_φ_to_μm
+from ..statistics import to_phi, to_microns
 
 
 class ArtificialComponent:
@@ -129,10 +129,10 @@ class ArtificialDataset:
         self.__n_samples, self.__n_parameters, self.__n_components = parameters.shape
         self.__n_classes = n_classes
         self.__min_μm, self.__max_μm = min_μm, max_μm
-        self.__min_φ, self.__max_φ = convert_μm_to_φ(min_μm), convert_μm_to_φ(max_μm)
+        self.__min_φ, self.__max_φ = to_phi(min_μm), to_phi(max_μm)
         self.__classes_φ = np.linspace(self.__min_φ, self.__max_φ, n_classes)
         self.__interval_φ = abs((self.__max_φ - self.__min_φ) / (n_classes - 1))
-        self.__classes_μm = convert_φ_to_μm(self.__classes_φ)
+        self.__classes_μm = to_microns(self.__classes_φ)
         self.__precision = precision
         self.__noise = noise
 
