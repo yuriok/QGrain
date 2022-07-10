@@ -5,7 +5,7 @@ import numpy as np
 from PySide6 import QtCore, QtWidgets
 from sklearn.decomposition import PCA
 
-from ..model import GrainSizeDataset
+from ..models import GrainSizeDataset
 from .BaseChart import BaseChart
 from .config_matplotlib import highlight_color, normal_color
 
@@ -27,7 +27,7 @@ class PCAResultChart(BaseChart):
         X = dataset.distribution_matrix
         pca = PCA()
         transformed = pca.fit_transform(X)
-        # labels = [f"{v:0.4f}" for v in dataset.classes_μm]
+        # labels = [f"{v:0.4f}" for v in dataset.classes]
         n_samples, n_features = X.shape
         cmap = plt.get_cmap()
         self.sample_axes.clear()

@@ -10,7 +10,7 @@ from ..chart.CumulativeCurveChart import CumulativeCurveChart
 from ..chart.diagrams import *
 from ..chart.Frequency3DChart import Frequency3DChart
 from ..chart.FrequencyCurveChart import FrequencyCurveChart
-from ..model import GrainSizeDataset, GrainSizeSample
+from ..models import GrainSizeDataset, GrainSizeSample
 from ..statistics import all_statistics
 
 

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from ..model import GrainSizeSample
+from ..models import GrainSizeSample
 from ..statistics import to_microns
 from .BaseChart import BaseChart
 from .config_matplotlib import normal_color

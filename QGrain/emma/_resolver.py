@@ -4,7 +4,7 @@ import typing
 import numpy as np
 import torch
 
-from ..model import GrainSizeDataset
+from ..models import GrainSizeDataset
 from ._distance import get_distance_func_by_name
 from ._kernel import KernelType, ProportionModule, get_kernel
 from ._result import EMMAResult

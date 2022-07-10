@@ -5,7 +5,7 @@ import typing
 from PySide6 import QtCore, QtWidgets
 
 from ..chart.PCAResultChart import PCAResultChart
-from ..model import GrainSizeDataset
+from ..models import GrainSizeDataset
 
 
 class PCAAnalyzer(QtWidgets.QWidget):

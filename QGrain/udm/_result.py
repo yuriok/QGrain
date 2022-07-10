@@ -6,7 +6,7 @@ import typing
 import numpy as np
 
 from ..emma import KernelType
-from ..model import GrainSizeDataset
+from ..models import GrainSizeDataset
 from ..ssu import DistributionType, SSUResult, SSUTask, get_distance_function, get_distribution, get_sorted_indexes
 from ._setting import UDMAlgorithmSetting
 

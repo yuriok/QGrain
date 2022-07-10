@@ -8,7 +8,7 @@ import numpy as np
 from PySide6.QtCore import QObject, Qt, QThread, Signal, Slot
 from scipy.optimize import OptimizeResult, basinhopping, minimize
 
-from ..model import GrainSizeDataset, GrainSizeSample
+from ..models import GrainSizeDataset, GrainSizeSample
 from ._distance import get_distance_function
 from ._distribution import DistributionType, get_distribution
 from ._result import SSUResult

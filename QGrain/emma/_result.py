@@ -5,7 +5,7 @@ import typing
 
 import numpy as np
 
-from ..model import GrainSizeDataset
+from ..models import GrainSizeDataset
 from ..ssu import get_distance_function
 from ._kernel import KernelType
 from ._setting import EMMAAlgorithmSetting
