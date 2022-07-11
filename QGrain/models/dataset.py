@@ -12,15 +12,10 @@ def _incremental(classes: Sequence[Union[int, float]]) -> Tuple[bool, Optional[i
     """
     Check if the series of grain size classes is incremental.
 
-    ## Parameters
-
-    classes: The grain size classes.
-
-    ## Returns
-
-    is_incremental: If the series of classes is incremental.
-
-    error_index: If it is incremental, return `None`, else return the index of first invalid value.
+    :param classes: The grain size classes.
+    :returns:
+        is_incremental: If the series of classes is incremental.
+        error_index: If it is incremental, return ``None``, else return the index of first invalid value.
     """
     classes = tuple(classes)
     for i, (left, right) in enumerate(zip(classes[:-1], classes[1:])):
@@ -49,23 +44,18 @@ def validate_classes(classes: Sequence[float]) -> Tuple[bool, Union[ndarray, str
     """
     Check if the series of grain size classes is valid.
 
-    ## Parameters
-
-    classes: The grain size classes.
-
-    ## Returns
-
-    is_valid: If the series of classes is valid.
-
-    array_or_msg: If it is valid, return a new numpy array, else return the error message.
+    :param classes: The grain size classes.
+    :returns:
+        is_valid: If the series of classes is valid.
+        array_or_msg: If it is valid, return a new numpy array, else return the error message.
     """
     if classes is None:
-        return False, "The passed `classes` can not be `None`."
+        return False, "The passed classes can not be `None`."
     array: ndarray = np.array(classes, dtype=np.float32)
     if array.ndim != 1:
-        return False, "The passed `classes` should be one-dimensional."
+        return False, "The passed classes should be one-dimensional."
     if len(array) == 0:
-        return False, "The passed `classes` can not be empty."
+        return False, "The passed classes can not be empty."
     indices = np.arange(len(array))
     nan_indices: ndarray = indices[np.isnan(array)]
     if len(nan_indices) > 0:
@@ -88,19 +78,27 @@ def validate_classes(classes: Sequence[float]) -> Tuple[bool, Union[ndarray, str
 
 
 def validate_distributions(distributions: Sequence[Sequence[float]]) -> Tuple[bool, Union[ndarray, str]]:
+    """
+    Check if the data of grain size distributions is valid.
+
+    :param distributions: The grain size distributions.
+    :returns:
+        is_valid: If the data is valid.
+        array_or_msg: If it is valid, return a new numpy array, else return the error message.
+    """
     if distributions is None:
-        return False, "The passed `distributions` can not be `None`."
+        return False, "The passed distributions can not be `None`."
     array = np.array(distributions, dtype=np.float32)
     if array.ndim != 2:
-        return False, "The passed `distributions` should be two-dimensional."
+        return False, "The passed distributions should be two-dimensional."
     n_samples, n_classes = array.shape
     if n_samples == 0 or n_classes == 0:
-        return False, "The passed `distribution` can not be empty."
+        return False, "The passed distribution can not be empty."
     cols, rows = np.meshgrid(np.arange(n_classes), np.arange(n_samples))
     nan_keys = np.isnan(array)
     cells = [f"({row}, {col})" for row, col in zip(rows[nan_keys], cols[nan_keys])]
     if len(cells) > 0:
-        return False, (f"There is at least one NaN value in the passed `distributions`. "
+        return False, (f"There is at least one NaN value in the passed distributions. "
                        f"See the cell(s): {', '.join(cells)}")
     rows = np.arange(n_samples)
     summed = np.sum(array, axis=1)
@@ -114,12 +112,25 @@ def validate_distributions(distributions: Sequence[Sequence[float]]) -> Tuple[bo
 
 
 class Sample:
+    """The class to represent one sample of the grain size dataset."""
     __slots__ = ("_name", "_classes", "_classes_phi", "_distribution")
 
     def __init__(self, name: str,
                  classes: ndarray,
                  classes_phi: ndarray,
                  distribution: ndarray):
+        """
+        Construct an instance of the ``Sample`` class.
+
+        **If not necessary, do not manually create the sample, because it will not validate the passed parameters.**
+
+        :param name: The name of this sample.
+        :param classes: The grain size classes in microns.
+        :param classes_phi: The grain size classes in phi values.
+        :param distribution: The frequency distribution of grain size classes.
+            Note, the sum of frequencies should be equal to 1.
+        :return: An instance of the ``Sample`` class.
+        """
         self._name = name
         self._classes = classes
         self._classes_phi = classes_phi
@@ -150,15 +161,40 @@ class Sample:
 
 
 class Dataset:
+    """
+    The class to represent the grain size dataset.
+
+    * Get the sample at index i, ``sample = dataset[i]``.
+    * Iterate all samples, ``for sample in dataset``.
+    * Iterate partial samples, ``for sample in dataset[:10]``.
+    * Get the number of samples, ``len(dataset)``.
+    """
     def __init__(self, name: str, sample_names: Sequence[str],
-                 classes: Sequence[Union[int, float]], distributions: Sequence[Sequence[Union[int, float]]]):
-        assert isinstance(name, str)
+                 classes: Sequence[Union[int, float]],
+                 distributions: Sequence[Sequence[Union[int, float]]]):
+        """
+        Construct an instance of the ``Dataset`` class.
+
+        :param name: The name of this dataset.
+        :param sample_names: The names of samples in this dataset.
+        :param classes: The grain size classes in microns.
+        :param distributions: The grain size distributions of all samples.
+            Note, the sum of frequencies of each sample should be equal to 1.
+        :return: An instance of the ``Dataset`` class.
+        :raises TypeError: If the name of dataset or any sample is not a string.
+        :raises ValueError: If the name of dataset or any sample is empty.
+            If any value in the grain size classes or distributions is invalid.
+            You can call the functions, ``validate_classes`` and ``validate_distributions``, to check them before.
+        """
+        if not isinstance(name, str):
+            raise TypeError("The name of dataset must be a string.")
         if len(name) == 0:
             raise ValueError("The name of dataset can not be empty.")
-        for sample_name in sample_names:
-            assert isinstance(sample_name, str)
+        for i, sample_name in enumerate(sample_names):
+            if not isinstance(sample_name, str):
+                raise TypeError(f"The name of sample must be a string. This error raised at the index: {i}.")
             if len(sample_name) == 0:
-                raise ValueError("The name of sample can not be empty.")
+                raise ValueError(f"The name of sample can not be empty. This error raised at the index: {i}.")
         valid, array_or_msg = validate_classes(classes)
         if not valid:
             raise ValueError(array_or_msg)
@@ -196,10 +232,6 @@ class Dataset:
     @property
     def sample_names(self) -> List[str]:
         return self._sample_names.copy()
-
-    @property
-    def samples(self) -> List[Sample]:
-        return list(iter(self))
 
     @property
     def n_classes(self) -> int:
