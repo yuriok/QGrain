@@ -1,11 +1,14 @@
-from __future__ import annotations
+__all__ = ["validate_classes", "validate_distributions", "Sample", "Dataset"]
+
+from typing import *
 
 import numpy as np
-from typing import *
+from numpy import ndarray
+
 from ..statistics import interval_phi
 
 
-def _incremental(classes: Sequence[int | float]) -> Tuple[bool, int | None]:
+def _incremental(classes: Sequence[Union[int, float]]) -> Tuple[bool, Optional[int]]:
     """
     Check if the series of grain size classes is incremental.
 
@@ -27,7 +30,7 @@ def _incremental(classes: Sequence[int | float]) -> Tuple[bool, int | None]:
         return True, None
 
 
-def _error_text(array: np.ndarray, index: int):
+def _error_text(array: ndarray, index: int):
     w = 3
     l, r = max(index - w, 0), min(index + w, len(array))
     l_header = [] if l == 0 else ["..."]
@@ -42,7 +45,7 @@ def _error_text(array: np.ndarray, index: int):
     return error_text
 
 
-def validate_classes(classes: Sequence[float]) -> Tuple[bool, np.ndarray | str]:
+def validate_classes(classes: Sequence[float]) -> Tuple[bool, Union[ndarray, str]]:
     """
     Check if the series of grain size classes is valid.
 
@@ -58,13 +61,13 @@ def validate_classes(classes: Sequence[float]) -> Tuple[bool, np.ndarray | str]:
     """
     if classes is None:
         return False, "The passed `classes` can not be `None`."
-    array: np.ndarray = np.array(classes, dtype=np.float32)
+    array: ndarray = np.array(classes, dtype=np.float32)
     if array.ndim != 1:
         return False, "The passed `classes` should be one-dimensional."
     if len(array) == 0:
         return False, "The passed `classes` can not be empty."
     indices = np.arange(len(array))
-    nan_indices: np.ndarray = indices[np.isnan(array)]
+    nan_indices: ndarray = indices[np.isnan(array)]
     if len(nan_indices) > 0:
         return False, (f"There is at least one NaN value in the series of grain size classes. "
                        f"Check the index(es): {', '.join(nan_indices.astype(str))}.")
@@ -84,7 +87,7 @@ def validate_classes(classes: Sequence[float]) -> Tuple[bool, np.ndarray | str]:
     return True, array
 
 
-def validate_distributions(distributions: Sequence[Sequence[float]]) -> Tuple[bool, np.ndarray | str]:
+def validate_distributions(distributions: Sequence[Sequence[float]]) -> Tuple[bool, Union[ndarray, str]]:
     if distributions is None:
         return False, "The passed `distributions` can not be `None`."
     array = np.array(distributions, dtype=np.float32)
@@ -114,9 +117,9 @@ class Sample:
     __slots__ = ("_name", "_classes", "_classes_phi", "_distribution")
 
     def __init__(self, name: str,
-                 classes: np.ndarray,
-                 classes_phi: np.ndarray,
-                 distribution: np.ndarray):
+                 classes: ndarray,
+                 classes_phi: ndarray,
+                 distribution: ndarray):
         self._name = name
         self._classes = classes
         self._classes_phi = classes_phi
@@ -130,11 +133,11 @@ class Sample:
         return self._name
 
     @property
-    def classes(self) -> np.ndarray:
+    def classes(self) -> ndarray:
         return self._classes
 
     @property
-    def classes_phi(self) -> np.ndarray:
+    def classes_phi(self) -> ndarray:
         return self._classes_phi
 
     @property
@@ -142,13 +145,13 @@ class Sample:
         return interval_phi(self.classes_phi)
 
     @property
-    def distribution(self) -> np.ndarray:
+    def distribution(self) -> ndarray:
         return self._distribution
 
 
 class Dataset:
     def __init__(self, name: str, sample_names: Sequence[str],
-                 classes: Sequence[int | float], distributions: Sequence[Sequence[int | float]]):
+                 classes: Sequence[Union[int, float]], distributions: Sequence[Sequence[Union[int, float]]]):
         assert isinstance(name, str)
         if len(name) == 0:
             raise ValueError("The name of dataset can not be empty.")
@@ -178,13 +181,13 @@ class Dataset:
         for i in range(len(self._sample_names)):
             yield self._get_sample(i)
 
-    def __getitem__(self, key) -> Union[Sample, Sequence[Sample]]:
-        if isinstance(key, int):
-            return self._get_sample(key)
-        elif isinstance(key, slice):
-            return [self._get_sample(index) for index in np.arange(len(self._sample_names))[key]]
+    def __getitem__(self, item) -> Union[Sample, Sequence[Sample]]:
+        if isinstance(item, int):
+            return self._get_sample(item)
+        elif isinstance(item, slice):
+            return [self._get_sample(index) for index in np.arange(len(self._sample_names))[item]]
         else:
-            raise TypeError(f"Sample indices must be integers or slices, not {type(key)}.")
+            raise TypeError(f"Sample indices must be integers or slices, not {type(item)}.")
 
     @property
     def name(self) -> str:
@@ -203,11 +206,11 @@ class Dataset:
         return len(self._classes)
 
     @property
-    def classes(self) -> np.ndarray:
+    def classes(self) -> ndarray:
         return self._classes
 
     @property
-    def classes_phi(self) -> np.ndarray:
+    def classes_phi(self) -> ndarray:
         return self._classes_phi
 
     @property
@@ -215,7 +218,7 @@ class Dataset:
         return interval_phi(self.classes_phi)
 
     @property
-    def distributions(self) -> np.ndarray:
+    def distributions(self) -> ndarray:
         return self._distributions
 
     def _get_sample(self, index: int) -> Sample:
