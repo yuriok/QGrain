@@ -34,7 +34,7 @@ def modes(classes: ndarray,
           is_geometric=False, trace=0.01) -> \
         Tuple[Sequence[float], Sequence[float]]:
     """
-    Get the modes of a grain size distribution. **The number of modes may be greater than 1**.
+    Get the modes of a grain size distribution. **The number of modes may be greater than 1.**
 
     :param classes: The grain size classes in microns.
     :param classes_phi: The grain size classes in phi values.
@@ -88,7 +88,7 @@ def reversed_phi_ppf(classes_phi: ndarray, distribution: ndarray) -> \
     expand_classes = np.linspace(classes_phi[0] - interval, classes_phi[-1] + interval, len(classes_phi) + 2)
     cumulative = to_cumulative(distribution, expand=True)
     cumulative = np.array(cumulative)
-    ppf = interp1d(cumulative, expand_classes, kind="linear")
+    ppf = interp1d(cumulative, expand_classes, kind="slinear")
     return ppf
 
 
