@@ -15,7 +15,7 @@ def _incremental(classes: Sequence[Union[int, float]]) -> Tuple[bool, Optional[i
     :param classes: The grain size classes.
     :returns:
         is_incremental: If the series of classes is incremental.
-        error_index: If it is incremental, return ``None``, else return the index of first invalid value.
+        error_index: If it is incremental, return `None`, else return the index of first invalid value.
     """
     classes = tuple(classes)
     for i, (left, right) in enumerate(zip(classes[:-1], classes[1:])):
@@ -120,7 +120,7 @@ class Sample:
                  classes_phi: ndarray,
                  distribution: ndarray):
         """
-        Construct an instance of the ``Sample`` class.
+        Construct an instance of the `Sample` class.
 
         **If not necessary, do not manually create the sample, because it will not validate the passed parameters.**
 
@@ -129,7 +129,7 @@ class Sample:
         :param classes_phi: The grain size classes in phi values.
         :param distribution: The frequency distribution of grain size classes.
             Note, the sum of frequencies should be equal to 1.
-        :return: An instance of the ``Sample`` class.
+        :return: An instance of the `Sample` class.
         """
         self._name = name
         self._classes = classes
@@ -164,27 +164,27 @@ class Dataset:
     """
     The class to represent the grain size dataset.
 
-    * Get the sample at index i, ``sample = dataset[i]``.
-    * Iterate all samples, ``for sample in dataset``.
-    * Iterate partial samples, ``for sample in dataset[:10]``.
-    * Get the number of samples, ``len(dataset)``.
+    * Get the sample at index i, `sample = dataset[i]`.
+    * Iterate all samples, `for sample in dataset`.
+    * Iterate partial samples, `for sample in dataset[:10]`.
+    * Get the number of samples, `len(dataset)`.
     """
     def __init__(self, name: str, sample_names: Sequence[str],
                  classes: Sequence[Union[int, float]],
                  distributions: Sequence[Sequence[Union[int, float]]]):
         """
-        Construct an instance of the ``Dataset`` class.
+        Construct an instance of the `Dataset` class.
 
         :param name: The name of this dataset.
         :param sample_names: The names of samples in this dataset.
         :param classes: The grain size classes in microns.
         :param distributions: The grain size distributions of all samples.
             Note, the sum of frequencies of each sample should be equal to 1.
-        :return: An instance of the ``Dataset`` class.
+        :return: An instance of the `Dataset` class.
         :raises TypeError: If the name of dataset or any sample is not a string.
         :raises ValueError: If the name of dataset or any sample is empty.
             If any value in the grain size classes or distributions is invalid.
-            You can call the functions, ``validate_classes`` and ``validate_distributions``, to check them before.
+            You can call the functions, `validate_classes` and `validate_distributions`, to check them before.
         """
         if not isinstance(name, str):
             raise TypeError("The name of dataset must be a string.")
