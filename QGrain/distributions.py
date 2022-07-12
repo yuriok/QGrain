@@ -1,8 +1,12 @@
+__all__ = ["DistributionType", "Normal", "SkewNormal",
+           "Weibull", "GeneralWeibull", "get_distribution",
+           "get_sorted_indexes", "sort_parameters"]
+
 import typing
 from enum import Enum, unique
 
 import numpy as np
-from scipy.optimize import minimize
+from scipy.special import softmax
 from scipy.stats import norm, skewnorm, weibull_min
 
 _INFINITESIMAL = 1e-8
@@ -17,13 +21,7 @@ class DistributionType(Enum):
 
 
 def relu(x):
-    return np.maximum(x, 1e-8)
-
-
-def softmax(x, axis=None):
-    x = x - x.max(axis=axis, keepdims=True)
-    y = np.exp(x)
-    return y / y.sum(axis=axis, keepdims=True)
+    return np.maximum(x, _INFINITESIMAL)
 
 
 class Normal:
@@ -34,20 +32,20 @@ class Normal:
                         (_INFINITESIMAL, None))
 
     @staticmethod
-    def interpret(parameters: np.ndarray, classes: np.ndarray, interval: np.ndarray):
+    def interpret(parameters: np.ndarray, classes: np.ndarray, interval: float):
         n_samples, n_components, n_classes = classes.shape
         assert parameters.ndim == 3
-        assert parameters.shape == (n_samples, Normal.N_PARAMETERS+1, n_components)
+        assert parameters.shape == (n_samples, Normal.N_PARAMETERS + 1, n_components)
         locations = np.expand_dims(parameters[:, 0, :], 2).repeat(n_classes, 2)
         scales = np.expand_dims(relu(parameters[:, 1, :]), 2).repeat(n_classes, 2)
         proportions = np.expand_dims(softmax(parameters[:, 2, :], axis=1), 1)
         components = norm.pdf(classes, loc=locations, scale=scales) * interval
-        mvsk = norm.stats(loc=locations[:, :, 0],scale=scales[:, :, 0], moments="mvsk")
+        mvsk = norm.stats(loc=locations[:, :, 0], scale=scales[:, :, 0], moments="mvsk")
         return proportions, components, mvsk
 
     @staticmethod
     def get_defaults(n_components: int):
-        defaults = np.zeros((Normal.N_PARAMETERS+1, n_components))
+        defaults = np.zeros((Normal.N_PARAMETERS + 1, n_components))
         defaults[0] = np.random.random((n_components,)) * 2.0 + 5.0
         defaults[1] = np.random.random((n_components,)) * 0.1 + 2.0
         defaults[2] = np.random.random((n_components,)) * 0.1 + 2.0
@@ -63,10 +61,10 @@ class SkewNormal:
                         (_INFINITESIMAL, None))
 
     @staticmethod
-    def interpret(parameters: np.ndarray, classes: np.ndarray, interval: np.ndarray):
+    def interpret(parameters: np.ndarray, classes: np.ndarray, interval: float):
         n_samples, n_components, n_classes = classes.shape
         assert parameters.ndim == 3
-        assert parameters.shape == (n_samples, SkewNormal.N_PARAMETERS+1, n_components)
+        assert parameters.shape == (n_samples, SkewNormal.N_PARAMETERS + 1, n_components)
         shapes = np.expand_dims(parameters[:, 0, :], 2).repeat(n_classes, 2)
         locations = np.expand_dims(parameters[:, 1, :], 2).repeat(n_classes, 2)
         scales = np.expand_dims(relu(parameters[:, 2, :]), 2).repeat(n_classes, 2)
@@ -77,7 +75,7 @@ class SkewNormal:
 
     @staticmethod
     def get_defaults(n_components: int):
-        defaults = np.zeros((SkewNormal.N_PARAMETERS+1, n_components))
+        defaults = np.zeros((SkewNormal.N_PARAMETERS + 1, n_components))
         defaults[0] = np.random.random((n_components,)) * 0.1
         defaults[1] = np.random.random((n_components,)) * 2.0 + 5.0
         defaults[2] = np.random.random((n_components,)) * 0.1 + 2.0
@@ -93,10 +91,10 @@ class Weibull:
                         (_INFINITESIMAL, None))
 
     @staticmethod
-    def interpret(parameters: np.ndarray, classes: np.ndarray, interval: np.ndarray):
+    def interpret(parameters: np.ndarray, classes: np.ndarray, interval: float):
         n_samples, n_components, n_classes = classes.shape
         assert parameters.ndim == 3
-        assert parameters.shape == (n_samples, Weibull.N_PARAMETERS+1, n_components)
+        assert parameters.shape == (n_samples, Weibull.N_PARAMETERS + 1, n_components)
         shapes = np.expand_dims(relu(parameters[:, 0, :]), 2).repeat(n_classes, 2)
         scales = np.expand_dims(relu(parameters[:, 1, :]), 2).repeat(n_classes, 2)
         proportions = np.expand_dims(softmax(parameters[:, 2, :], axis=1), 1)
@@ -106,7 +104,7 @@ class Weibull:
 
     @staticmethod
     def get_defaults(n_components: int):
-        defaults = np.zeros((Weibull.N_PARAMETERS+1, n_components))
+        defaults = np.zeros((Weibull.N_PARAMETERS + 1, n_components))
         defaults[0] = np.random.random((n_components,)) * 0.1 + 3.60234942
         defaults[1] = np.random.random((n_components,)) * 0.1 + 3.0
         defaults[2] = np.random.random((n_components,)) * 0.1 + 2.0
@@ -122,10 +120,10 @@ class GeneralWeibull:
                         (_INFINITESIMAL, None))
 
     @staticmethod
-    def interpret(parameters: np.ndarray, classes: np.ndarray, interval: np.ndarray):
+    def interpret(parameters: np.ndarray, classes: np.ndarray, interval: float):
         n_samples, n_components, n_classes = classes.shape
         assert parameters.ndim == 3
-        assert parameters.shape == (n_samples, GeneralWeibull.N_PARAMETERS+1, n_components)
+        assert parameters.shape == (n_samples, GeneralWeibull.N_PARAMETERS + 1, n_components)
         shapes = np.expand_dims(relu(parameters[:, 0, :]), 2).repeat(n_classes, 2)
         locations = np.expand_dims(parameters[:, 1, :], 2).repeat(n_classes, 2)
         scales = np.expand_dims(relu(parameters[:, 2, :]), 2).repeat(n_classes, 2)
@@ -136,7 +134,7 @@ class GeneralWeibull:
 
     @staticmethod
     def get_defaults(n_components: int):
-        defaults = np.zeros((GeneralWeibull.N_PARAMETERS+1, n_components))
+        defaults = np.zeros((GeneralWeibull.N_PARAMETERS + 1, n_components))
         defaults[0] = np.random.random((n_components,)) * 0.1 + 3.60234942
         defaults[1] = np.random.random((n_components,)) * 2.0 + 5.0
         defaults[2] = np.random.random((n_components,)) * 0.1 + 3.0
@@ -169,6 +167,7 @@ def get_sorted_indexes(
     mean_values.sort(key=lambda x: x[1], reverse=True)
     sorted_indexes = tuple([i for i, _ in mean_values])
     return sorted_indexes
+
 
 def sort_parameters(
         distribution_type: DistributionType,
