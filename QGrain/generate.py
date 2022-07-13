@@ -1,3 +1,6 @@
+__all__ = ["SIMPLE_PRESET", "LOESS_PRESET", "LACUSTRINE_PRESET",
+           "random_parameters", "random_dataset", "random_sample", "random_mean_sample"]
+
 from typing import *
 
 import numpy as np

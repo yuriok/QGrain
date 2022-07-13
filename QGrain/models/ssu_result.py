@@ -6,9 +6,11 @@ from typing import *
 import numpy as np
 from numpy import ndarray
 
+from .artificial_dataset import ArtificialSample
 from .dataset import Sample
 from ..distributions import DistributionType, get_distribution
 from ..metrics import loss_numpy
+from ..statistics import interval_phi
 
 
 class SSUResultComponent:
@@ -33,6 +35,10 @@ class SSUResultComponent:
     @property
     def classes_phi(self) -> ndarray:
         return self._classes_phi
+
+    @property
+    def interval_phi(self) -> float:
+        return interval_phi(self._classes_phi)
 
     @property
     def distribution(self) -> ndarray:
@@ -68,7 +74,7 @@ class SSUResult:
     This class represents the SSU result of each sample.
     """
 
-    def __init__(self, sample: Sample, distribution_type: DistributionType,
+    def __init__(self, sample: Union[Sample, ArtificialSample], distribution_type: DistributionType,
                  x0: ndarray, parameters: ndarray, time_spent: float):
         self._sample = sample
         self._distribution_type = distribution_type
@@ -122,6 +128,10 @@ class SSUResult:
     @property
     def classes_phi(self) -> ndarray:
         return self._sample.classes_phi
+
+    @property
+    def interval_phi(self) -> float:
+        return interval_phi(self._sample.classes_phi)
 
     @property
     def distribution(self) -> ndarray:
