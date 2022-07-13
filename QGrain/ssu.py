@@ -169,6 +169,4 @@ def try_dataset(
             succeeded_results.append(result)
         else:
             failed_samples.append((i, message))
-    pool.join()
-    pool.close()
     return succeeded_results, failed_samples
