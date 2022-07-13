@@ -16,7 +16,7 @@ from .models import Dataset, Sample, SSUResult, ArtificialSample, ArtificialData
 # "cosine" metric has problem
 built_in_losses = (
     "1-norm", "2-norm", "3-norm", "4-norm",
-    "mae", "mse", "rmse", "rmlse", "angular")
+    "mae", "mse", "rmse", "rmlse", "lmse", "angular", "cosine")
 
 
 def check_loss(loss: str):
@@ -35,7 +35,7 @@ def check_optimizer(optimizer: str):
 
 
 def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: DistributionType, n_components: int,
-            x0: ndarray = None, loss: str = "rmlse", optimizer: str = "SLSQP", try_global: bool = False,
+            x0: ndarray = None, loss: str = "lmse", optimizer: str = "SLSQP", try_global: bool = False,
             global_max_niter: int = 100, global_niter_success: int = 5, global_step_size: float = 0.2,
             optimizer_max_niter: int = 1000, need_history: bool = True, logger: logging.Logger = None,
             progress_callback: Callable[[float], None] = None) -> Tuple[Optional[SSUResult], str]:
