@@ -147,6 +147,11 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
     return ssu_result, message
 
 
+def _execute(args: Tuple[Union[ArtificialSample, Sample], DistributionType, int, Dict[str, Any]]):
+    sample, distribution_type, n_components, options = args
+    return try_ssu(sample, distribution_type, n_components, **options)
+
+
 def try_dataset(
         dataset: Union[ArtificialDataset, Dataset],
         distribution_type: DistributionType,
@@ -155,11 +160,8 @@ def try_dataset(
         options: Dict[str, Any] = None):
     multiprocessing.freeze_support()
     pool = multiprocessing.Pool(n_processes)
-
-    def execute(sample: Union[ArtificialSample, Sample]):
-        return try_ssu(sample, distribution_type, n_components, **options)
-
-    results = pool.map(execute, iter(dataset))
+    args = [(sample, distribution_type, n_components, options) for sample in dataset]
+    results = pool.map(_execute, args)
     succeeded_results: List[SSUResult] = []
     failed_samples: List[Tuple[int, str]] = []
     for i, (result, message) in enumerate(results):
@@ -167,4 +169,6 @@ def try_dataset(
             succeeded_results.append(result)
         else:
             failed_samples.append((i, message))
+    pool.join()
+    pool.close()
     return succeeded_results, failed_samples
