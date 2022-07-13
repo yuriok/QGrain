@@ -37,7 +37,7 @@ def check_optimizer(optimizer: str):
 def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: DistributionType, n_components: int,
             x0: ndarray = None, loss: str = "lmse", optimizer: str = "SLSQP", try_global: bool = False,
             global_max_niter: int = 100, global_niter_success: int = 5, global_step_size: float = 0.2,
-            optimizer_max_niter: int = 1000, need_history: bool = True, logger: logging.Logger = None,
+            optimizer_max_niter: int = 10000, need_history: bool = True, logger: logging.Logger = None,
             progress_callback: Callable[[float], None] = None) -> Tuple[Optional[SSUResult], str]:
     assert isinstance(sample, (ArtificialSample, Sample))
     assert isinstance(distribution_type, DistributionType)
