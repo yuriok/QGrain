@@ -74,17 +74,27 @@ class SSUResult:
     This class represents the SSU result of each sample.
     """
 
-    def __init__(self, sample: Union[Sample, ArtificialSample], distribution_type: DistributionType,
-                 x0: ndarray, parameters: ndarray, time_spent: float):
+    def __init__(self, sample: Union[ArtificialSample, Sample], distribution_type: DistributionType,
+                 x0: ndarray, parameters: ndarray, time_spent: Union[int, float]):
+        assert isinstance(sample, (ArtificialSample, Sample))
+        assert isinstance(distribution_type, DistributionType)
+        assert isinstance(x0, ndarray)
+        assert isinstance(parameters, ndarray)
+        assert isinstance(time_spent, (int, float))
+        assert x0.ndim == 2
+        assert parameters.ndim == 3
+        n_iterations, n_parameters, n_components = parameters.shape
+        distribution_class = get_distribution(distribution_type)
+        assert n_parameters == distribution_class.N_PARAMETERS + 1
+        assert n_iterations > 0
+        assert n_parameters == 3 or n_parameters == 4
+        assert n_components > 0
         self._sample = sample
         self._distribution_type = distribution_type
         self._x0 = x0
         self._parameters = parameters
         self._time_spent = time_spent
-
-        n_iterations, n_parameters, n_components = parameters.shape
         classes = np.expand_dims(np.expand_dims(sample.classes_phi, 0), 0).repeat(n_components, 1)
-        distribution_class = get_distribution(distribution_type)
         proportions, components, (m, std, s, k) = distribution_class.interpret(
             np.expand_dims(self._parameters[-1], 0), classes, self._sample.interval_phi)
         proportions, components, (m, std, s, k) = proportions[0], components[0], (m[0], std[0], s[0], k[0])
@@ -162,10 +172,6 @@ class SSUResult:
         return self._parameters.shape[1]
 
     @property
-    def n_components(self) -> int:
-        return self._parameters.shape[2]
-
-    @property
     def is_valid(self) -> bool:
         valid = True
         for values in [self._proportions, self._components, self._distribution, *self._moments]:
@@ -199,11 +205,11 @@ class SSUResult:
             (m[index], std[index], s[index], k[index]))
         return component
 
-    def loss(self, distance: str):
-        loss_func = loss_numpy(distance)
+    def loss(self, name: str):
+        loss_func = loss_numpy(name)
         return loss_func(self.distribution, self.sample.distribution)
 
-    def loss_series(self, distance: str):
+    def loss_series(self, name: str):
         n_iterations, n_parameters, n_components = self._parameters.shape
         classes = np.expand_dims(np.expand_dims(
             self._sample.classes_phi, 0), 0).repeat(n_iterations, 0).repeat(n_components, 1)
@@ -212,6 +218,6 @@ class SSUResult:
             self._parameters, classes, self._sample.interval_phi)
         distributions = (proportions @ components)[:, 0, :]
         targets = np.expand_dims(self._sample.distribution, 0).repeat(n_iterations, 0)
-        loss_func = loss_numpy(distance)
-        loss_series = loss_func(distributions, targets, 1)
+        loss_func = loss_numpy(name)
+        loss_series = loss_func(distributions, targets, axis=1)
         return loss_series
