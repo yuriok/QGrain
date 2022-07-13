@@ -11,7 +11,7 @@ from scipy.optimize import basinhopping, minimize
 
 from .distributions import DistributionType, get_distribution, get_sorted_indexes
 from .metrics import loss_numpy
-from .models import Dataset, Sample, SSUResult
+from .models import Dataset, Sample, SSUResult, ArtificialSample, ArtificialDataset
 
 # "cosine" metric has problem
 built_in_losses = (
@@ -34,12 +34,12 @@ def check_optimizer(optimizer: str):
     assert optimizer in built_in_optimizers
 
 
-def try_ssu(sample: Sample, distribution_type: DistributionType, n_components: int, x0: ndarray = None,
-            loss: str = "rmlse", optimizer: str = "SLSQP", try_global: bool = False, global_max_niter: int = 100,
-            global_niter_success: int = 5, global_step_size: float = 0.2, optimizer_max_niter: int = 1000,
-            need_history: bool = True, logger: logging.Logger = None,
+def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: DistributionType, n_components: int,
+            x0: ndarray = None, loss: str = "rmlse", optimizer: str = "SLSQP", try_global: bool = False,
+            global_max_niter: int = 100, global_niter_success: int = 5, global_step_size: float = 0.2,
+            optimizer_max_niter: int = 1000, need_history: bool = True, logger: logging.Logger = None,
             progress_callback: Callable[[float], None] = None) -> Tuple[Optional[SSUResult], str]:
-    assert isinstance(sample, Sample)
+    assert isinstance(sample, (ArtificialSample, Sample))
     assert isinstance(distribution_type, DistributionType)
     assert isinstance(n_components, int)
     distribution_class = get_distribution(distribution_type)
@@ -145,7 +145,7 @@ def try_ssu(sample: Sample, distribution_type: DistributionType, n_components: i
 
 
 def try_dataset(
-        dataset: Dataset,
+        dataset: Union[ArtificialDataset, Dataset],
         distribution_type: DistributionType,
         n_components: int,
         n_processes: int = 1,
@@ -153,7 +153,7 @@ def try_dataset(
     multiprocessing.freeze_support()
     pool = multiprocessing.Pool(n_processes)
 
-    def execute(sample: Sample):
+    def execute(sample: Union[ArtificialSample, Sample]):
         return try_ssu(sample, distribution_type, n_components, **options)
 
     results = pool.map(execute, iter(dataset))

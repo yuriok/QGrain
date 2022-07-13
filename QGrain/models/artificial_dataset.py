@@ -148,12 +148,12 @@ class ArtificialSample:
         return self._classes_phi
 
     @property
-    def distribution(self) -> ndarray:
-        return self._distribution
+    def interval_phi(self) -> float:
+        return interval_phi(self._classes_phi)
 
     @property
-    def components(self) -> List[ArtificialComponent]:
-        return list(iter(self))
+    def distribution(self) -> ndarray:
+        return self._distribution
 
     @property
     def sample(self):
@@ -170,15 +170,20 @@ class ArtificialSample:
 
 
 class ArtificialDataset:
-    """The class to represent one artificial dataset."""
+    """
+    The class to represent one artificial dataset.
+
+    * Get the sample at index i, `sample = dataset[i]`.
+    * Iterate all samples, `for sample in dataset`.
+    * Iterate partial samples, `for sample in dataset[:10]`.
+    * Get the number of samples, `len(dataset)`.
+    """
     def __init__(self, parameters: ndarray,
                  distribution_type: DistributionType,
                  min_size=0.02, max_size=2000.0, n_classes=101,
                  precision=4, noise=5):
         """
         Construct an instance of the `ArtificialDataset` class.
-
-        **If not necessary, do not manually create the sample, because it will not validate the passed parameters.**
 
         :param parameters: A three-dimensional numpy array that contains the parameters to generate samples.
         :param distribution_type: The type of elementary distribution.
@@ -192,7 +197,6 @@ class ArtificialDataset:
         # validations
         assert isinstance(parameters, ndarray)
         assert parameters.ndim == 3
-        assert parameters.shape[0]
         assert isinstance(min_size, (int, float))
         assert isinstance(max_size, (int, float))
         assert isinstance(n_classes, int)
@@ -205,6 +209,8 @@ class ArtificialDataset:
         assert precision > 1
         assert noise > 1
         n_samples, n_parameters, n_components = parameters.shape
+        distribution_class = get_distribution(distribution_type)
+        assert n_parameters == distribution_class.N_PARAMETERS + 1
         assert n_samples > 0
         assert n_parameters == 3 or n_parameters == 4
         assert n_components > 0
@@ -217,7 +223,6 @@ class ArtificialDataset:
         self._precision = precision
         self._noise = noise
         classes = np.expand_dims(np.expand_dims(self._classes_phi, 0), 0).repeat(n_samples, 0).repeat(n_components, 1)
-        distribution_class = get_distribution(distribution_type)
         proportions, components, (m, v, s, k) = distribution_class.interpret(
             parameters, classes, interval_phi(self._classes_phi))
         std = np.sqrt(v)
@@ -238,14 +243,14 @@ class ArtificialDataset:
         return self._parameters.shape[0]
 
     def __iter__(self):
-        for i in range(len(self._parameters.shape[0])):
+        for i in range(self._parameters.shape[0]):
             yield self._get_sample(i)
 
     def __getitem__(self, item):
         if isinstance(item, int):
             return self._get_sample(item)
         elif isinstance(item, slice):
-            return [self._get_sample(index) for index in np.arange(len(self._parameters.shape[0]))[item]]
+            return [self._get_sample(index) for index in np.arange(self._parameters.shape[0])[item]]
         else:
             raise TypeError(f"Sample indices must be integers or slices, not {type(item)}.")
 

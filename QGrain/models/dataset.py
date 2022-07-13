@@ -153,7 +153,7 @@ class Sample:
 
     @property
     def interval_phi(self) -> float:
-        return interval_phi(self.classes_phi)
+        return interval_phi(self._classes_phi)
 
     @property
     def distribution(self) -> ndarray:
