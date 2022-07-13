@@ -1,10 +1,11 @@
 import pytest
+from numpy import ndarray
 
 from QGrain.distributions import DistributionType
 from QGrain.generate import random_dataset, SIMPLE_PRESET
 from QGrain.models.ssu_result import *
 from QGrain.ssu import built_in_losses
-from numpy import ndarray
+
 
 class TestSSUResult:
     dataset = random_dataset(**SIMPLE_PRESET, n_samples=100)
