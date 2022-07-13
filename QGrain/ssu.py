@@ -139,7 +139,10 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
     sorted_parameters = np.zeros_like(parameters)
     for i, j in enumerate(sorted_indexes):
         sorted_parameters[:, :, i] = parameters[:, :, j]
-    ssu_result = SSUResult(sample, distribution_type, x0, sorted_parameters, time_spent)
+    settings = dict(loss=loss, optimizer=optimizer, try_global=try_global, global_max_niter=global_max_niter,
+                    global_niter_success=global_max_niter, global_step_size=global_step_size,
+                    optimizer_max_niter=optimizer_max_niter, need_history=need_history)
+    ssu_result = SSUResult(sample, distribution_type, x0, sorted_parameters, time_spent, settings)
     logger.debug(f"The fitting process successfully finished. {message}")
     return ssu_result, message
 

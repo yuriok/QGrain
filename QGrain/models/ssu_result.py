@@ -75,7 +75,7 @@ class SSUResult:
     """
 
     def __init__(self, sample: Union[ArtificialSample, Sample], distribution_type: DistributionType,
-                 x0: ndarray, parameters: ndarray, time_spent: Union[int, float]):
+                 x0: ndarray, parameters: ndarray, time_spent: Union[int, float], settings: Dict[str, Any]):
         assert isinstance(sample, (ArtificialSample, Sample))
         assert isinstance(distribution_type, DistributionType)
         assert isinstance(x0, ndarray)
@@ -94,6 +94,7 @@ class SSUResult:
         self._x0 = x0
         self._parameters = parameters
         self._time_spent = time_spent
+        self._settings = settings
         classes = np.expand_dims(np.expand_dims(sample.classes_phi, 0), 0).repeat(n_components, 1)
         proportions, components, (m, std, s, k) = distribution_class.interpret(
             np.expand_dims(self._parameters[-1], 0), classes, self._sample.interval_phi)
@@ -170,6 +171,10 @@ class SSUResult:
     @property
     def n_parameters(self) -> int:
         return self._parameters.shape[1]
+
+    @property
+    def settings(self) -> Dict[str, Any]:
+        return copy.deepcopy(self._settings)
 
     @property
     def is_valid(self) -> bool:
