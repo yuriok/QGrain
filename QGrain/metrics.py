@@ -28,7 +28,7 @@ def rmse_numpy(values: ndarray, targets: ndarray, axis=None) -> ndarray:
 
 # Root Mean Squared Logarithmic Error
 def rmlse_numpy(values: ndarray, targets: ndarray, axis=None) -> ndarray:
-    return np.sqrt(np.mean(np.square(np.log(values + 1) - np.log(targets + 1))))
+    return np.sqrt(np.mean(np.square(np.log(values + 1) - np.log(targets + 1)), axis=axis))
 
 
 # Cosine
