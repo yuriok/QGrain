@@ -31,6 +31,11 @@ def rmlse_numpy(values: ndarray, targets: ndarray, axis=None) -> ndarray:
     return np.sqrt(np.mean(np.square(np.log(values + 1) - np.log(targets + 1)), axis=axis))
 
 
+# Logarithmic Mean Squared Error
+def lmse_numpy(values: ndarray, targets: ndarray, axis=None) -> ndarray:
+    return np.log(np.mean(np.square(values - targets), axis=axis))
+
+
 # Cosine
 def cosine_numpy(values: ndarray, targets: ndarray, axis=None) -> ndarray:
     if np.all(np.equal(values, 0.0)) or np.all(np.equal(targets, 0.0)):
@@ -56,6 +61,8 @@ def loss_numpy(distance: str) -> Callable[[ndarray, ndarray, Optional[int]], nda
         return lambda x, y, axis=None: rmse_numpy(x, y, axis=axis)
     elif distance == "rmlse":
         return lambda x, y, axis=None: rmlse_numpy(x, y, axis=axis)
+    elif distance == "lmse":
+        return lambda x, y, axis=None: lmse_numpy(x, y, axis=axis)
     elif distance == "cosine":
         return lambda x, y, axis=None: cosine_numpy(x, y, axis=axis)
     elif distance == "angular":
@@ -89,6 +96,11 @@ def rmlse_torch(values: Tensor, targets: Tensor, dim=None) -> Tensor:
     return torch.sqrt(torch.mean(torch.square(torch.log(values + 1) - torch.log(targets + 1)), dim=dim))
 
 
+# Logarithmic Mean Squared Error
+def lmse_torch(values: Tensor, targets: Tensor, dim=None) -> Tensor:
+    return torch.log(torch.mean(torch.square(values - targets), dim=dim))
+
+
 # Cosine
 def cosine_torch(values: Tensor, targets: Tensor, dim=None) -> Tensor:
     return torch.sum(values * targets, dim=dim) / (
@@ -113,6 +125,8 @@ def loss_torch(distance: str) -> Callable[[Tensor, Tensor, Optional[int]], Tenso
         return lambda x, y, dim=None: rmse_torch(x, y, dim=dim)
     elif distance == "rmlse":
         return lambda x, y, dim=None: rmlse_torch(x, y, dim=dim)
+    elif distance == "lmse":
+        return lambda x, y, dim=None: lmse_torch(x, y, dim=dim)
     elif distance == "cosine":
         return lambda x, y, dim=None: cosine_torch(x, y, dim=dim)
     elif distance == "angular":
