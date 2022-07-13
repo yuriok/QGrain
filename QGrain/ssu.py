@@ -44,7 +44,7 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
     assert isinstance(n_components, int)
     distribution_class = get_distribution(distribution_type)
     if x0 is None:
-        x0 = np.expand_dims(distribution_class.get_defaults(n_components), 0)
+        x0 = distribution_class.get_defaults(n_components)
     else:
         x0 = np.array(x0)
         assert x0.ndim == 2
@@ -83,7 +83,7 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
     global_iteration = 0
     iteration = 0
     max_iterations = global_max_niter * optimizer_max_niter if try_global else optimizer_max_niter
-    history = []
+    history = [np.expand_dims(x0, axis=0)]
     classes = np.expand_dims(np.expand_dims(sample.classes_phi, 0), 0).repeat(n_components, 1)
 
     def closure(x):
