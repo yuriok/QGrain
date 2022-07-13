@@ -85,9 +85,9 @@ class SSUResult:
         n_iterations, n_parameters, n_components = parameters.shape
         classes = np.expand_dims(np.expand_dims(sample.classes_phi, 0), 0).repeat(n_components, 1)
         distribution_class = get_distribution(distribution_type)
-        proportions, components, (m, v, s, k) = distribution_class.interpret(
+        proportions, components, (m, std, s, k) = distribution_class.interpret(
             np.expand_dims(self._parameters[-1], 0), classes, self._sample.interval_phi)
-        proportions, components, (m, std, s, k) = proportions[0], components[0], (m[0], np.std(v[0]), s[0], k[0])
+        proportions, components, (m, std, s, k) = proportions[0], components[0], (m[0], std[0], s[0], k[0])
         distribution = (proportions @ components)[0]
         proportions = proportions[0]
         self._distribution = distribution
@@ -180,9 +180,8 @@ class SSUResult:
         classes = np.expand_dims(np.expand_dims(
             self._sample.classes_phi, 0), 0).repeat(n_iterations, 0).repeat(n_components, 1)
         distribution_class = get_distribution(self._distribution_type)
-        proportions, components, (m, v, s, k) = distribution_class.interpret(
+        proportions, components, (m, std, s, k) = distribution_class.interpret(
             self._parameters, classes, self._sample.interval_phi)
-        std = np.std(v)
         distributions = (proportions @ components)
         for i in range(n_iterations):
             copy_result = copy.copy(self)

@@ -88,7 +88,7 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
 
     def closure(x):
         x = x.reshape((1, distribution_class.N_PARAMETERS + 1, n_components))
-        proportions, components, (m, v, s, k) = distribution_class.interpret(x, classes, sample.interval_phi)
+        proportions, components, _ = distribution_class.interpret(x, classes, sample.interval_phi)
         pred_distribution = (proportions[0] @ components[0]).squeeze()
         return loss_func(pred_distribution, sample.distribution)
 
