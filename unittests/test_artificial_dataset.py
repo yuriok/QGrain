@@ -1,11 +1,11 @@
 import pytest
-import numpy as np
-
-from QGrain.models.artificial_dataset import *
-from QGrain.statistics import *
-from QGrain.generate import SIMPLE_PRESET, random_parameters
-
 from scipy.stats import norm
+
+from QGrain.distributions import get_distribution, DistributionType
+from QGrain.generate import SIMPLE_PRESET, random_parameters
+from QGrain.models.artificial_dataset import *
+from QGrain.models.dataset import Dataset, Sample
+from QGrain.statistics import *
 
 
 class TestArtificialComponent:
@@ -54,6 +54,10 @@ class TestArtificialSample:
         for component in self.sample[:-1]:
             pass
 
+    def test_has_sample(self):
+        sample = self.sample.sample
+        assert isinstance(sample, Sample)
+
 
 class TestArtificialDataset:
     parameters = random_parameters(SIMPLE_PRESET["target"], 100)
@@ -93,6 +97,74 @@ class TestArtificialDataset:
     def test_consistent(self):
         for i, sample in enumerate(self.dataset):
             assert sample.distribution.tobytes() == self.dataset.distributions[i].tobytes()
+
+    def test_has_dataset(self):
+        dataset = self.dataset.dataset
+        assert isinstance(dataset, Dataset)
+
+    def test_components(self):
+        assert self.dataset.components.ndim == 3
+        assert self.dataset.components.shape == (
+            self.dataset.n_samples, self.dataset.n_components, self.dataset.n_classes)
+
+    def test_proportions(self):
+        assert self.dataset.proportions.ndim == 3
+        assert self.dataset.proportions.shape == (self.dataset.n_samples, 1, self.dataset.n_components)
+
+    def test_n_parameters(self):
+        n_parameters = get_distribution(self.dataset.distribution_type).N_PARAMETERS + 1
+        assert self.dataset.n_parameters == n_parameters
+
+    def test_none_error(self):
+        with pytest.raises(AssertionError):
+            ArtificialDataset(None, DistributionType.Normal)
+
+    def test_ndim_error(self):
+        parameters = self.dataset.parameters.copy()
+        with pytest.raises(AssertionError):
+            ArtificialDataset(parameters[0], self.dataset.distribution_type)
+
+    def test_n_parameters_error(self):
+        parameters = self.dataset.parameters.copy()
+        with pytest.raises(AssertionError):
+            ArtificialDataset(parameters, DistributionType.Normal)
+
+    def test_size_type_error(self):
+        parameters = self.dataset.parameters.copy()
+        with pytest.raises(AssertionError):
+            ArtificialDataset(parameters, self.dataset.distribution_type, min_size="1")
+        with pytest.raises(AssertionError):
+            ArtificialDataset(parameters, self.dataset.distribution_type, max_size="1")
+        with pytest.raises(AssertionError):
+            ArtificialDataset(parameters, self.dataset.distribution_type, n_classes="1")
+        with pytest.raises(AssertionError):
+            ArtificialDataset(parameters, self.dataset.distribution_type, precision="4")
+        with pytest.raises(AssertionError):
+            ArtificialDataset(parameters, self.dataset.distribution_type, noise="5")
+
+    def test_size_reversed_error(self):
+        parameters = self.dataset.parameters.copy()
+        with pytest.raises(AssertionError):
+            ArtificialDataset(parameters, self.dataset.distribution_type, min_size=2000.0, max_size=0.02)
+
+    def test_out_of_range_error(self):
+        parameters = self.dataset.parameters.copy()
+        with pytest.raises(AssertionError):
+            ArtificialDataset(parameters, self.dataset.distribution_type, min_size=0.0)
+        with pytest.raises(AssertionError):
+            ArtificialDataset(parameters, self.dataset.distribution_type, max_size=0.0)
+        with pytest.raises(AssertionError):
+            ArtificialDataset(parameters, self.dataset.distribution_type, n_classes=1)
+        with pytest.raises(AssertionError):
+            ArtificialDataset(parameters, self.dataset.distribution_type, precision=1)
+        with pytest.raises(AssertionError):
+            ArtificialDataset(parameters, self.dataset.distribution_type, noise=1)
+
+    def test_index_error(self):
+        with pytest.raises(TypeError):
+            self.dataset["Sample1"]
+        with pytest.raises(TypeError):
+            self.dataset[:, 0]
 
 
 if __name__ == "__main__":

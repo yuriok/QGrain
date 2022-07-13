@@ -1,9 +1,7 @@
-import numpy as np
 import pytest
 from scipy.stats import norm
 
 from QGrain.statistics import *
-
 
 classes_phi = np.linspace(15, -15, 101)
 classes = to_microns(classes_phi)
