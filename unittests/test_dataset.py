@@ -234,15 +234,22 @@ class TestGrainSizeDataset:
         for i, sample in enumerate(self.dataset):
             assert sample.distribution.tobytes() == self.dataset.distributions[i].tobytes()
 
-    def test_error(self):
+    def test_ctor_error(self):
         with pytest.raises(ValueError):
-            dataset = Dataset("", self.sample_names, self.classes, self.distributions)
+            Dataset("", self.sample_names, self.classes, self.distributions)
 
         with pytest.raises(ValueError):
-            dataset = Dataset(self.name, self.sample_names, np.zeros_like(self.classes), self.distributions)
+            Dataset(self.name, self.sample_names, np.zeros_like(self.classes), self.distributions)
 
         with pytest.raises(ValueError):
-            dataset = Dataset(self.name, self.sample_names, self.classes, np.zeros_like(self.distributions))
+            Dataset(self.name, self.sample_names, self.classes, np.zeros_like(self.distributions))
+
+    def test_index_error(self):
+        with pytest.raises(TypeError):
+            self.dataset["Sample1"]
+
+        with pytest.raises(TypeError):
+            self.dataset[:, 0]
 
 
 if __name__ == "__main__":
