@@ -40,8 +40,8 @@ class Normal:
         scales = np.expand_dims(relu(parameters[:, 1, :]), 2).repeat(n_classes, 2)
         proportions = np.expand_dims(softmax(parameters[:, 2, :], axis=1), 1)
         components = norm.pdf(classes, loc=locations, scale=scales) * interval
-        mvsk = norm.stats(loc=locations[:, :, 0], scale=scales[:, :, 0], moments="mvsk")
-        return proportions, components, mvsk
+        m, v, s, k = norm.stats(loc=locations[:, :, 0], scale=scales[:, :, 0], moments="mvsk")
+        return proportions, components, (m, np.sqrt(v), s, k)
 
     @staticmethod
     def get_defaults(n_components: int):
@@ -70,8 +70,8 @@ class SkewNormal:
         scales = np.expand_dims(relu(parameters[:, 2, :]), 2).repeat(n_classes, 2)
         proportions = np.expand_dims(softmax(parameters[:, 3, :], axis=1), 1)
         components = skewnorm.pdf(classes, shapes, loc=locations, scale=scales) * interval
-        mvsk = skewnorm.stats(shapes[:, :, 0], loc=locations[:, :, 0], scale=scales[:, :, 0], moments="mvsk")
-        return proportions, components, mvsk
+        m, v, s, k = skewnorm.stats(shapes[:, :, 0], loc=locations[:, :, 0], scale=scales[:, :, 0], moments="mvsk")
+        return proportions, components, (m, np.sqrt(v), s, k)
 
     @staticmethod
     def get_defaults(n_components: int):
@@ -99,8 +99,8 @@ class Weibull:
         scales = np.expand_dims(relu(parameters[:, 1, :]), 2).repeat(n_classes, 2)
         proportions = np.expand_dims(softmax(parameters[:, 2, :], axis=1), 1)
         components = weibull_min.pdf(classes, shapes, scale=scales) * interval
-        mvsk = weibull_min.stats(shapes[:, :, 0], scale=scales[:, :, 0], moments="mvsk")
-        return proportions, components, mvsk
+        m, v, s, k = weibull_min.stats(shapes[:, :, 0], scale=scales[:, :, 0], moments="mvsk")
+        return proportions, components, (m, np.sqrt(v), s, k)
 
     @staticmethod
     def get_defaults(n_components: int):
@@ -129,8 +129,8 @@ class GeneralWeibull:
         scales = np.expand_dims(relu(parameters[:, 2, :]), 2).repeat(n_classes, 2)
         proportions = np.expand_dims(softmax(parameters[:, 3, :], axis=1), 1)
         components = weibull_min.pdf(classes, shapes, loc=locations, scale=scales) * interval
-        mvsk = weibull_min.stats(shapes[:, :, 0], loc=locations[:, :, 0], scale=scales[:, :, 0], moments="mvsk")
-        return proportions, components, mvsk
+        m, v, s, k = weibull_min.stats(shapes[:, :, 0], loc=locations[:, :, 0], scale=scales[:, :, 0], moments="mvsk")
+        return proportions, components, (m, np.sqrt(v), s, k)
 
     @staticmethod
     def get_defaults(n_components: int):
@@ -161,7 +161,7 @@ def get_sorted_indexes(
         classes: np.ndarray,
         interval: float) -> typing.Tuple[int]:
     distribution_class = get_distribution(distribution_type)
-    proportions, components, (m, v, s, k) = distribution_class.interpret(parameters, classes, interval)
+    proportions, components, (m, std, s, k) = distribution_class.interpret(parameters, classes, interval)
     mean_values = [(i, mean) for i, mean in enumerate(np.median(m, axis=0))]
     # sort them by mean size
     mean_values.sort(key=lambda x: x[1], reverse=True)
