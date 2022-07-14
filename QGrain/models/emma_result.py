@@ -1,4 +1,4 @@
-
+__all__ = ["EMMAResult"]
 
 import copy
 from typing import *
@@ -6,16 +6,38 @@ from typing import *
 import numpy as np
 from numpy import ndarray
 
-from ..models import Dataset
-from ..metrics import loss_numpy
 from ..kernels import KernelType
+from ..metrics import loss_numpy
+from ..models import Dataset, ArtificialDataset
 
 
 class EMMAResult:
-    def __init__(self, dataset: Dataset, kernel_type: KernelType, n_members: int,
-                 proportions: ndarray, end_members: ndarray, time_spent: float,
+    def __init__(self, dataset: [ArtificialDataset, Dataset], kernel_type: KernelType, n_members: int,
+                 proportions: ndarray, end_members: ndarray, time_spent: Union[int, float],
                  x0: ndarray = None, history: Sequence[Tuple[ndarray, ndarray]] = None,
                  settings: Dict[str, Any] = None, loss_series: Dict[str, ndarray] = None):
+        # do some validations
+        assert isinstance(dataset, (ArtificialDataset, Dataset))
+        assert isinstance(kernel_type, KernelType)
+        assert isinstance(n_members, int)
+        assert isinstance(proportions, ndarray)
+        assert proportions.ndim == 2
+        assert proportions.shape == (dataset.n_samples, n_members)
+        assert isinstance(end_members, ndarray)
+        assert end_members.ndim == 2
+        assert end_members.shape == (n_members, dataset.n_classes)
+        assert isinstance(time_spent, (int, float))
+        if x0 is not None:
+            assert isinstance(x0, ndarray)
+            assert x0.ndim == 2
+            assert x0.shape[1] == n_members
+        if history is not None:
+            assert len(history) > 0
+        if settings is not None:
+            assert isinstance(settings, dict)
+            if loss_series is not None:
+                assert settings["loss"] in loss_series.keys()
+
         self._dataset = dataset
         self._kernel_type = kernel_type
         self._n_members = n_members
@@ -33,7 +55,7 @@ class EMMAResult:
         self._sort()
 
     @property
-    def dataset(self) -> Dataset:
+    def dataset(self) -> Union[ArtificialDataset, Dataset]:
         return self._dataset
 
     @property

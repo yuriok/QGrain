@@ -1,15 +1,16 @@
+__all__ = ["built_in_losses", "try_emma"]
+
+import logging
 import time
 from typing import *
 
 import numpy as np
-from numpy import ndarray
 import torch
+from numpy import ndarray
 
-from .models import Dataset, EMMAResult, ArtificialDataset
-from .metrics import loss_torch
 from .kernels import KernelType, ProportionModule, get_kernel
-import logging
-
+from .metrics import loss_torch
+from .models import Dataset, EMMAResult, ArtificialDataset
 
 built_in_losses = (
     "1-norm", "2-norm", "3-norm", "4-norm",
@@ -24,7 +25,8 @@ class EMMAModule(torch.nn.Module):
         self.n_members = n_members
         self.n_classes = len(classes_phi)
         self._interval_phi = np.abs((classes_phi[0] - classes_phi[-1]) / (classes_phi.shape[0] - 1))
-        self._classes = torch.nn.Parameter(torch.from_numpy(classes_phi).repeat(1, n_members, 1), requires_grad=False)
+        self._classes_phi = torch.nn.Parameter(
+            torch.from_numpy(classes_phi).repeat(1, n_members, 1), requires_grad=False)
         self.kernel_type = kernel_type
         self.proportions = ProportionModule(n_samples, n_members)
         self.end_members = get_kernel(kernel_type, 1, self.n_members, self.n_classes, x0)
@@ -33,7 +35,7 @@ class EMMAModule(torch.nn.Module):
         # n_samples x n_members
         proportions = self.proportions().squeeze(1)
         # n_members x n_classes
-        end_members = self.end_members(self._classes, self._interval_phi).squeeze(0)
+        end_members = self.end_members(self._classes_phi, self._interval_phi).squeeze(0)
         # n_samples x n_classes
         # distributions = proportions @ end_members
         return proportions, end_members
@@ -100,10 +102,10 @@ def try_emma(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType
     loss_func = loss_torch(loss)
     optimizer = torch.optim.Adam(emma.parameters(), lr=learning_rate, betas=betas)
     total_loss_series = []
-    history = []
-    start = time.time()
+    history: List[Tuple[ndarray, ndarray]] = []
     emma.end_members.requires_grad_(False)
     max_total_epochs = pretrain_epochs + max_epochs
+    start = time.time()
     for pretrain_epoch in range(pretrain_epochs):
         proportions, end_members = emma()
         prediction = proportions @ end_members
@@ -132,7 +134,8 @@ def try_emma(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType
         loss_i.backward()
         torch.nn.utils.clip_grad_norm_(emma.parameters(), 1e-1)
         optimizer.step()
-        history.append((proportions.detach().cpu().numpy(), end_members.detach().cpu().numpy()))
+        if need_history:
+            history.append((proportions.detach().cpu().numpy(), end_members.detach().cpu().numpy()))
         if progress_callback is not None:
             progress_callback((pretrain_epochs+epoch) / max_total_epochs)
         if epoch > min_epochs:

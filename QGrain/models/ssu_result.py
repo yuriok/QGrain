@@ -224,5 +224,5 @@ class SSUResult:
         distributions = (proportions @ components)[:, 0, :]
         targets = np.expand_dims(self._sample.distribution, 0).repeat(n_iterations, 0)
         loss_func = loss_numpy(name)
-        loss_series = loss_func(distributions, targets, axis=1)
+        loss_series = loss_func(distributions, targets, 1)
         return loss_series
