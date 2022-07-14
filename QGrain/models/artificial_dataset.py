@@ -160,6 +160,15 @@ class ArtificialSample:
         sample = Sample(self._name, self._classes, self._classes_phi, self._distribution)
         return sample
 
+    @property
+    def is_valid(self) -> bool:
+        valid = True
+        for values in [self._proportions, self._components, self._distribution, *self._moments]:
+            if np.any(np.logical_or(np.isnan(values), np.isinf(values))):
+                valid = False
+                break
+        return valid
+
     def _get_component(self, index: int):
         m, std, s, k = self._moments
         component = ArtificialComponent(
@@ -215,6 +224,7 @@ class ArtificialDataset:
         assert n_parameters == 3 or n_parameters == 4
         assert n_components > 0
         # preparation
+        self._name = f"AD({n_samples}, {n_components}, {distribution_type.name})"
         self._parameters = parameters
         self._distribution_type = distribution_type
         self._min_size, self._max_size = min_size, max_size
@@ -223,9 +233,8 @@ class ArtificialDataset:
         self._precision = precision
         self._noise = noise
         classes = np.expand_dims(np.expand_dims(self._classes_phi, 0), 0).repeat(n_samples, 0).repeat(n_components, 1)
-        proportions, components, (m, v, s, k) = distribution_class.interpret(
+        proportions, components, (m, std, s, k) = distribution_class.interpret(
             parameters, classes, interval_phi(self._classes_phi))
-        std = np.sqrt(v)
         noise = np.random.randn(n_samples, n_classes) * (10 ** (-noise))
         distributions = np.round((proportions @ components).squeeze(1) + noise, decimals=precision)
         self._proportions = proportions
@@ -253,6 +262,16 @@ class ArtificialDataset:
             return [self._get_sample(index) for index in np.arange(self._parameters.shape[0])[item]]
         else:
             raise TypeError(f"Sample indices must be integers or slices, not {type(item)}.")
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @name.setter
+    def name(self, value: str):
+        assert isinstance(value)
+        assert len(value) > 0
+        self._name = value
 
     @property
     def parameters(self) -> ndarray:
