@@ -1,45 +1,43 @@
-import typing
+__all__ = ["Frequency3DChart"]
 
-import matplotlib.pyplot as plt
+from typing import *
+
 import numpy as np
-from PySide6 import QtCore, QtGui, QtWidgets
-
-from ..models import Sample
-from ..statistics import to_microns, to_cumulative
-from .BaseChart import BaseChart
-from .config_matplotlib import normal_color
+from PySide6 import QtGui, QtWidgets
 from mpl_toolkits.mplot3d import Axes3D
+from numpy import ndarray
+
+from . import BaseChart
+from ..models import Sample
+from ..statistics import to_microns
+
 
 class Frequency3DChart(BaseChart):
     def __init__(self, parent=None, figsize=(6, 4)):
         super().__init__(parent=parent, figsize=figsize)
         self.setWindowTitle(self.tr("Frequency 3D Chart"))
-        self.axes = Axes3D(self.figure, auto_add_to_figure=False)
-        self.figure.add_axes(self.axes)
-
-        self.scale_menu = QtWidgets.QMenu(self.tr("Scale")) # type: QtWidgets.QMenu
+        self._axes = Axes3D(self._figure, auto_add_to_figure=False)
+        self._figure.add_axes(self._axes)
+        self.scale_menu: QtWidgets.QMenu = QtWidgets.QMenu(self.tr("Scale"))
         self.menu.insertMenu(self.edit_figure_action, self.scale_menu)
         self.scale_group = QtGui.QActionGroup(self.scale_menu)
         self.scale_group.setExclusive(True)
-        self.scale_actions = [] # type: list[QtGui.QAction]
+        self.scale_actions: List[QtGui.QAction] = []
         for key, name in self.supported_scales:
-            scale_action = self.scale_group.addAction(name) # type: QtGui.QAction
+            scale_action: QtGui.QAction = self.scale_group.addAction(name)
             scale_action.setCheckable(True)
             scale_action.triggered.connect(self.update_chart)
             self.scale_menu.addAction(scale_action)
             self.scale_actions.append(scale_action)
         self.scale_actions[2].setChecked(True)
-
-        self.last_samples = []
-        self.last_max_frequency = 0.0
-
+        self._last_samples = []
 
     @property
-    def supported_scales(self) -> typing.List[typing.Tuple[str, str]]:
-        scales = [("log-linear", self.tr("Log-linear")),
+    def supported_scales(self) -> Tuple[Tuple[str, str]]:
+        scales = (("log-linear", self.tr("Log-linear")),
                   ("log", self.tr("Log")),
                   ("phi", self.tr("Phi")),
-                  ("linear", self.tr("Linear"))]
+                  ("linear", self.tr("Linear")))
         return scales
 
     @property
@@ -50,47 +48,47 @@ class Frequency3DChart(BaseChart):
                 return key
 
     @property
-    def transfer(self) -> typing.Callable:
+    def transfer(self) -> Callable[[Union[int, float, ndarray]], Union[int, float, ndarray]]:
         if self.scale == "log-linear":
-            return lambda classes_φ: to_microns(classes_φ)
+            return lambda classes_phi: to_microns(classes_phi)
         elif self.scale == "log":
-            return lambda classes_φ: np.log(to_microns(classes_φ))
+            return lambda classes_phi: np.log(to_microns(classes_phi))
         elif self.scale == "phi":
-            return lambda classes_φ: classes_φ
+            return lambda classes_phi: classes_phi
         elif self.scale == "linear":
-            return lambda classes_φ: to_microns(classes_φ)
+            return lambda classes_phi: to_microns(classes_phi)
 
     @property
     def xlabel(self) -> str:
         if self.scale == "log-linear":
-            return "Grain size [μm]"
+            return "Grain size (microns)"
         elif self.scale == "log":
-            return "Ln(grain size in μm)"
+            return "Ln(grain size in microns)"
         elif self.scale == "phi":
-            return "Grain size [φ]"
+            return "Grain size (phi)"
         elif self.scale == "linear":
-            return "Grain size [μm]"
+            return "Grain size (microns)"
 
     @property
     def ylabel(self) -> str:
         return "Frequency"
 
     def update_chart(self):
-        self.figure.clear()
-        self.axes = Axes3D(self.figure, auto_add_to_figure=False)
-        self.figure.add_axes(self.axes)
-        self.show_samples(self.last_samples, append=False)
+        self._figure.clear()
+        self._axes = Axes3D(self._figure, auto_add_to_figure=False)
+        self._figure.add_axes(self._axes)
+        self.show_samples(self._last_samples, append=False)
 
-    def show_samples(self, samples: typing.Iterable[Sample], append=False):
+    def show_samples(self, samples: Sequence[Sample], append=False):
         if len(samples) == 0:
             return
-        append = append and len(self.last_samples) != 0
+        append = append and len(self._last_samples) != 0
         if not append:
-            self.last_samples = []
-        self.axes.clear()
+            self._last_samples = []
+        self._axes.clear()
         record_samples = []
         sample_distributions = []
-        for sample in self.last_samples:
+        for sample in self._last_samples:
             record_samples.append(sample)
             sample_distributions.append(sample.distribution)
         for sample in samples:
@@ -100,17 +98,17 @@ class Frequency3DChart(BaseChart):
         x = self.transfer(record_samples[0].classes_phi)
         y = np.linspace(1, len(Z), len(Z))
         X, Y = np.meshgrid(x, y)
-        self.axes.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap="binary")
-        self.axes.set_xlim(x[0], x[-1])
-        self.axes.set_xlabel(self.xlabel)
-        self.axes.set_ylabel(self.tr("Sample index"))
-        self.axes.set_zlabel(self.ylabel)
-        self.last_samples = record_samples
+        self._axes.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap="binary")
+        self._axes.set_xlim(x[0], x[-1])
+        self._axes.set_xlabel(self.xlabel)
+        self._axes.set_ylabel(self.tr("Sample index"))
+        self._axes.set_zlabel(self.ylabel)
+        self._last_samples = record_samples
         if self.scale == "linear":
-            self.axes.view_init(elev=15.0, azim=45)
+            self._axes.view_init(elev=15.0, azim=45)
         else:
-            self.axes.view_init(elev=45.0, azim=-120)
-        self.canvas.draw()
+            self._axes.view_init(elev=45.0, azim=-120)
+        self._canvas.draw()
 
     def retranslate(self):
         super().retranslate()

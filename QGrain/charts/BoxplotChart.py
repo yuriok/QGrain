@@ -1,26 +1,25 @@
-import typing
+__all__ = ["BoxplotChart"]
+
+from typing import *
 
 import matplotlib.pyplot as plt
-import numpy as np
+from numpy import ndarray
 
-from .BaseChart import BaseChart
-from .config_matplotlib import highlight_color, normal_color
+from . import normal_color, BaseChart
 
 
 class BoxplotChart(BaseChart):
-    def __init__(self, parent=None, figsize=(4, 3)):
+    def __init__(self, parent=None, figsize=(3, 2.5)):
         super().__init__(parent=parent, figsize=figsize)
-        self.axes = self.figure.subplots()
+        self._axes = self._figure.subplots()
         self.setWindowTitle(self.tr("Boxplot Chart"))
-        self.__last_result = None
+        self._last_result = None
 
-    def show_dataset(self, dataset: typing.List[np.ndarray],
-                     xlabels: typing.List[str], ylabel: str,
-                     title: str = ""):
-        self.axes.clear()
+    def show_dataset(self, dataset: Sequence[ndarray], xlabels: Sequence[str], ylabel: str, title: str = ""):
+        self._axes.clear()
         assert len(dataset) == len(xlabels)
         # "whiskers", "caps", "boxes", "medians", "fliers", "means"
-        artists = self.axes.boxplot(dataset, labels=xlabels, patch_artist=True)
+        artists = self._axes.boxplot(dataset, labels=xlabels, patch_artist=True)
         cmap = plt.get_cmap()
         for i, box in enumerate(artists["boxes"]):
             box.set_facecolor(cmap(i))
@@ -34,17 +33,17 @@ class BoxplotChart(BaseChart):
         for i, flier in enumerate(artists["fliers"]):
             flier.set_markerfacecolor(cmap(i))
             flier.set_markeredgewidth(0.0)
-        self.axes.set_ylabel(ylabel)
-        self.axes.set_title(title)
-        self.figure.tight_layout()
-        self.canvas.draw()
-        self.__last_result = dataset, xlabels, ylabel, title
+        self._axes.set_ylabel(ylabel)
+        self._axes.set_title(title)
+        self._figure.tight_layout()
+        self._canvas.draw()
+        self._last_result = dataset, xlabels, ylabel, title
 
     def update_chart(self):
-        if self.__last_result is not None:
-            self.figure.clear()
-            self.axes = self.figure.subplots()
-            self.show_dataset(*self.__last_result)
+        if self._last_result is not None:
+            self._figure.clear()
+            self._axes = self._figure.subplots()
+            self.show_dataset(*self._last_result)
 
     def retranslate(self):
         super().retranslate()
