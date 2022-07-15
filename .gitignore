@@ -109,3 +109,4 @@ venv.bak/
 # pycharm
 .idea
 /.run
+/unittests/.temp/
