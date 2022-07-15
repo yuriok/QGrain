@@ -19,8 +19,8 @@ def test_random_parameters():
     assert parameters.shape == (n_samples, distribution_class.N_PARAMETERS + 1, len(SIMPLE_PRESET["target"]))
     for i, component in enumerate(SIMPLE_PRESET["target"]):
         for j, (mean, std) in enumerate(component):
-            assert abs(np.mean(parameters[:, j, i]) - mean) < 1e-3
-            assert abs(np.std(parameters[:, j, i]) - std) < 1e-3
+            assert abs(np.mean(parameters[:, j, i]) - mean) < 5e-3
+            assert abs(np.std(parameters[:, j, i]) - std) < 5e-3
 
 
 def test_random_dataset():
