@@ -4,7 +4,8 @@ import numpy as np
 import torch
 from PySide6 import QtCore, QtWidgets
 
-from ..emma import EMMAAlgorithmSetting, built_in_distances
+from ..emma import EMMAAlgorithmSetting
+from ..models import built_in_losses
 
 
 class EMMASettingDialog(QtWidgets.QDialog):
@@ -29,8 +30,8 @@ class EMMASettingDialog(QtWidgets.QDialog):
         self.distance_label = QtWidgets.QLabel(self.tr("Distance Function"))
         self.distance_label.setToolTip(self.tr("The function to calculate the difference (on the contrary, similarity) between two samples."))
         self.distance_combo_box = QtWidgets.QComboBox()
-        self.distance_combo_box.addItems(built_in_distances)
-        self.distance_combo_box.setCurrentText("log10MSE")
+        self.distance_combo_box.addItems(built_in_losses)
+        self.distance_combo_box.setCurrentText("lmse")
         self.main_layout.addWidget(self.distance_label, 1, 0)
         self.main_layout.addWidget(self.distance_combo_box, 1, 1)
 
@@ -111,7 +112,7 @@ class EMMASettingDialog(QtWidgets.QDialog):
     def setting(self, setting: EMMAAlgorithmSetting):
         device_map = {"cpu": 0, "cuda": 1}
         self.device_combo_box.setCurrentIndex(device_map[setting.device])
-        self.distance_combo_box.setCurrentText(setting.distance)
+        self.distance_combo_box.setCurrentText(setting.loss)
         self.pretrain_epochs_input.setValue(setting.pretrain_epochs)
         self.min_epochs_input.setValue(setting.min_epochs)
         self.max_epochs_input.setValue(setting.max_epochs)
