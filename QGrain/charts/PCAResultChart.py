@@ -1,25 +1,24 @@
-import typing
+from typing import *
 
 import matplotlib.pyplot as plt
 import numpy as np
-from PySide6 import QtCore, QtWidgets
 from sklearn.decomposition import PCA
 
-from ..models import Dataset
-from .BaseChart import BaseChart
-from .config_matplotlib import highlight_color, normal_color
+from . import BaseChart
+from . import normal_color
+from ..models import Dataset, ArtificialDataset
 
 
 class PCAResultChart(BaseChart):
-    def __init__(self, parent=None, size=(6, 5)):
+    def __init__(self, parent=None, size=(6.6, 4.4)):
         super().__init__(parent=parent, figsize=size)
-        self.sample_axes = self.figure.add_subplot(2, 2, 1)
-        self.shape_axes = self.figure.add_subplot(2, 2, 2)
-        self.series_axes = self.figure.add_subplot(2, 1, 2)
+        self.sample_axes = self._figure.add_subplot(2, 2, 1)
+        self.shape_axes = self._figure.add_subplot(2, 2, 2)
+        self.series_axes = self._figure.add_subplot(2, 1, 2)
         self.setWindowTitle(self.tr("PCA Chart"))
         self._last_dataset: Dataset = None
 
-    def show_dataset(self, dataset: Dataset):
+    def show_dataset(self, dataset: Union[ArtificialDataset, Dataset]):
         assert dataset is not None
         self._last_dataset = dataset
         pca = PCA()
@@ -43,10 +42,9 @@ class PCAResultChart(BaseChart):
         self.shape_axes.plot(dataset.classes, pca.components_[0], color=cmap(0), label="PC1")
         self.shape_axes.plot(dataset.classes, pca.components_[1], color=cmap(1), label="PC2")
         self.shape_axes.set_xscale("log")
-        self.shape_axes.set_xlabel("Grain size [μm]")
+        self.shape_axes.set_xlabel("Grain size (microns)")
         self.shape_axes.set_ylabel("Transformed value")
         self.shape_axes.legend(loc="upper left")
-
         for i in range(2):
             self.series_axes.plot(transformed[:, i], color=cmap(i),
                                   label=f"PC{i+1} ({pca.explained_variance_ratio_[i]:0.2%})",
@@ -54,14 +52,14 @@ class PCAResultChart(BaseChart):
         self.series_axes.set_xlabel("Sample index")
         self.series_axes.set_ylabel("Transformed value")
         self.series_axes.legend(loc="upper left")
-        self.figure.tight_layout()
-        self.canvas.draw()
+        self._figure.tight_layout()
+        self._canvas.draw()
 
     def update_chart(self):
-        self.figure.clear()
-        self.sample_axes = self.figure.add_subplot(2, 2, 1)
-        self.shape_axes = self.figure.add_subplot(2, 2, 2)
-        self.series_axes = self.figure.add_subplot(2, 1, 2)
+        self._figure.clear()
+        self.sample_axes = self._figure.add_subplot(2, 2, 1)
+        self.shape_axes = self._figure.add_subplot(2, 2, 2)
+        self.series_axes = self._figure.add_subplot(2, 1, 2)
         if self._last_dataset is not None:
             self.show_dataset(self._last_dataset)
 
