@@ -79,7 +79,7 @@ class TestSSUResult:
             result[:, 0]
 
     def test_apis(self):
-        # `ArtificialSample` has similar apis with `SSUResult`, to make them can be used in plotting chart
+        # `ArtificialSample` has similar apis with `SSUResult`, to make them can be used in plotting charts
         as0 = self.dataset[0]
         result = SSUResult(as0, self.dataset.distribution_type, self.dataset.parameters[0],
                            self.dataset.parameters, 1.0, settings={})

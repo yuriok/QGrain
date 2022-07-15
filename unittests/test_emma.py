@@ -1,11 +1,10 @@
 import numpy as np
 import pytest
 
-from QGrain.distributions import DistributionType
-from QGrain.kernels import KernelType
-from QGrain.generate import random_dataset, SIMPLE_PRESET
-from QGrain.models import EMMAResult
 from QGrain.emma import try_emma, built_in_losses
+from QGrain.generate import random_dataset, SIMPLE_PRESET
+from QGrain.kernels import KernelType
+from QGrain.models import EMMAResult
 
 
 class TestTryEMMA:
@@ -76,5 +75,16 @@ class TestTryEMMA:
         result = try_emma(self.dataset, KernelType.Normal, self.dataset.n_components)
         for loss_name in built_in_losses:
             loss_series = result.loss_series(loss_name)
+            assert isinstance(loss_series, np.ndarray)
+            assert len(loss_series) == result.n_iterations
             class_wise_losses = result.class_wise_losses(loss_name)
+            assert isinstance(class_wise_losses, np.ndarray)
+            assert len(class_wise_losses) == result.n_classes
             sample_wise_losses = result.sample_wise_losses(loss_name)
+            assert isinstance(sample_wise_losses, np.ndarray)
+            assert len(sample_wise_losses) == result.n_samples
+
+    def test_all_kernels(self):
+        for kernel_type in [KernelType.Nonparametric, KernelType.Normal,
+                            KernelType.SkewNormal, KernelType.Weibull, KernelType.GeneralWeibull]:
+            result = try_emma(self.dataset, kernel_type, self.dataset.n_components)
