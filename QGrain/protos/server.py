@@ -135,7 +135,7 @@ class QGrainServicer(qgrain_pb2_grpc.QGrainServicer):
             x0 = np.frombuffer(request.x0, dtype=np.float32).copy().reshape(n_parameters, request.n_members)
         settings = dict(device=request.device, loss=request.loss, pretrain_epochs=request.pretrain_epochs,
                         min_epochs=request.min_epochs, max_epochs=request.max_epochs, precision=request.precision,
-                        learning_rate=request.learning_rate, betas=(request.beta1, request.beta2),
+                        learning_rate=request.learning_rate, betas=tuple(request.betas),
                         update_end_members=request.update_end_members, need_history=request.need_history)
         try:
             result = try_emma(dataset, kernel_type, request.n_members, x0=x0, **settings)
@@ -164,7 +164,7 @@ class QGrainServicer(qgrain_pb2_grpc.QGrainServicer):
             x0 = np.frombuffer(request.x0, dtype=np.float32).copy().reshape(n_parameters, request.n_components)
         settings = dict(device=request.device, pretrain_epochs=request.pretrain_epochs, min_epochs=request.min_epochs,
                         max_epochs=request.max_epochs, precision=request.precision, learning_rate=request.learning_rate,
-                        betas=(request.beta1, request.beta2), constraint_level=request.constraint_level,
+                        betas=tuple(request.betas), constraint_level=request.constraint_level,
                         need_history=request.need_history)
         try:
             result = try_udm(dataset, kernel_type, request.n_components, x0=x0, **settings)

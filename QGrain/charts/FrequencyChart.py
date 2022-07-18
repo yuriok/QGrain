@@ -18,13 +18,13 @@ class FrequencyChart(BaseChart):
         self.setWindowTitle(self.tr("Frequency Chart"))
         self._axes = self._figure.subplots()
 
-        self.scale_menu: QtWidgets.QMenu = QtWidgets.QMenu(self.tr("Scale"))
+        self.scale_menu = QtWidgets.QMenu(self.tr("Scale"))
         self.menu.insertMenu(self.edit_figure_action, self.scale_menu)
         self.scale_group = QtGui.QActionGroup(self.scale_menu)
         self.scale_group.setExclusive(True)
         self.scale_actions: List[QtGui.QAction] = []
         for key, name in self.supported_scales:
-            scale_action: QtGui.QAction = self.scale_group.addAction(name)
+            scale_action = self.scale_group.addAction(name)
             scale_action.setCheckable(True)
             scale_action.triggered.connect(self.update_chart)
             self.scale_menu.addAction(scale_action)

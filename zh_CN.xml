@@ -745,136 +745,136 @@
 <context>
     <name>EMMASettings</name>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="19"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="155"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="22"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="158"/>
         <source>EMMA Settings</source>
         <translation>EMMA设置</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="22"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="156"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="25"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="159"/>
         <source>Device</source>
         <translation>设备</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="23"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="157"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="26"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="160"/>
         <source>PyTorch can use the NVIDIA GPU to do calculations.</source>
         <translation>PyTorch可以使用NVIDIA的GPU进行计算。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="27"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="158"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="30"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="161"/>
         <source>Loss</source>
         <translation>损失函数</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="29"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="160"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="32"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="163"/>
         <source>The function to calculate the difference between prediction and observation.</source>
         <translation>该函数被用来计算预测和观测数据之间的差异。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="35"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="161"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="38"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="164"/>
         <source>Pretrain Epochs</source>
         <translation>预训练轮数</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="38"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="164"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="41"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="167"/>
         <source>The number of epochs before formal training. The pretrain process only update the proportions of end members.</source>
         <translation>正式训练之前的训练轮数。预训练过程只更新端元的相对含量。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="44"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="165"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="47"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="168"/>
         <source>Minimum Number of Epochs</source>
         <translation>最小轮数</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="45"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="166"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="48"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="169"/>
         <source>Minimum number of epochs to be performed.</source>
         <translation>算法执行的最小轮数。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="51"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="167"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="54"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="170"/>
         <source>Maximum Number of Epochs</source>
         <translation>最大轮数</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="52"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="168"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="55"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="171"/>
         <source>Maximum number of epochs to be performed.</source>
         <translation>算法执行的最大轮数。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="58"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="169"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="61"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="172"/>
         <source>Precision</source>
         <translation>精度</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="59"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="170"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="62"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="173"/>
         <source>It controls the precision of final loss.</source>
         <translation>它决定了算法中损失函数最终值的精度。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="65"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="171"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="68"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="174"/>
         <source>Learning Rate (x10&lt;sup&gt;-3&lt;/sup&gt;)</source>
         <translation>学习率 (x10&lt;sup&gt;-3&lt;/sup&gt;)</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="67"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="173"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="70"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="176"/>
         <source>The learning rate of the neural network to update its weights from gradient.</source>
         <translation>神经网络从梯度更新权重时的学习率。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="74"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="174"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="77"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="177"/>
         <source>Beta 1</source>
         <translation>Beta 1</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="76"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="85"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="176"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="79"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="88"/>
         <location filename="QGrain/ui/EMMASettings.py" line="179"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="182"/>
         <source>Betas are the coefficients used for computing running averages of gradient and its square.</source>
         <translation>Beta值是用于滑动平均梯度的系数。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="83"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="177"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="86"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="180"/>
         <source>Beta 2</source>
         <translation>Beta 2</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="92"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="180"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="95"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="183"/>
         <source>Update End Members</source>
         <translation>更新端元</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="94"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="182"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="97"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="185"/>
         <source>Update the distributions of end members while training the model or not.</source>
         <translation>是否在训练模型时更新端元的分布。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="98"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="184"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="101"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="187"/>
         <source>Record the variation history of parameters or not.</source>
         <translation>是否记录参数的变化历史。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="97"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="183"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="100"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="186"/>
         <source>Need History</source>
         <translation>需要历史</translation>
     </message>
@@ -1029,265 +1029,264 @@ Deviation</source>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="160"/>
-        <location filename="QGrain/ui/MainWindow.py" line="194"/>
-        <location filename="QGrain/ui/MainWindow.py" line="350"/>
+        <location filename="QGrain/ui/MainWindow.py" line="163"/>
+        <location filename="QGrain/ui/MainWindow.py" line="197"/>
+        <location filename="QGrain/ui/MainWindow.py" line="344"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="64"/>
-        <location filename="QGrain/ui/MainWindow.py" line="352"/>
+        <location filename="QGrain/ui/MainWindow.py" line="65"/>
+        <location filename="QGrain/ui/MainWindow.py" line="346"/>
         <source>Open</source>
         <translation>打开</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="65"/>
-        <location filename="QGrain/ui/MainWindow.py" line="354"/>
+        <location filename="QGrain/ui/MainWindow.py" line="66"/>
+        <location filename="QGrain/ui/MainWindow.py" line="348"/>
         <source>Grain Size Dataset</source>
         <translation>粒度数据集</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="75"/>
-        <location filename="QGrain/ui/MainWindow.py" line="353"/>
+        <location filename="QGrain/ui/MainWindow.py" line="76"/>
+        <location filename="QGrain/ui/MainWindow.py" line="347"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="111"/>
-        <location filename="QGrain/ui/MainWindow.py" line="372"/>
+        <location filename="QGrain/ui/MainWindow.py" line="114"/>
+        <location filename="QGrain/ui/MainWindow.py" line="367"/>
         <source>Language</source>
         <translation>语言</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="123"/>
-        <location filename="QGrain/ui/MainWindow.py" line="373"/>
+        <location filename="QGrain/ui/MainWindow.py" line="126"/>
+        <location filename="QGrain/ui/MainWindow.py" line="368"/>
         <source>Theme</source>
         <translation>主题</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="142"/>
-        <location filename="QGrain/ui/MainWindow.py" line="375"/>
+        <location filename="QGrain/ui/MainWindow.py" line="145"/>
+        <location filename="QGrain/ui/MainWindow.py" line="370"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="191"/>
+        <location filename="QGrain/ui/MainWindow.py" line="194"/>
         <source>Info</source>
         <translation>信息</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="197"/>
+        <location filename="QGrain/ui/MainWindow.py" line="200"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="271"/>
-        <location filename="QGrain/ui/MainWindow.py" line="301"/>
+        <location filename="QGrain/ui/MainWindow.py" line="270"/>
+        <location filename="QGrain/ui/MainWindow.py" line="297"/>
         <source>The dataset has not been loaded.</source>
         <translation>数据集尚未被加载。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="161"/>
-        <location filename="QGrain/ui/MainWindow.py" line="351"/>
+        <location filename="QGrain/ui/MainWindow.py" line="164"/>
+        <location filename="QGrain/ui/MainWindow.py" line="345"/>
         <source>Closing this window will terminate all running tasks, are you sure to close it?</source>
         <translation>关闭该窗口将会终止所有运行中的任务，你确定要关闭它吗？</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="49"/>
-        <location filename="QGrain/ui/MainWindow.py" line="376"/>
+        <location filename="QGrain/ui/MainWindow.py" line="50"/>
+        <location filename="QGrain/ui/MainWindow.py" line="371"/>
         <source>Generator</source>
         <translation>Generator</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="53"/>
-        <location filename="QGrain/ui/MainWindow.py" line="378"/>
+        <location filename="QGrain/ui/MainWindow.py" line="54"/>
+        <location filename="QGrain/ui/MainWindow.py" line="373"/>
         <source>PCA</source>
         <translation>PCA</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="55"/>
-        <location filename="QGrain/ui/MainWindow.py" line="379"/>
+        <location filename="QGrain/ui/MainWindow.py" line="56"/>
+        <location filename="QGrain/ui/MainWindow.py" line="374"/>
         <source>Clustering</source>
         <translation>Clustering</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="57"/>
-        <location filename="QGrain/ui/MainWindow.py" line="380"/>
+        <location filename="QGrain/ui/MainWindow.py" line="58"/>
+        <location filename="QGrain/ui/MainWindow.py" line="375"/>
         <source>SSU</source>
         <translation>SSU</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="59"/>
-        <location filename="QGrain/ui/MainWindow.py" line="381"/>
+        <location filename="QGrain/ui/MainWindow.py" line="60"/>
+        <location filename="QGrain/ui/MainWindow.py" line="376"/>
         <source>EMMA</source>
         <translation>EMMA</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="61"/>
-        <location filename="QGrain/ui/MainWindow.py" line="382"/>
+        <location filename="QGrain/ui/MainWindow.py" line="62"/>
+        <location filename="QGrain/ui/MainWindow.py" line="377"/>
         <source>UDM</source>
         <translation>UDM</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="78"/>
-        <location filename="QGrain/ui/MainWindow.py" line="359"/>
+        <location filename="QGrain/ui/MainWindow.py" line="77"/>
+        <location filename="QGrain/ui/MainWindow.py" line="352"/>
+        <source>Artificial Dataset</source>
+        <translation>人造数据集</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/MainWindow.py" line="81"/>
+        <location filename="QGrain/ui/MainWindow.py" line="354"/>
         <source>PCA Result</source>
         <translation>PCA结果</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="80"/>
-        <location filename="QGrain/ui/MainWindow.py" line="360"/>
+        <location filename="QGrain/ui/MainWindow.py" line="83"/>
+        <location filename="QGrain/ui/MainWindow.py" line="355"/>
         <source>Clustering Result</source>
         <translation>聚类分析结果</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="138"/>
-        <location filename="QGrain/ui/MainWindow.py" line="374"/>
+        <location filename="QGrain/ui/MainWindow.py" line="141"/>
+        <location filename="QGrain/ui/MainWindow.py" line="369"/>
         <source>Log</source>
         <translation>日志</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="216"/>
-        <location filename="QGrain/ui/MainWindow.py" line="242"/>
-        <location filename="QGrain/ui/MainWindow.py" line="280"/>
-        <location filename="QGrain/ui/MainWindow.py" line="310"/>
+        <location filename="QGrain/ui/MainWindow.py" line="219"/>
+        <location filename="QGrain/ui/MainWindow.py" line="243"/>
+        <location filename="QGrain/ui/MainWindow.py" line="278"/>
+        <location filename="QGrain/ui/MainWindow.py" line="305"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="266"/>
-        <location filename="QGrain/ui/MainWindow.py" line="297"/>
-        <location filename="QGrain/ui/MainWindow.py" line="326"/>
-        <source>An unknown exception was raised. Please check the logs for more details.</source>
-        <translation>出现了一个未知的异常。请检查日志以获取详情。</translation>
-    </message>
-    <message>
-        <location filename="QGrain/ui/MainWindow.py" line="304"/>
+        <location filename="QGrain/ui/MainWindow.py" line="300"/>
         <source>Choose a filename to save the PCA result</source>
         <translation>保存PCA结果</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="310"/>
+        <location filename="QGrain/ui/MainWindow.py" line="305"/>
         <source>Saving the PCA result...</source>
         <translation>正在保存PCA结果...</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="67"/>
-        <location filename="QGrain/ui/MainWindow.py" line="82"/>
-        <location filename="QGrain/ui/MainWindow.py" line="355"/>
-        <location filename="QGrain/ui/MainWindow.py" line="361"/>
+        <location filename="QGrain/ui/MainWindow.py" line="68"/>
+        <location filename="QGrain/ui/MainWindow.py" line="85"/>
+        <location filename="QGrain/ui/MainWindow.py" line="349"/>
+        <location filename="QGrain/ui/MainWindow.py" line="356"/>
         <source>SSU Results</source>
         <translation>SSU结果</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="99"/>
-        <location filename="QGrain/ui/MainWindow.py" line="368"/>
+        <location filename="QGrain/ui/MainWindow.py" line="102"/>
+        <location filename="QGrain/ui/MainWindow.py" line="363"/>
         <source>Experimental</source>
         <translation>实验性</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="101"/>
-        <location filename="QGrain/ui/MainWindow.py" line="369"/>
+        <location filename="QGrain/ui/MainWindow.py" line="104"/>
+        <location filename="QGrain/ui/MainWindow.py" line="364"/>
         <source>Perform SSU For All Samples</source>
         <translation>为所有样本执行SSU算法</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="51"/>
-        <location filename="QGrain/ui/MainWindow.py" line="377"/>
+        <location filename="QGrain/ui/MainWindow.py" line="52"/>
+        <location filename="QGrain/ui/MainWindow.py" line="372"/>
         <source>Statistics</source>
         <translation>Statistics</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="69"/>
-        <location filename="QGrain/ui/MainWindow.py" line="84"/>
-        <location filename="QGrain/ui/MainWindow.py" line="356"/>
-        <location filename="QGrain/ui/MainWindow.py" line="362"/>
+        <location filename="QGrain/ui/MainWindow.py" line="70"/>
+        <location filename="QGrain/ui/MainWindow.py" line="87"/>
+        <location filename="QGrain/ui/MainWindow.py" line="350"/>
+        <location filename="QGrain/ui/MainWindow.py" line="357"/>
         <source>EMMA Result</source>
         <translation>EMMA结果</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="71"/>
-        <location filename="QGrain/ui/MainWindow.py" line="86"/>
-        <location filename="QGrain/ui/MainWindow.py" line="357"/>
-        <location filename="QGrain/ui/MainWindow.py" line="363"/>
+        <location filename="QGrain/ui/MainWindow.py" line="72"/>
+        <location filename="QGrain/ui/MainWindow.py" line="89"/>
+        <location filename="QGrain/ui/MainWindow.py" line="351"/>
+        <location filename="QGrain/ui/MainWindow.py" line="358"/>
         <source>UDM Result</source>
         <translation>UDM结果</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="90"/>
-        <location filename="QGrain/ui/MainWindow.py" line="364"/>
+        <location filename="QGrain/ui/MainWindow.py" line="93"/>
+        <location filename="QGrain/ui/MainWindow.py" line="359"/>
         <source>Configure</source>
         <translation>配置</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="91"/>
-        <location filename="QGrain/ui/MainWindow.py" line="365"/>
+        <location filename="QGrain/ui/MainWindow.py" line="94"/>
+        <location filename="QGrain/ui/MainWindow.py" line="360"/>
         <source>SSU Algorithm</source>
         <translation>SSU算法</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="93"/>
-        <location filename="QGrain/ui/MainWindow.py" line="366"/>
+        <location filename="QGrain/ui/MainWindow.py" line="96"/>
+        <location filename="QGrain/ui/MainWindow.py" line="361"/>
         <source>EMMA Algorithm</source>
         <translation>EMMA算法</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="95"/>
-        <location filename="QGrain/ui/MainWindow.py" line="367"/>
+        <location filename="QGrain/ui/MainWindow.py" line="98"/>
+        <location filename="QGrain/ui/MainWindow.py" line="362"/>
         <source>UDM Algorithm</source>
         <translation>UDM算法</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="104"/>
-        <location filename="QGrain/ui/MainWindow.py" line="370"/>
+        <location filename="QGrain/ui/MainWindow.py" line="107"/>
+        <location filename="QGrain/ui/MainWindow.py" line="365"/>
         <source>Convert Selected UDM Result To SSU Results</source>
         <translation>将选中的UDM结果转换为SSU结果</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="211"/>
+        <location filename="QGrain/ui/MainWindow.py" line="214"/>
         <source>There is no UDM result.</source>
         <translation>UDM结果不存在。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="76"/>
-        <location filename="QGrain/ui/MainWindow.py" line="358"/>
+        <location filename="QGrain/ui/MainWindow.py" line="79"/>
+        <location filename="QGrain/ui/MainWindow.py" line="353"/>
         <source>Statistical Result</source>
         <translation>统计学结果</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="216"/>
+        <location filename="QGrain/ui/MainWindow.py" line="219"/>
         <source>Converting the selected UDM result to SSU results...</source>
         <translation>正在将选中的UDM结果转换为SSU结果...</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="274"/>
+        <location filename="QGrain/ui/MainWindow.py" line="273"/>
         <source>Choose a filename to save the statistical result</source>
         <translation>选取一个文件来保存统计学结果</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="280"/>
+        <location filename="QGrain/ui/MainWindow.py" line="278"/>
         <source>Saving the statistical result...</source>
         <translation>正在保存统计学结果...</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="107"/>
-        <location filename="QGrain/ui/MainWindow.py" line="371"/>
+        <location filename="QGrain/ui/MainWindow.py" line="110"/>
+        <location filename="QGrain/ui/MainWindow.py" line="366"/>
         <source>Save Figures For All SSU Results</source>
         <translation>保存所有SSU结果的图片</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="232"/>
+        <location filename="QGrain/ui/MainWindow.py" line="235"/>
         <source>There is no SSU result.</source>
         <translation>没有SSU结果。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="235"/>
+        <location filename="QGrain/ui/MainWindow.py" line="238"/>
         <source>Choose a directory to save the figures for all SSU results</source>
         <translation>选择一个目录来保存所有SSU结果的图片</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/MainWindow.py" line="242"/>
+        <location filename="QGrain/ui/MainWindow.py" line="243"/>
         <source>Saving the figures for all SSU results...</source>
         <translation>正在保存所有SSU结果的图片...</translation>
     </message>

@@ -111,8 +111,8 @@ class QGrainClient:
             dataset_pb2 = self._to_dataset_pb2(dataset)
             x0_pb2 = bytes() if x0 is None else x0.astype(np.float32).tobytes()
             settings = dict(device=device, loss=loss, pretrain_epochs=pretrain_epochs, min_epochs=min_epochs,
-                            max_epochs=max_epochs, precision=precision, learning_rate=learning_rate, beta1=betas[0],
-                            beta2=betas[1], update_end_members=update_end_members, need_history=need_history)
+                            max_epochs=max_epochs, precision=precision, learning_rate=learning_rate, betas=betas,
+                            update_end_members=update_end_members, need_history=need_history)
             request = qgrain_pb2.EMMARequest(dataset=dataset_pb2, distribution_type=kernel_type.value,
                                              n_members=n_members, x0=x0_pb2, **settings)
             response = stub.get_emma_result(request)
@@ -140,8 +140,8 @@ class QGrainClient:
             x0_pb2 = bytes() if x0 is None else x0.astype(np.float32).tobytes()
             n_parameters = get_distribution(DistributionType.__members__[kernel_type.name]).N_PARAMETERS + 1
             settings = dict(device=device, pretrain_epochs=pretrain_epochs, min_epochs=min_epochs,
-                            max_epochs=max_epochs, precision=precision, learning_rate=learning_rate, beta1=betas[0],
-                            beta2=betas[1], constraint_level=constraint_level, need_history=need_history)
+                            max_epochs=max_epochs, precision=precision, learning_rate=learning_rate, betas=betas,
+                            constraint_level=constraint_level, need_history=need_history)
             request = qgrain_pb2.UDMRequest(dataset=dataset_pb2, distribution_type=kernel_type.value,
                                             n_components=n_components, x0=x0_pb2, **settings)
             response = stub.get_udm_result(request)
