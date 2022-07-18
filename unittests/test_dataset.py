@@ -6,13 +6,12 @@ from QGrain.models.dataset import validate_distributions, validate_classes, Data
 
 
 class TestValidateClasses:
-    valid_data: np.ndarray = np.logspace(0, 5, 101, dtype=np.float32) * 0.02
+    valid_data: np.ndarray = np.logspace(0, 5, 101) * 0.02
 
     def test_valid(self):
         valid, array_or_msg = validate_classes(self.valid_data)
         assert valid
         assert isinstance(array_or_msg, np.ndarray)
-        assert array_or_msg.dtype == np.float32
         assert array_or_msg.ndim == 1
 
     def test_np_float64(self):
@@ -41,7 +40,6 @@ class TestValidateClasses:
         valid, array_or_msg = validate_classes(self.valid_data.astype(str).tolist())
         assert valid
         assert isinstance(array_or_msg, np.ndarray)
-        assert array_or_msg.dtype == np.float32
         assert array_or_msg.ndim == 1
         assert array_or_msg.shape == self.valid_data.shape
         assert np.all(np.less(np.abs(array_or_msg - self.valid_data), 1e-4))
@@ -59,13 +57,13 @@ class TestValidateClasses:
         assert not valid
 
     def test_ndim_2(self):
-        data = np.linspace(0, 1, 12, dtype=np.float32).reshape(2, -1)
+        data = np.linspace(0, 1, 12).reshape(2, -1)
         valid, msg = validate_classes(data)
         print("\n", "While passing two-dimensional data, the error messages:", msg, end="\n")
         assert not valid
 
     def test_ndim_3(self):
-        data = np.linspace(0, 1, 12, dtype=np.float32).reshape(2, 2, -1)
+        data = np.linspace(0, 1, 12).reshape(2, 2, -1)
         valid, msg = validate_classes(data)
         print("\n", "While passing three-dimensional data, the error messages:", msg, end="\n")
         assert not valid
@@ -113,13 +111,12 @@ class TestValidateClasses:
 
 
 class TestValidateDistributions:
-    valid_data: np.ndarray = softmax(np.random.randn(100, 101).astype(np.float32), axis=1)
+    valid_data: np.ndarray = softmax(np.random.randn(100, 101), axis=1)
 
     def test_valid(self):
         valid, array_or_msg = validate_distributions(self.valid_data.tolist())
         assert valid
         assert isinstance(array_or_msg, np.ndarray)
-        assert array_or_msg.dtype == np.float32
         assert array_or_msg.ndim == 2
         assert np.all(np.less(np.sum(array_or_msg, axis=1) - 1.0, 1e-4))
 
@@ -146,7 +143,6 @@ class TestValidateDistributions:
         valid, array_or_msg = validate_distributions(self.valid_data.astype(str).tolist())
         assert valid
         assert isinstance(array_or_msg, np.ndarray)
-        assert array_or_msg.dtype == np.float32
         assert array_or_msg.ndim == 2
         assert array_or_msg.shape == self.valid_data.shape
         assert np.all(np.less(np.abs(array_or_msg - self.valid_data), 1e-4))
@@ -164,13 +160,13 @@ class TestValidateDistributions:
         assert not valid
 
     def test_ndim_1(self):
-        data = np.linspace(0, 1, 12, dtype=np.float32).reshape(-1)
+        data = np.linspace(0, 1, 12).reshape(-1)
         valid, msg = validate_distributions(data)
         print("\n", "While passing one-dimensional data, the error messages:", msg, end="\n")
         assert not valid
 
     def test_ndim_3(self):
-        data = np.linspace(0, 1, 12, dtype=np.float32).reshape(2, 2, -1)
+        data = np.linspace(0, 1, 12).reshape(2, 2, -1)
         valid, msg = validate_distributions(data)
         print("\n", "While passing three-dimensional data, the error messages:", msg, end="\n")
         assert not valid
@@ -193,8 +189,8 @@ class TestValidateDistributions:
 class TestGrainSizeDataset:
     name = "Test"
     sample_names = [f"Sample_{i + 1}" for i in range(100)]
-    classes: np.ndarray = np.logspace(0, 5, 101, dtype=np.float32) * 0.02
-    distributions: np.ndarray = softmax(np.random.randn(100, 101).astype(np.float32), axis=1)
+    classes: np.ndarray = np.logspace(0, 5, 101) * 0.02
+    distributions: np.ndarray = softmax(np.random.randn(100, 101), axis=1)
     dataset = Dataset(name, sample_names, classes, distributions)
 
     def test_get_item(self):

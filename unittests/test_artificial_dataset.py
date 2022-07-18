@@ -1,11 +1,10 @@
 import pytest
 from scipy.stats import norm
 
-from QGrain.distributions import get_distribution, DistributionType
-from QGrain.generate import SIMPLE_PRESET, random_parameters
-from QGrain.models.artificial_dataset import *
-from QGrain.models.dataset import Dataset, Sample
 from QGrain.statistics import *
+from QGrain.models import *
+from QGrain.distributions import get_distribution
+from QGrain.generate import SIMPLE_PRESET, random_parameters
 
 
 class TestArtificialComponent:

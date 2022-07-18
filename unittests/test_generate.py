@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from QGrain.distributions import get_distribution
 from QGrain.generate import *
+from QGrain.distributions import get_distribution
 
 
 def test_presets():

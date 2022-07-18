@@ -1,14 +1,14 @@
 import numpy as np
 import pytest
 
-from QGrain.emma import try_emma, built_in_losses
+from QGrain.models import EMMAResult
 from QGrain.generate import random_dataset, SIMPLE_PRESET
 from QGrain.kernels import KernelType
-from QGrain.models import EMMAResult
+from QGrain.emma import try_emma, built_in_losses
 
 
 class TestTryEMMA:
-    dataset = random_dataset(**SIMPLE_PRESET, n_samples=200)
+    dataset = random_dataset(**SIMPLE_PRESET, n_samples=100)
     x0 = np.array([[mean for (mean, std) in component] for component in SIMPLE_PRESET["target"]]).T
     x0 = x0[1:-1]
 
@@ -59,6 +59,10 @@ class TestTryEMMA:
                       "proportions", "end_members", "time_spent", "x0", "history", "settings"]
         for prop in properties:
             assert hasattr(result, prop)
+
+    def test_no_history(self):
+        result = try_emma(self.dataset, KernelType.Normal, self.dataset.n_components, need_history=False)
+        assert result.n_iterations == 1
 
     def test_history(self):
         result = try_emma(self.dataset, KernelType.Normal, self.dataset.n_components)

@@ -37,7 +37,7 @@ def test_modes():
 
 def test_to_cumulative():
     for (i, distribution) in enumerate(distributions):
-        cumulative = to_cumulative(distribution, expand=i % 2)
+        cumulative = to_cumulative(distribution)
         assert np.all(np.less_equal(cumulative[:-1], cumulative[1:]))
 
 
@@ -107,8 +107,8 @@ def test_major_statistics():
 
 
 def test_all_statistics():
-    keys = ["arithmetic", "geometric", "logarithmic", "geometric_FW57", "logarithmic_FW57",
-            "proportions_GSM", "proportions_SSC", "proportions_BGSSC", "proportions", "group_Folk54", "group_BP12"]
+    keys = ["arithmetic", "geometric", "logarithmic", "geometric_fw57", "logarithmic_fw57",
+            "proportions_gsm", "proportions_ssc", "proportions_bgssc", "proportions", "group_folk54", "group_bp12"]
     for (i, distribution) in enumerate(distributions):
         statistics = all_statistics(classes, classes_phi, distribution)
         for key in keys:
