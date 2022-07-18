@@ -202,7 +202,7 @@ class SSUAnalyzer(QtWidgets.QWidget):
         self.component_number_label.setText(self.tr("Number of Components"))
         self.sample_index_label.setText(self.tr("Sample Index"))
         self.sample_name_label.setText(self.tr("Sample Name"))
-        if not self._dataset.has_sample:
+        if self._dataset is None:
             self.sample_name_display.setText(self.tr("Unknown"))
         self.try_fit_button.setText(self.tr("Try Fit"))
         self.edit_parameter_button.setText(self.tr("Edit Parameters"))
