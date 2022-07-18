@@ -4,7 +4,6 @@ scipy
 scikit-learn
 grpcio
 protobuf
-torch
 xlrd
 openpyxl
 PySide6 >= 6.2.0
