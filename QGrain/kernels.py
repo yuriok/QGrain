@@ -1,18 +1,9 @@
-from enum import Enum, unique
-
 import numpy as np
 import torch
 
+from .models import KernelType
+
 _INFINITESIMAL = 1e-8
-
-
-@unique
-class KernelType(Enum):
-    Nonparametric = "Nonparametric"
-    Normal = "Normal"
-    SkewNormal = "Skew Normal"
-    Weibull = "Weibull"
-    GeneralWeibull = "General Weibull"
 
 
 def normal_pdf(x, loc, scale):

@@ -9,9 +9,9 @@ import numpy as np
 from numpy import ndarray
 from scipy.optimize import basinhopping, minimize
 
-from .distributions import DistributionType, get_distribution, get_sorted_indexes
+from .models import DistributionType, Dataset, Sample, SSUResult, ArtificialSample, ArtificialDataset
+from .distributions import get_distribution, get_sorted_indexes
 from .metrics import loss_numpy
-from .models import Dataset, Sample, SSUResult, ArtificialSample, ArtificialDataset
 
 # "cosine" metric has problem
 built_in_losses = (
@@ -68,7 +68,7 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
     start_text = f"""Performing the SSU algorithm on the sample ({sample.name}).
     Distribution type: {distribution_type.name}
     Number of components: {n_components}
-    x0: {x0}
+    x0: {x0 if x0 is None else x0.tolist()}
     Loss: {loss}
     Optimizer: {optimizer}
     Try global optimization: {try_global}
@@ -142,7 +142,7 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
     settings = dict(loss=loss, optimizer=optimizer, try_global=try_global, global_max_niter=global_max_niter,
                     global_niter_success=global_max_niter, global_step_size=global_step_size,
                     optimizer_max_niter=optimizer_max_niter, need_history=need_history)
-    ssu_result = SSUResult(sample, distribution_type, x0, sorted_parameters, time_spent, settings)
+    ssu_result = SSUResult(sample, distribution_type, sorted_parameters, time_spent, x0=x0, settings=settings)
     logger.debug(f"The fitting process successfully finished. {message}")
     return ssu_result, message
 
