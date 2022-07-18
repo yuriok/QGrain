@@ -48,7 +48,7 @@ class TestServer:
         server = QGrainServicer()
         dataset_pb2 = QGrainClient._to_dataset_pb2(self.dataset)
         settings = dict(device="cpu", loss="lmse", pretrain_epochs=0, min_epochs=100,
-                        max_epochs=10000, precision=6, learning_rate=5e-3, beta1=0.8, beta2=0.5,
+                        max_epochs=10000, precision=6, learning_rate=5e-3, betas=(0.8, 0.5),
                         update_end_members=True, need_history=True)
         request = qgrain_pb2.EMMARequest(dataset=dataset_pb2, distribution_type=KernelType.Normal.value, n_members=3,
                                          x0=bytes(), **settings)
@@ -69,7 +69,7 @@ class TestServer:
         dataset_pb2 = QGrainClient._to_dataset_pb2(self.dataset)
         n_parameters = get_distribution(DistributionType.Normal).N_PARAMETERS + 1
         settings = dict(device="cpu", pretrain_epochs=0, min_epochs=100, max_epochs=10000, precision=6,
-                        learning_rate=5e-3, beta1=0.8, beta2=0.5, constraint_level=2.0, need_history=True)
+                        learning_rate=5e-3, betas=(0.8, 0.5), constraint_level=2.0, need_history=True)
         request = qgrain_pb2.UDMRequest(dataset=dataset_pb2, distribution_type=KernelType.Normal.value,
                                         n_components=3, x0=bytes(), **settings)
         response = server.get_udm_result(request, None)

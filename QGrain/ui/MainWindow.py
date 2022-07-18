@@ -10,6 +10,7 @@ from .. import QGRAIN_ROOT_PATH
 from ..models import Dataset
 from ..protos.client import QGrainClient
 from ..io import save_pca, save_statistics
+from ..utils import udm_to_ssu
 from . import EXTRA, setup_app, setup_logging
 from .About import About
 from .ClusteringAnalyzer import ClusteringAnalyzer
@@ -61,57 +62,59 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tab_widget.addTab(self.udm_analyzer, self.tr("UDM"))
 
         # Open
-        self.open_menu: QtWidgets.QMenu = self.menuBar().addMenu(self.tr("Open"))
-        self.open_dataset_action: QtGui.QAction = self.open_menu.addAction(self.tr("Grain Size Dataset"))
+        self.open_menu = self.menuBar().addMenu(self.tr("Open"))
+        self.open_dataset_action = self.open_menu.addAction(self.tr("Grain Size Dataset"))
         self.open_dataset_action.triggered.connect(lambda: self.load_dataset_dialog.show())
-        self.load_ssu_result_action: QtGui.QAction = self.open_menu.addAction(self.tr("SSU Results"))
+        self.load_ssu_result_action = self.open_menu.addAction(self.tr("SSU Results"))
         self.load_ssu_result_action.triggered.connect(self.ssu_analyzer.result_view.load_results)
-        self.load_emma_result_action: QtGui.QAction = self.open_menu.addAction(self.tr("EMMA Result"))
+        self.load_emma_result_action = self.open_menu.addAction(self.tr("EMMA Result"))
         self.load_emma_result_action.triggered.connect(self.emma_analyzer.load_result)
-        self.load_udm_result_action: QtGui.QAction = self.open_menu.addAction(self.tr("UDM Result"))
+        self.load_udm_result_action = self.open_menu.addAction(self.tr("UDM Result"))
         self.load_udm_result_action.triggered.connect(self.udm_analyzer.load_result)
 
         # Save
-        self.save_menu: QtWidgets.QMenu = self.menuBar().addMenu(self.tr("Save"))
-        self.save_statistics_action: QtGui.QAction = self.save_menu.addAction(self.tr("Statistical Result"))
+        self.save_menu = self.menuBar().addMenu(self.tr("Save"))
+        self.save_artificial_action = self.save_menu.addAction(self.tr("Artificial Dataset"))
+        self.save_artificial_action.triggered.connect(self.dataset_generator.on_save_clicked)
+        self.save_statistics_action = self.save_menu.addAction(self.tr("Statistical Result"))
         self.save_statistics_action.triggered.connect(self.on_save_statistics_clicked)
-        self.save_pca_action: QtGui.QAction = self.save_menu.addAction(self.tr("PCA Result"))
+        self.save_pca_action = self.save_menu.addAction(self.tr("PCA Result"))
         self.save_pca_action.triggered.connect(self.on_save_pca_clicked)
-        self.save_clustering_action: QtGui.QAction = self.save_menu.addAction(self.tr("Clustering Result"))
+        self.save_clustering_action = self.save_menu.addAction(self.tr("Clustering Result"))
         self.save_clustering_action.triggered.connect(self.clustering_analyzer.save_result)
-        self.save_ssu_result_action: QtGui.QAction = self.save_menu.addAction(self.tr("SSU Results"))
+        self.save_ssu_result_action = self.save_menu.addAction(self.tr("SSU Results"))
         self.save_ssu_result_action.triggered.connect(self.ssu_analyzer.result_view.save_results)
-        self.save_emma_result_action: QtGui.QAction = self.save_menu.addAction(self.tr("EMMA Result"))
+        self.save_emma_result_action = self.save_menu.addAction(self.tr("EMMA Result"))
         self.save_emma_result_action.triggered.connect(self.emma_analyzer.save_selected_result)
-        self.save_udm_result_action: QtGui.QAction = self.save_menu.addAction(self.tr("UDM Result"))
+        self.save_udm_result_action = self.save_menu.addAction(self.tr("UDM Result"))
         self.save_udm_result_action.triggered.connect(self.udm_analyzer.save_selected_result)
 
         # Config
-        self.config_menu: QtWidgets.QMenu = self.menuBar().addMenu(self.tr("Configure"))
-        self.config_ssu_action: QtGui.QAction = self.config_menu.addAction(self.tr("SSU Algorithm"))
+        self.config_menu = self.menuBar().addMenu(self.tr("Configure"))
+        self.config_ssu_action = self.config_menu.addAction(self.tr("SSU Algorithm"))
         self.config_ssu_action.triggered.connect(self.ssu_setting_dialog.show)
-        self.config_emma_action: QtGui.QAction = self.config_menu.addAction(self.tr("EMMA Algorithm"))
+        self.config_emma_action = self.config_menu.addAction(self.tr("EMMA Algorithm"))
         self.config_emma_action.triggered.connect(self.emma_setting_dialog.show)
-        self.config_udm_action: QtGui.QAction = self.config_menu.addAction(self.tr("UDM Algorithm"))
+        self.config_udm_action = self.config_menu.addAction(self.tr("UDM Algorithm"))
         self.config_udm_action.triggered.connect(self.udm_setting_dialog.show)
 
         # Experimental
-        self.experimental_menu: QtWidgets.QMenu = self.menuBar().addMenu(self.tr("Experimental"))
-        self.ssu_fit_all_action: QtGui.QAction = self.experimental_menu.addAction(
+        self.experimental_menu = self.menuBar().addMenu(self.tr("Experimental"))
+        self.ssu_fit_all_action = self.experimental_menu.addAction(
             self.tr("Perform SSU For All Samples"))
         self.ssu_fit_all_action.triggered.connect(self.ssu_fit_all_samples)
-        self.convert_udm_to_ssu_action: QtGui.QAction = self.experimental_menu.addAction(
+        self.convert_udm_to_ssu_action = self.experimental_menu.addAction(
             self.tr("Convert Selected UDM Result To SSU Results"))
         self.convert_udm_to_ssu_action.triggered.connect(self.convert_udm_to_ssu)
-        self.save_all_ssu_figures_action: QtGui.QAction = self.experimental_menu.addAction(
+        self.save_all_ssu_figures_action = self.experimental_menu.addAction(
             self.tr("Save Figures For All SSU Results"))
         self.save_all_ssu_figures_action.triggered.connect(self.save_all_ssu_figure)
 
         # Language
-        self.language_menu: QtWidgets.QMenu = self.menuBar().addMenu(self.tr("Language"))
+        self.language_menu = self.menuBar().addMenu(self.tr("Language"))
         self.language_group = QtGui.QActionGroup(self.language_menu)
         self.language_group.setExclusive(True)
-        self.language_actions: list[QtGui.QAction] = []
+        self.language_actions: List[QtGui.QAction] = []
         for key, name in self.supported_languages:
             action = self.language_group.addAction(name)
             action.setCheckable(True)
@@ -120,7 +123,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.language_actions.append(action)
         self.language_actions[0].setChecked(True)
         # Theme
-        self.theme_menu: QtWidgets.QMenu = self.menuBar().addMenu(self.tr("Theme"))
+        self.theme_menu = self.menuBar().addMenu(self.tr("Theme"))
         self.theme_group = QtGui.QActionGroup(self.theme_menu)
         self.theme_group.setExclusive(True)
         self.theme_actions = []
@@ -223,7 +226,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 raise StopIteration()
             progress_dialog.setValue(int(progress*100))
             QtCore.QCoreApplication.processEvents()
-        ssu_results = udm_result.to_ssu_results(callback)
+        ssu_results = udm_to_ssu(udm_result, logger=self.logger, progress_callback=callback)
         self.ssu_analyzer.result_view.add_results(ssu_results)
 
     def save_all_ssu_figure(self):
@@ -236,22 +239,21 @@ class MainWindow(QtWidgets.QMainWindow):
             ".", QtWidgets.QFileDialog.ShowDirsOnly)
         if directory is None or directory == "":
             return
+        progress_dialog = QtWidgets.QProgressDialog(
+            self.tr("Saving the figures for all SSU results..."), self.tr("Cancel"),
+            0, 100, self)
+        progress_dialog.setWindowTitle("QGrain")
+        progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
 
+        def callback(progress: float):
+            if progress_dialog.wasCanceled():
+                raise StopIteration()
+            progress_dialog.setValue(int(progress*100))
+            QtCore.QCoreApplication.processEvents()
         try:
-            progress_dialog = QtWidgets.QProgressDialog(
-                self.tr("Saving the figures for all SSU results..."), self.tr("Cancel"),
-                0, 100, self)
-            progress_dialog.setWindowTitle("QGrain")
-            progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
-
-            def callback(progress: float):
-                if progress_dialog.wasCanceled():
-                    raise StopIteration()
-                progress_dialog.setValue(int(progress*100))
-                QtCore.QCoreApplication.processEvents()
             all_results = self.ssu_analyzer.result_view.all_results
             for i, result in enumerate(all_results):
-                self.ssu_analyzer.result_chart.show_chart(result.view_model)
+                self.ssu_analyzer.result_chart.show_chart(result)
                 image = self.ssu_analyzer.result_chart.grab()
                 filename = os.path.join(directory, f"{i}.png")
                 image.save(filename)
@@ -259,11 +261,8 @@ class MainWindow(QtWidgets.QMainWindow):
             callback(1.0)
         except StopIteration as e:
             self.logger.info("The saving task was canceled.")
+        finally:
             progress_dialog.close()
-        except Exception as e:
-            progress_dialog.close()
-            self.logger.exception("An unknown exception was raised. Please check the logs for more details.")
-            self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
 
     def on_save_statistics_clicked(self):
         if self._dataset is None:
@@ -275,26 +274,23 @@ class MainWindow(QtWidgets.QMainWindow):
             ".", "Microsoft Excel (*.xlsx)")
         if filename is None or filename == "":
             return
-        try:
-            progress_dialog = QtWidgets.QProgressDialog(
-                self.tr("Saving the statistical result..."), self.tr("Cancel"),
-                0, 100, self)
-            progress_dialog.setWindowTitle("QGrain")
-            progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
+        progress_dialog = QtWidgets.QProgressDialog(
+            self.tr("Saving the statistical result..."), self.tr("Cancel"),
+            0, 100, self)
+        progress_dialog.setWindowTitle("QGrain")
+        progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
 
-            def callback(progress: float):
-                if progress_dialog.wasCanceled():
-                    raise StopIteration()
-                progress_dialog.setValue(int(progress*100))
-                QtCore.QCoreApplication.processEvents()
+        def callback(progress: float):
+            if progress_dialog.wasCanceled():
+                raise StopIteration()
+            progress_dialog.setValue(int(progress*100))
+            QtCore.QCoreApplication.processEvents()
+        try:
             save_statistics(self._dataset, filename, progress_callback=callback, logger=self.logger)
         except StopIteration as e:
             self.logger.info("The saving task was canceled.")
+        finally:
             progress_dialog.close()
-        except Exception as e:
-            progress_dialog.close()
-            self.logger.exception("An unknown exception was raised. Please check the logs for more details.")
-            self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
 
     def on_save_pca_clicked(self):
         if self._dataset is None:
@@ -305,25 +301,23 @@ class MainWindow(QtWidgets.QMainWindow):
             ".", "Microsoft Excel (*.xlsx)")
         if filename is None or filename == "":
             return
+        progress_dialog = QtWidgets.QProgressDialog(
+            self.tr("Saving the PCA result..."), self.tr("Cancel"),
+            0, 100, self)
+        progress_dialog.setWindowTitle("QGrain")
+        progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
+
+        def callback(progress: float):
+            if progress_dialog.wasCanceled():
+                raise StopIteration()
+            progress_dialog.setValue(int(progress*100))
+            QtCore.QCoreApplication.processEvents()
         try:
-            progress_dialog = QtWidgets.QProgressDialog(
-                self.tr("Saving the PCA result..."), self.tr("Cancel"),
-                0, 100, self)
-            progress_dialog.setWindowTitle("QGrain")
-            progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
-            def callback(progress: float):
-                if progress_dialog.wasCanceled():
-                    raise StopIteration()
-                progress_dialog.setValue(int(progress*100))
-                QtCore.QCoreApplication.processEvents()
             save_pca(self._dataset, filename, progress_callback=callback, logger=self.logger)
         except StopIteration as e:
             self.logger.info("The saving task was canceled.")
+        finally:
             progress_dialog.close()
-        except Exception as e:
-            progress_dialog.close()
-            self.logger.exception("An unknown exception was raised. Please check the logs for more details.")
-            self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
 
     def switch_language(self, language: str):
         app = QtWidgets.QApplication.instance()
@@ -355,6 +349,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.load_ssu_result_action.setText(self.tr("SSU Results"))
         self.load_emma_result_action.setText(self.tr("EMMA Result"))
         self.load_udm_result_action.setText(self.tr("UDM Result"))
+        self.save_artificial_action.setText(self.tr("Artificial Dataset"))
         self.save_statistics_action.setText(self.tr("Statistical Result"))
         self.save_pca_action.setText(self.tr("PCA Result"))
         self.save_clustering_action.setText(self.tr("Clustering Result"))
@@ -394,7 +389,8 @@ def qgrain_app():
     from ..ssu import try_ssu
     sample = dataset[0]
     x0 = dataset.parameters[0, 1:, :]
-    result, msg = try_ssu(sample.sample, DistributionType.Normal, dataset.n_components, x0=x0)
+    result, msg = try_ssu(sample.sample, DistributionType.Normal, dataset.n_components,
+                          x0=x0, try_global=True, need_history=False)
     assert isinstance(result, SSUResult)
     main.parameter_editor.refer_ssu_result(result)
     main.parameter_editor.enabled_checkbox.setChecked(True)

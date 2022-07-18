@@ -334,7 +334,7 @@ class DatasetGenerator(QtWidgets.QWidget):
             self.preview_button.setText(self.tr("Stop"))
             self.update_timer.start(500)
 
-    def on_generate_clicked(self):
+    def on_save_clicked(self):
         filename, _ = self.file_dialog.getSaveFileName(
             self, self.tr("Choose a filename to save the generated dataset"),
             ".", "Microsoft Excel (*.xlsx)")

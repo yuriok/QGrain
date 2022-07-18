@@ -9,7 +9,7 @@ import xlrd
 from PySide6 import QtCore, QtWidgets
 
 from ..models import Dataset
-from ..io.load_dataset import check_layout, load_dataset, get_file_type, ReadFileType
+from ..io.load import check_layout, load_dataset, get_file_type, ReadFileType
 
 
 class DatasetLoader(QtWidgets.QDialog):

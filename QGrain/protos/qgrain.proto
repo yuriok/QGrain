@@ -117,10 +117,9 @@ message EMMARequest {
   int32 max_epochs = 9;
   float precision = 10;
   float learning_rate = 11;
-  float beta1 = 12;
-  float beta2 = 13;
-  bool update_end_members = 14;
-  bool need_history = 15;
+  repeated float betas = 12;
+  bool update_end_members = 13;
+  bool need_history = 14;
 };
 
 message EMMAResponse {
@@ -146,10 +145,9 @@ message UDMRequest {
   int32 max_epochs = 8;
   float precision = 9;
   float learning_rate = 10;
-  float beta1 = 11;
-  float beta2 = 12;
-  float constraint_level = 13;
-  bool need_history = 14;
+  repeated float betas = 11;
+  float constraint_level = 12;
+  bool need_history = 13;
 };
 
 message UDMResponse {
