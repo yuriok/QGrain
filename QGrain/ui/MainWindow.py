@@ -101,7 +101,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.tr("Perform SSU For All Samples"))
         self.ssu_fit_all_action.triggered.connect(self.ssu_fit_all_samples)
         self.convert_udm_to_ssu_action: QtGui.QAction = self.experimental_menu.addAction(
-            self.tr("Convert UDM Result To SSU Results"))
+            self.tr("Convert Selected UDM Result To SSU Results"))
         self.convert_udm_to_ssu_action.triggered.connect(self.convert_udm_to_ssu)
         self.save_all_ssu_figures_action: QtGui.QAction = self.experimental_menu.addAction(
             self.tr("Save Figures For All SSU Results"))
@@ -213,7 +213,7 @@ class MainWindow(QtWidgets.QMainWindow):
         udm_result = self.udm_analyzer.selected_result
         assert udm_result is not None
         progress_dialog = QtWidgets.QProgressDialog(
-            self.tr("Converting UDM result to SSU results..."), self.tr("Cancel"),
+            self.tr("Converting the selected UDM result to SSU results..."), self.tr("Cancel"),
             0, 100, self)
         progress_dialog.setWindowTitle("QGrain")
         progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
@@ -258,7 +258,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 callback(i/len(all_results))
             callback(1.0)
         except StopIteration as e:
-            self.logger.info("Saving task was canceled.")
+            self.logger.info("The saving task was canceled.")
             progress_dialog.close()
         except Exception as e:
             progress_dialog.close()
@@ -267,17 +267,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def on_save_statistics_clicked(self):
         if self._dataset is None:
-            self.logger.error("Dataset has not been loaded.")
-            self.show_error(self.tr("Dataset has not been loaded."))
+            self.logger.error("The dataset has not been loaded.")
+            self.show_error(self.tr("The dataset has not been loaded."))
             return
         filename, _ = self.file_dialog.getSaveFileName(
-            self, self.tr("Save statistical result"),
+            self, self.tr("Choose a filename to save the statistical result"),
             ".", "Microsoft Excel (*.xlsx)")
         if filename is None or filename == "":
             return
         try:
             progress_dialog = QtWidgets.QProgressDialog(
-                self.tr("Saving statistical result..."), self.tr("Cancel"),
+                self.tr("Saving the statistical result..."), self.tr("Cancel"),
                 0, 100, self)
             progress_dialog.setWindowTitle("QGrain")
             progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
@@ -289,7 +289,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 QtCore.QCoreApplication.processEvents()
             save_statistics(self._dataset, filename, progress_callback=callback, logger=self.logger)
         except StopIteration as e:
-            self.logger.info("Saving task was canceled.")
+            self.logger.info("The saving task was canceled.")
             progress_dialog.close()
         except Exception as e:
             progress_dialog.close()
@@ -298,15 +298,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def on_save_pca_clicked(self):
         if self._dataset is None:
-            self.show_error(self.tr("Dataset has not been loaded."))
+            self.show_error(self.tr("The dataset has not been loaded."))
             return
-        filename, _ = self.file_dialog.getSaveFileName(self, self.tr("Save PCA result"),
-                                                       ".", "Microsoft Excel (*.xlsx)")
+        filename, _ = self.file_dialog.getSaveFileName(
+            self, self.tr("Choose a filename to save the PCA result"),
+            ".", "Microsoft Excel (*.xlsx)")
         if filename is None or filename == "":
             return
         try:
             progress_dialog = QtWidgets.QProgressDialog(
-                self.tr("Saving PCA result..."), self.tr("Cancel"),
+                self.tr("Saving the PCA result..."), self.tr("Cancel"),
                 0, 100, self)
             progress_dialog.setWindowTitle("QGrain")
             progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
@@ -317,7 +318,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 QtCore.QCoreApplication.processEvents()
             save_pca(self._dataset, filename, progress_callback=callback, logger=self.logger)
         except StopIteration as e:
-            self.logger.info("Saving task was canceled.")
+            self.logger.info("The saving task was canceled.")
             progress_dialog.close()
         except Exception as e:
             progress_dialog.close()
@@ -366,7 +367,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.config_udm_action.setText(self.tr("UDM Algorithm"))
         self.experimental_menu.setTitle(self.tr("Experimental"))
         self.ssu_fit_all_action.setText(self.tr("Perform SSU For All Samples"))
-        self.convert_udm_to_ssu_action.setText(self.tr("Convert UDM Result To SSU Results"))
+        self.convert_udm_to_ssu_action.setText(self.tr("Convert Selected UDM Result To SSU Results"))
         self.save_all_ssu_figures_action.setText(self.tr("Save Figures For All SSU Results"))
         self.language_menu.setTitle(self.tr("Language"))
         self.theme_menu.setTitle(self.tr("Theme"))

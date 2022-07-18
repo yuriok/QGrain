@@ -142,8 +142,8 @@ class UDMAnalyzer(QtWidgets.QWidget):
 
     def on_try_fit_clicked(self):
         if self._dataset is None:
-            self.logger.error("Dataset has not been loaded.")
-            self.show_error(self.tr("Dataset has not been loaded."))
+            self.logger.error("The dataset has not been loaded.")
+            self.show_error(self.tr("The dataset has not been loaded."))
             return
 
         settings = {**self.setting_dialog.settings}
@@ -162,8 +162,8 @@ class UDMAnalyzer(QtWidgets.QWidget):
                 server_state = self._client.get_service_state()
                 if len(self._dataset) > server_state["max_dataset_size"]:
                     self.logger.error(
-                        f"The dataset size ({len(self._dataset)} samples) exceeded the limitation of remote server.")
-                    self.show_error(self.tr("The dataset size exceeded the limitation of remote server."))
+                        f"The dataset size ({len(self._dataset)} samples) exceeded the limitation of remote grpc server.")
+                    self.show_error(self.tr("The dataset size exceeded the limitation of remote grpc server."))
                     return
                 # TODO: async & progress report
                 result_or_msg = self._client.get_udm_result(self._dataset, **settings)
@@ -172,8 +172,8 @@ class UDMAnalyzer(QtWidgets.QWidget):
                     self.result_chart.show_result(result_or_msg)
                     return
                 else:
-                    self.logger.error(f"UDM fitting failed: {result_or_msg}.")
-                    self.show_error(self.tr("UDM fitting failed, please check the log for more details."))
+                    self.logger.error(f"The UDM fitting task failed: {result_or_msg}.")
+                    self.show_error(self.tr("The UDM fitting task failed, please check the logs for more details."))
                     return
             except _InactiveRpcError:
                     self.logger.warning("The remote grpc server is not available.")
@@ -197,7 +197,7 @@ class UDMAnalyzer(QtWidgets.QWidget):
             self.add_results([result])
             self.result_chart.show_result(result)
         except StopIteration:
-            self.logger.info("Performing task was canceled.")
+            self.logger.info("The performing task was canceled.")
         finally:
             progress_dialog.close()
             self.try_fit_button.setEnabled(True)
@@ -283,7 +283,7 @@ class UDMAnalyzer(QtWidgets.QWidget):
                     pickle.dump(self.selected_result, f)
                     self.logger.info("The selected UDM result has been dumped.")
         except StopIteration as e:
-            self.logger.info("Saving task was canceled.")
+            self.logger.info("The saving task was canceled.")
             progress_dialog.close()
         except Exception as e:
             progress_dialog.close()

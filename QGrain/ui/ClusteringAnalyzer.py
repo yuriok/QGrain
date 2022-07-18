@@ -44,14 +44,14 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
         self.main_layout.addWidget(self.metric_label, 1, 2)
         self.main_layout.addWidget(self.metric_combo_box, 1, 3)
         self.p_label = QtWidgets.QLabel(self.tr("p"))
-        self.p_label.setToolTip(self.tr("Controls the number of leaves at the bottom level of the figure."))
+        self.p_label.setToolTip(self.tr("The number of leaves at the bottom level of the figure."))
         self.p_input = QtWidgets.QSpinBox()
         self.p_input.setMinimum(1)
         self.p_input.valueChanged.connect(lambda p: self.perform())
         self.main_layout.addWidget(self.p_label, 1, 4)
         self.main_layout.addWidget(self.p_input, 1, 5)
         self.n_clusters_label = QtWidgets.QLabel(self.tr("Number of Clusters"))
-        self.n_clusters_label.setToolTip(self.tr("Controls the number of clusters of this clustering algorithm."))
+        self.n_clusters_label.setToolTip(self.tr("The number of clusters."))
         self.n_clusters_input = QtWidgets.QSpinBox()
         self.n_clusters_input.setMinimum(2)
         self.main_layout.addWidget(self.n_clusters_label, 1, 6)
@@ -165,7 +165,7 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
 
             save_clustering(self._last_dataset, flags, filename, progress_callback=callback, logger=self.logger)
         except StopIteration:
-            self.logger.info("Saving task was canceled.")
+            self.logger.info("The saving task was canceled.")
         except Exception as e:
             self.logger.exception(f"An unknown exception was raised: {e}. "
                                   f"Please check the logs for more details.", stack_info=True)
@@ -185,6 +185,6 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
         self.metric_label.setText(self.tr("Metric"))
         self.metric_label.setToolTip(self.tr("The distance metric."))
         self.p_label.setText(self.tr("p"))
-        self.p_label.setToolTip(self.tr("Controls the number of leaves at the bottom level of the figure."))
+        self.p_label.setToolTip(self.tr("The number of leaves at the bottom level of the figure."))
         self.n_clusters_label.setText(self.tr("Number of Clusters"))
-        self.n_clusters_label.setToolTip(self.tr("Controls the number of clusters of this clustering algorithm."))
+        self.n_clusters_label.setToolTip(self.tr("The number of clusters."))

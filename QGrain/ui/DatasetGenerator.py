@@ -161,12 +161,12 @@ class DatasetGenerator(QtWidgets.QWidget):
         self.control_layout.addWidget(self.n_components_input, 0, 1)
         self.control_layout.addWidget(self.distribution_type_label, 0, 2)
         self.control_layout.addWidget(self.distribution_type_combo_box, 0, 3)
-        self.minimum_size_label = QtWidgets.QLabel(self.tr("Minimum Size [{0}]").format("μm"))
+        self.minimum_size_label = QtWidgets.QLabel(self.tr("Minimum Size"))
         self.minimum_size_input = QtWidgets.QDoubleSpinBox()
         self.minimum_size_input.setDecimals(2)
         self.minimum_size_input.setRange(1e-4, 1e6)
         self.minimum_size_input.setValue(0.0200)
-        self.maximum_size_label = QtWidgets.QLabel(self.tr("Maximum Size [{0}]").format("μm"))
+        self.maximum_size_label = QtWidgets.QLabel(self.tr("Maximum Size"))
         self.maximum_size_input = QtWidgets.QDoubleSpinBox()
         self.maximum_size_input.setDecimals(2)
         self.maximum_size_input.setRange(1e-4, 1e6)
@@ -340,11 +340,11 @@ class DatasetGenerator(QtWidgets.QWidget):
             ".", "Microsoft Excel (*.xlsx)")
         if filename is None or filename == "":
             return
-        self.logger.debug(f"Generate a dataset with the parameters: {self.generate_kwargs}.")
+        self.logger.debug(f"Generating a random dataset with the parameters: {self.generate_kwargs}.")
         n_samples = self.n_samples_input.value()
         dataset = self.get_random_dataset(n_samples)
         progress_dialog = QtWidgets.QProgressDialog(
-            self.tr("Saving artificial dataset..."), self.tr("Cancel"),
+            self.tr("Saving the generated dataset..."), self.tr("Cancel"),
             0, 100, self)
         progress_dialog.setWindowTitle("QGrain")
         progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
@@ -400,8 +400,8 @@ class DatasetGenerator(QtWidgets.QWidget):
         self.preview_group.setTitle(self.tr("Preview"))
         self.n_components_label.setText(self.tr("Number of Components"))
         self.distribution_type_label.setText(self.tr("Distribution Type"))
-        self.minimum_size_label.setText(self.tr("Minimum Size [{0}]").format("μm"))
-        self.maximum_size_label.setText(self.tr("Maximum Size [{0}]").format("μm"))
+        self.minimum_size_label.setText(self.tr("Minimum Size"))
+        self.maximum_size_label.setText(self.tr("Maximum Size"))
         self.n_classes_label.setText(self.tr("Number of Classes"))
         self.precision_label.setText(self.tr("Data Precision"))
         self.n_samples_label.setText(self.tr("Number of Samples"))

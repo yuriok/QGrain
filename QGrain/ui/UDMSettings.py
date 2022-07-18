@@ -20,7 +20,7 @@ class UDMSettings(QtWidgets.QDialog):
         self.main_layout = QtWidgets.QGridLayout(self)
         self.device_label = QtWidgets.QLabel(self.tr("Device"))
         self.device_label.setToolTip(self.tr(
-            "The neural network framework, pytorch, also can use the GPU of NVIDIA to do calculations."))
+            "PyTorch can use the NVIDIA GPU to do calculations."))
         self.device_combo_box = QtWidgets.QComboBox()
         self.main_layout.addWidget(self.device_label, 0, 0)
         self.main_layout.addWidget(self.device_combo_box, 0, 1)
@@ -49,7 +49,7 @@ class UDMSettings(QtWidgets.QDialog):
         self.main_layout.addWidget(self.max_epochs_input, 3, 1)
         self.precision_label = QtWidgets.QLabel(self.tr("Precision"))
         self.precision_label.setToolTip(self.tr(
-            "It controls the precision for the value of loss function in the stopping criterion."))
+            "It controls the precision of final loss."))
         self.precision_input = QtWidgets.QDoubleSpinBox()
         self.precision_input.setRange(2.0, 20.0)
         self.precision_input.setValue(10.0)
@@ -93,8 +93,7 @@ class UDMSettings(QtWidgets.QDialog):
         self.main_layout.addWidget(self.constraint_level_label, 8, 0)
         self.main_layout.addWidget(self.constraint_level_input, 8, 1)
         self.need_history_checkbox = QtWidgets.QCheckBox(self.tr("Need History"))
-        self.need_history_checkbox.setToolTip(self.tr(
-            "If checked, it will record the variation history of model."))
+        self.need_history_checkbox.setToolTip(self.tr("Record the variation history of parameters or not."))
         self.need_history_checkbox.setChecked(False)
         self.main_layout.addWidget(self.need_history_checkbox, 9, 0, 1, 2)
         self._update_device_list()
@@ -152,7 +151,7 @@ class UDMSettings(QtWidgets.QDialog):
         self.setWindowTitle(self.tr("UDM Settings"))
         self.device_label.setText(self.tr("Device"))
         self.device_label.setToolTip(self.tr(
-            "The neural network framework, pytorch, also can use the GPU of NVIDIA to do calculations."))
+            "PyTorch can use the NVIDIA GPU to do calculations."))
         self.pretrain_epochs_label.setText(self.tr("Pretrain Epochs"))
         self.pretrain_epochs_label.setToolTip(self.tr(
             "The number of epochs before formal training. "
@@ -163,7 +162,7 @@ class UDMSettings(QtWidgets.QDialog):
         self.max_epochs_label.setToolTip(self.tr("Maximum number of epochs to be performed."))
         self.precision_label.setText(self.tr("Precision"))
         self.precision_label.setToolTip(self.tr(
-            "It controls the precision for the value of loss function in the stopping criterion."))
+            "It controls the precision of final loss."))
         self.learning_rate_label.setText(self.tr("Learning Rate (x10<sup>-3</sup>)"))
         self.learning_rate_label.setToolTip(self.tr(
             "The learning rate of the neural network to update its weights from gradient."))
@@ -178,5 +177,4 @@ class UDMSettings(QtWidgets.QDialog):
             "It controls the constraint intensity of the end member diversity between different samples. "
             "When the constraint level is high, the end members of different samples tend to be equal.")
         self.need_history_checkbox.setText(self.tr("Need History"))
-        self.need_history_checkbox.setToolTip(self.tr(
-            "If checked, it will record the variation history of model."))
+        self.need_history_checkbox.setToolTip(self.tr("Record the variation history of parameters or not."))
