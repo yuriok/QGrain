@@ -271,9 +271,9 @@ class ParameterEditor(QtWidgets.QDialog):
         self.update_cache()
         self.update_chart()
 
-    def setup_target(self, classes_μm: np.ndarray, target: np.ndarray):
-        self._classes = classes_μm
-        self._classes_phi = -np.log2(classes_μm / 1000.0)
+    def setup_target(self, classes: np.ndarray, target: np.ndarray):
+        self._classes = classes
+        self._classes_phi = -np.log2(classes / 1000.0)
         self._interval_phi = interval_phi(self._classes_phi)
         self._target = target
 

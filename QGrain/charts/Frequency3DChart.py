@@ -33,7 +33,7 @@ class Frequency3DChart(BaseChart):
         self._last_samples = []
 
     @property
-    def supported_scales(self) -> Tuple[Tuple[str, str]]:
+    def supported_scales(self) -> Sequence[Tuple[str, str]]:
         scales = (("log-linear", self.tr("Log-linear")),
                   ("log", self.tr("Log")),
                   ("phi", self.tr("Phi")),

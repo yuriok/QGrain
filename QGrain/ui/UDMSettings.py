@@ -20,7 +20,7 @@ class UDMSettings(QtWidgets.QDialog):
         self.main_layout = QtWidgets.QGridLayout(self)
         self.device_label = QtWidgets.QLabel(self.tr("Device"))
         self.device_label.setToolTip(self.tr(
-            "The neural netowrk framwork, pytorch, also can use the GPU of NVIDIA to do calculations."))
+            "The neural network framework, pytorch, also can use the GPU of NVIDIA to do calculations."))
         self.device_combo_box = QtWidgets.QComboBox()
         self.main_layout.addWidget(self.device_label, 0, 0)
         self.main_layout.addWidget(self.device_combo_box, 0, 1)
@@ -152,7 +152,7 @@ class UDMSettings(QtWidgets.QDialog):
         self.setWindowTitle(self.tr("UDM Settings"))
         self.device_label.setText(self.tr("Device"))
         self.device_label.setToolTip(self.tr(
-            "The neural netowrk framwork, pytorch, also can use the GPU of NVIDIA to do calculations."))
+            "The neural network framework, pytorch, also can use the GPU of NVIDIA to do calculations."))
         self.pretrain_epochs_label.setText(self.tr("Pretrain Epochs"))
         self.pretrain_epochs_label.setToolTip(self.tr(
             "The number of epochs before formal training. "

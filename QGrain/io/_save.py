@@ -9,14 +9,13 @@ from openpyxl.worksheet.worksheet import Worksheet
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 
+from ._use_excel import column_to_char, prepare_styles
 from .. import QGRAIN_VERSION
-from ..artificial import ArtificialDataset
 from ..emma import EMMAResult
-from ..models import Dataset, Sample
+from ..models import Dataset, Sample, ArtificialDataset
 from ..ssu import DistributionType, SSUResult, get_distribution
 from ..statistics import _all_scales, all_statistics, logarithmic
-from ..udm import UDMAlgorithmSetting, UDMResult
-from ._use_excel import column_to_char, prepare_styles
+from ..udm import UDMResult
 
 SMALL_WIDTH = 12
 MEDIAN_WIDTH = 24
@@ -86,27 +85,20 @@ def save_artificial_dataset(
     prepare_styles(wb)
     logger.debug("Creating the `README` sheet.")
     readme_text = \
-        """
-        It contanins [number of components + 3] sheets:
-        1. The first sheet is used to put the random settings which were used to generate random parameters.
-        2. The second sheet is the generated dataset.
-        3. The third sheet stores the random parameters which were used to calulate the component distributions and their mixture.
-        4. The left sheets are the distributions of all components.
+        f"""
+        It contains {dataset.n_components+2} sheets:
+        1. The first sheet is the grain size distributions of this artificial dataset.
+        2. The second sheet stores the parameters which were used to generate the dataset.
+        3-{dataset.n_components+2}. Each of the left sheets is used to put the distributions of each component.
 
         Sampling Settings
-            Minimum size [μm]: {0}
-            Maximum size [μm]: {1}
-            Number of Grain Size Classes: {2}
-            Precision: {3}
-            Noise Decimals: {4}
-            Number of Samples: {5}
-        """.format(
-            dataset.min_μm,
-            dataset.max_μm,
-            dataset.n_classes,
-            dataset.precision,
-            dataset.noise,
-            len(dataset))
+            Minimum size [micron]: {dataset.classes[0]}
+            Maximum size [micron]: {dataset.classes[-1]}
+            Number of Grain Size Classes: {len(dataset.classes)}
+            Precision: {dataset.precision}
+            Noise Decimals: {dataset.noise}
+            Number of Samples: {len(dataset)}
+        """
     _write_readme_sheet(wb.active, readme_text)
 
     def write(row, col, value, style="normal_light"):
@@ -115,43 +107,15 @@ def save_artificial_dataset(
 
     distribution_class = get_distribution(dataset.distribution_type)
     parameter_names = list(distribution_class.PARAMETER_NAMES) + ["Weight"]
-    n_parameters = distribution_class.N_PARAMETERS + 1
-    if dataset.target is not None:
-        logger.debug("Creating the `Random Settings` sheet.")
-        ws = wb.create_sheet("Random Settings")
-        write(0, 0, "Parameter", style="header")
-        ws.merge_cells(start_row=1, start_column=1, end_row=2, end_column=1)
-        for i_param, param_name in enumerate(parameter_names):
-            write(0, i_param*2+1, param_name, style="header")
-            ws.merge_cells(start_row=1, start_column=i_param*2+2, end_row=1, end_column=i_param*2+3)
-        ws.column_dimensions[column_to_char(0)].width = 16
-        for col in range(1, n_parameters*2+1):
-            ws.column_dimensions[column_to_char(col)].width = 16
-            if col % 2 == 0:
-                write(1, col, "Standard deviation", style="header")
-            else:
-                write(1, col, "Mean", style="header")
-        for row, component_parameters in enumerate(dataset.target, 2):
-            if row % 2 == 1:
-                style = "normal_dark"
-            else:
-                style = "normal_light"
-            write(row, 0, f"Component{row-1}", style=style)
-            for i, (mean, std) in enumerate(component_parameters):
-                write(row, i*2+1, mean, style=style)
-                write(row, i*2+2, std, style=style)
-    else:
-        logger.warning("Not creating the `Random Settings` sheet.")
 
-    logger.debug("Creating the `Dataset` sheet.")
-    ws = wb.create_sheet("Dataset")
+    logger.debug("Creating the `GSDs` sheet.")
+    ws = wb.create_sheet("GSDs")
     write(0, 0, "Sample Name", style="header")
     ws.column_dimensions[column_to_char(0)].width = 24
-    for col, value in enumerate(dataset.classes_μm, 1):
+    for col, value in enumerate(dataset.classes, 1):
         write(0, col, value, style="header")
         ws.column_dimensions[column_to_char(col)].width = 10
-    for i, sample in enumerate(dataset):
-        row = i + 1
+    for row, sample in enumerate(dataset, 1):
         if row % 2 == 0:
             style = "normal_dark"
         else:
@@ -161,7 +125,7 @@ def save_artificial_dataset(
             write(row, col, value, style=style)
 
         if progress_callback is not None:
-            progress_callback(i / len(dataset) * 0.2)
+            progress_callback(row / len(dataset) * 0.2)
 
     logger.debug("Creating the `Parameters` sheet.")
     ws = wb.create_sheet("Parameters")
@@ -169,31 +133,31 @@ def save_artificial_dataset(
     ws.merge_cells(start_row=1, start_column=1, end_row=2, end_column=1)
     ws.column_dimensions[column_to_char(0)].width = 24
     for i in range(dataset.n_components):
-        write(0, n_parameters*i+1, f"Component{i+1}", style="header")
-        ws.merge_cells(start_row=1, start_column=n_parameters*i+2, end_row=1, end_column=n_parameters*(i+1)+1)
+        write(0, dataset.n_parameters*i+1, f"Component{i+1}", style="header")
+        ws.merge_cells(start_row=1, start_column=dataset.n_parameters*i+2, end_row=1, end_column=dataset.n_parameters*(i+1)+1)
         for j, header_name in enumerate(parameter_names):
-            write(1, n_parameters*i+1+j, header_name, style="header")
-            ws.column_dimensions[column_to_char(n_parameters*i+1+j)].width = 16
-    for i in range(len(dataset)):
+            write(1, dataset.n_parameters*i+1+j, header_name, style="header")
+            ws.column_dimensions[column_to_char(dataset.n_parameters*i+1+j)].width = 16
+    for i, sample in enumerate(dataset):
         row = i + 2
         if row % 2 == 1:
             style = "normal_dark"
         else:
             style = "normal_light"
-        write(row, 0, dataset[i].name, style=style)
-        for j in range(dataset.n_components):
-            for k in range(n_parameters):
-                write(row, n_parameters*j+k+1, dataset.parameters[i, k, j], style=style)
+        write(row, 0, sample.name, style=style)
+        for j, component in enumerate(sample.components):
+            for k in range(dataset.n_parameters):
+                write(row, dataset.n_parameters*j+k+1, dataset.parameters[i, k, j], style=style)
 
         if progress_callback is not None:
-            progress_callback(1/len(dataset)*0.2 + 0.2)
+            progress_callback(1 / len(dataset) * 0.2 + 0.2)
 
     for i in range(dataset.n_components):
         logger.debug(f"Creating the `C{i+1}` sheet.")
         ws = wb.create_sheet(f"C{i+1}")
         write(0, 0, "Sample Name", style="header")
         ws.column_dimensions[column_to_char(0)].width = 24
-        for col, value in enumerate(dataset.classes_μm, 1):
+        for col, value in enumerate(dataset.classes, 1):
             write(0, col, value, style="header")
             ws.column_dimensions[column_to_char(col)].width = 10
         for row, sample in enumerate(dataset, 1):
@@ -269,7 +233,7 @@ def save_statistics(
     logger.debug("Creating the `README` sheet.")
     readme_text = \
         """
-        It contanins 6 sheets.
+        It contains 6 sheets.
             1-5. The previous five sheets stores the statistical parameters of five computational methods, respectively.
             6. The last sheet puts the proportions of different size scales and the classification groups.
 
@@ -302,7 +266,7 @@ def save_statistics(
                 (lambda s: s[method]["skewness"], f"Skewness", small_width),
                 (lambda s: s[method]["kurtosis"], f"Kurtosis", small_width)]
             return keys
-        elif method in ("geometric", "logarithmic", "geometric_FW57", "logarithmic_FW57"):
+        elif method in ("geometric", "logarithmic", "geometric_fw57", "logarithmic_fw57"):
             unit = "μm" if method.startswith("geometric") else "φ"
             keys = [
                 (lambda s: s[method]["mean"], f"Mean [{unit}]", small_width),
@@ -320,12 +284,12 @@ def save_statistics(
             return keys
         elif method == "proportion_and_classification":
             keys = [
-                (lambda s: ", ".join([f"{p*100:0.4f}" for p in s["proportions_GSM"]]), "(Gravel, Sand, Mud) Proportions [%]", large_width),
-                (lambda s: ", ".join([f"{p*100:0.4f}" for p in s["proportions_SSC"]]), "(Sand, Silt, Clay) Proportions [%]", large_width),
-                (lambda s: ", ".join([f"{p*100:0.4f}" for p in s["proportions_BGSSC"]]), "(Boulder, Gravel, Sand, Silt, Clay) Proportions [%]", large_width),
-                (lambda s: s["group_Folk54"], "Group (Folk, 1954)", median_width),
-                (lambda s: s["group_BP12"], "Group (Blott & Pye, 2012)", large_width),
-                (lambda s: s["group_BP12_symbol"], "Group Symbol (Blott & Pye, 2012)", median_width)]
+                (lambda s: ", ".join([f"{p*100:0.4f}" for p in s["proportions_gsm"]]), "(Gravel, Sand, Mud) Proportions [%]", large_width),
+                (lambda s: ", ".join([f"{p*100:0.4f}" for p in s["proportions_ssc"]]), "(Sand, Silt, Clay) Proportions [%]", large_width),
+                (lambda s: ", ".join([f"{p*100:0.4f}" for p in s["proportions_bgssc"]]), "(Boulder, Gravel, Sand, Silt, Clay) Proportions [%]", large_width),
+                (lambda s: s["group_folk54"], "Group (Folk, 1954)", median_width),
+                (lambda s: s["group_bp12"], "Group (Blott & Pye, 2012)", large_width),
+                (lambda s: s["group_bp12_symbol"], "Group Symbol (Blott & Pye, 2012)", median_width)]
             all_scales = _all_scales()
             for scale in all_scales:
                 func = lambda s, scale=scale: s["proportions"][scale] * 100.0
@@ -339,8 +303,8 @@ def save_statistics(
         cell = ws.cell(row+1, col+1, value=value)
         cell.style = style
 
-    methods = ["arithmetic", "geometric", "logarithmic", "geometric_FW57", "logarithmic_FW57", "proportion_and_classification"]
-    sheet_names = ["Arithmetic", "Geometric", "Logarithmic", "Geometric_FW57", "Logarithmic_FW57", "Proportion and Classification"]
+    methods = ["arithmetic", "geometric", "logarithmic", "geometric_fw57", "logarithmic_fw57", "proportion_and_classification"]
+    sheet_names = ["Arithmetic", "Geometric", "Logarithmic", "Geometric_fw57", "Logarithmic_fw57", "Proportion and Classification"]
     for i_method, (method, sheet_name) in enumerate(zip(methods, sheet_names)):
         logger.debug(f"Creating the `{sheet_name}` sheet.")
         ws = wb.create_sheet(sheet_name)
@@ -394,7 +358,7 @@ def save_pca(
     logger.debug("Creating the `README` sheet.")
     readme_text = \
         """
-        It contanins 3 sheets:
+        It contains 3 sheets:
         1. The first sheet is the dataset which was used to perform the PCA algorithm.
         2. The second sheet is used to put the distributions of all PCs.
         3. The third sheet is used to store the PC variations of all samples.
@@ -441,13 +405,13 @@ def save_pca(
     for i in range(10):
         write(0, i+1, f"PC{i+1} ({ratios[i]:0.2%})", style="header")
         ws.column_dimensions[column_to_char(i+1)].width = 10
-    for row, varations in enumerate(transformed, 1):
+    for row, variations in enumerate(transformed, 1):
         if row % 2 == 0:
             style = "normal_dark"
         else:
             style = "normal_light"
         write(row, 0, dataset[row-1].name, style=style)
-        for col, value in enumerate(varations, 1):
+        for col, value in enumerate(variations, 1):
             write(row, col, value, style=style)
         if progress_callback is not None:
             progress_callback(row / len(dataset) * 0.7 + 0.3)
@@ -487,13 +451,13 @@ def save_clustering(
     logger.debug("Creating the `README` sheet.")
     readme_text = \
         """
-        It contanins 3 or [number of clusters + 3] sheets:
+        It contains 3 or [number of clusters + 3] sheets:
         1. The first sheet is the dataset which was used to perform the hierarchy clustering algorithm.
         2. The second sheet is used to put the clustering flags of all samples.
-        3. The third sheet is the typical sampels (i.e, the first sample of each cluster was selected).
+        3. The third sheet is the typical samples (i.e, the first sample of each cluster was selected).
         4. If the number of clusters less equal to 100, the samples of each cluster will be save to individual sheets.
 
-        The base hierarchy clusrting algorithm is implemented by Scipy. You can get the details of algorithm from the following website.
+        The base hierarchy clustering algorithm is implemented by Scipy. You can get the details of algorithm from the following website.
         https://docs.scipy.org/doc/scipy/reference/cluster.hierarchy.html
         """
     _write_readme_sheet(wb.active, readme_text)
@@ -598,12 +562,12 @@ def save_emma(
     logger.debug("Creating the `README` sheet.")
     readme_text = \
         """
-        It contanins three sheets:
+        It contains three sheets:
         1. The first sheet is the dataset which was used to perform the EMMA algorithm.
         2. The second sheet is used to put the distributions of all end members.
         3. The third sheet is the proportions of end members of all samples.
 
-        This EMMA algorithm was implemented by QGrian, using the famous machine learning framework, PyTorch.
+        This EMMA algorithm was implemented by QGrain, using the famous machine learning framework, PyTorch.
 
         EMMA Algorithm Details
             Number of Samples: {0}
@@ -630,7 +594,7 @@ def save_emma(
             result.n_iterations,
             result.time_spent,
             result.resolver_setting.device,
-            result.resolver_setting.distance,
+            result.resolver_setting.loss,
             result.resolver_setting.pretrain_epochs,
             result.resolver_setting.min_epochs,
             result.resolver_setting.max_epochs,
@@ -681,8 +645,9 @@ def save_emma(
         else:
             style = "normal_light"
         write(row, 0, result.dataset[i].name, style=style)
-        for i in range(result.n_members):
-            write(row, col, sample_proportions[i], style=style)
+        for j in range(result.n_members):
+            col = j + 1
+            write(row, col, sample_proportions[j], style=style)
         if progress_callback is not None:
             progress_callback(i / result.n_samples * 0.6 + 0.4)
 
@@ -706,7 +671,7 @@ def save_ssu(
     # pack the GSDs of samples to the dataset
     dataset = Dataset(
         "GSDs", [result.sample.name for result in results],
-        results[0].classes_μm,
+        results[0].classes,
         [result.sample.distribution for result in results])
     max_n_components = max(Counter([result.n_components for result in results]).keys())
 
@@ -721,8 +686,8 @@ def save_ssu(
             for component in result.components:
                 stacked_components.append(component.distribution)
         stacked_components = np.array(stacked_components)
-        clusers = KMeans(n_clusters=max_n_components)
-        flags = clusers.fit_predict(stacked_components)
+        clusters = KMeans(n_clusters=max_n_components)
+        flags = clusters.fit_predict(stacked_components)
         # check flags to make it unique
         flag_index = 0
         for result in results:
@@ -752,11 +717,11 @@ def save_ssu(
     logger.debug("Creating the `README` sheet.")
     readme_text = \
         """
-        It contanins [max number of components + 4] sheets:
+        It contains [max number of components + 4] sheets:
         1. The first sheet is used to put the grain size distributions of corresponding samples.
         2. The second sheet is used to put the fitting information and resolved parameters of SSU results.
         3. The third sheet stores the statistical parameters of all components.
-        4. The fouth sheet is used to put the distributions of unmixed components and the sum.
+        4. The fourth sheet is used to put the distributions of unmixed components and the sum.
         5. Other sheets severally store the distributions of each component group.
 
         The SSU algorithm is implemented by QGrain.
@@ -807,7 +772,7 @@ def save_ssu(
         write(row, 5, result.parameters.__str__(), style=style)
         write(row, 6, result.time_spent, style=style)
         write(row, 7, result.n_iterations, style=style)
-        write(row, 8, result.get_distance("log10MSE"), style=style)
+        write(row, 8, result.loss("log10MSE"), style=style)
         if progress_callback is not None:
             progress_callback(i / len(dataset) * 0.1 + 0.1)
 
@@ -841,7 +806,7 @@ def save_ssu(
         write(row, 0, result.sample.name, style=style)
         for component in result.components:
             index = flags[flag_index]
-            s = all_statistics(result.classes_μm, result.classes_φ, component.distribution)
+            s = all_statistics(result.classes, result.classes_phi, component.distribution)
             write(row, index*len(sub_headers)+1, component.proportion, style=style)
             write(row, index*len(sub_headers)+2, s["logarithmic"]["mean"], style=style)
             write(row, index*len(sub_headers)+3, s["geometric"]["mean"], style=style)
@@ -933,11 +898,11 @@ def save_udm(
     logger.debug("Creating the `README` sheet.")
     readme_text = \
         """
-        It contanins [number of components + 4] sheets:
+        It contains [number of components + 4] sheets:
         1. The first sheet is used to put the grain size distributions of corresponding samples.
         2. The second sheet is used to put the resolved parameters of all samples.
         3. The third sheet stores the statistical parameters of all components.
-        4. The fouth sheet is used to put the distributions of unmixed components and the sum.
+        4. The fourth sheet is used to put the distributions of unmixed components and the sum.
         5. Other sheets severally store the distributions of each component group.
 
         The UDM algorithm was proposed and implemented by QGrain.
@@ -987,8 +952,8 @@ def save_udm(
         cell = ws.cell(row+1, col+1, value=value)
         cell.style = style
 
-    logger.debug("Creating the `Resolved Paramters` sheet.")
-    ws = wb.create_sheet("Resolved Paramters")
+    logger.debug("Creating the `Resolved Parameters` sheet.")
+    ws = wb.create_sheet("Resolved Parameters")
     write(0, 0, "Sample Name", style="header")
     ws.merge_cells(start_row=1, start_column=1, end_row=2, end_column=1)
     ws.column_dimensions[column_to_char(0)].width = 16

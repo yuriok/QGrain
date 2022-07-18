@@ -233,7 +233,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         directory = self.file_dialog.getExistingDirectory(
             self, self.tr("Choose a directory to save the figures for all SSU results"),
-            None, QtWidgets.QFileDialog.ShowDirsOnly)
+            ".", QtWidgets.QFileDialog.ShowDirsOnly)
         if directory is None or directory == "":
             return
 
@@ -300,9 +300,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if self._dataset is None:
             self.show_error(self.tr("Dataset has not been loaded."))
             return
-        filename, _ = self.file_dialog.getSaveFileName(
-            None, self.tr("Save PCA result"),
-            None, "Microsoft Excel (*.xlsx)")
+        filename, _ = self.file_dialog.getSaveFileName(self, self.tr("Save PCA result"),
+                                                       ".", "Microsoft Excel (*.xlsx)")
         if filename is None or filename == "":
             return
         try:

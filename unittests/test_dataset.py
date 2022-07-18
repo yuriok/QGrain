@@ -63,7 +63,7 @@ class TestValidateClasses:
         assert not valid
 
     def test_ndim_3(self):
-        data = np.linspace(0, 1, 12).reshape(2, 2, -1)
+        data = np.linspace(0, 1, 12).reshape((2, 2, -1))
         valid, msg = validate_classes(data)
         print("\n", "While passing three-dimensional data, the error messages:", msg, end="\n")
         assert not valid
@@ -166,7 +166,7 @@ class TestValidateDistributions:
         assert not valid
 
     def test_ndim_3(self):
-        data = np.linspace(0, 1, 12).reshape(2, 2, -1)
+        data = np.linspace(0, 1, 12).reshape((2, 2, -1))
         valid, msg = validate_distributions(data)
         print("\n", "While passing three-dimensional data, the error messages:", msg, end="\n")
         assert not valid

@@ -1,6 +1,4 @@
 import os
-import sys
-
 
 proto_dir = "./QGrain/protos"
 target_dir = "./QGrain/protos"

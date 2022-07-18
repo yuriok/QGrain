@@ -229,7 +229,7 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         self.update_page(self.page_index)
 
     @property
-    def supported_proportions(self) -> Tuple[Tuple[str, str]]:
+    def supported_proportions(self) -> Sequence[Tuple[str, str]]:
         result = (
             ("proportions_gsm", self.tr("Gravel, Sand, Mud")),
             ("proportions_ssc", self.tr("Sand, Silt, Clay")),
@@ -237,7 +237,7 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         return result
 
     @property
-    def proportion(self) -> str:
+    def proportion(self) -> Tuple[str, str]:
         index = self.proportion_combo_box.currentIndex()
         key, description = self.supported_proportions[index]
         return key, description
@@ -357,7 +357,7 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         if self.page_index < self.n_pages - 1:
             self.current_page_combo_box.setCurrentIndex(self.page_index + 1)
 
-    def plot_chart(self, chart, samples: List[Sample], append: str):
+    def plot_chart(self, chart, samples: List[Sample], append: bool):
         if self._dataset is None:
             self.show_error(self.tr("Dataset has not been loaded."))
         elif len(samples) == 0:
@@ -400,7 +400,7 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
             self.FW57_checkbox.setText(self.tr("Method of Statistical Moments"))
         for i, (_, description) in enumerate(self.supported_proportions):
             self.proportion_combo_box.setItemText(i, description)
-        self.plot_cumulative_curve_menu.setTitle(self.tr("Plot Cumlulative Curve Chart"))
+        self.plot_cumulative_curve_menu.setTitle(self.tr("Plot Cumulative Curve Chart"))
         self.cumulative_plot_selected_action.setText(self.tr("Plot"))
         self.cumulative_append_selected_action.setText(self.tr("Append"))
         self.cumulative_plot_all_action.setText(self.tr("Plot All"))

@@ -50,12 +50,12 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
         self.p_input.valueChanged.connect(lambda p: self.perform())
         self.main_layout.addWidget(self.p_label, 1, 4)
         self.main_layout.addWidget(self.p_input, 1, 5)
-        self.n_clusers_label = QtWidgets.QLabel(self.tr("Number of Clusters"))
-        self.n_clusers_label.setToolTip(self.tr("Controls the number of clusters of this clustering algorithm."))
-        self.n_clusers_input = QtWidgets.QSpinBox()
-        self.n_clusers_input.setMinimum(2)
-        self.main_layout.addWidget(self.n_clusers_label, 1, 6)
-        self.main_layout.addWidget(self.n_clusers_input, 1, 7)
+        self.n_clusters_label = QtWidgets.QLabel(self.tr("Number of Clusters"))
+        self.n_clusters_label.setToolTip(self.tr("Controls the number of clusters of this clustering algorithm."))
+        self.n_clusters_input = QtWidgets.QSpinBox()
+        self.n_clusters_input.setMinimum(2)
+        self.main_layout.addWidget(self.n_clusters_label, 1, 6)
+        self.main_layout.addWidget(self.n_clusters_input, 1, 7)
         self.normal_msg = QtWidgets.QMessageBox(self)
         self.file_dialog = QtWidgets.QFileDialog(parent=self)
         self._last_dataset = None
@@ -89,7 +89,7 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
 
     @property
     def n_clusters(self) -> int:
-        return self.n_clusers_input.value()
+        return self.n_clusters_input.value()
 
     def on_dataset_loaded(self, dataset: Dataset):
         if dataset is None:
@@ -97,7 +97,7 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
         self._last_dataset = dataset
         self._last_result = None
         self.p_input.setMaximum(len(dataset))
-        self.n_clusers_input.setMaximum(len(dataset) - 1)
+        self.n_clusters_input.setMaximum(len(dataset) - 1)
         if len(dataset) > 20:
             self.p_input.setValue(10)
         self.perform()
@@ -186,5 +186,5 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
         self.metric_label.setToolTip(self.tr("The distance metric."))
         self.p_label.setText(self.tr("p"))
         self.p_label.setToolTip(self.tr("Controls the number of leaves at the bottom level of the figure."))
-        self.n_clusers_label.setText(self.tr("Number of Clusters"))
-        self.n_clusers_label.setToolTip(self.tr("Controls the number of clusters of this clustering algorithm."))
+        self.n_clusters_label.setText(self.tr("Number of Clusters"))
+        self.n_clusters_label.setToolTip(self.tr("Controls the number of clusters of this clustering algorithm."))

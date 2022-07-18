@@ -5,7 +5,7 @@ __all__ = [
     "BP12GSMDiagramChart",
     "BP12SSCDiagramChart"]
 
-import typing
+from typing import *
 
 import numpy as np
 
@@ -22,23 +22,23 @@ class DiagramChart(BaseChart):
         self.draw_base()
         self._sample_batches = []
 
-    def trans_pos(self, a, b):
+    def trans_pos(self, a, b) -> Tuple[float, float]:
         pass
 
     @property
     def title(self):
-        pass
+        return ""
 
     @property
     def lines(self):
-        pass
+        return []
 
     @property
     def labels(self):
-        pass
+        return []
 
     @property
-    def n_batchs(self) -> int:
+    def n_batches(self) -> int:
         return len(self._sample_batches)
 
     def plot_legend(self):
@@ -60,10 +60,10 @@ class DiagramChart(BaseChart):
         self.plot_legend()
         self._figure.tight_layout()
 
-    def convert_samples(self, samples: typing.List[Sample]):
+    def convert_samples(self, samples: List[Sample]) -> Tuple[Sequence[float], Sequence[float]]:
         pass
 
-    def show_samples(self, samples: typing.List[Sample],
+    def show_samples(self, samples: List[Sample],
                      append=False, c="#ffffff00",
                      marker=".", ms=8, mfc="red", mew=0.0,
                      **kwargs):
@@ -75,7 +75,7 @@ class DiagramChart(BaseChart):
             self._sample_batches.clear()
         a, b = self.convert_samples(samples)
         x, y = self.trans_pos(a, b)
-        self.axes.plot(x, y, c=c, marker=marker, ms=ms, mfc=mfc, mew=mew, **kwargs, label=f"batch_{self.n_batchs}")
+        self.axes.plot(x, y, c=c, marker=marker, ms=ms, mfc=mfc, mew=mew, **kwargs, label=f"batch_{self.n_batches}")
         self._canvas.draw()
         plot_kwargs = dict(c=c, marker=marker, ms=ms, mfc=mfc, mew=mew)
         plot_kwargs.update(kwargs)
@@ -114,7 +114,7 @@ class Folk54GSMDiagramChart(DiagramChart):
             ([1 / 10, 1 / 10], [0.0, 0.05], dict(c=normal_color(), linewidth=0.8)),  # sand: mud = 1:9
             ([1 / 2, 1 / 2], [0.0, 0.8], dict(c=normal_color(), linewidth=0.8)),  # sand: mud = 1:1
             ([9 / 10, 9 / 10], [0.0, 0.8], dict(c=normal_color(), linewidth=0.8))]  # sand: mud = 9:1
-        ADDTIONAL_LINES = [
+        ADDITIONAL_LINES = [
             ([0.05, -0.03], [0.02, 0.12], dict(c=normal_color(), linewidth=0.8)),
             ([0.3, 0.3], [0.02, 0.06], dict(c=normal_color(), linewidth=0.8)),
             ([0.7, 0.7], [0.02, 0.06], dict(c=normal_color(), linewidth=0.8)),
@@ -123,7 +123,7 @@ class Folk54GSMDiagramChart(DiagramChart):
             ([0.95, 1.03], [0.2, 0.275], dict(c=normal_color(), linewidth=0.8)),
             ([0.95, 1.03], [0.5, 0.55], dict(c=normal_color(), linewidth=0.8))]
 
-        return STRUCTURAL_LINES + ADDTIONAL_LINES
+        return STRUCTURAL_LINES + ADDITIONAL_LINES
 
     @property
     def labels(self):
@@ -180,7 +180,7 @@ class Folk54GSMDiagramChart(DiagramChart):
         assert not np.any(np.isnan(x))
         return x, y
 
-    def convert_samples(self, samples: typing.List[Sample]):
+    def convert_samples(self, samples: List[Sample]) -> Tuple[Sequence[float], Sequence[float]]:
         sand = []
         gravel = []
         for i, sample in enumerate(samples):
@@ -213,9 +213,9 @@ class Folk54SSCDiagramChart(DiagramChart):
             ([0.0, 1.0], [0.9, 0.9], dict(c=normal_color(), linewidth=0.8)),  # sand = 90%
             ([1 / 3, 1 / 3], [0.0, 0.9], dict(c=normal_color(), linewidth=0.8)),  # clay: silt = 1:2
             ([2 / 3, 2 / 3], [0.0, 0.9], dict(c=normal_color(), linewidth=0.8))]  # clay: silt = 2:1
-        ADDTIONAL_LINES = []
+        ADDITIONAL_LINES = []
 
-        return STRUCTURAL_LINES + ADDTIONAL_LINES
+        return STRUCTURAL_LINES + ADDITIONAL_LINES
 
     @property
     def labels(self):
@@ -265,7 +265,7 @@ class Folk54SSCDiagramChart(DiagramChart):
         assert not np.any(np.isnan(x))
         return x, y
 
-    def convert_samples(self, samples: typing.List[Sample]):
+    def convert_samples(self, samples: List[Sample]) -> Tuple[Sequence[float], Sequence[float]]:
         silt = []
         sand = []
         for i, sample in enumerate(samples):
@@ -524,7 +524,7 @@ class BP12GSMDiagramChart(DiagramChart):
         x = 0.5 * b + a
         return x, y
 
-    def convert_samples(self, samples: typing.List[Sample]):
+    def convert_samples(self, samples: List[Sample]) -> Tuple[Sequence[float], Sequence[float]]:
         sand = []
         gravel = []
         for i, sample in enumerate(samples):
@@ -784,7 +784,7 @@ class BP12SSCDiagramChart(DiagramChart):
             y = y0 - span - row * (row_h + span)
             self.axes.text(x, y, text, ha="left", va="top", fontsize=7, color=normal_color())
 
-    def convert_samples(self, samples: typing.List[Sample]):
+    def convert_samples(self, samples: List[Sample]) -> Tuple[Sequence[float], Sequence[float]]:
         silt = []
         sand = []
         for i, sample in enumerate(samples):

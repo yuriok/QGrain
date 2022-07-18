@@ -177,7 +177,7 @@ class DatasetGenerator(QtWidgets.QWidget):
         self.control_layout.addWidget(self.maximum_size_input, 1, 3)
         self.n_classes_label = QtWidgets.QLabel(self.tr("Number of Classes"))
         self.n_classes_input = QtWidgets.QSpinBox()
-        self.n_classes_input.setRange(10, 1e4)
+        self.n_classes_input.setRange(10, 10000)
         self.n_classes_input.setValue(101)
         self.precision_label = QtWidgets.QLabel(self.tr("Data Precision"))
         self.precision_input = QtWidgets.QSpinBox()
@@ -337,7 +337,7 @@ class DatasetGenerator(QtWidgets.QWidget):
     def on_generate_clicked(self):
         filename, _ = self.file_dialog.getSaveFileName(
             self, self.tr("Choose a filename to save the generated dataset"),
-            None, "Microsoft Excel (*.xlsx)")
+            ".", "Microsoft Excel (*.xlsx)")
         if filename is None or filename == "":
             return
         self.logger.debug(f"Generate a dataset with the parameters: {self.generate_kwargs}.")
