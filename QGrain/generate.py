@@ -5,8 +5,7 @@ from typing import *
 
 import numpy as np
 
-from .models import ArtificialDataset
-from .distributions import DistributionType
+from .models import DistributionType, ArtificialDataset
 
 SIMPLE_PRESET = dict(
     target=[
@@ -48,11 +47,8 @@ def random_parameters(target: Sequence[Sequence[Tuple[float, float]]], n_samples
     return parameters
 
 
-def random_dataset(
-        target: Sequence[Sequence[Tuple[float, float]]],
-        distribution_type: DistributionType, n_samples: int,
-        min_size=0.02, max_size=2000.0, n_classes=101,
-        precision=4, noise=5):
+def random_dataset(target: Sequence[Sequence[Tuple[float, float]]], distribution_type: DistributionType, n_samples: int,
+                   min_size=0.02, max_size=2000.0, n_classes=101, precision=4, noise=5):
     """
     Generate a random dataset.
 
@@ -84,11 +80,8 @@ def random_dataset(
     return dataset
 
 
-def random_sample(
-        target: Sequence[Sequence[Tuple[float, float]]],
-        distribution_type: DistributionType,
-        min_size=0.02, max_size=2000.0, n_classes=101,
-        precision=4, noise=5):
+def random_sample(target: Sequence[Sequence[Tuple[float, float]]], distribution_type: DistributionType,
+                  min_size=0.02, max_size=2000.0, n_classes=101, precision=4, noise=5):
     """
     Generate a random sample.
 
@@ -109,11 +102,8 @@ def random_sample(
     return dataset[0]
 
 
-def random_mean_sample(
-        target: Sequence[Sequence[Tuple[float, float]]],
-        distribution_type: DistributionType,
-        min_size=0.02, max_size=2000.0, n_classes=101,
-        precision=4, noise=5):
+def random_mean_sample(target: Sequence[Sequence[Tuple[float, float]]], distribution_type: DistributionType,
+                       min_size=0.02, max_size=2000.0, n_classes=101, precision=4, noise=5):
     """
     Generate a sample using the `mean` values in `target` as the parameters.
 

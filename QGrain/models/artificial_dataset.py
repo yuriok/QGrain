@@ -5,9 +5,9 @@ from typing import *
 import numpy as np
 from numpy import ndarray
 
-from ..distributions import DistributionType, get_distribution
-from ..models import Dataset, Sample
 from ..statistics import to_phi, to_microns, interval_phi
+from ..models import DistributionType, Dataset, Sample
+from ..distributions import get_distribution
 
 
 class ArtificialComponent:
@@ -272,6 +272,10 @@ class ArtificialDataset:
         assert isinstance(value)
         assert len(value) > 0
         self._name = value
+
+    @property
+    def sample_names(self) -> List[str]:
+        return [f"AS{i+1}" for i in range(self._parameters.shape[0])]
 
     @property
     def parameters(self) -> ndarray:

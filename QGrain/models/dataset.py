@@ -51,7 +51,7 @@ def validate_classes(classes: Sequence[float]) -> Tuple[bool, Union[ndarray, str
     """
     if classes is None:
         return False, "The passed classes can not be `None`."
-    array: ndarray = np.array(classes, dtype=np.float32)
+    array: ndarray = np.array(classes, dtype=np.float64)
     if array.ndim != 1:
         return False, "The passed classes should be one-dimensional."
     if len(array) == 0:
@@ -88,7 +88,7 @@ def validate_distributions(distributions: Sequence[Sequence[float]]) -> Tuple[bo
     """
     if distributions is None:
         return False, "The passed distributions can not be `None`."
-    array = np.array(distributions, dtype=np.float32)
+    array = np.array(distributions, dtype=np.float64)
     if array.ndim != 2:
         return False, "The passed distributions should be two-dimensional."
     n_samples, n_classes = array.shape
@@ -190,6 +190,8 @@ class Dataset:
             raise TypeError("The name of dataset must be a string.")
         if len(name) == 0:
             raise ValueError("The name of dataset can not be empty.")
+        if len(sample_names) != len(distributions):
+            raise ValueError("The lengths of sample names and distributions are not equal.")
         for i, sample_name in enumerate(sample_names):
             if not isinstance(sample_name, str):
                 raise TypeError(f"The name of sample must be a string. This error raised at the index: {i}.")

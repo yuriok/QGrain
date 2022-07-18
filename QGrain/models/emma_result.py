@@ -6,37 +6,37 @@ from typing import *
 import numpy as np
 from numpy import ndarray
 
-from ..kernels import KernelType
+from ..models import KernelType, Dataset, ArtificialDataset
 from ..metrics import loss_numpy
-from ..models import Dataset, ArtificialDataset
 
 
 class EMMAResult:
+    """The class to represent the result of EMMA algorithm."""
     def __init__(self, dataset: [ArtificialDataset, Dataset], kernel_type: KernelType, n_members: int,
-                 proportions: ndarray, end_members: ndarray, time_spent: Union[int, float],
-                 x0: ndarray = None, history: Sequence[Tuple[ndarray, ndarray]] = None,
+                 proportions: ndarray, end_members: ndarray, time_spent: Union[int, float], x0: ndarray = None,
                  settings: Dict[str, Any] = None, loss_series: Dict[str, ndarray] = None):
         # do some validations
         assert isinstance(dataset, (ArtificialDataset, Dataset))
         assert isinstance(kernel_type, KernelType)
         assert isinstance(n_members, int)
         assert isinstance(proportions, ndarray)
-        assert proportions.ndim == 2
-        assert proportions.shape == (dataset.n_samples, n_members)
+        n_iterations = len(proportions)
+        assert proportions.ndim == 3
+        assert proportions.shape == (n_iterations, len(dataset), n_members)
         assert isinstance(end_members, ndarray)
-        assert end_members.ndim == 2
-        assert end_members.shape == (n_members, dataset.n_classes)
+        assert end_members.ndim == 3
+        assert end_members.shape == (n_iterations, n_members, len(dataset.classes))
         assert isinstance(time_spent, (int, float))
         if x0 is not None:
             assert isinstance(x0, ndarray)
             assert x0.ndim == 2
             assert x0.shape[1] == n_members
-        if history is not None:
-            assert len(history) > 0
         if settings is not None:
             assert isinstance(settings, dict)
             if loss_series is not None:
-                assert settings["loss"] in loss_series.keys()
+                assert settings["loss"] in loss_series
+                if settings["need_history"]:
+                    assert len(loss_series[settings["loss"]]) == proportions.shape[0]
 
         self._dataset = dataset
         self._kernel_type = kernel_type
@@ -44,11 +44,11 @@ class EMMAResult:
         self._x0 = x0
         self._proportions = proportions
         self._end_members = end_members
+        self._i = -1
         self._time_spent = time_spent
-        self._history = history
         self._settings = settings
         self._loss_series = loss_series
-        modes = [(i, dataset.classes[np.unravel_index(np.argmax(end_members[i]), end_members[i].shape)])
+        modes = [(i, dataset.classes[np.unravel_index(np.argmax(end_members[-1, i]), end_members[-1, i].shape)])
                  for i in range(n_members)]
         modes.sort(key=lambda x: x[1])
         self._sorted_indexes = tuple([i for i, _ in modes])
@@ -60,7 +60,7 @@ class EMMAResult:
 
     @property
     def n_samples(self) -> int:
-        return len(self.dataset)
+        return len(self._dataset)
 
     @property
     def n_members(self) -> int:
@@ -75,12 +75,16 @@ class EMMAResult:
         return self._kernel_type
 
     @property
-    def proportions(self) -> np.ndarray:
-        return self._proportions
+    def proportions(self) -> ndarray:
+        return self._proportions[self._i]
 
     @property
-    def end_members(self) -> np.ndarray:
-        return self._end_members
+    def end_members(self) -> ndarray:
+        return self._end_members[self._i]
+
+    @property
+    def distributions(self) -> ndarray:
+        return self.proportions @ self.end_members
 
     @property
     def time_spent(self) -> Union[int, float]:
@@ -92,22 +96,14 @@ class EMMAResult:
 
     @property
     def n_iterations(self) -> int:
-        if self._history is None:
-            return 0
-        else:
-            return len(self._history)
+        return self._proportions.shape[0]
 
     @property
     def history(self):
-        if self.n_iterations == 0:
-            raise ValueError("No history record.")
-        else:
-            for fractions, end_members in self._history:
-                copy_result = copy.copy(self)
-                copy_result._proportions = fractions
-                copy_result._end_members = end_members
-                copy_result._sort()
-                yield copy_result
+        for i in range(self._proportions.shape[0]):
+            copy_result = copy.copy(self)
+            copy_result._i = i
+            yield copy_result
 
     @property
     def settings(self) -> Optional[Dict[str, Any]]:
@@ -120,40 +116,45 @@ class EMMAResult:
         proportions = np.zeros_like(self._proportions)
         end_members = np.zeros_like(self._end_members)
         for i, j in enumerate(self._sorted_indexes):
-            proportions[:, i] = self._proportions[:, j]
-            end_members[i, :] = self._end_members[j, :]
+            proportions[:, :, i] = self._proportions[:, :, j]
+            end_members[:, i, :] = self._end_members[:, j, :]
         self._proportions = proportions
         self._end_members = end_members
 
     def loss(self, name: str) -> float:
         loss_func = loss_numpy(name)
         observation = self._dataset.distributions
-        prediction = self._proportions @ self._end_members
+        prediction = self.proportions @ self.end_members
         return loss_func(prediction, observation, None)
 
     def loss_series(self, name: str) -> ndarray:
-        if self.n_iterations == 0:
-            raise ValueError("No history record.")
-        else:
+        if name in self._loss_series:
+            return self._loss_series[name]
+        loss_func = loss_numpy(name)
+        try:
+            observation = np.expand_dims(self._dataset.distributions, 0).repeat(self.n_iterations, axis=0)
+            prediction = self._proportions @ self._end_members
+            series = loss_func(prediction, observation, (1, 2))
+            self._loss_series[name] = series
+            return series
+        except MemoryError:
             series = []
-            loss_func = loss_numpy(name)
-            for proportions, end_members in self._history:
-                predict = proportions @ end_members
-                distance = loss_func(predict, self._dataset.distributions, None)
-                series.append(distance)
+            for result in self.history:
+                series.append(result.loss(name))
             series = np.array(series)
+            self._loss_series[name] = series
             return series
 
     def class_wise_losses(self, name: str) -> ndarray:
         loss_func = loss_numpy(name)
         observation = self._dataset.distributions
-        prediction = self._proportions @ self._end_members
+        prediction = self.proportions @ self.end_members
         losses = loss_func(prediction, observation, 0)
         return losses
 
     def sample_wise_losses(self, name: str) -> ndarray:
         loss_func = loss_numpy(name)
         observation = self._dataset.distributions
-        prediction = self._proportions @ self._end_members
+        prediction = self.proportions @ self.end_members
         losses = loss_func(prediction, observation, 1)
         return losses

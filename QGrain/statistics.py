@@ -1,5 +1,5 @@
 import string
-from typing import List, Tuple, Sequence, Dict, Callable, Union
+from typing import *
 
 import numpy as np
 from numpy import ndarray
@@ -63,7 +63,7 @@ def to_cumulative(distribution: ndarray, expand=False) -> ndarray:
     :return: A numpy array contains the cumulative frequencies.
     """
     if expand:
-        cumulative = np.zeros(len(distribution) + 2, dtype=np.float32)
+        cumulative = np.zeros(len(distribution) + 2)
         cumulative[0] = 0.0
         cumulative[-1] = 1.0
         cumulative[1:-1] = np.cumsum(distribution)
@@ -869,27 +869,27 @@ def all_statistics(classes: ndarray, classes_phi: ndarray, distribution: ndarray
     :param distribution: The frequency distribution of grain size classes.
         Note, the sum of frequencies should be equal to 1.
     :return: The `dict` contains the statistical parameters of all methods, including
-        `arithmetic`, `geometric`, `logarithmic`, `geometric_FW57`, `logarithmic_FW57`;
-        and the proportions of different grades, including `proportions_GSM`, `proportions_SSC`,
-        `proportions_BGSSC`, `proportions`; and the classification groups,
-        including `group_Folk54` and `group_BP12`.
+        `arithmetic`, `geometric`, `logarithmic`, `geometric_fw57`, `logarithmic_fw57`;
+        and the proportions of different grades, including `proportions_gsm`, `proportions_ssc`,
+        `proportions_bgssc`, `proportions`; and the classification groups,
+        including `group_folk54` and `group_bp12`.
     """
     result = {
         "arithmetic": arithmetic(classes, distribution),
         "geometric": major_statistics(classes, classes_phi, distribution, is_geometric=True, is_fw57=False),
         "logarithmic": major_statistics(classes, classes_phi, distribution, is_geometric=False, is_fw57=False),
-        "geometric_FW57": major_statistics(classes, classes_phi, distribution, is_geometric=True, is_fw57=True),
-        "logarithmic_FW57": major_statistics(classes, classes_phi, distribution, is_geometric=False, is_fw57=True),
-        "proportions_GSM": proportions_gsm(classes_phi, distribution),
-        "proportions_SSC": proportions_ssc(classes_phi, distribution),
-        "proportions_BGSSC": proportions_bgssc(classes_phi, distribution),
+        "geometric_fw57": major_statistics(classes, classes_phi, distribution, is_geometric=True, is_fw57=True),
+        "logarithmic_fw57": major_statistics(classes, classes_phi, distribution, is_geometric=False, is_fw57=True),
+        "proportions_gsm": proportions_gsm(classes_phi, distribution),
+        "proportions_ssc": proportions_ssc(classes_phi, distribution),
+        "proportions_bgssc": proportions_bgssc(classes_phi, distribution),
         "proportions": all_proportions(classes_phi, distribution),
-        "group_Folk54": group_folk54(classes_phi, distribution)}
+        "group_folk54": group_folk54(classes_phi, distribution)}
 
     bp12_symbols, bp12_descriptions = group_bp12(classes_phi, distribution)
     bp12_symbol = "".join(bp12_symbols)
     bp12_description = string.capwords(" ".join(bp12_descriptions))
-    result["_group_BP12_symbols"] = bp12_symbols
-    result["group_BP12_symbol"] = bp12_symbol
-    result["group_BP12"] = bp12_description
+    result["_group_bp12_symbols"] = bp12_symbols
+    result["group_bp12_symbol"] = bp12_symbol
+    result["group_bp12"] = bp12_description
     return result

@@ -6,11 +6,10 @@ from typing import *
 import numpy as np
 from numpy import ndarray
 
-from .artificial_dataset import ArtificialSample
-from .dataset import Sample
-from ..distributions import DistributionType, get_distribution
-from ..metrics import loss_numpy
 from ..statistics import interval_phi
+from ..models import DistributionType, ArtificialSample, Sample
+from ..distributions import get_distribution
+from ..metrics import loss_numpy
 
 
 class SSUResultComponent:
@@ -75,13 +74,15 @@ class SSUResult:
     """
 
     def __init__(self, sample: Union[ArtificialSample, Sample], distribution_type: DistributionType,
-                 x0: ndarray, parameters: ndarray, time_spent: Union[int, float], settings: Dict[str, Any]):
+                 parameters: ndarray, time_spent: Union[int, float], x0: ndarray = None,
+                 settings: Dict[str, Any] = None):
         assert isinstance(sample, (ArtificialSample, Sample))
         assert isinstance(distribution_type, DistributionType)
-        assert isinstance(x0, ndarray)
         assert isinstance(parameters, ndarray)
         assert isinstance(time_spent, (int, float))
-        assert x0.ndim == 2
+        if x0 is not None:
+            assert isinstance(x0, ndarray)
+            assert x0.ndim == 2
         assert parameters.ndim == 3
         n_iterations, n_parameters, n_components = parameters.shape
         distribution_class = get_distribution(distribution_type)
