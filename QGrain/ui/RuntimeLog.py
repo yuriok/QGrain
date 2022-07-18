@@ -1,22 +1,20 @@
-__all__ = ["LogDialog", "StatusBarLogHandler", "GUILogHandler"]
+__all__ = ["RuntimeLog", "StatusBarLogHandler", "GUILogHandler"]
 
 import logging
-import os
 from queue import Queue
 
-from PySide6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 SUCCESS_COLOR = "#55bb8a"
 WARNING_COLOR = "#fbda41"
 ERROR_COLOR = "#c04851"
 
-class LogDialog(QtWidgets.QDialog):
-    MAX_SIZE = 200
-    def __init__(self, parent=None):
-        super().__init__(parent=parent, f=QtCore.Qt.Window)
-        self.init_ui()
 
-    def init_ui(self):
+class RuntimeLog(QtWidgets.QDialog):
+    MAX_SIZE = 200
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
         self.setWindowTitle(self.tr("Runtime Log"))
         self.setMinimumSize(400, 400)
         self.main_layout = QtWidgets.QGridLayout(self)
@@ -26,14 +24,8 @@ class LogDialog(QtWidgets.QDialog):
         self.main_layout.addWidget(self.text, 0, 0)
         self.record_queue = Queue(maxsize=self.MAX_SIZE)
 
-    def changeEvent(self, event: QtCore.QEvent):
-        if event.type() == QtCore.QEvent.LanguageChange:
-            self.retranslate()
-
-    def retranslate(self):
-        self.setWindowTitle(self.tr("Runtime Log"))
-
-    def get_html_message(self, record: logging.LogRecord, message: str):
+    @classmethod
+    def get_html_message(cls, record: logging.LogRecord, message: str):
         format_str = "<font color='{0}'>{1}<font/>"
         if record.levelno < logging.INFO:
             return message
@@ -50,6 +42,14 @@ class LogDialog(QtWidgets.QDialog):
         self.record_queue.put((record, message), False)
         html_message = self.get_html_message(record, message)
         self.text.appendHtml(html_message)
+
+    def changeEvent(self, event: QtCore.QEvent):
+        if event.type() == QtCore.QEvent.LanguageChange:
+            self.retranslate()
+
+    def retranslate(self):
+        self.setWindowTitle(self.tr("Runtime Log"))
+
 
 class StatusBarLogHandler(logging.Handler):
     def __init__(self, status_bar: QtWidgets.QStatusBar, level=logging.WARNING):
@@ -76,8 +76,9 @@ class StatusBarLogHandler(logging.Handler):
         self.status_bar.showMessage(message)
         self.__mutex.unlock()
 
+
 class GUILogHandler(logging.Handler):
-    def __init__(self, log_panel: LogDialog, level=logging.WARNING):
+    def __init__(self, log_panel: RuntimeLog, level=logging.WARNING):
         super().__init__(level=level)
         self.log_panel = log_panel
         self.__mutex = QtCore.QMutex()

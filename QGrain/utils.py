@@ -6,8 +6,7 @@ from typing import *
 import numpy as np
 from numpy import ndarray
 
-from QGrain.distributions import DistributionType
-from QGrain.models import UDMResult, SSUResult
+from QGrain.models import DistributionType, UDMResult, SSUResult
 
 
 def get_image_by_proportions(proportions: ndarray, resolution: int = 100) -> ndarray:
@@ -49,7 +48,8 @@ def udm_to_ssu(result: UDMResult, logger: logging.Logger = None,
         else:
             history = [np.expand_dims(result._history[j][i], axis=0) for j in range(result.n_iterations)]
             parameters = np.concatenate(history, axis=0)
-        ssu_result = SSUResult(result.dataset[i], distribution_type, x0, parameters, time_spent, result.settings)
+        ssu_result = SSUResult(result.dataset[i], distribution_type, parameters, time_spent,
+                               x0=x0, settings=result.settings)
         ssu_results.append(ssu_result)
         if progress_callback is not None:
             progress_callback(i / result.n_samples)
