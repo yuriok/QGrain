@@ -1,32 +1,31 @@
 import logging
 import os
 import sys
-from logging.handlers import TimedRotatingFileHandler
 from typing import *
 
-import matplotlib as mpl
 from PySide6 import QtCore, QtGui, QtWidgets
 from qt_material import apply_stylesheet, list_themes
 
-from .AboutDialog import AboutDialog
+from .. import QGRAIN_ROOT_PATH
+from ..models import Dataset
+from ..protos.client import QGrainClient
+from ..io import save_pca, save_statistics
+from . import EXTRA, setup_app, setup_logging
+from .About import About
 from .ClusteringAnalyzer import ClusteringAnalyzer
 from .DatasetGenerator import DatasetGenerator
 from .DatasetLoader import DatasetLoader
 from .EMMAAnalyzer import EMMAAnalyzer
-from .EMMASettingDialog import EMMASettingDialog
-from .LogDialog import *
+from .EMMASettings import EMMASettings
+from .RuntimeLog import *
 from .PCAAnalyzer import PCAAnalyzer
 from .ParameterEditor import ParameterEditor
 from .SSUAnalyzer import SSUAnalyzer
 from .SSUMulticoreAnalyzer import SSUMulticoreAnalyzer
-from .SSUSettingDialog import SSUSettingDialog
+from .SSUSettings import SSUSettings
 from .StatisticalAnalyzer import StatisticalAnalyzer
 from .UDMAnalyzer import UDMAnalyzer
-from .UDMSettingDialog import UDMSettingDialog
-from .. import QGRAIN_ROOT_PATH, QGRAIN_VERSION
-from ..chart import setup_matplotlib
-from ..io import save_pca, save_statistics
-from ..models import Dataset
+from .UDMSettings import UDMSettings
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -34,12 +33,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self._dataset: Dataset = None
-        self._translator: QtCore.QTranslator = None
+        self._dataset: Optional[Dataset] = None
+        self._translator: Optional[QtCore.QTranslator] = None
+        self._client = QGrainClient()
         self.setWindowTitle("QGrain")
-        self.ssu_setting_dialog = SSUSettingDialog(self)
-        self.emma_setting_dialog = EMMASettingDialog(self)
-        self.udm_setting_dialog = UDMSettingDialog(self)
+        self.ssu_setting_dialog = SSUSettings(self)
+        self.emma_setting_dialog = EMMASettings(parent=self, client=self._client)
+        self.udm_setting_dialog = UDMSettings(parent=self, client=self._client)
         self.parameter_editor = ParameterEditor(self)
         self.ssu_multicore_analyzer = SSUMulticoreAnalyzer(self)
         self.tab_widget = QtWidgets.QTabWidget(self)
@@ -55,9 +55,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tab_widget.addTab(self.clustering_analyzer, self.tr("Clustering"))
         self.ssu_analyzer = SSUAnalyzer(self.ssu_setting_dialog, self.parameter_editor)
         self.tab_widget.addTab(self.ssu_analyzer, self.tr("SSU"))
-        self.emma_analyzer = EMMAAnalyzer(self.emma_setting_dialog, self.parameter_editor)
+        self.emma_analyzer = EMMAAnalyzer(self.emma_setting_dialog, self.parameter_editor, client=self._client)
         self.tab_widget.addTab(self.emma_analyzer, self.tr("EMMA"))
-        self.udm_analyzer = UDMAnalyzer(self.udm_setting_dialog, self.parameter_editor)
+        self.udm_analyzer = UDMAnalyzer(self.udm_setting_dialog, self.parameter_editor, client=self._client)
         self.tab_widget.addTab(self.udm_analyzer, self.tr("UDM"))
 
         # Open
@@ -66,8 +66,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.open_dataset_action.triggered.connect(lambda: self.load_dataset_dialog.show())
         self.load_ssu_result_action: QtGui.QAction = self.open_menu.addAction(self.tr("SSU Results"))
         self.load_ssu_result_action.triggered.connect(self.ssu_analyzer.result_view.load_results)
-        self.load_ssu_reference_action: QtGui.QAction = self.open_menu.addAction(self.tr("SSU References"))
-        self.load_ssu_reference_action.triggered.connect(self.ssu_analyzer.reference_view.load_references)
         self.load_emma_result_action: QtGui.QAction = self.open_menu.addAction(self.tr("EMMA Result"))
         self.load_emma_result_action.triggered.connect(self.emma_analyzer.load_result)
         self.load_udm_result_action: QtGui.QAction = self.open_menu.addAction(self.tr("UDM Result"))
@@ -83,8 +81,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.save_clustering_action.triggered.connect(self.clustering_analyzer.save_result)
         self.save_ssu_result_action: QtGui.QAction = self.save_menu.addAction(self.tr("SSU Results"))
         self.save_ssu_result_action.triggered.connect(self.ssu_analyzer.result_view.save_results)
-        self.save_ssu_reference_action: QtGui.QAction = self.save_menu.addAction(self.tr("SSU References"))
-        self.save_ssu_reference_action.triggered.connect(self.ssu_analyzer.reference_view.dump_references)
         self.save_emma_result_action: QtGui.QAction = self.save_menu.addAction(self.tr("EMMA Result"))
         self.save_emma_result_action.triggered.connect(self.emma_analyzer.save_selected_result)
         self.save_udm_result_action: QtGui.QAction = self.save_menu.addAction(self.tr("UDM Result"))
@@ -133,9 +129,7 @@ class MainWindow(QtWidgets.QMainWindow):
             action.setCheckable(True)
             app = QtCore.QCoreApplication.instance()
             invert_secondary = theme.startswith("light")
-            action.triggered.connect(
-                lambda checked=False, theme=theme, invert_secondary=invert_secondary: apply_stylesheet(
-                    app, theme=theme, invert_secondary=invert_secondary, extra=EXTRA))
+            action.triggered.connect(lambda checked=False, theme=theme, invert_secondary=invert_secondary: apply_stylesheet(app, theme=theme, invert_secondary=invert_secondary, extra=EXTRA))
             self.theme_menu.addAction(action)
             self.theme_actions.append(action)
             if theme == "light_cyan.xml":
@@ -158,8 +152,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.load_dataset_dialog.dataset_loaded.connect(self.ssu_analyzer.on_dataset_loaded)
         self.load_dataset_dialog.dataset_loaded.connect(self.emma_analyzer.on_dataset_loaded)
         self.load_dataset_dialog.dataset_loaded.connect(self.udm_analyzer.on_dataset_loaded)
-        self.log_dialog = LogDialog(self)
-        self.about_dialog = AboutDialog(self)
+        self.log_dialog = RuntimeLog(self)
+        self.about_dialog = About(self)
         self.file_dialog = QtWidgets.QFileDialog(parent=self)
         self.normal_msg = QtWidgets.QMessageBox(self)
         self.close_msg = QtWidgets.QMessageBox(self)
@@ -257,7 +251,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 QtCore.QCoreApplication.processEvents()
             all_results = self.ssu_analyzer.result_view.all_results
             for i, result in enumerate(all_results):
-                self.ssu_analyzer.result_chart.show_model(result.view_model)
+                self.ssu_analyzer.result_chart.show_chart(result.view_model)
                 image = self.ssu_analyzer.result_chart.grab()
                 filename = os.path.join(directory, f"{i}.png")
                 image.save(filename)
@@ -347,11 +341,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def closeEvent(self, event: QtGui.QCloseEvent):
         res = self.close_msg.exec_()
         if res == QtWidgets.QMessageBox.Yes:
-            self.ssu_analyzer.async_worker.working_thread.terminate()
             event.accept()
         else:
             event.ignore()
-
 
     def retranslate(self):
         self.setWindowTitle("QGrain")
@@ -361,14 +353,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.save_menu.setTitle(self.tr("Save"))
         self.open_dataset_action.setText(self.tr("Grain Size Dataset"))
         self.load_ssu_result_action.setText(self.tr("SSU Results"))
-        self.load_ssu_reference_action.setText(self.tr("SSU References"))
         self.load_emma_result_action.setText(self.tr("EMMA Result"))
         self.load_udm_result_action.setText(self.tr("UDM Result"))
         self.save_statistics_action.setText(self.tr("Statistical Result"))
         self.save_pca_action.setText(self.tr("PCA Result"))
         self.save_clustering_action.setText(self.tr("Clustering Result"))
         self.save_ssu_result_action.setText(self.tr("SSU Results"))
-        self.save_ssu_reference_action.setText(self.tr("SSU References"))
         self.save_emma_result_action.setText(self.tr("EMMA Result"))
         self.save_udm_result_action.setText(self.tr("UDM Result"))
         self.config_menu.setTitle(self.tr("Configure"))
@@ -393,93 +383,24 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ssu_multicore_analyzer.retranslate()
 
 
-EXTRA = {'font_family': 'Roboto,Arial,Helvetica,Tahoma,Verdana,Microsoft YaHei UI,SimSum'}
-
-
-def getdirsize(dir):
-    size = 0
-    for root, _, files in os.walk(dir):
-        size += sum([os.path.getsize(os.path.join(root, name)) for name in files])
-    return size
-
-
-def create_necessary_folders():
-    necessary_folders = (
-        os.path.join(os.path.expanduser("~"), "QGrain"),
-        os.path.join(os.path.expanduser("~"), "QGrain", "logs"))
-    for folder in necessary_folders:
-        os.makedirs(folder, exist_ok=True)
-
-
-def setup_language(app: QtWidgets.QApplication, language: str):
-    trans = QtCore.QTranslator(app)
-    trans.load(os.path.join(QGRAIN_ROOT_PATH, "assets", language))
-    app.installTranslator(trans)
-
-
-def setup_logging(main: MainWindow):
-    format_str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    file_handler = TimedRotatingFileHandler(os.path.join(os.path.expanduser("~"), "QGrain", "logs", "qgrain.log"), when="D", backupCount=8, encoding="utf-8")
-    file_handler.setLevel(logging.DEBUG)
-    file_handler.setFormatter(logging.Formatter(format_str))
-    status_bar_handler = StatusBarLogHandler(main.statusBar(), level=logging.INFO)
-    status_bar_handler.setFormatter(logging.Formatter(format_str))
-    gui_handler = GUILogHandler(main.log_dialog, level=logging.DEBUG)
-    gui_handler.setFormatter(logging.Formatter(format_str))
-    logging.basicConfig(level=logging.DEBUG, format=format_str)
-    logging.getLogger().addHandler(file_handler)
-    logging.getLogger().addHandler(status_bar_handler)
-    logging.getLogger().addHandler(gui_handler)
-    mpl.set_loglevel("error")
-
-
-def setup_app():
-    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_DisableHighDpiScaling)
-    app = QtWidgets.QApplication(sys.argv)
-    # for filename in os.listdir(os.path.join(QGRAIN_ROOT_PATH, "assets")):
-    #     if filename.endswith(".ttf"):
-    #         font_path = os.path.join(QGRAIN_ROOT_PATH, "assets", filename)
-    #         font_id = QtGui.QFontDatabase.addApplicationFont(font_path)
-    #         font_family = QtGui.QFontDatabase.applicationFontFamilies(font_id)
-    splash = QtWidgets.QSplashScreen()
-    pixmap = QtGui.QPixmap(os.path.join(QGRAIN_ROOT_PATH, "assets", "icon.png"))
-    pixmap.setDevicePixelRatio(1.0)
-    splash.setPixmap(pixmap)
-    splash.show()
-
-    create_necessary_folders()
-    app.setWindowIcon(QtGui.QIcon(pixmap))
-    # app.setApplicationDisplayName(f"QGrain ({QGRAIN_VERSION})")
-    app.setApplicationVersion(QGRAIN_VERSION)
-    from qt_material import apply_stylesheet
-    apply_stylesheet(app, theme="light_cyan.xml", invert_secondary=True, extra=EXTRA)
-    setup_matplotlib()
-    setup_language(app, "en")
-    return app, splash
-
-
 def qgrain_app():
     app, splash = setup_app()
     main = MainWindow()
     # load the artificial dataset to show the functions of all modules
     dataset = main.dataset_generator.get_random_dataset(100)
-    main.load_dataset_dialog.dataset_loaded.emit(dataset.dataset_to_fit)
+    main.load_dataset_dialog.dataset_loaded.emit(dataset.dataset)
     main.ssu_analyzer.on_try_fit_clicked()
-    from ..ssu import DistributionType, try_sample, SSUResult
-    sample = dataset.samples[0]
-    initial_parameters = dataset.parameters[0, 1:, :]
-    task_or_result = try_sample(
-        sample.sample_to_fit,
-        DistributionType.Normal,
-        dataset.n_components,
-        initial_parameters=initial_parameters)
-    assert isinstance(task_or_result, SSUResult)
-    main.parameter_editor.refer_ssu_result(task_or_result)
+    from ..models import DistributionType, SSUResult
+    from ..ssu import try_ssu
+    sample = dataset[0]
+    x0 = dataset.parameters[0, 1:, :]
+    result, msg = try_ssu(sample.sample, DistributionType.Normal, dataset.n_components, x0=x0)
+    assert isinstance(result, SSUResult)
+    main.parameter_editor.refer_ssu_result(result)
     main.parameter_editor.enabled_checkbox.setChecked(True)
     main.emma_analyzer.on_try_fit_clicked()
     main.udm_analyzer.on_try_fit_clicked()
-    setup_logging(main)
-    # main.move(main.screen().geometry().center() - main.frameGeometry().center())
+    setup_logging(main.statusBar(), main.log_dialog)
     main.show()
     splash.finish(main)
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

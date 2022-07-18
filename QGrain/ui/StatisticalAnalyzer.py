@@ -4,13 +4,10 @@ from typing import *
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from ..chart.CumulativeCurveChart import CumulativeCurveChart
-from ..chart.Frequency3DChart import Frequency3DChart
-from ..chart.FrequencyCurveChart import FrequencyCurveChart
-from ..chart.config_matplotlib import highlight_color
-from ..chart.diagrams import *
-from ..models import Dataset, Sample
 from ..statistics import all_statistics
+from ..models import Dataset, Sample
+from ..charts import (highlight_color, FrequencyChart, CumulativeChart, Frequency3DChart, DiagramChart,
+                      BP12SSCDiagramChart, BP12GSMDiagramChart, Folk54SSCDiagramChart, Folk54GSMDiagramChart)
 
 
 class StatisticalAnalyzer(QtWidgets.QWidget):
@@ -34,7 +31,6 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         self.data_table.setRowCount(len(self.tips))
         self.main_layout = QtWidgets.QGridLayout(self)
         self.main_layout.addWidget(self.data_table, 0, 0, 1, 3)
-
         self.previous_button = QtWidgets.QPushButton(self.tr("Previous"))
         self.previous_button.setToolTip(self.tr("Click to back to the previous page."))
         self.previous_button.clicked.connect(self.on_previous_button_clicked)
@@ -48,7 +44,6 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         self.main_layout.addWidget(self.previous_button, 1, 0)
         self.main_layout.addWidget(self.current_page_combo_box, 1, 1)
         self.main_layout.addWidget(self.next_button, 1, 2)
-
         self.geometric_checkbox = QtWidgets.QCheckBox(self.tr("Geometric [unit is {0}]").format("μm"))
         self.geometric_checkbox.setChecked(True)
         self.geometric_checkbox.stateChanged.connect(self.on_is_geometric_changed)
@@ -58,15 +53,12 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         self.FW57_checkbox.stateChanged.connect(self.on_is_FW57_changed)
         self.main_layout.addWidget(self.FW57_checkbox, 2, 1)
         self.proportion_combo_box = QtWidgets.QComboBox()
-
         self.proportion_combo_box.addItems([description for _, description in self.supported_proportions])
         self.proportion_combo_box.currentIndexChanged.connect(lambda: self.update_page(self.page_index))
         self.main_layout.addWidget(self.proportion_combo_box, 2, 2)
-
         self.main_layout.setColumnStretch(0, 1)
         self.main_layout.setColumnStretch(1, 1)
         self.main_layout.setColumnStretch(2, 1)
-
         self.menu = QtWidgets.QMenu(self.data_table)
         self.plot_cumulative_curve_menu = self.menu.addMenu(self.tr("Plot Cumulative Curve Chart"))
         self.cumulative_plot_selected_action = self.plot_cumulative_curve_menu.addAction(self.tr("Plot"))
@@ -81,7 +73,6 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         self.cumulative_append_all_action = self.plot_cumulative_curve_menu.addAction(self.tr("Append All"))
         self.cumulative_append_all_action.triggered.connect(
             lambda: self.plot_chart(self.cumulative_curve_chart, self._dataset.samples, True))
-
         self.plot_frequency_curve_menu = self.menu.addMenu(self.tr("Plot Frequency Curve Chart"))
         self.frequency_plot_selected_action = self.plot_frequency_curve_menu.addAction(self.tr("Plot"))
         self.frequency_plot_selected_action.triggered.connect(
@@ -95,7 +86,6 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         self.frequency_append_all_action = self.plot_frequency_curve_menu.addAction(self.tr("Append All"))
         self.frequency_append_all_action.triggered.connect(
             lambda: self.plot_chart(self.frequency_curve_chart, self._dataset.samples, True))
-
         self.plot_frequency_curve_3D_menu = self.menu.addMenu(self.tr("Plot Frequency Curve 3D Chart"))
         self.frequency_3D_plot_selected_action = self.plot_frequency_curve_3D_menu.addAction(self.tr("Plot"))
         self.frequency_3D_plot_selected_action.triggered.connect(
@@ -109,7 +99,6 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         self.frequency_3D_append_all_action = self.plot_frequency_curve_3D_menu.addAction(self.tr("Append All"))
         self.frequency_3D_append_all_action.triggered.connect(
             lambda: self.plot_chart(self.frequency_curve_3D_chart, self._dataset.samples, True))
-
         self.folk54_GSM_diagram_menu = self.menu.addMenu(self.tr("Plot GSM Diagram (Folk, 1954)"))
         self.folk54_GSM_plot_selected_action = self.folk54_GSM_diagram_menu.addAction(self.tr("Plot"))
         self.folk54_GSM_plot_selected_action.triggered.connect(
@@ -123,7 +112,6 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         self.folk54_GSM_append_all_action = self.folk54_GSM_diagram_menu.addAction(self.tr("Append All"))
         self.folk54_GSM_append_all_action.triggered.connect(
             lambda: self.plot_chart(self.folk54_GSM_diagram_chart, self._dataset.samples, True))
-
         self.folk54_SSC_diagram_menu = self.menu.addMenu(self.tr("Plot SSC Diagram (Folk, 1954)"))
         self.folk54_SSC_plot_selected_action = self.folk54_SSC_diagram_menu.addAction(self.tr("Plot"))
         self.folk54_SSC_plot_selected_action.triggered.connect(
@@ -137,7 +125,6 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         self.folk54_SSC_append_all_action = self.folk54_SSC_diagram_menu.addAction(self.tr("Append All"))
         self.folk54_SSC_append_all_action.triggered.connect(
             lambda: self.plot_chart(self.folk54_SSC_diagram_chart, self._dataset.samples, True))
-
         self.BP12_GSM_diagram_menu = self.menu.addMenu(self.tr("Plot GSM Diagram (Blott and Pye, 2012)"))
         self.BP12_GSM_plot_selected_action = self.BP12_GSM_diagram_menu.addAction(self.tr("Plot"))
         self.BP12_GSM_plot_selected_action.triggered.connect(
@@ -151,7 +138,6 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         self.BP12_GSM_append_all_action = self.BP12_GSM_diagram_menu.addAction(self.tr("Append All"))
         self.BP12_GSM_append_all_action.triggered.connect(
             lambda: self.plot_chart(self.BP12_GSM_diagram_chart, self._dataset.samples, True))
-
         self.BP12_SSC_diagram_menu = self.menu.addMenu(self.tr("Plot SSC Diagram (Blott and Pye, 2012)"))
         self.BP12_SSC_plot_selected_action = self.BP12_SSC_diagram_menu.addAction(self.tr("Plot"))
         self.BP12_SSC_plot_selected_action.triggered.connect(
@@ -165,21 +151,17 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         self.BP12_SSC_append_all_action = self.BP12_SSC_diagram_menu.addAction(self.tr("Append All"))
         self.BP12_SSC_append_all_action.triggered.connect(
             lambda: self.plot_chart(self.BP12_SSC_diagram_chart, self._dataset.samples, True))
-
         self.previous_button.setEnabled(False)
         self.current_page_combo_box.setEnabled(False)
         self.next_button.setEnabled(False)
-
         self.data_table.customContextMenuRequested.connect(self.show_menu)
-
-        self.frequency_curve_chart = FrequencyCurveChart()
+        self.frequency_curve_chart = FrequencyChart()
         self.frequency_curve_3D_chart = Frequency3DChart()
-        self.cumulative_curve_chart = CumulativeCurveChart()
+        self.cumulative_curve_chart = CumulativeChart()
         self.folk54_GSM_diagram_chart = Folk54GSMDiagramChart()
         self.folk54_SSC_diagram_chart = Folk54SSCDiagramChart()
         self.BP12_GSM_diagram_chart = BP12GSMDiagramChart()
         self.BP12_SSC_diagram_chart = BP12SSCDiagramChart()
-
         self.normal_msg = QtWidgets.QMessageBox(self)
 
     def show_menu(self, pos):
@@ -249,9 +231,9 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
     @property
     def supported_proportions(self) -> Tuple[Tuple[str, str]]:
         result = (
-            ("proportions_GSM", self.tr("Gravel, Sand, Mud")),
-            ("proportions_SSC", self.tr("Sand, Silt, Clay")),
-            ("proportions_BGSSC", self.tr("Boulder, Gravel, Sand, Silt, Clay")))
+            ("proportions_gsm", self.tr("Gravel, Sand, Mud")),
+            ("proportions_ssc", self.tr("Sand, Silt, Clay")),
+            ("proportions_bgssc", self.tr("Boulder, Gravel, Sand, Silt, Clay")))
         return result
 
     @property
@@ -276,7 +258,7 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         if self._dataset is None:
             return
 
-        def write(row: int, col: int, value: str):
+        def write(row: int, col: int, value: Union[int, float, str]):
             if isinstance(value, str):
                 pass
             elif isinstance(value, int):
@@ -322,9 +304,9 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
                     (True, "kurtosis"),
                     (True, "kurtosis_description"),
                     (False, proportion_key),
-                    (False, "group_Folk54"),
-                    (False, "group_BP12_symbol"),
-                    (False, "group_BP12")]
+                    (False, "group_folk54"),
+                    (False, "group_bp12_symbol"),
+                    (False, "group_bp12")]
         self.data_table.setRowCount(end - start)
         self.data_table.setColumnCount(len(col_names))
         self.data_table.setHorizontalHeaderLabels(col_names)
@@ -334,12 +316,12 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
             statistics = all_statistics(sample.classes, sample.classes_phi, sample.distribution)
             if self.is_geometric:
                 if self.is_FW57:
-                    sub_key = "geometric_FW57"
+                    sub_key = "geometric_fw57"
                 else:
                     sub_key = "geometric"
             else:
                 if self.is_FW57:
-                    sub_key = "logarithmic_FW57"
+                    sub_key = "logarithmic_fw57"
                 else:
                     sub_key = "logarithmic"
             for col, (in_sub, key) in enumerate(col_keys):
@@ -418,43 +400,36 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
             self.FW57_checkbox.setText(self.tr("Method of Statistical Moments"))
         for i, (_, description) in enumerate(self.supported_proportions):
             self.proportion_combo_box.setItemText(i, description)
-
         self.plot_cumulative_curve_menu.setTitle(self.tr("Plot Cumlulative Curve Chart"))
         self.cumulative_plot_selected_action.setText(self.tr("Plot"))
         self.cumulative_append_selected_action.setText(self.tr("Append"))
         self.cumulative_plot_all_action.setText(self.tr("Plot All"))
         self.cumulative_append_all_action.setText(self.tr("Append All"))
-
         self.plot_frequency_curve_menu.setTitle(self.tr("Plot Frequency Curve Chart"))
         self.frequency_plot_selected_action.setText(self.tr("Plot"))
         self.frequency_append_selected_action.setText(self.tr("Append"))
         self.frequency_plot_all_action.setText(self.tr("Plot All"))
         self.frequency_append_all_action.setText(self.tr("Append All"))
-
         self.plot_frequency_curve_3D_menu.setTitle(self.tr("Plot Frequency Curve 3D Chart"))
         self.frequency_3D_plot_selected_action.setText(self.tr("Plot"))
         self.frequency_3D_append_selected_action.setText(self.tr("Append"))
         self.frequency_3D_plot_all_action.setText(self.tr("Plot All"))
         self.frequency_3D_append_all_action.setText(self.tr("Append All"))
-
         self.folk54_GSM_diagram_menu.setTitle(self.tr("Plot GSM Diagram (Folk, 1954)"))
         self.folk54_GSM_plot_selected_action.setText(self.tr("Plot"))
         self.folk54_GSM_append_selected_action.setText(self.tr("Append"))
         self.folk54_GSM_plot_all_action.setText(self.tr("Plot All"))
         self.folk54_GSM_append_all_action.setText(self.tr("Append All"))
-
         self.folk54_SSC_diagram_menu.setTitle(self.tr("Plot SSC Diagram (Folk, 1954)"))
         self.folk54_SSC_plot_selected_action.setText(self.tr("Plot"))
         self.folk54_SSC_append_selected_action.setText(self.tr("Append"))
         self.folk54_SSC_plot_all_action.setText(self.tr("Plot All"))
         self.folk54_SSC_append_all_action.setText(self.tr("Append All"))
-
         self.BP12_GSM_diagram_menu.setTitle(self.tr("Plot GSM Diagram (Blott and Pye, 2012)"))
         self.BP12_GSM_plot_selected_action.setText(self.tr("Plot"))
         self.BP12_GSM_append_selected_action.setText(self.tr("Append"))
         self.BP12_GSM_plot_all_action.setText(self.tr("Plot All"))
         self.BP12_GSM_append_all_action.setText(self.tr("Append All"))
-
         self.BP12_SSC_diagram_menu.setTitle(self.tr("Plot SSC Diagram (Blott and Pye, 2012)"))
         self.BP12_SSC_plot_selected_action.setText(self.tr("Plot"))
         self.BP12_SSC_append_selected_action.setText(self.tr("Append"))
