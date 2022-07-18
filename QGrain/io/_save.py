@@ -11,11 +11,10 @@ from sklearn.decomposition import PCA
 
 from ._use_excel import column_to_char, prepare_styles
 from .. import QGRAIN_VERSION
-from ..emma import EMMAResult
-from ..models import Dataset, Sample, ArtificialDataset
-from ..ssu import DistributionType, SSUResult, get_distribution
+from ..models import DistributionType, Dataset, Sample, ArtificialDataset, SSUResult, EMMAResult , UDMResult
 from ..statistics import _all_scales, all_statistics, logarithmic
-from ..udm import UDMResult
+from ..distributions import get_distribution
+
 
 SMALL_WIDTH = 12
 MEDIAN_WIDTH = 24

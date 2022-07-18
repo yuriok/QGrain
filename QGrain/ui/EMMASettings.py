@@ -6,8 +6,11 @@ from typing import *
 from PySide6 import QtCore, QtWidgets
 from grpc._channel import _InactiveRpcError
 
-from ..emma import built_in_losses
 from ..protos.client import QGrainClient
+
+built_in_losses = (
+    "1-norm", "2-norm", "3-norm", "4-norm",
+    "mae", "mse", "rmse", "rmlse", "lmse", "angular", "cosine")
 
 
 class EMMASettings(QtWidgets.QDialog):
