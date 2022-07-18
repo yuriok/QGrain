@@ -1,6 +1,6 @@
 import os
 
-QGRAIN_VERSION = "0.4.0.6"
+QGRAIN_VERSION = "0.5.0.0"
 QGRAIN_ROOT_PATH = os.path.dirname(__file__)
 
 
