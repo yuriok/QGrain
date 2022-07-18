@@ -1,15 +1,15 @@
 import numpy as np
 import pytest
 
-from QGrain.emma import built_in_losses
+from QGrain.models import UDMResult
 from QGrain.generate import random_dataset, SIMPLE_PRESET
 from QGrain.kernels import KernelType
-from QGrain.models import UDMResult
+from QGrain.emma import built_in_losses
 from QGrain.udm import try_udm
 
 
 class TestTryUDM:
-    dataset = random_dataset(**SIMPLE_PRESET, n_samples=200)
+    dataset = random_dataset(**SIMPLE_PRESET, n_samples=100)
     x0 = np.array([[mean for (mean, std) in component] for component in SIMPLE_PRESET["target"]]).T
     x0 = x0[1:-1]
 
@@ -61,6 +61,10 @@ class TestTryUDM:
                       "proportions", "components", "time_spent", "x0", "history", "settings"]
         for prop in properties:
             assert hasattr(result, prop)
+
+    def test_no_history(self):
+        result = try_udm(self.dataset, KernelType.Normal, self.dataset.n_components, need_history=False)
+        assert result.n_iterations == 1
 
     def test_history(self):
         result = try_udm(self.dataset, KernelType.Normal, self.dataset.n_components)
