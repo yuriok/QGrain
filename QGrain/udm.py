@@ -8,8 +8,8 @@ import numpy as np
 import torch
 from numpy import ndarray
 
-from .kernels import KernelType, ProportionModule, get_kernel
-from .models import Dataset, UDMResult, ArtificialDataset
+from .models import KernelType, Dataset, UDMResult, ArtificialDataset
+from .kernels import ProportionModule, get_kernel
 
 
 class UDMModule(torch.nn.Module):
@@ -35,7 +35,10 @@ class UDMModule(torch.nn.Module):
 
     @property
     def all_parameters(self) -> np.ndarray:
-        return torch.cat([self.components._params, self.proportions._params], dim=1).detach().cpu().numpy()
+        with torch.no_grad():
+            all_parameters = torch.cat([self.components._params, self.proportions._params], dim=1)
+            all_parameters = all_parameters.detach().cpu().numpy()
+        return all_parameters
 
 
 def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType, n_components: int, x0: ndarray = None,
@@ -82,7 +85,7 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
     start_text = f"""Performing the UDM algorithm on the dataset ({dataset.name}).
     Kernel type: {kernel_type.name}
     Number of end members: {n_components}
-    x0: {x0}
+    x0: {x0 if x0 is None else x0.tolist()}
     Device: {device}
     Pretrain epochs: {pretrain_epochs}
     Minimum epochs: {min_epochs}
@@ -99,7 +102,7 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
     optimizer = torch.optim.Adam(udm.parameters(), lr=learning_rate, betas=betas)
     distribution_loss_series = []
     component_loss_series = []
-    history: List[ndarray] = []
+    history: List[ndarray] = [udm.all_parameters]
     udm.components.requires_grad_(False)
     max_total_epochs = pretrain_epochs + max_epochs
     start = time.time()
@@ -154,11 +157,14 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
                     betas=betas, constraint_level=constraint_level, need_history=need_history)
     distribution_loss_series = np.array(distribution_loss_series)
     component_loss_series = np.array(component_loss_series)
-    loss_series = {"total_loss": distribution_loss_series + component_loss_series,
-                   "distribution_loss": distribution_loss_series,
-                   "component_loss": component_loss_series}
-    result = UDMResult(dataset, kernel_type, n_components, udm.all_parameters,
-                       time_spent, x0, history, settings, loss_series)
+    loss_series = {"total": distribution_loss_series + component_loss_series,
+                   "distribution": distribution_loss_series,
+                   "component": component_loss_series}
+    if need_history:
+        parameters = np.concatenate([np.expand_dims(p, axis=0) for p in history], axis=0)
+    else:
+        parameters = np.expand_dims(udm.all_parameters, axis=0)
+    result = UDMResult(dataset, kernel_type, n_components, parameters, time_spent, x0, settings, loss_series)
     if progress_callback is not None:
         progress_callback(1.0)
     return result
