@@ -16,6 +16,8 @@ setup(
         "numpy",
         "scipy",
         "scikit-learn",
+        "grpcio",
+        "protobuf",
         "torch",
         "xlrd",
         "openpyxl",
