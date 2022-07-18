@@ -69,7 +69,7 @@ class DistributionChart(BaseChart):
         self._last_result: Union[ArtificialSample, SSUResult, None] = None
 
     @property
-    def supported_scales(self) -> Tuple[Tuple[str, str]]:
+    def supported_scales(self) -> Sequence[Tuple[str, str]]:
         scales = (("log-linear", self.tr("Log-linear")),
                   ("log", self.tr("Log")),
                   ("phi", self.tr("Phi")),
@@ -77,7 +77,7 @@ class DistributionChart(BaseChart):
         return scales
 
     @property
-    def supported_intervals(self) -> Tuple[Tuple[int, str]]:
+    def supported_intervals(self) -> Sequence[Tuple[int, str]]:
         intervals = ((5, self.tr("5 Milliseconds")),
                      (10, self.tr("10 Milliseconds")),
                      (20, self.tr("20 Milliseconds")),

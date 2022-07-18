@@ -16,7 +16,7 @@ class PCAResultChart(BaseChart):
         self.shape_axes = self._figure.add_subplot(2, 2, 2)
         self.series_axes = self._figure.add_subplot(2, 1, 2)
         self.setWindowTitle(self.tr("PCA Chart"))
-        self._last_dataset: Dataset = None
+        self._last_dataset: Optional[Dataset] = None
 
     def show_dataset(self, dataset: Union[ArtificialDataset, Dataset]):
         assert dataset is not None

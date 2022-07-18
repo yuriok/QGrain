@@ -240,7 +240,7 @@ class UDMAnalyzer(QtWidgets.QWidget):
     def load_result(self):
         filename, _  = self.file_dialog.getOpenFileName(
             self, self.tr("Choose the file which stores the dumped UDM result"),
-            None, "Dumped UDM Result (*.udm)")
+            ".", "Dumped UDM Result (*.udm)")
         if filename is None or filename == "":
             return
         with open(filename, "rb") as f:
@@ -259,7 +259,7 @@ class UDMAnalyzer(QtWidgets.QWidget):
             return
         filename, _ = self.file_dialog.getSaveFileName(
             self, self.tr("Choose a filename to save the selected UDM result"),
-            None, "Microsoft Excel (*.xlsx);;Dumped UDM Result (*.udm)")
+            ".", "Microsoft Excel (*.xlsx);;Dumped UDM Result (*.udm)")
         if filename is None or filename == "":
             return
         try:

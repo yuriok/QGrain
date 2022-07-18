@@ -9,8 +9,7 @@ import torch
 from numpy import ndarray
 
 from .models import KernelType, ArtificialDataset, Dataset, EMMAResult
-from .kernels import ProportionModule, get_kernel
-from .metrics import loss_torch
+from .kernels import loss_torch, ProportionModule, get_kernel
 
 built_in_losses = (
     "1-norm", "2-norm", "3-norm", "4-norm",

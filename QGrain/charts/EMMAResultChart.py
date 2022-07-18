@@ -70,10 +70,10 @@ class EMMAResultChart(BaseChart):
         self.save_animation_action: QtGui.QAction = QtGui.QAction(self.tr("Save Animation"))
         self.menu.addAction(self.save_animation_action)
         self.save_animation_action.triggered.connect(self.save_animation)
-        self._last_result: EMMAResult = None
+        self._last_result: Optional[EMMAResult] = None
 
     @property
-    def supported_scales(self) -> Tuple[Tuple[str, str]]:
+    def supported_scales(self) -> Sequence[Tuple[str, str]]:
         scales = (("log-linear", self.tr("Log-linear")),
                   ("log", self.tr("Log")),
                   ("phi", self.tr("Phi")),
@@ -81,7 +81,7 @@ class EMMAResultChart(BaseChart):
         return scales
 
     @property
-    def supported_losses(self) -> Tuple[Tuple[str, str]]:
+    def supported_losses(self) -> Sequence[Tuple[str, str]]:
         losses = (("1-norm", self.tr("1 Norm")),
                   ("2-norm", self.tr("2 Norm")),
                   ("3-norm", self.tr("3 Norm")),
@@ -96,7 +96,7 @@ class EMMAResultChart(BaseChart):
         return losses
 
     @property
-    def supported_intervals(self) -> Tuple[Tuple[int, str]]:
+    def supported_intervals(self) -> Sequence[Tuple[int, str]]:
         intervals = ((5, self.tr("5 Milliseconds")),
                      (10, self.tr("10 Milliseconds")),
                      (20, self.tr("20 Milliseconds")),

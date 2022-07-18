@@ -297,7 +297,7 @@ class SSUResultViewer(QtWidgets.QWidget):
     def load_results(self):
         filename, _ = self.file_dialog.getOpenFileName(
             self, self.tr("Choose the file which stores the dumped SSU results"),
-            None, "Dumped SSU Results (*.ssu)")
+            ".", "Dumped SSU Results (*.ssu)")
         if filename is None or filename == "":
             return
         with open(filename, "rb") as f:
@@ -337,8 +337,8 @@ class SSUResultViewer(QtWidgets.QWidget):
             self.show_error(self.tr("There is no SSU result."))
             return
         filename, _ = self.file_dialog.getSaveFileName(
-            None, self.tr("Choose a filename to save the SSU Results"),
-            None, "Microsoft Excel (*.xlsx);;Dumped SSU Results (*.ssu)")
+            self, self.tr("Choose a filename to save the SSU Results"),
+            ".", "Microsoft Excel (*.xlsx);;Dumped SSU Results (*.ssu)")
         if filename is None or filename == "":
             return
         try:
@@ -410,7 +410,7 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.boxplot_chart.show_dataset([losses], xlabels=[self.loss_name], ylabel="Loss")
         self.boxplot_chart.show()
 
-        # calculate the 1/4, 1/2, and 3/4 postion value to judge which result is invalid
+        # calculate the 1/4, 1/2, and 3/4 position value to judge which result is invalid
         # 1. the mean squared errors are much higher in the results which are lack of components
         # 2. with the component number getting higher, the mean squared error will get lower and finally reach the minimum
         median = np.median(losses)
@@ -460,7 +460,7 @@ class SSUResultViewer(QtWidgets.QWidget):
 
         for i in range(max_n_components):
             stacked_moments = np.array(moments[i])
-            # calculate the 1/4, 1/2, and 3/4 postion value to judge which result is invalid
+            # calculate the 1/4, 1/2, and 3/4 position value to judge which result is invalid
             # 1. the mean squared errors are much higher in the results which are lack of components
             # 2. with the component number getting higher, the mean squared error will get lower and finally reach the minimum
             median = np.median(stacked_moments)

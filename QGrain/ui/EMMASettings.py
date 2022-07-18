@@ -21,7 +21,7 @@ class EMMASettings(QtWidgets.QDialog):
         self.main_layout = QtWidgets.QGridLayout(self)
         self.device_label = QtWidgets.QLabel(self.tr("Device"))
         self.device_label.setToolTip(self.tr(
-            "The neural netowrk framwork, pytorch, also can use the GPU of NVIDIA to do calculations."))
+            "The neural network framework, pytorch, also can use the GPU of NVIDIA to do calculations."))
         self.device_combo_box = QtWidgets.QComboBox()
         self.main_layout.addWidget(self.device_label, 0, 0)
         self.main_layout.addWidget(self.device_combo_box, 0, 1)
@@ -158,7 +158,7 @@ class EMMASettings(QtWidgets.QDialog):
         self.setWindowTitle(self.tr("EMMA Settings"))
         self.device_label.setText(self.tr("Device"))
         self.device_label.setToolTip(self.tr(
-            "The neural netowrk framwork, pytorch, also can use the GPU of NVIDIA to do calculations."))
+            "The neural network framework, pytorch, also can use the GPU of NVIDIA to do calculations."))
         self.loss_label.setText(self.tr("Loss"))
         self.loss_label.setToolTip(self.tr(
             "The function to calculate the difference between prediction and observation."))

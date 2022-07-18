@@ -44,9 +44,9 @@ def udm_to_ssu(result: UDMResult, logger: logging.Logger = None,
     ssu_results = []
     for i in range(result.n_samples):
         if result.n_iterations == 0:
-            parameters = np.expand_dims(result.parameters[i], axis=0)
+            parameters = np.expand_dims(result.parameters[-1, i], axis=0)
         else:
-            history = [np.expand_dims(result._history[j][i], axis=0) for j in range(result.n_iterations)]
+            history = [np.expand_dims(result.parameters[j][i], axis=0) for j in range(result.n_iterations)]
             parameters = np.concatenate(history, axis=0)
         ssu_result = SSUResult(result.dataset[i], distribution_type, parameters, time_spent,
                                x0=x0, settings=result.settings)

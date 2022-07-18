@@ -213,7 +213,7 @@ class SSUResult:
 
     def loss(self, name: str):
         loss_func = loss_numpy(name)
-        return loss_func(self.distribution, self.sample.distribution)
+        return loss_func(self.distribution, self.sample.distribution, None)
 
     def loss_series(self, name: str):
         n_iterations, n_parameters, n_components = self._parameters.shape

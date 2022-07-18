@@ -269,7 +269,7 @@ class ArtificialDataset:
 
     @name.setter
     def name(self, value: str):
-        assert isinstance(value)
+        assert isinstance(value, str)
         assert len(value) > 0
         self._name = value
 

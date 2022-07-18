@@ -4,8 +4,7 @@ __all__ = [
     "prepare_styles"]
 
 import openpyxl
-from openpyxl.styles import (Alignment, Border, Font, NamedStyle, PatternFill,
-                             Side)
+from openpyxl.styles import (Alignment, Font, NamedStyle, PatternFill)
 
 
 def column_to_char(column_index: int):
