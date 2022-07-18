@@ -1,0 +1,166 @@
+syntax = "proto3";
+
+enum DistributionType{
+  Nonparametric = 0;
+  Normal = 1;
+  SkewNormal = 2;
+  Weibull = 3;
+  GeneralWeibull = 4;
+};
+
+message Sample {
+  string name = 1;
+  repeated float classes = 2;
+  repeated float distribution = 3;
+};
+
+message Dataset
+{
+  string name = 1;
+  int32 n_samples = 2;
+  int32 n_classes = 3;
+  repeated string sample_names = 4;
+  repeated float classes = 5;
+  bytes distributions = 6;
+};
+
+service QGrain {
+  rpc get_service_state (ServiceStateRequest) returns (ServiceStateResponse) {}
+  rpc get_statistics (StatisticalRequest) returns (StatisticalResponse) {}
+  rpc get_ssu_result (SSURequest) returns (SSUResponse) {}
+  rpc get_emma_result (EMMARequest) returns (EMMAResponse) {}
+  rpc get_udm_result (UDMRequest) returns (UDMResponse) {}
+};
+
+
+message ServiceStateRequest {};
+
+message ServiceStateResponse {
+  int32 max_workers = 1;
+  int32 max_message_length = 2;
+  repeated string available_devices = 9;
+  int32 max_dataset_size = 10;
+};
+
+message StatisticalRequest {
+  Dataset dataset = 1;
+};
+
+message StatisticalParameters {
+  string method = 1;
+  float mean = 2;
+  float std = 3;
+  float skewness = 4;
+  float kurtosis = 5;
+  optional float median = 6;
+  optional float mode = 7;
+  repeated float modes = 8;
+  optional string mean_description = 9;
+  optional string std_description = 10;
+  optional string skewness_description = 11;
+  optional string kurtosis_description = 12;
+};
+
+message StatisticalResult {
+  optional StatisticalParameters arithmetic = 1;
+  optional StatisticalParameters geometric = 2;
+  optional StatisticalParameters logarithmic = 3;
+  optional StatisticalParameters geometric_fw57 = 4;
+  optional StatisticalParameters logarithmic_fw57 = 5;
+  repeated float proportions_gsm = 6;
+  repeated float proportions_ssc = 7;
+  repeated float proportions_bgssc = 8;
+  map<string, float> proportions = 9;
+  optional string group_folk54 = 10;
+  optional string group_bp12_symbol = 11;
+  optional string group_bp12 = 12;
+};
+
+message StatisticalResponse {
+  string message = 1;
+  repeated StatisticalResult results = 2;
+}
+
+message SSURequest {
+  Sample sample = 1;
+  DistributionType distribution_type = 2;
+  int32 n_components = 3;
+  optional bytes x0 = 4;
+  string loss = 5;
+  string optimizer = 6;
+  bool try_global = 7;
+  int32 global_max_niter = 8;
+  int32 global_niter_success = 9;
+  float global_step_size = 10;
+  int32 optimizer_max_niter = 11;
+  bool need_history = 12;
+};
+
+message SSUResponse {
+  string message = 1;
+  optional float time_spent = 2;
+  optional int32 n_iterations = 3;
+  optional int32 n_parameters = 4;
+  optional int32 n_components = 5;
+  optional bytes parameters = 6;
+};
+
+message EMMARequest {
+  Dataset dataset = 1;
+  DistributionType distribution_type = 2;
+  int32 n_members = 3;
+  optional bytes x0 = 4;
+  string device = 5;
+  string loss = 6;
+  int32 pretrain_epochs = 7;
+  int32 min_epochs = 8;
+  int32 max_epochs = 9;
+  float precision = 10;
+  float learning_rate = 11;
+  float beta1 = 12;
+  float beta2 = 13;
+  bool update_end_members = 14;
+  bool need_history = 15;
+};
+
+message EMMAResponse {
+  string message = 1;
+  optional float time_spent = 2;
+  optional int32 n_iterations = 3;
+  optional int32 n_samples = 4;
+  optional int32 n_members = 5;
+  optional int32 n_classes = 6;
+  optional bytes proportions = 7;
+  optional bytes end_members = 8;
+  repeated float losses = 9;
+};
+
+message UDMRequest {
+  Dataset dataset = 1;
+  DistributionType distribution_type = 2;
+  int32 n_components = 3;
+  optional bytes x0 = 4;
+  string device = 5;
+  int32 pretrain_epochs = 6;
+  int32 min_epochs = 7;
+  int32 max_epochs = 8;
+  float precision = 9;
+  float learning_rate = 10;
+  float beta1 = 11;
+  float beta2 = 12;
+  float constraint_level = 13;
+  bool need_history = 14;
+};
+
+message UDMResponse {
+  string message = 1;
+  optional float time_spent = 2;
+  optional int32 n_iterations = 3;
+  optional int32 n_samples = 4;
+  optional int32 n_components = 5;
+  optional int32 n_classes = 6;
+  optional bytes parameters = 7;
+  repeated float distribution_losses = 8;
+  repeated float component_losses = 9;
+  repeated float total_losses = 10;
+};
