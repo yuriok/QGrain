@@ -179,7 +179,9 @@ class EMMAResultChart(BaseChart):
             self._animation._stop()
             self._animation = None
         classes = self.transfer(result.dataset.classes_phi)
-        iteration_indexes = np.linspace(1, result.n_iterations, result.n_iterations)
+        loss_key, loss_name = self.loss
+        loss_series = result.loss_series(loss_key)
+        iteration_indexes = np.linspace(1, len(loss_series), len(loss_series))
         interval = max(1, result.n_samples // self.N_DISPLAY_SAMPLES)
         sample_axes = self._figure.add_subplot(2, 2, 1)
         for sample in result.dataset[::interval]:
@@ -193,10 +195,10 @@ class EMMAResultChart(BaseChart):
         sample_axes.set_title("GSDs")
 
         loss_axes = self._figure.add_subplot(2, 2, 2)
-        loss_axes.plot(iteration_indexes, result.loss_series(self.loss[0]), c=normal_color())
+        loss_axes.plot(iteration_indexes, loss_series, c=normal_color())
         loss_axes.set_xlim(iteration_indexes[0], iteration_indexes[-1])
         loss_axes.set_xlabel("Iteration")
-        loss_axes.set_ylabel(self.loss[1])
+        loss_axes.set_ylabel(loss_name)
         loss_axes.set_title("Loss variation")
 
         end_member_axes = self._figure.add_subplot(2, 2, 3)
@@ -213,7 +215,7 @@ class EMMAResultChart(BaseChart):
         proportion_axes = self._figure.add_subplot(2, 2, 4)
         image = get_image_by_proportions(result.proportions, resolution=100)
         proportion_axes.imshow(image, plt.get_cmap(), aspect="auto", vmin=0, vmax=9)
-        proportion_axes.set_xlim(-0.5, result.n_samples - 0.5)
+        proportion_axes.set_xlim(0, result.n_samples)
         proportion_axes.set_ylim(-0.5, 99.5)
         proportion_axes.set_yticks([0, 20, 40, 60, 80, 100], ["0.0", "0.2", "0.4", "0.6", "0.8", "1.0"])
         proportion_axes.set_xlabel("Sample index")
@@ -229,7 +231,9 @@ class EMMAResultChart(BaseChart):
             self._animation._stop()
             self._animation = None
         classes = self.transfer(result.dataset.classes_phi)
-        iteration_indexes = np.linspace(1, result.n_iterations, result.n_iterations)
+        loss_key, loss_name = self.loss
+        loss_series = result.loss_series(loss_key)
+        iteration_indexes = np.linspace(1, len(loss_series), len(loss_series))
         loss_series = result.loss_series(self.loss[0])
         min_distance, max_distance = np.min(loss_series), np.max(loss_series)
         interval = max(1, result.n_samples // self.N_DISPLAY_SAMPLES)
@@ -247,7 +251,7 @@ class EMMAResultChart(BaseChart):
         loss_axes.plot(iteration_indexes, loss_series, c=normal_color())
         loss_axes.set_xlim(iteration_indexes[0], iteration_indexes[-1])
         loss_axes.set_xlabel("Iteration")
-        loss_axes.set_ylabel(self.loss[1])
+        loss_axes.set_ylabel(loss_name)
         loss_axes.set_title("Loss variation")
         end_member_axes = self._figure.add_subplot(2, 2, 3)
         if self.xlog:
@@ -258,7 +262,7 @@ class EMMAResultChart(BaseChart):
         end_member_axes.set_ylabel(self.ylabel)
         end_member_axes.set_title("End members")
         proportion_axes = self._figure.add_subplot(2, 2, 4)
-        proportion_axes.set_xlim(-0.5, result.n_samples - 0.5)
+        proportion_axes.set_xlim(0, result.n_samples)
         proportion_axes.set_ylim(-0.5, 99.5)
         proportion_axes.set_yticks([20, 40, 60, 80], ["0.2", "0.4", "0.6", "0.8"])
         proportion_axes.set_xlabel("Sample index")
