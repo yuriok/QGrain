@@ -1,23 +1,15 @@
-__all__ = ["DistributionType", "Normal", "SkewNormal",
-           "Weibull", "GeneralWeibull", "get_distribution",
-           "get_sorted_indexes", "sort_parameters"]
+__all__ = ["Normal", "SkewNormal", "Weibull", "GeneralWeibull",
+           "get_distribution", "get_sorted_indexes", "sort_parameters"]
 
 import typing
-from enum import Enum, unique
 
 import numpy as np
 from scipy.special import softmax
 from scipy.stats import norm, skewnorm, weibull_min
 
+from .models import DistributionType
+
 _INFINITESIMAL = 1e-8
-
-
-@unique
-class DistributionType(Enum):
-    Normal = "Normal"
-    SkewNormal = "Skew Normal"
-    Weibull = "Weibull"
-    GeneralWeibull = "General Weibull"
 
 
 def relu(x):

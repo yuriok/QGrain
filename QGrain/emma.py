@@ -8,9 +8,9 @@ import numpy as np
 import torch
 from numpy import ndarray
 
-from .kernels import KernelType, ProportionModule, get_kernel
+from .models import KernelType, ArtificialDataset, Dataset, EMMAResult
+from .kernels import ProportionModule, get_kernel
 from .metrics import loss_torch
-from .models import Dataset, EMMAResult, ArtificialDataset
 
 built_in_losses = (
     "1-norm", "2-norm", "3-norm", "4-norm",
@@ -84,7 +84,7 @@ def try_emma(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType
     start_text = f"""Performing the EMMA algorithm on the dataset ({dataset.name}).
     Kernel type: {kernel_type.name}
     Number of end members: {n_members}
-    x0: {x0}
+    x0: {x0 if x0 is None else x0.tolist()}
     Device: {device}
     Loss: {loss}
     Pretrain epochs: {pretrain_epochs}
@@ -152,11 +152,15 @@ def try_emma(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType
                     betas=betas, update_end_members=update_end_members, need_history=need_history)
     total_loss_series = np.array(total_loss_series)
     loss_series = {loss: total_loss_series}
-    proportions, end_members = emma()
-    result = EMMAResult(dataset, kernel_type, n_members,
-                        proportions.detach().cpu().numpy(),
-                        end_members.detach().cpu().numpy(),
-                        time_spent, x0, history, settings, loss_series)
+    if need_history:
+        proportions = np.concatenate([np.expand_dims(proportions, axis=0) for proportions, _ in history], axis=0)
+        end_members = np.concatenate([np.expand_dims(end_members, axis=0) for _, end_members in history], axis=0)
+    else:
+        with torch.no_grad():
+            proportions, end_members = emma()
+            proportions = np.expand_dims(proportions.cpu().numpy(), axis=0)
+            end_members = np.expand_dims(end_members.cpu().numpy(), axis=0)
+    result = EMMAResult(dataset, kernel_type, n_members, proportions, end_members, time_spent, x0, settings, loss_series)
     if progress_callback is not None:
         progress_callback(1.0)
     return result
