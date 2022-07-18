@@ -751,7 +751,7 @@ def save_ssu(
                "Resolved Parameters",
                "Spent Time [s]",
                "Number of Iterations",
-               "Final Distance [log10MSE]"]
+               "Final Loss [LMSE]"]
     for col, value in enumerate(headers, 1):
         write(0, col, value, style="header")
         if col in (3, 4, 5):
@@ -772,7 +772,7 @@ def save_ssu(
         write(row, 5, result.parameters.__str__(), style=style)
         write(row, 6, result.time_spent, style=style)
         write(row, 7, result.n_iterations, style=style)
-        write(row, 8, result.loss("log10MSE"), style=style)
+        write(row, 8, result.loss("lmse"), style=style)
         if progress_callback is not None:
             progress_callback(i / len(dataset) * 0.1 + 0.1)
 

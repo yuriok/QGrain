@@ -94,7 +94,7 @@ class DatasetLoader(QtWidgets.QDialog):
 
     def on_select_clicked(self):
         filename, _ = self.file_dialog.getOpenFileName(
-            self, self.tr("Select a file"), ".",
+            self, self.tr("Select a file which stores the grain size dataset"), ".",
             "Excel (*.xlsx);;97-2003 Excel (*.xls);;CSV (*.csv)")
         if filename is None or filename == "":
             return
@@ -149,7 +149,7 @@ class DatasetLoader(QtWidgets.QDialog):
                                  "and has been emitted to other widgets.")
                 self.hide()
         except StopIteration:
-            self.logger.info("Loading task was canceled.")
+            self.logger.info("The loading task was canceled.")
         finally:
             progress_dialog.close()
 

@@ -142,7 +142,7 @@ class BaseChart(QtWidgets.QWidget):
                 else:
                     self._animation.save(filename, writer="ffmpeg", fps=10, progress_callback=callback)
         except StopIteration:
-            self.logger.info("Saving task was canceled.")
+            self.logger.info("The saving task was canceled.")
             progress_dialog.close()
 
     def retranslate(self):

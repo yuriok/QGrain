@@ -60,7 +60,7 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         self.main_layout.setColumnStretch(1, 1)
         self.main_layout.setColumnStretch(2, 1)
         self.menu = QtWidgets.QMenu(self.data_table)
-        self.plot_cumulative_curve_menu = self.menu.addMenu(self.tr("Plot Cumulative Curve Chart"))
+        self.plot_cumulative_curve_menu = self.menu.addMenu(self.tr("Plot Cumulative Frequency Chart"))
         self.cumulative_plot_selected_action = self.plot_cumulative_curve_menu.addAction(self.tr("Plot"))
         self.cumulative_plot_selected_action.triggered.connect(
             lambda: self.plot_chart(self.cumulative_curve_chart, self.selections, False))
@@ -73,7 +73,7 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         self.cumulative_append_all_action = self.plot_cumulative_curve_menu.addAction(self.tr("Append All"))
         self.cumulative_append_all_action.triggered.connect(
             lambda: self.plot_chart(self.cumulative_curve_chart, self._dataset.samples, True))
-        self.plot_frequency_curve_menu = self.menu.addMenu(self.tr("Plot Frequency Curve Chart"))
+        self.plot_frequency_curve_menu = self.menu.addMenu(self.tr("Plot Frequency Distribution Chart"))
         self.frequency_plot_selected_action = self.plot_frequency_curve_menu.addAction(self.tr("Plot"))
         self.frequency_plot_selected_action.triggered.connect(
             lambda: self.plot_chart(self.frequency_curve_chart, self.selections, False))
@@ -86,7 +86,7 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         self.frequency_append_all_action = self.plot_frequency_curve_menu.addAction(self.tr("Append All"))
         self.frequency_append_all_action.triggered.connect(
             lambda: self.plot_chart(self.frequency_curve_chart, self._dataset.samples, True))
-        self.plot_frequency_curve_3D_menu = self.menu.addMenu(self.tr("Plot Frequency Curve 3D Chart"))
+        self.plot_frequency_curve_3D_menu = self.menu.addMenu(self.tr("Plot Frequency 3D Chart"))
         self.frequency_3D_plot_selected_action = self.plot_frequency_curve_3D_menu.addAction(self.tr("Plot"))
         self.frequency_3D_plot_selected_action.triggered.connect(
             lambda: self.plot_chart(self.frequency_curve_3D_chart, self.selections, False))
@@ -359,7 +359,7 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
 
     def plot_chart(self, chart, samples: List[Sample], append: bool):
         if self._dataset is None:
-            self.show_error(self.tr("Dataset has not been loaded."))
+            self.show_error(self.tr("The dataset has not been loaded."))
         elif len(samples) == 0:
             self.show_error(self.tr("No sample was selected."))
         else:
@@ -400,17 +400,17 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
             self.FW57_checkbox.setText(self.tr("Method of Statistical Moments"))
         for i, (_, description) in enumerate(self.supported_proportions):
             self.proportion_combo_box.setItemText(i, description)
-        self.plot_cumulative_curve_menu.setTitle(self.tr("Plot Cumulative Curve Chart"))
+        self.plot_cumulative_curve_menu.setTitle(self.tr("Plot Cumulative Frequency Chart"))
         self.cumulative_plot_selected_action.setText(self.tr("Plot"))
         self.cumulative_append_selected_action.setText(self.tr("Append"))
         self.cumulative_plot_all_action.setText(self.tr("Plot All"))
         self.cumulative_append_all_action.setText(self.tr("Append All"))
-        self.plot_frequency_curve_menu.setTitle(self.tr("Plot Frequency Curve Chart"))
+        self.plot_frequency_curve_menu.setTitle(self.tr("Plot Frequency Distribution Chart"))
         self.frequency_plot_selected_action.setText(self.tr("Plot"))
         self.frequency_append_selected_action.setText(self.tr("Append"))
         self.frequency_plot_all_action.setText(self.tr("Plot All"))
         self.frequency_append_all_action.setText(self.tr("Append All"))
-        self.plot_frequency_curve_3D_menu.setTitle(self.tr("Plot Frequency Curve 3D Chart"))
+        self.plot_frequency_curve_3D_menu.setTitle(self.tr("Plot Frequency 3D Chart"))
         self.frequency_3D_plot_selected_action.setText(self.tr("Plot"))
         self.frequency_3D_append_selected_action.setText(self.tr("Append"))
         self.frequency_3D_plot_all_action.setText(self.tr("Plot All"))

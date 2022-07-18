@@ -66,14 +66,14 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.auto_show_selected_action = self.menu.addAction(self.tr("Auto Show"))
         self.auto_show_selected_action.setCheckable(True)
         self.auto_show_selected_action.setChecked(False)
-        self.show_distance_action = self.menu.addAction(self.tr("Show Distance Series"))
+        self.show_distance_action = self.menu.addAction(self.tr("Show Loss Series"))
         self.show_distance_action.triggered.connect(self.show_distance_series)
         self.show_parameter_action = self.menu.addAction(self.tr("Show Parameters"))
         self.show_parameter_action.triggered.connect(self.show_parameters)
         self.detect_outliers_menu = self.menu.addMenu(self.tr("Check"))
         self.check_nan_and_inf_action = self.detect_outliers_menu.addAction(self.tr("NaN / Inf"))
         self.check_nan_and_inf_action.triggered.connect(self.check_nan_and_inf)
-        self.check_final_distances_action = self.detect_outliers_menu.addAction(self.tr("Final Distance"))
+        self.check_final_distances_action = self.detect_outliers_menu.addAction(self.tr("Final Loss"))
         self.check_final_distances_action.triggered.connect(self.check_final_distances)
         self.check_mean_action = self.detect_outliers_menu.addAction(self.tr("Mean"))
         self.check_mean_action.triggered.connect(lambda: self.check_component_moments("mean"))
@@ -360,7 +360,7 @@ class SSUResultViewer(QtWidgets.QWidget):
                     pickle.dump(self._results, f)
                     self.logger.info("All SSU results have been dumped.")
         except StopIteration as e:
-            self.logger.info("Saving task was canceled.")
+            self.logger.info("The saving task was canceled.")
             progress_dialog.close()
         except Exception as e:
             progress_dialog.close()
@@ -427,7 +427,7 @@ class SSUResultViewer(QtWidgets.QWidget):
             # if distance > value_3_4 + distance_QR * 1.5 or distance < value_1_4 - distance_QR * 1.5:
                 outlier_results.append(result)
                 outlier_indexes.append(i)
-        self.logger.debug(f"Check the final distances using Whisker plot.")
+        self.logger.debug(f"Check the final losses using Whisker plot.")
         self.ask_deal_outliers(outlier_results, outlier_indexes)
 
     def check_component_moments(self, key: str):
@@ -515,11 +515,11 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.refer_action.setText(self.tr("Refer Parameters"))
         self.show_chart_action.setText(self.tr("Show Chart"))
         self.auto_show_selected_action.setText(self.tr("Auto Show"))
-        self.show_distance_action.setText(self.tr("Show Distance Series"))
+        self.show_distance_action.setText(self.tr("Show Loss Series"))
         self.show_parameter_action.setText(self.tr("Show Parameters"))
         self.detect_outliers_menu.setTitle(self.tr("Check"))
         self.check_nan_and_inf_action.setText(self.tr("NaN / Inf"))
-        self.check_final_distances_action.setText(self.tr("Final Distance"))
+        self.check_final_distances_action.setText(self.tr("Final Loss"))
         self.check_mean_action.setText(self.tr("Mean"))
         self.check_std_action.setText(self.tr("Sorting Coefficient"))
         self.check_skewness_action.setText(self.tr("Skewness"))

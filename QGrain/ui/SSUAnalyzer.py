@@ -160,7 +160,7 @@ class SSUAnalyzer(QtWidgets.QWidget):
             self.result_chart.show_result(result)
             self.result_view.add_result(result)
         else:
-            self.show_error(self.tr("The SSU fitting failed: {0}.").format(msg))
+            self.show_error(self.tr("The SSU fitting task failed: {0}.").format(msg))
         self.try_fit_button.setEnabled(True)
         self.edit_parameter_button.setEnabled(True)
         self.try_previous_button.setEnabled(True)

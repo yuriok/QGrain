@@ -20,8 +20,7 @@ class EMMASettings(QtWidgets.QDialog):
         self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
         self.main_layout = QtWidgets.QGridLayout(self)
         self.device_label = QtWidgets.QLabel(self.tr("Device"))
-        self.device_label.setToolTip(self.tr(
-            "The neural network framework, pytorch, also can use the GPU of NVIDIA to do calculations."))
+        self.device_label.setToolTip(self.tr("PyTorch can use the NVIDIA GPU to do calculations."))
         self.device_combo_box = QtWidgets.QComboBox()
         self.main_layout.addWidget(self.device_label, 0, 0)
         self.main_layout.addWidget(self.device_combo_box, 0, 1)
@@ -57,8 +56,7 @@ class EMMASettings(QtWidgets.QDialog):
         self.main_layout.addWidget(self.max_epochs_label, 4, 0)
         self.main_layout.addWidget(self.max_epochs_input, 4, 1)
         self.precision_label = QtWidgets.QLabel(self.tr("Precision"))
-        self.precision_label.setToolTip(self.tr(
-            "It controls the precision for the value of loss function in the stopping criterion."))
+        self.precision_label.setToolTip(self.tr("It controls the precision of final loss."))
         self.precision_input = QtWidgets.QDoubleSpinBox()
         self.precision_input.setRange(2.0, 20.0)
         self.precision_input.setValue(10.0)
@@ -93,12 +91,11 @@ class EMMASettings(QtWidgets.QDialog):
         self.main_layout.addWidget(self.beta2_input, 8, 1)
         self.update_EMs_checkbox = QtWidgets.QCheckBox(self.tr("Update End Members"))
         self.update_EMs_checkbox.setToolTip(self.tr(
-            "If checked, it will update update the distributions of end members while training the model."))
+            "Update the distributions of end members while training the model or not."))
         self.update_EMs_checkbox.setChecked(True)
         self.main_layout.addWidget(self.update_EMs_checkbox, 9, 0, 1, 2)
         self.need_history_checkbox = QtWidgets.QCheckBox(self.tr("Need History"))
-        self.need_history_checkbox.setToolTip(self.tr(
-            "If checked, it will record the variation history of model."))
+        self.need_history_checkbox.setToolTip(self.tr("Record the variation history of parameters or not."))
         self.need_history_checkbox.setChecked(False)
         self.main_layout.addWidget(self.need_history_checkbox, 10, 0, 1, 2)
         self._update_device_list()
@@ -157,8 +154,7 @@ class EMMASettings(QtWidgets.QDialog):
     def retranslate(self):
         self.setWindowTitle(self.tr("EMMA Settings"))
         self.device_label.setText(self.tr("Device"))
-        self.device_label.setToolTip(self.tr(
-            "The neural network framework, pytorch, also can use the GPU of NVIDIA to do calculations."))
+        self.device_label.setToolTip(self.tr("PyTorch can use the NVIDIA GPU to do calculations."))
         self.loss_label.setText(self.tr("Loss"))
         self.loss_label.setToolTip(self.tr(
             "The function to calculate the difference between prediction and observation."))
@@ -171,8 +167,7 @@ class EMMASettings(QtWidgets.QDialog):
         self.max_epochs_label.setText(self.tr("Maximum Number of Epochs"))
         self.max_epochs_label.setToolTip(self.tr("Maximum number of epochs to be performed."))
         self.precision_label.setText(self.tr("Precision"))
-        self.precision_label.setToolTip(self.tr(
-            "It controls the precision for the value of loss function in the stopping criterion."))
+        self.precision_label.setToolTip(self.tr("It controls the precision of final loss."))
         self.learning_rate_label.setText(self.tr("Learning Rate (x10<sup>-3</sup>)"))
         self.learning_rate_label.setToolTip(self.tr(
             "The learning rate of the neural network to update its weights from gradient."))
@@ -184,7 +179,6 @@ class EMMASettings(QtWidgets.QDialog):
             "Betas are the coefficients used for computing running averages of gradient and its square."))
         self.update_EMs_checkbox.setText(self.tr("Update End Members"))
         self.update_EMs_checkbox.setToolTip(self.tr(
-            "If checked, it will update update the distributions of end members while training the model."))
+            "Update the distributions of end members while training the model or not."))
         self.need_history_checkbox.setText(self.tr("Need History"))
-        self.need_history_checkbox.setToolTip(self.tr(
-            "If checked, it will record the variation history of model."))
+        self.need_history_checkbox.setToolTip(self.tr("Record the variation history of parameters or not."))
