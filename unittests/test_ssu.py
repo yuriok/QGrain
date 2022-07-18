@@ -1,9 +1,8 @@
 import numpy as np
 import pytest
 
-from QGrain.distributions import DistributionType
+from QGrain.models import DistributionType, SSUResult
 from QGrain.generate import random_dataset, SIMPLE_PRESET
-from QGrain.models import SSUResult
 from QGrain.ssu import *
 
 
@@ -29,6 +28,13 @@ class TestTrySSU:
                                   loss="lmse")
         self.log_message(result, message)
         assert isinstance(result, SSUResult)
+
+    def test_no_history(self):
+        result, message = try_ssu(self.dataset[0], DistributionType.Normal, self.dataset.n_components,
+                                  loss="lmse", need_history=False)
+        self.log_message(result, message)
+        assert isinstance(result, SSUResult)
+        assert result.n_iterations == 1
 
     def test_has_x0(self):
         result, message = try_ssu(self.dataset[0], DistributionType.Normal, self.dataset.n_components,
