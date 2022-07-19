@@ -7,10 +7,10 @@ import numpy as np
 from PySide6 import QtCore, QtGui, QtWidgets
 from matplotlib.animation import FuncAnimation
 from numpy import ndarray
-from scipy.stats import pearsonr
 
 from . import BaseChart
 from . import normal_color
+from ..metrics import loss_numpy
 from ..models import SSUResult, ArtificialSample
 from ..statistics import to_microns, mode
 
@@ -93,7 +93,7 @@ class DistributionChart(BaseChart):
                 return key
 
     @property
-    def show_mode_lines(self) -> bool:
+    def show_mode(self) -> bool:
         return self.show_mode_lines_action.isChecked()
 
     @property
@@ -154,142 +154,125 @@ class DistributionChart(BaseChart):
         self.save_animation_action.setEnabled(self._animation is not None)
         self.menu.popup(QtGui.QCursor.pos())
 
-    def show_chart(self, result: Union[ArtificialSample, SSUResult], quick=False):
-        modes_phi = [mode(result.classes, result.classes_phi, component.distribution, is_geometric=False) for
-                     component in result]
-        if not quick:
-            self._last_result = result
-            self._figure.clear()
-            if self._animation is not None:
-                self._animation._stop()
-                self._animation = None
-            x = self.transfer(result.classes_phi)
-            self._axes = self._figure.subplots()
-            self._axes.set_title(result.name)
-            self._axes.set_xlabel(self.xlabel)
-            self._axes.set_ylabel(self.ylabel)
-            self.observation_line = self._axes.plot(
-                x, result.sample.distribution,
-                c="#ffffff00",
-                marker=".", ms=8,
-                mfc=normal_color(), mec=normal_color(),
-                label="Observation")[0]
-            self._axes.set_xlim(x[0], x[-1])
-            self._axes.set_ylim(0.0, round(np.max(result.sample.distribution) * 1.2, 2))
-            self.prediction_line = self._axes.plot(x, result.distribution, c=normal_color(), label="Prediction")[0]
-            self.component_lines = []
-            for i, component in enumerate(result):
-                component = self._axes.plot(x, component.distribution * component.proportion,
-                                            c=plt.get_cmap()(i), label=f"C{i + 1}")[0]
-                self.component_lines.append(component)
-            self._figure.tight_layout()
-        else:
-            self.observation_line.set_ydata(result.sample.distribution)
-            self.prediction_line.set_ydata(result.distribution)
-            for component_line, component in zip(self.component_lines, result):
-                component_line.set_ydata(component.distribution * component.proportion)
+    def show_chart(self, result: Union[ArtificialSample, SSUResult]):
+        self._last_result = result
+        self._axes.clear()
+        if self._animation is not None:
+            self._animation._stop()
+            self._animation = None
+        x = self.transfer(result.classes_phi)
+        self._axes.set_title(result.name)
+        self._axes.set_xlabel(self.xlabel)
+        self._axes.set_ylabel(self.ylabel)
+        self._axes.plot(x, result.sample.distribution, c="#ffffff00", marker=".", ms=8, mfc=normal_color(),
+                        mec=normal_color(), label="Observation")
+        self._axes.set_xlim(x[0], x[-1])
+        self._axes.set_ylim(0.0, round(np.max(result.sample.distribution) * 1.2, 2))
+        lmse_loss = loss_numpy("lmse")(result.distribution, result.sample.distribution, None)
+        self._axes.plot(x, result.distribution, c=normal_color(), label=f"Prediction (LMSE={lmse_loss:.2f})")
+        for i, component in enumerate(result):
+            mode_micron = mode(result.classes, result.classes_phi, component.distribution, is_geometric=True)
+            self._axes.plot(x, component.distribution * component.proportion, c=plt.get_cmap()(i),
+                            label=f"C{i + 1} ({mode_micron:.2f} μm, {component.proportion:.2%}))")
         if self.xlog:
             self._axes.set_xscale("log")
-        if self.show_mode_lines:
-            if hasattr(self, "vlines"):
-                self.vlines.remove()
-            modes = [self.transfer(mode_phi) for mode_phi in modes_phi]
+        if self.show_mode:
+            modes = [self.transfer(mode(result.classes, result.classes_phi, component.distribution,
+                                        is_geometric=False)) for component in result]
             colors = [plt.get_cmap()(i) for i in range(len(result))]
-            self.vlines = self._axes.vlines(modes, 0.0, 1.0, colors=colors)
+            self._axes.vlines(modes, 0.0, 1.0, colors=colors)
         if self.show_legend:
-            r, p = pearsonr(result.distribution, result.sample.distribution)
-            r2 = r ** 2
-            handles = [self.observation_line, self.prediction_line]
-            handles.extend(self.component_lines)
-            labels = ["Observation", f"Prediction ($R^2$={r2:.2f})"]
-            for i, (mode_phi, component) in enumerate(zip(modes_phi, result)):
-                mode_micron = to_microns(mode_phi)
-                label = f"C{i + 1} ({mode_micron:.2f} μm, {component.proportion:.2%})"
-                labels.append(label)
-            self.legend = self._axes.legend(
-                handles=handles, labels=labels,
-                loc="upper left", prop={"size": 8})
+            self._axes.legend(loc="upper left")
+        self._figure.tight_layout()
         self._canvas.draw()
 
     def show_animation(self, result: SSUResult):
         self._last_result = result
-        self._figure.clear()
+        self._axes.clear()
         if self._animation is not None:
             self._animation._stop()
             self._animation = None
-        self._axes = self._figure.subplots()
-        results = iter(result.history)
         x = self.transfer(result.classes_phi)
         if self.xlog:
             self._axes.set_xscale("log")
         self._axes.set_title(result.name)
         self._axes.set_xlabel(self.xlabel)
         self._axes.set_ylabel(self.ylabel)
-        self.observation_line = self._axes.plot(
-            x, result.sample.distribution, c="#ffffff00", marker=".", ms=8,
-            mfc=normal_color(), mec=normal_color(), label="Observation")[0]
+        observation_line = self._axes.plot(x, result.sample.distribution, c="#ffffff00", marker=".", ms=8,
+                                           mfc=normal_color(), mec=normal_color(), label="Observation")[0]
         self._axes.set_xlim(x[0], x[-1])
-        self._axes.set_ylim(0.0, round(np.max(result.distribution) * 1.2, 2))
-        self._figure.tight_layout()
+        self._axes.set_ylim(0.0, round(np.max(result.sample.distribution) * 1.2, 2))
 
-        def common(result: SSUResult):
-            modes_phi = [mode(result.classes, result.classes_phi, component.distribution, is_geometric=False) for
-                         component in result]
-            if self.show_mode_lines:
-                if hasattr(self, "vlines"):
-                    self.vlines.remove()
-                modes = [self.transfer(mode_phi) for mode_phi in modes_phi]
-                colors = [plt.get_cmap()(i) for i in range(len(result))]
-                self.vlines = self._axes.vlines(modes, 0.0, 1.0, colors=colors)
-            if self.show_legend:
-                r, p = pearsonr(result.distribution, result.sample.distribution)
-                r2 = r ** 2
-                handles = [self.observation_line, self.prediction_line]
-                handles.extend(self.component_lines)
-                labels = ["Target", f"Mixed ($R^2$={r2:.2f})"]
-                for i, (mode_phi, component) in enumerate(zip(modes_phi, result)):
-                    mode_micron = to_microns(mode_phi)
-                    label = f"C{i + 1} ({mode_micron:.2f} μm, {component.proportion:.2%})"
-                    labels.append(label)
-                self.legend = self._axes.legend(
-                    handles=handles, labels=labels,
-                    loc="upper left", prop={"size": 8})
+        prediction_line: Optional[plt.Line2D] = None
+        component_lines: List[plt.Line2D] = []
+        mode_lines: Optional[plt.Artist] = None
+        legend: Optional[plt.Artist] = None
 
         def init():
-            self.prediction_line = self._axes.plot(x, result.distribution, c=normal_color(), label="mixed")[0]
-            self.component_lines = [
-                self._axes.plot(x, component.distribution * component.proportion, c=plt.get_cmap()(i),
-                                label=f"C{i + 1}")[0] for i, component in enumerate(result)]
-            common(result)
-            check_artists = [self.prediction_line]
-            check_artists.extend(self.component_lines)
-            if self.show_mode_lines:
-                check_artists.append(self.vlines)
-            if self.show_legend:
-                check_artists.append(self.legend)
-            return check_artists
+            nonlocal prediction_line
+            nonlocal component_lines
+            nonlocal mode_lines
+            nonlocal legend
+            if prediction_line is None:
+                lmse_loss = loss_numpy("lmse")(result.distribution, result.sample.distribution, None)
+                prediction_line = self._axes.plot(x, result.distribution, c=normal_color(),
+                                                  label=f"Prediction (LMSE={lmse_loss:.2f})")[0]
+                for i, component in enumerate(result):
+                    mode_micron = mode(result.classes, result.classes_phi, component.distribution, is_geometric=True)
+                    line = self._axes.plot(x, component.distribution * component.proportion, c=plt.get_cmap()(i),
+                                           label=f"C{i + 1} ({mode_micron:.2f} μm, {component.proportion:.2%}))")[0]
+                    component_lines.append(line)
+                if self.show_mode:
+                    modes = [self.transfer(mode(result.classes, result.classes_phi, component.distribution,
+                                                is_geometric=False)) for component in result]
+                    colors = [plt.get_cmap()(i) for i in range(len(result))]
+                    mode_lines = self._axes.vlines(modes, 0.0, 1.0, colors=colors)
+                if self.show_legend:
+                    legend = self._axes.legend(loc="upper left")
+            artists = [prediction_line, *component_lines]
+            if mode_lines is not None:
+                artists.append(mode_lines)
+            if legend is not None:
+                artists.append(legend)
+            return artists
 
         def animate(current: SSUResult):
-            self.prediction_line.set_ydata(current.distribution)
-            for line, component in zip(self.component_lines, current):
+            nonlocal prediction_line
+            nonlocal component_lines
+            nonlocal mode_lines
+            nonlocal legend
+            prediction_line.set_ydata(current.distribution)
+            for i, (line, component) in enumerate(zip(component_lines, current)):
+                mode_micron = mode(current.classes, current.classes_phi, component.distribution, is_geometric=True)
                 line.set_ydata(component.distribution * component.proportion)
-            common(current)
-            check_artists = [self.prediction_line]
-            check_artists.extend(self.component_lines)
-            if self.show_mode_lines:
-                check_artists.append(self.vlines)
+                line.set_label(f"C{i + 1} ({mode_micron:.2f} μm, {component.proportion:.2%}))")
+            artists = [prediction_line, *component_lines]
+            if self.show_mode:
+                mode_lines.remove()
+                modes = [self.transfer(mode(current.classes, current.classes_phi, component.distribution,
+                                            is_geometric=False)) for component in current]
+                colors = [plt.get_cmap()(i) for i in range(len(current))]
+                mode_lines = self._axes.vlines(modes, 0.0, 1.0, colors=colors)
+                artists.append(mode_lines)
             if self.show_legend:
-                check_artists.append(self.legend)
-            return check_artists
+                lmse_loss = loss_numpy("lmse")(current.distribution, current.sample.distribution, None)
+                handles = [observation_line, prediction_line, *component_lines]
+                labels = ["Observation", f"Prediction (LMSE={lmse_loss:.2f})"]
+                for i, component in enumerate(current):
+                    mode_micron = mode(current.classes, current.classes_phi, component.distribution, is_geometric=True)
+                    label = f"C{i + 1} ({mode_micron:.2f} μm, {component.proportion:.2%})"
+                    labels.append(label)
+                legend = self._axes.legend(handles=handles, labels=labels, loc="upper left")
+                artists.append(legend)
+            return artists
 
-        self._animation = FuncAnimation(
-            self._figure, animate, frames=results, init_func=init,
-            interval=self.animation_interval, blit=True,
-            repeat=self.repeat_animation, repeat_delay=3.0, save_count=result.n_iterations)
+        self._animation = FuncAnimation(self._figure, animate, frames=result.history, init_func=init,
+                                        interval=self.animation_interval, blit=True, repeat=self.repeat_animation,
+                                        repeat_delay=5.0, save_count=result.n_iterations)
 
     def show_result(self, result: SSUResult):
         self._last_result = result
-        self._figure.clear()
+        self._axes.clear()
         if self._animation is not None:
             self._animation._stop()
             self._animation = None
@@ -304,8 +287,6 @@ class DistributionChart(BaseChart):
         self._axes = self._figure.subplots()
         if self._last_result is not None:
             self.show_result(self._last_result)
-        elif self._last_result is not None:
-            self.show_chart(self._last_result)
 
     def retranslate(self):
         super().retranslate()
