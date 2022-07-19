@@ -1,38 +1,40 @@
-import logging
-import typing
+__all__ = ["ParameterEditor"]
+
+from typing import *
 
 import numpy as np
 from PySide6 import QtCore, QtWidgets
 
-from ..chart.DistributionChart import DistributionChart
-from ..ssu import DistributionType, SSUResult, SSUViewModel, get_distribution, sort_parameters
-from ..statistics import get_interval_φ
+from ..statistics import interval_phi
+from ..models import DistributionType, SSUResult, ArtificialDataset
+from ..distributions import sort_parameters
+from ..charts.DistributionChart import DistributionChart
 
 
 class ParameterComponent(QtWidgets.QWidget):
     NORMAL_SETTINGS = dict(
-        n_parameters = 3,
+        n_parameters=3,
         parameter_names=("Location", "Scale", "Weight"),
         ranges=((-15.0, 15.0), (0.01, 100.0), (0.0, 10.0)),
         defaults=(5.0, 1.0, 1.0),
         steps=(0.1, 0.1, 0.1))
 
     SKEW_NORMAL_SETTINGS = dict(
-        n_parameters = 4,
+        n_parameters=4,
         parameter_names=("Shape", "Location", "Scale", "Weight"),
         ranges=((-100.0, 100.0), (-15.0, 15.0), (0.01, 100.0), (0.0, 10.0)),
         defaults=(0.0, 5.0, 1.0, 1.0),
         steps=(0.1, 0.1, 0.1, 0.1))
 
     WEIBULL_SETTINGS = dict(
-        n_parameters = 3,
+        n_parameters=3,
         parameter_names=("Shape", "Scale", "Weight"),
         ranges=((-2000.0, 2000.0), (0.01, 2000.0), (0.0, 10.0)),
         defaults=(3.6, 1.0, 1.0),
         steps=(0.1, 0.1, 0.1))
 
     GENERAL_WEIBULL_SETTINGS = dict(
-        n_parameters = 4,
+        n_parameters=4,
         parameter_names=("Shape", "Location", "Scale", "Weight"),
         ranges=((-2000.0, 2000.0), (-2000.0, 2000.0), (0.01, 2000.0), (0.0, 10.0)),
         defaults=(3.6, 5.0, 1.0, 1.0),
@@ -45,14 +47,12 @@ class ParameterComponent(QtWidgets.QWidget):
         DistributionType.GeneralWeibull: GENERAL_WEIBULL_SETTINGS}
 
     value_changed = QtCore.Signal()
+
     def __init__(self, name: str, distribution_type: DistributionType, parent=None):
         super().__init__(parent=parent)
         self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
-        self.__name = name
-        self.__distribution_type = distribution_type
-        self.init_ui()
-
-    def init_ui(self):
+        self._name = name
+        self._distribution_type = distribution_type
         # make sure that the pyside2-lupdate.exe can recognize these keywords
         _ = [self.tr("Shape"), self.tr("Location"), self.tr("Scale"), self.tr("Weight")]
         self.main_layout = QtWidgets.QGridLayout(self)
@@ -63,9 +63,9 @@ class ParameterComponent(QtWidgets.QWidget):
         self.group_layout = QtWidgets.QGridLayout(self.group)
         self.group_layout.setColumnMinimumWidth(0, 32)
         self.group_layout.setColumnMinimumWidth(1, 32)
-        settings = self.SETTING_MAP[self.__distribution_type]
+        settings = self.SETTING_MAP[self._distribution_type]
         self.widgets = [] # type: list[tuple[QtWidgets.QLabel, QtWidgets.QDoubleSpinBox]]
-        self.name_label = QtWidgets.QLabel(self.__name)
+        self.name_label = QtWidgets.QLabel(self._name)
         self.name_label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
         self.value_label = QtWidgets.QLabel(self.tr("Value"))
         self.value_label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
@@ -81,7 +81,6 @@ class ParameterComponent(QtWidgets.QWidget):
             self.group_layout.addWidget(label, i+1, 0)
             self.group_layout.addWidget(input, i+1, 1)
             self.widgets.append((label, input))
-
         for _, input in self.widgets:
             input.valueChanged.connect(self.on_value_changed)
 
@@ -104,43 +103,35 @@ class ParameterComponent(QtWidgets.QWidget):
 
     def retranslate(self):
         self.value_label.setText(self.tr("Value"))
-        settings = self.SETTING_MAP[self.__distribution_type]
+        settings = self.SETTING_MAP[self._distribution_type]
         for param_name, (param_label, _) in zip(settings["parameter_names"], self.widgets):
             param_label.setText(self.tr(param_name))
 
 
 class ParameterEditor(QtWidgets.QDialog):
     SUPPORT_DISTRIBUTIONS = (
-        DistributionType.Normal,
-        DistributionType.SkewNormal,
-        DistributionType.Weibull,
-        DistributionType.GeneralWeibull)
+        (DistributionType.Normal, "Normal"),
+        (DistributionType.SkewNormal, "Skew Normal"),
+        (DistributionType.Weibull, "Weibull"),
+        (DistributionType.GeneralWeibull, "General Weibull"))
     DISTRIBUTION_INDEX_MAP = {
         DistributionType.Normal: 0,
         DistributionType.SkewNormal: 1,
         DistributionType.Weibull: 2,
         DistributionType.GeneralWeibull: 3}
-    def __init__(self, parent=None):
-        super().__init__(parent=parent, f=QtCore.Qt.Window)
-        self.__cache_dict = {}
-        self.__classes_μm = np.logspace(0, 5, 101) * 0.02
-        self.__classes_φ = -np.log2(self.__classes_μm/1000.0)
-        self.__interval_φ = get_interval_φ(self.__classes_φ)
-        self.__target = None
-        self.init_ui()
-        self.switch_preset(0)
-        self.file_dialog = QtWidgets.QFileDialog(parent=self)
 
-    def init_ui(self):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self._cache_dict = {}
+        self._classes = np.logspace(0, 5, 101) * 0.02
+        self._classes_phi = -np.log2(self._classes / 1000.0)
+        self._interval_phi = interval_phi(self._classes_phi)
+        self._target = None
         self.setWindowTitle(self.tr("Parameter Editor"))
         self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
         self.main_layout = QtWidgets.QGridLayout(self)
         self.control_group = QtWidgets.QGroupBox(self.tr("Control"))
         self.control_layout = QtWidgets.QGridLayout(self.control_group)
-        # self.control_layout.setColumnStretch(0, 2)
-        # self.control_layout.setColumnStretch(1, 1)
-        # self.control_layout.setColumnStretch(2, 2)
-        # self.control_layout.setColumnStretch(3, 1)
         self.preset_label = QtWidgets.QLabel(self.tr("Preset Archive"))
         self.preset_combo_box = QtWidgets.QComboBox()
         self.preset_combo_box.addItems([str(i) for i in range(1, 11)])
@@ -153,7 +144,6 @@ class ParameterEditor(QtWidgets.QDialog):
         self.control_layout.addWidget(self.preset_combo_box, 0, 1)
         self.control_layout.addWidget(self.enabled_checkbox, 0, 2)
         self.control_layout.addWidget(self.preview_button, 0, 3)
-
         self.n_components_label = QtWidgets.QLabel(self.tr("Number of Components"))
         self.n_components_input = QtWidgets.QSpinBox()
         self.n_components_input.setRange(1, 12)
@@ -161,34 +151,33 @@ class ParameterEditor(QtWidgets.QDialog):
         self.n_components_input.valueChanged.connect(self.update_cache)
         self.distribution_type_label = QtWidgets.QLabel(self.tr("Distribution Type"))
         self.distribution_type_combo_box = QtWidgets.QComboBox()
-        self.distribution_type_combo_box.addItems([distribution_type.value for distribution_type in self.SUPPORT_DISTRIBUTIONS])
+        self.distribution_type_combo_box.addItems([name for _, name in self.SUPPORT_DISTRIBUTIONS])
         self.distribution_type_combo_box.currentIndexChanged.connect(self.on_distribution_type_changed)
         self.distribution_type_combo_box.currentIndexChanged.connect(self.on_distribution_type_changed)
         self.control_layout.addWidget(self.n_components_label, 1, 0)
         self.control_layout.addWidget(self.n_components_input, 1, 1)
         self.control_layout.addWidget(self.distribution_type_label, 1, 2)
         self.control_layout.addWidget(self.distribution_type_combo_box, 1, 3)
-
-        self.param_tab_widget = QtWidgets.QTabWidget()
-        # self.param_tab_widget.setTabPosition(QtWidgets.QTabWidget.West)
-        self.component_sets = [] # type: list[tuple[QtWidgets.QWidget, QtWidgets.QGridLayout, list[ParameterComponent]]]
-
+        self.parameter_tab_widget = QtWidgets.QTabWidget()
+        self.component_sets: List[Tuple[QtWidgets.QWidget, QtWidgets.QGridLayout, List[ParameterComponent]]] = []
         self.preview_group = QtWidgets.QGroupBox(self.tr("Preview"))
         self.preview_layout = QtWidgets.QGridLayout(self.preview_group)
         self.preview_layout.setContentsMargins(0, 0, 0, 0)
         self.preview_chart = DistributionChart(parent=self)
         self.preview_layout.addWidget(self.preview_chart, 0, 0)
-
         self.splitter_1 = QtWidgets.QSplitter()
         self.splitter_1.setOrientation(QtCore.Qt.Vertical)
         self.splitter_1.addWidget(self.control_group)
-        self.splitter_1.addWidget(self.param_tab_widget)
+        self.splitter_1.addWidget(self.parameter_tab_widget)
         self.splitter_1.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         self.splitter_2 = QtWidgets.QSplitter()
         self.splitter_2.setOrientation(QtCore.Qt.Horizontal)
         self.splitter_2.addWidget(self.splitter_1)
         self.splitter_2.addWidget(self.preview_group)
         self.main_layout.addWidget(self.splitter_2, 0, 0)
+
+        self.switch_preset(0)
+        self.file_dialog = QtWidgets.QFileDialog(parent=self)
 
     @property
     def preset_index(self) -> int:
@@ -200,9 +189,7 @@ class ParameterEditor(QtWidgets.QDialog):
 
     @property
     def distribution_type(self) -> DistributionType:
-        index = self.distribution_type_combo_box.currentIndex()
-        distribution_type = self.SUPPORT_DISTRIBUTIONS[index]
-        return distribution_type
+        return self.SUPPORT_DISTRIBUTIONS[self.distribution_type_combo_box.currentIndex()][0]
 
     @property
     def parameter_enabled(self) -> bool:
@@ -216,8 +203,8 @@ class ParameterEditor(QtWidgets.QDialog):
                 if component.isEnabled():
                     parameters.append(component.parameters)
         parameters = np.expand_dims(np.array(parameters).T, axis=0)
-        classes = np.expand_dims(np.expand_dims(self.__classes_φ, axis=0), axis=0).repeat(self.n_components, axis=1)
-        sorted_parameters = sort_parameters(self.distribution_type, parameters, classes, self.__interval_φ)
+        classes = np.expand_dims(np.expand_dims(self._classes_phi, axis=0), axis=0).repeat(self.n_components, axis=1)
+        sorted_parameters = sort_parameters(self.distribution_type, parameters, classes, self._interval_phi)
         return sorted_parameters[0]
 
     def _clear_components(self):
@@ -227,13 +214,13 @@ class ParameterEditor(QtWidgets.QDialog):
                 param_layout.removeWidget(component)
                 component.hide()
             param_holder.hide()
-        self.param_tab_widget.clear()
+        self.parameter_tab_widget.clear()
         self.component_sets.clear()
 
     def _add_components(self):
         for i in range(4):
             param_holder = QtWidgets.QWidget()
-            self.param_tab_widget.addTab(param_holder, f"C{i*3+1}-{i*3+3}")
+            self.parameter_tab_widget.addTab(param_holder, f"C{i * 3 + 1}-{i * 3 + 3}")
             param_layout = QtWidgets.QGridLayout(param_holder)
             param_layout.setContentsMargins(0, 0, 0, 0)
             components = []
@@ -259,11 +246,11 @@ class ParameterEditor(QtWidgets.QDialog):
         self.on_n_components_changed(self.n_components)
 
     def update_cache(self):
-        self.__cache_dict[self.preset_index] = (self.distribution_type, self.n_components, self.parameters)
+        self._cache_dict[self.preset_index] = (self.distribution_type, self.n_components, self.parameters)
 
     def switch_preset(self, preset_index: int):
-        if preset_index in self.__cache_dict.keys():
-            distribution_type, n_components, parameter_matrix = self.__cache_dict[preset_index]
+        if preset_index in self._cache_dict.keys():
+            distribution_type, n_components, parameter_matrix = self._cache_dict[preset_index]
             self.distribution_type_combo_box.setCurrentIndex(self.DISTRIBUTION_INDEX_MAP[distribution_type])
             self.n_components_input.setValue(n_components)
             parameters = parameter_matrix.T
@@ -284,31 +271,26 @@ class ParameterEditor(QtWidgets.QDialog):
         self.update_cache()
         self.update_chart()
 
-    def setup_target(self, classes_μm: np.ndarray, target: np.ndarray):
-        self.__classes_μm = classes_μm
-        self.__classes_φ = -np.log2(classes_μm/1000.0)
-        self.__interval_φ = get_interval_φ(self.__classes_φ)
-        self.__target = target
+    def setup_target(self, classes: np.ndarray, target: np.ndarray):
+        self._classes = classes
+        self._classes_phi = -np.log2(classes / 1000.0)
+        self._interval_phi = interval_phi(self._classes_phi)
+        self._target = target
 
     def update_chart(self):
-        distribution_class = get_distribution(self.distribution_type)
-        classes = np.expand_dims(np.expand_dims(self.__classes_φ, axis=0), axis=0).repeat(self.n_components, axis=1)
-        proportions, components, mvsk = distribution_class.interpret(np.expand_dims(self.parameters, axis=0), classes, self.__interval_φ)
-        mixed = (proportions @ components).squeeze()
-        target = self.__target if self.__target is not None else mixed
-        model = SSUViewModel(self.__classes_φ, target, mixed, components.squeeze(), proportions.squeeze())
-        self.preview_chart.show_model(model)
+        sample = ArtificialDataset(np.expand_dims(self.parameters, axis=0), self.distribution_type)[0]
+        self.preview_chart.show_chart(sample)
 
     def refer_ssu_result(self, result: SSUResult):
         self.distribution_type_combo_box.setCurrentIndex(self.DISTRIBUTION_INDEX_MAP[result.distribution_type])
-        self.n_components_input.setValue(result.n_components)
-        enabled_components = [] # type: list[ParameterComponent]
+        self.n_components_input.setValue(len(result))
+        enabled_components: List[ParameterComponent] = []
         for _, _, components in self.component_sets:
             for component in components:
                 if component.isEnabled():
                     enabled_components.append(component)
-        for result_component, component in zip(result.components, enabled_components):
-            component.set_parameters(result_component.parameters)
+        for i, component in enumerate(enabled_components):
+            component.set_parameters(result.parameters[-1, :, i])
         self.update_chart()
         self.update_cache()
 

@@ -1,30 +1,23 @@
-
 import os
 
-PRO_FILENAME = r"./QGrain.pro"
 
-PRO_TEMPLATE = \
-"""
-SOURCES={0}
-TRANSLATIONS=en.ts zh_CN.ts
-CODECFORTR=UTF-8
-"""
-
-def update_qt_pro():
+def get_source():
     sources = []
-    for root, _, filenames in os.walk("./QGrain"):
+    for root, _, filenames in os.walk(r".\QGrain"):
         for filename in filenames:
             pure_name, extension = os.path.splitext(filename)
             if extension == ".py":
                 if pure_name == "__init__":
                     continue
                 sources.append(os.path.abspath(os.path.join(root, filename)))
+    text = " ".join(sources)
+    return text
 
-    text = "\\\n    ".join(sources)
-    with open(PRO_FILENAME, "w") as f:
-        f.write(PRO_TEMPLATE.format(text))
 
 if __name__ == "__main__":
-    update_qt_pro()
-    os.system("pyside2-lupdate -noobsolete ./QGrain.pro")
-    # os.system("pyside2-lupdate ./QGrain.pro")
+    source = get_source()
+    target_xml = os.path.abspath("./zh_CN.xml")
+    target_ts = os.path.abspath("zh_CN.ts")
+    os.renames(target_xml, target_ts)
+    os.system(f"pyside6-lupdate {source} -noobsolete -ts {target_ts}")
+    os.renames(target_ts, target_xml)
