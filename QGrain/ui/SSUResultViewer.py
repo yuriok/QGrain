@@ -341,34 +341,31 @@ class SSUResultViewer(QtWidgets.QWidget):
             ".", "Microsoft Excel (*.xlsx);;Dumped SSU Results (*.ssu)")
         if filename is None or filename == "":
             return
-        try:
             # Excel
-            if filename[-4:] == "xlsx":
-                progress_dialog = QtWidgets.QProgressDialog(
-                        self.tr("Saving the SSU results..."), self.tr("Cancel"),
-                        0, 100, self)
-                progress_dialog.setWindowTitle("QGrain")
-                progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
-                def callback(progress: float):
-                    if progress_dialog.wasCanceled():
-                        raise StopIteration()
-                    progress_dialog.setValue(int(progress*100))
-                    QtCore.QCoreApplication.processEvents()
-                save_ssu(self._results, filename, align_components, progress_callback=callback, logger=self.logger)
-            else:
-                with open(filename, "wb") as f:
-                    pickle.dump(self._results, f)
-                    self.logger.info("All SSU results have been dumped.")
-        except StopIteration as e:
-            self.logger.info("The saving task was canceled.")
-            progress_dialog.close()
-        except Exception as e:
-            progress_dialog.close()
-            self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
-            self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
+        if filename[-4:] == "xlsx":
+            progress_dialog = QtWidgets.QProgressDialog(
+                    self.tr("Saving the SSU results..."), self.tr("Cancel"),
+                    0, 100, self)
+            progress_dialog.setWindowTitle("QGrain")
+            progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
 
-    def ask_deal_outliers(self, outlier_results: List[SSUResult],
-                          outlier_indexes: List[int]):
+            def callback(progress: float):
+                if progress_dialog.wasCanceled():
+                    raise StopIteration()
+                progress_dialog.setValue(int(progress*100))
+                QtCore.QCoreApplication.processEvents()
+            try:
+                save_ssu(self._results, filename, align_components, progress_callback=callback, logger=self.logger)
+            except StopIteration as e:
+                self.logger.info("The saving task was canceled.")
+            finally:
+                progress_dialog.close()
+        else:
+            with open(filename, "wb") as f:
+                pickle.dump(self._results, f)
+                self.logger.info("All SSU results have been dumped.")
+
+    def ask_deal_outliers(self, outlier_results: List[SSUResult], outlier_indexes: List[int]):
         assert len(outlier_indexes) == len(outlier_results)
         if len(outlier_results) == 0:
             self.logger.info("There is no result was evaluated as the outlier.")

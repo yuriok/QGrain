@@ -262,33 +262,29 @@ class UDMAnalyzer(QtWidgets.QWidget):
             ".", "Microsoft Excel (*.xlsx);;Dumped UDM Result (*.udm)")
         if filename is None or filename == "":
             return
-        try:
-            # Excel
-            if filename[-4:] == "xlsx":
-                result = self.selected_result
-                progress_dialog = QtWidgets.QProgressDialog(
-                    self.tr("Saving the UDM result..."), self.tr("Cancel"),
-                    0, 100, self)
-                progress_dialog.setWindowTitle("QGrain")
-                progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
-                def callback(progress: float):
-                    if progress_dialog.wasCanceled():
-                        raise StopIteration()
-                    progress_dialog.setValue(int(progress*100))
-                    QtCore.QCoreApplication.processEvents()
+        # Excel
+        if filename[-4:] == "xlsx":
+            result = self.selected_result
+            progress_dialog = QtWidgets.QProgressDialog(
+                self.tr("Saving the UDM result..."), self.tr("Cancel"),
+                0, 100, self)
+            progress_dialog.setWindowTitle("QGrain")
+            progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
+            def callback(progress: float):
+                if progress_dialog.wasCanceled():
+                    raise StopIteration()
+                progress_dialog.setValue(int(progress*100))
+                QtCore.QCoreApplication.processEvents()
+            try:
                 save_udm(result, filename, progress_callback=callback, logger=self.logger)
-            # Binary File
-            else:
-                with open(filename, "wb") as f:
-                    pickle.dump(self.selected_result, f)
-                    self.logger.info("The selected UDM result has been dumped.")
-        except StopIteration as e:
-            self.logger.info("The saving task was canceled.")
-            progress_dialog.close()
-        except Exception as e:
-            progress_dialog.close()
-            self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
-            self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
+            except StopIteration as e:
+                self.logger.info("The saving task was canceled.")
+            finally:
+                progress_dialog.close()
+        # Binary File
+        with open(filename, "wb") as f:
+            pickle.dump(self.selected_result, f)
+            self.logger.info("The selected UDM result has been dumped.")
 
     def changeEvent(self, event: QtCore.QEvent):
         if event.type() == QtCore.QEvent.LanguageChange:
