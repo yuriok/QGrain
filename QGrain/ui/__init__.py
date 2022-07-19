@@ -10,7 +10,8 @@ from .RuntimeLog import StatusBarLogHandler, GUILogHandler, RuntimeLog
 from .. import QGRAIN_VERSION, QGRAIN_ROOT_PATH
 from ..charts import setup_matplotlib
 
-EXTRA = {"font_family": "Roboto, Arial, Helvetica, Tahoma, Verdana, Microsoft YaHei UI, SimSum"}
+EXTRA = {"font_family": "Roboto, Arial, Helvetica, Tahoma, Verdana, Microsoft YaHei UI, SimSum",
+         "density_scale": "-1"}
 
 
 def get_dir_size(directory: str):
