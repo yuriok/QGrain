@@ -130,7 +130,7 @@ def _write_readme_sheet(ws: Worksheet, text: str):
     ws.column_dimensions[column_to_char(0)].width = 200
 
 
-def _write_dataset_sheet(ws: Worksheet, dataset: Dataset, progress_callback: Callable[[float], None]):
+def _write_dataset_sheet(ws: Worksheet, dataset: Dataset, progress_callback: Callable[[float], None] = None):
     def write(r, c, v, s="normal_light"):
         cell = ws.cell(r+1, c+1, value=v)
         cell.style = s
@@ -156,7 +156,8 @@ def _write_dataset_sheet(ws: Worksheet, dataset: Dataset, progress_callback: Cal
             progress_callback(progress)
 
 
-def save_artificial_dataset(dataset: ArtificialDataset, filename: str, progress_callback: Callable[[float], None],
+def save_artificial_dataset(dataset: ArtificialDataset, filename: str,
+                            progress_callback: Callable[[float], None] = None,
                             logger: logging.Logger = None):
     if logger is None:
         logger = logging.getLogger("QGrain")
@@ -215,7 +216,8 @@ def save_artificial_dataset(dataset: ArtificialDataset, filename: str, progress_
     ws.column_dimensions[column_to_char(0)].width = 24
     for i in range(dataset.n_components):
         write(0, dataset.n_parameters * i + 1, f"Component{i+1}", s="header")
-        ws.merge_cells(start_row=1, start_column=dataset.n_parameters*i+2, end_row=1, end_column=dataset.n_parameters*(i+1)+1)
+        ws.merge_cells(start_row=1, start_column=dataset.n_parameters*i+2,
+                       end_row=1, end_column=dataset.n_parameters*(i+1)+1)
         for j, header_name in enumerate(parameter_names):
             write(1, dataset.n_parameters * i + 1 + j, header_name, s="header")
             ws.column_dimensions[column_to_char(dataset.n_parameters*i+1+j)].width = 16
@@ -258,7 +260,7 @@ def save_artificial_dataset(dataset: ArtificialDataset, filename: str, progress_
     logger.info(f"The artificial dataset has been saved to the Excel file: [{filename}].")
 
 
-def save_dataset(dataset: Dataset, filename: str, progress_callback: Callable[[float], None],
+def save_dataset(dataset: Dataset, filename: str, progress_callback: Callable[[float], None] = None,
                  logger: logging.Logger = None):
     assert dataset is not None
     if logger is None:
@@ -285,7 +287,7 @@ def save_dataset(dataset: Dataset, filename: str, progress_callback: Callable[[f
     logger.info(f"The dataset has been saved to the Excel file: [{filename}].")
 
 
-def save_statistics(dataset: Dataset, filename: str, progress_callback: Callable[[float], None],
+def save_statistics(dataset: Dataset, filename: str, progress_callback: Callable[[float], None] = None,
                     logger: logging.Logger = None):
     assert dataset is not None
     if logger is None:
@@ -414,7 +416,7 @@ def save_statistics(dataset: Dataset, filename: str, progress_callback: Callable
     logger.info(f"The statistical result has been saved to the Excel file: [{filename}].")
 
 
-def save_pca(dataset: Dataset, filename: str, progress_callback: Callable[[float], None],
+def save_pca(dataset: Dataset, filename: str, progress_callback: Callable[[float], None] = None,
              logger: logging.Logger = None):
     assert dataset is not None
     if logger is None:
@@ -500,8 +502,8 @@ def save_pca(dataset: Dataset, filename: str, progress_callback: Callable[[float
     logger.info(f"The PCA result has been saved to the Excel file: [{filename}].")
 
 
-def save_clustering(dataset: Dataset, flags: Sequence[int], filename: str, progress_callback: Callable[[float], None],
-                    logger: logging.Logger = None):
+def save_clustering(dataset: Dataset, flags: Sequence[int], filename: str,
+                    progress_callback: Callable[[float], None] = None, logger: logging.Logger = None):
     assert dataset is not None
     if logger is None:
         logger = logging.getLogger("QGrain")
@@ -621,7 +623,7 @@ def save_clustering(dataset: Dataset, flags: Sequence[int], filename: str, progr
     logger.info(f"The Clustering result has been saved to the Excel file: [{filename}].")
 
 
-def save_emma(result: EMMAResult, filename: str, progress_callback: Callable[[float], None],
+def save_emma(result: EMMAResult, filename: str, progress_callback: Callable[[float], None] = None,
               logger: logging.Logger = None):
     if logger is None:
         logger = logging.getLogger("QGrain")
