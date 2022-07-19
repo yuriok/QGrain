@@ -69,7 +69,7 @@ class EMMAResultChart(BaseChart):
         self.repeat_action.setChecked(False)
         self.save_animation_action = QtGui.QAction(self.tr("Save Animation"))
         self.menu.addAction(self.save_animation_action)
-        self.save_animation_action.triggered.connect(self.save_animation)
+        self.save_animation_action.triggered.connect(lambda: self.save_animation())
         self._last_result: Optional[EMMAResult] = None
 
     @property
@@ -193,14 +193,12 @@ class EMMAResultChart(BaseChart):
         sample_axes.set_xlabel(self.xlabel)
         sample_axes.set_ylabel(self.ylabel)
         sample_axes.set_title("GSDs")
-
         loss_axes = self._figure.add_subplot(2, 2, 2)
         loss_axes.plot(iteration_indexes, loss_series, c=normal_color())
-        loss_axes.set_xlim(iteration_indexes[0], iteration_indexes[-1])
+        loss_axes.set_xlim(0, len(loss_series))
         loss_axes.set_xlabel("Iteration")
         loss_axes.set_ylabel(loss_name)
         loss_axes.set_title("Loss variation")
-
         end_member_axes = self._figure.add_subplot(2, 2, 3)
         if self.xlog:
             end_member_axes.set_xscale("log")
@@ -211,12 +209,12 @@ class EMMAResultChart(BaseChart):
         end_member_axes.set_xlabel(self.xlabel)
         end_member_axes.set_ylabel(self.ylabel)
         end_member_axes.set_title("End members")
-
         proportion_axes = self._figure.add_subplot(2, 2, 4)
         image = get_image_by_proportions(result.proportions, resolution=100)
-        proportion_axes.imshow(image, plt.get_cmap(), aspect="auto", vmin=0, vmax=9)
+        proportion_axes.imshow(
+            image, plt.get_cmap(), aspect="auto", vmin=0, vmax=9, extent=(0.0, result.n_samples, 100, 0.0))
         proportion_axes.set_xlim(0, result.n_samples)
-        proportion_axes.set_ylim(-0.5, 99.5)
+        proportion_axes.set_ylim(0, 100)
         proportion_axes.set_yticks([0, 20, 40, 60, 80, 100], ["0.0", "0.2", "0.4", "0.6", "0.8", "1.0"])
         proportion_axes.set_xlabel("Sample index")
         proportion_axes.set_ylabel("Proportion")
@@ -225,6 +223,7 @@ class EMMAResultChart(BaseChart):
         self._canvas.draw()
 
     def show_animation(self, result: EMMAResult):
+        assert result.n_iterations > 1
         self._last_result = result
         self._figure.clear()
         if self._animation is not None:
@@ -249,7 +248,7 @@ class EMMAResultChart(BaseChart):
         sample_axes.set_title("GSDs")
         loss_axes = self._figure.add_subplot(2, 2, 2)
         loss_axes.plot(iteration_indexes, loss_series, c=normal_color())
-        loss_axes.set_xlim(iteration_indexes[0], iteration_indexes[-1])
+        loss_axes.set_xlim(0, len(loss_series))
         loss_axes.set_xlabel("Iteration")
         loss_axes.set_ylabel(loss_name)
         loss_axes.set_title("Loss variation")
@@ -257,51 +256,55 @@ class EMMAResultChart(BaseChart):
         if self.xlog:
             end_member_axes.set_xscale("log")
         end_member_axes.set_xlim(classes[0], classes[-1])
-        end_member_axes.set_ylim(0.0, round(np.max(result.end_members) * 1.2, 2))
+        end_member_axes.set_ylim(0, round(np.max(result.end_members) * 1.2, 2))
         end_member_axes.set_xlabel(self.xlabel)
         end_member_axes.set_ylabel(self.ylabel)
         end_member_axes.set_title("End members")
         proportion_axes = self._figure.add_subplot(2, 2, 4)
         proportion_axes.set_xlim(0, result.n_samples)
-        proportion_axes.set_ylim(-0.5, 99.5)
-        proportion_axes.set_yticks([20, 40, 60, 80], ["0.2", "0.4", "0.6", "0.8"])
+        proportion_axes.set_ylim(0, 100)
+        proportion_axes.set_yticks([0, 20, 40, 60, 80, 100], ["0.0", "0.2", "0.4", "0.6", "0.8", "1.0"])
         proportion_axes.set_xlabel("Sample index")
         proportion_axes.set_ylabel("Proportion")
         proportion_axes.set_title("Proportions")
 
+        iteration_line: Optional[plt.Line2D] = None
+        end_member_curves: List[plt.Line2D] = []
+        proportion_image: Optional[plt.Artist] = None
+
         def init():
-            self.iteration_line = loss_axes.plot([1, 1], [min_distance, max_distance], c=normal_color())[0]
-            self.end_member_curves = []
-            for i in range(result.n_members):
-                end_member_curve = \
-                    end_member_axes.plot(classes, result.end_members[i], c=plt.get_cmap()(i), label=f"EM{i + 1}")[0]
-                self.end_member_curves.append(end_member_curve)
-            image = get_image_by_proportions(result.proportions, resolution=100)
-            self.proportion_image = proportion_axes.imshow(image, plt.get_cmap(), aspect="auto", vmin=0, vmax=9)
-            return self.iteration_line, self.proportion_image, *self.end_member_curves
+            nonlocal iteration_line
+            nonlocal end_member_curves
+            nonlocal proportion_image
+            if iteration_line is None:
+                iteration_line = loss_axes.plot([1, 1], [min_distance, max_distance], c=normal_color())[0]
+                for i in range(result.n_members):
+                    curve = end_member_axes.plot(classes, result.end_members[i],
+                                                 c=plt.get_cmap()(i), label=f"EM{i + 1}")[0]
+                    end_member_curves.append(curve)
+                image = get_image_by_proportions(result.proportions, resolution=100)
+                proportion_image = proportion_axes.imshow(
+                    image, plt.get_cmap(), aspect="auto", vmin=0, vmax=9, extent=(0.0, result.n_samples, 100, 0.0))
+            return iteration_line, proportion_image, *end_member_curves
 
         def animate(args: Tuple[int, EMMAResult]):
+            nonlocal iteration_line
+            nonlocal end_member_curves
+            nonlocal proportion_image
             iteration, current = args
-            self.iteration_line.set_xdata([iteration, iteration])
+            iteration_line.set_xdata((iteration, iteration))
             for i in range(current.n_members):
-                self.end_member_curves[i].set_ydata(current.end_members[i])
+                end_member_curves[i].set_ydata(current.end_members[i])
             image = get_image_by_proportions(current.proportions, resolution=100)
-            self.proportion_image.set_data(image)
-            return self.iteration_line, self.proportion_image, *self.end_member_curves
+            proportion_image.set_data(image)
+            return iteration_line, proportion_image, *end_member_curves
 
-        self._animation = FuncAnimation(
-            self._figure, animate, init_func=init,
-            frames=enumerate(result.history), interval=self.animation_interval,
-            blit=True, repeat=self.repeat_animation,
-            repeat_delay=3.0, save_count=result.n_iterations)
+        self._animation = FuncAnimation(self._figure, animate, init_func=init, frames=enumerate(result.history),
+                                        interval=self.animation_interval, blit=True, repeat=self.repeat_animation,
+                                        repeat_delay=5.0, save_count=result.n_iterations)
 
     def show_result(self, result: EMMAResult):
-        self._last_result = result
-        self._figure.clear()
-        if self._animation is not None:
-            self._animation._stop()
-            self._animation = None
-        if self.animated:
+        if self.animated and result.n_iterations > 1:
             self.show_animation(result)
         else:
             self.show_chart(result)

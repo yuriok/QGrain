@@ -75,7 +75,6 @@ class BaseChart(QtWidgets.QWidget):
         self.save_figure_action = self.menu.addAction(self.tr("Save Figure"))
         self.save_figure_action.triggered.connect(lambda: self._toolbar.save_figure())
         self.normal_msg = QtWidgets.QMessageBox(parent=self)
-        self.file_dialog = QtWidgets.QFileDialog(parent=self)
         self._animation: Optional[FuncAnimation] = None
 
     def show_message(self, title: str, message: str):
@@ -105,7 +104,7 @@ class BaseChart(QtWidgets.QWidget):
         if self._animation is None:
             return
         if filename is None:
-            filename, format_str = self.file_dialog.getSaveFileName(
+            filename, format_str = QtWidgets.QFileDialog.getSaveFileName(
                 self, self.tr("Choose a filename to save the animation of this SSU result"),
                 ".", "Html Animation (*.html);;MPEG-4 Video File (*.mp4);;Graphics Interchange Format (*.gif)")
         if filename is None or filename == "":
