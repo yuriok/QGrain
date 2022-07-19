@@ -152,10 +152,10 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
         progress_dialog.setWindowTitle("QGrain")
         progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
         try:
-            linkage_method, distance, linkage_matrix = self._last_result
+            linkage_method, metric, linkage_matrix = self._last_result
             flags = fcluster(linkage_matrix, self.n_clusters, criterion="maxclust")
             self.logger.debug(f"Try to save the clustering result. Linkage: {linkage_method}. "
-                              f"Metric: {distance}. Number of clusters: {self.n_clusters}.")
+                              f"Metric: {metric}. Number of clusters: {self.n_clusters}.")
 
             def callback(progress: float):
                 if progress_dialog.wasCanceled():
