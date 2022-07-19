@@ -1,6 +1,6 @@
 import logging
 import os
-import sys
+import string
 from typing import *
 
 from PySide6 import QtCore, QtGui, QtWidgets
@@ -11,7 +11,7 @@ from ..models import Dataset
 from ..protos.client import QGrainClient
 from ..io import save_pca, save_statistics
 from ..utils import udm_to_ssu
-from . import EXTRA, setup_app, setup_logging
+from . import EXTRA
 from .About import About
 from .ClusteringAnalyzer import ClusteringAnalyzer
 from .DatasetGenerator import DatasetGenerator
@@ -122,30 +122,35 @@ class MainWindow(QtWidgets.QMainWindow):
             self.language_menu.addAction(action)
             self.language_actions.append(action)
         self.language_actions[0].setChecked(True)
+
         # Theme
         self.theme_menu = self.menuBar().addMenu(self.tr("Theme"))
         self.theme_group = QtGui.QActionGroup(self.theme_menu)
         self.theme_group.setExclusive(True)
         self.theme_actions = []
         for theme in list_themes():
-            action = self.theme_group.addAction(theme)
+            action = self.theme_group.addAction(string.capwords(theme[:-4].replace("_", " ")))
             action.setCheckable(True)
             app = QtCore.QCoreApplication.instance()
-            invert_secondary = theme.startswith("light")
-            action.triggered.connect(lambda checked=False, theme=theme, invert_secondary=invert_secondary: apply_stylesheet(app, theme=theme, invert_secondary=invert_secondary, extra=EXTRA))
+            invert = theme.startswith("light")
+            action.triggered.connect(lambda checked=False, t=theme, i=invert:
+                                     apply_stylesheet(app, theme=t, invert_secondary=i, extra=EXTRA))
             self.theme_menu.addAction(action)
             self.theme_actions.append(action)
             if theme == "light_cyan.xml":
                 action.setChecked(True)
+
         # Log
         self.log_action = QtGui.QAction(self.tr("Log"))
         self.log_action.triggered.connect(lambda: self.log_dialog.show())
         self.menuBar().addAction(self.log_action)
+
         # About
         self.about_action = QtGui.QAction(self.tr("About"))
         self.about_action.triggered.connect(lambda: self.about_dialog.show())
         self.menuBar().addAction(self.about_action)
 
+        # Connect signals
         self.ssu_multicore_analyzer.result_finished.connect(self.ssu_analyzer.result_view.add_result)
         self.load_dataset_dialog = DatasetLoader(self)
         self.load_dataset_dialog.dataset_loaded.connect(self.on_dataset_loaded)
@@ -376,27 +381,3 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tab_widget.setTabText(5, self.tr("EMMA"))
         self.tab_widget.setTabText(6, self.tr("UDM"))
         self.ssu_multicore_analyzer.retranslate()
-
-
-def qgrain_app():
-    app, splash = setup_app()
-    main = MainWindow()
-    # load the artificial dataset to show the functions of all modules
-    dataset = main.dataset_generator.get_random_dataset(100)
-    main.load_dataset_dialog.dataset_loaded.emit(dataset.dataset)
-    main.ssu_analyzer.on_try_fit_clicked()
-    from ..models import DistributionType, SSUResult
-    from ..ssu import try_ssu
-    sample = dataset[0]
-    x0 = dataset.parameters[0, 1:, :]
-    result, msg = try_ssu(sample.sample, DistributionType.Normal, dataset.n_components,
-                          x0=x0, try_global=True, need_history=False)
-    assert isinstance(result, SSUResult)
-    main.parameter_editor.refer_ssu_result(result)
-    main.parameter_editor.enabled_checkbox.setChecked(True)
-    main.emma_analyzer.on_try_fit_clicked()
-    main.udm_analyzer.on_try_fit_clicked()
-    setup_logging(main.statusBar(), main.log_dialog)
-    main.show()
-    splash.finish(main)
-    sys.exit(app.exec())

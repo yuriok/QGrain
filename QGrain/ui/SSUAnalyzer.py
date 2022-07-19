@@ -74,7 +74,7 @@ class SSUAnalyzer(QtWidgets.QWidget):
         self.result_layout = QtWidgets.QGridLayout(self.result_group)
         self.result_view = SSUResultViewer()
         self.result_view.result_displayed.connect(self.on_result_displayed)
-        self.result_view.result_referred.connect(self.parameter_editor.refer_ssu_result)
+        self.result_view.result_referred.connect(self.parameter_editor.refer_result)
         self.result_layout.addWidget(self.result_view)
         self.splitter_1 = QtWidgets.QSplitter(QtCore.Qt.Orientation.Vertical)
         self.splitter_1.addWidget(self.control_group)

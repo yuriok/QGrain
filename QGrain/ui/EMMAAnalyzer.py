@@ -183,8 +183,7 @@ class EMMAAnalyzer(QtWidgets.QWidget):
         self.try_fit_button.setEnabled(False)
         self.edit_parameter_button.setEnabled(False)
         progress_dialog = QtWidgets.QProgressDialog(
-            self.tr("Performing the EMMA algorithm..."), self.tr("Cancel"),
-            0, 100, self)
+            self.tr("Performing the EMMA algorithm..."), self.tr("Cancel"), 0, 100, self)
         progress_dialog.setWindowTitle("QGrain")
         progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
 

@@ -69,10 +69,10 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
             lambda: self.plot_chart(self.cumulative_curve_chart, self.selections, True))
         self.cumulative_plot_all_action = self.plot_cumulative_curve_menu.addAction(self.tr("Plot All"))
         self.cumulative_plot_all_action.triggered.connect(
-            lambda: self.plot_chart(self.cumulative_curve_chart, self._dataset.samples, False))
+            lambda: self.plot_chart(self.cumulative_curve_chart, self._dataset, False))
         self.cumulative_append_all_action = self.plot_cumulative_curve_menu.addAction(self.tr("Append All"))
         self.cumulative_append_all_action.triggered.connect(
-            lambda: self.plot_chart(self.cumulative_curve_chart, self._dataset.samples, True))
+            lambda: self.plot_chart(self.cumulative_curve_chart, self._dataset, True))
         self.plot_frequency_curve_menu = self.menu.addMenu(self.tr("Plot Frequency Distribution Chart"))
         self.frequency_plot_selected_action = self.plot_frequency_curve_menu.addAction(self.tr("Plot"))
         self.frequency_plot_selected_action.triggered.connect(
@@ -82,10 +82,10 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
             lambda: self.plot_chart(self.frequency_curve_chart, self.selections, True))
         self.frequency_plot_all_action = self.plot_frequency_curve_menu.addAction(self.tr("Plot All"))
         self.frequency_plot_all_action.triggered.connect(
-            lambda: self.plot_chart(self.frequency_curve_chart, self._dataset.samples, False))
+            lambda: self.plot_chart(self.frequency_curve_chart, self._dataset, False))
         self.frequency_append_all_action = self.plot_frequency_curve_menu.addAction(self.tr("Append All"))
         self.frequency_append_all_action.triggered.connect(
-            lambda: self.plot_chart(self.frequency_curve_chart, self._dataset.samples, True))
+            lambda: self.plot_chart(self.frequency_curve_chart, self._dataset, True))
         self.plot_frequency_curve_3D_menu = self.menu.addMenu(self.tr("Plot Frequency 3D Chart"))
         self.frequency_3D_plot_selected_action = self.plot_frequency_curve_3D_menu.addAction(self.tr("Plot"))
         self.frequency_3D_plot_selected_action.triggered.connect(
@@ -95,10 +95,10 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
             lambda: self.plot_chart(self.frequency_curve_3D_chart, self.selections, True))
         self.frequency_3D_plot_all_action = self.plot_frequency_curve_3D_menu.addAction(self.tr("Plot All"))
         self.frequency_3D_plot_all_action.triggered.connect(
-            lambda: self.plot_chart(self.frequency_curve_3D_chart, self._dataset.samples, False))
+            lambda: self.plot_chart(self.frequency_curve_3D_chart, self._dataset, False))
         self.frequency_3D_append_all_action = self.plot_frequency_curve_3D_menu.addAction(self.tr("Append All"))
         self.frequency_3D_append_all_action.triggered.connect(
-            lambda: self.plot_chart(self.frequency_curve_3D_chart, self._dataset.samples, True))
+            lambda: self.plot_chart(self.frequency_curve_3D_chart, self._dataset, True))
         self.folk54_GSM_diagram_menu = self.menu.addMenu(self.tr("Plot GSM Diagram (Folk, 1954)"))
         self.folk54_GSM_plot_selected_action = self.folk54_GSM_diagram_menu.addAction(self.tr("Plot"))
         self.folk54_GSM_plot_selected_action.triggered.connect(
@@ -108,10 +108,10 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
             lambda: self.plot_chart(self.folk54_GSM_diagram_chart, self.selections, True))
         self.folk54_GSM_plot_all_action = self.folk54_GSM_diagram_menu.addAction(self.tr("Plot All"))
         self.folk54_GSM_plot_all_action.triggered.connect(
-            lambda: self.plot_chart(self.folk54_GSM_diagram_chart, self._dataset.samples, False))
+            lambda: self.plot_chart(self.folk54_GSM_diagram_chart, self._dataset, False))
         self.folk54_GSM_append_all_action = self.folk54_GSM_diagram_menu.addAction(self.tr("Append All"))
         self.folk54_GSM_append_all_action.triggered.connect(
-            lambda: self.plot_chart(self.folk54_GSM_diagram_chart, self._dataset.samples, True))
+            lambda: self.plot_chart(self.folk54_GSM_diagram_chart, self._dataset, True))
         self.folk54_SSC_diagram_menu = self.menu.addMenu(self.tr("Plot SSC Diagram (Folk, 1954)"))
         self.folk54_SSC_plot_selected_action = self.folk54_SSC_diagram_menu.addAction(self.tr("Plot"))
         self.folk54_SSC_plot_selected_action.triggered.connect(
@@ -121,10 +121,10 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
             lambda: self.plot_chart(self.folk54_SSC_diagram_chart, self.selections, True))
         self.folk54_SSC_plot_all_action = self.folk54_SSC_diagram_menu.addAction(self.tr("Plot All"))
         self.folk54_SSC_plot_all_action.triggered.connect(
-            lambda: self.plot_chart(self.folk54_SSC_diagram_chart, self._dataset.samples, False))
+            lambda: self.plot_chart(self.folk54_SSC_diagram_chart, self._dataset, False))
         self.folk54_SSC_append_all_action = self.folk54_SSC_diagram_menu.addAction(self.tr("Append All"))
         self.folk54_SSC_append_all_action.triggered.connect(
-            lambda: self.plot_chart(self.folk54_SSC_diagram_chart, self._dataset.samples, True))
+            lambda: self.plot_chart(self.folk54_SSC_diagram_chart, self._dataset, True))
         self.BP12_GSM_diagram_menu = self.menu.addMenu(self.tr("Plot GSM Diagram (Blott and Pye, 2012)"))
         self.BP12_GSM_plot_selected_action = self.BP12_GSM_diagram_menu.addAction(self.tr("Plot"))
         self.BP12_GSM_plot_selected_action.triggered.connect(
@@ -134,10 +134,10 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
             lambda: self.plot_chart(self.BP12_GSM_diagram_chart, self.selections, True))
         self.BP12_GSM_plot_all_action = self.BP12_GSM_diagram_menu.addAction(self.tr("Plot All"))
         self.BP12_GSM_plot_all_action.triggered.connect(
-            lambda: self.plot_chart(self.BP12_GSM_diagram_chart, self._dataset.samples, False))
+            lambda: self.plot_chart(self.BP12_GSM_diagram_chart, self._dataset, False))
         self.BP12_GSM_append_all_action = self.BP12_GSM_diagram_menu.addAction(self.tr("Append All"))
         self.BP12_GSM_append_all_action.triggered.connect(
-            lambda: self.plot_chart(self.BP12_GSM_diagram_chart, self._dataset.samples, True))
+            lambda: self.plot_chart(self.BP12_GSM_diagram_chart, self._dataset, True))
         self.BP12_SSC_diagram_menu = self.menu.addMenu(self.tr("Plot SSC Diagram (Blott and Pye, 2012)"))
         self.BP12_SSC_plot_selected_action = self.BP12_SSC_diagram_menu.addAction(self.tr("Plot"))
         self.BP12_SSC_plot_selected_action.triggered.connect(
@@ -147,10 +147,10 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
             lambda: self.plot_chart(self.BP12_SSC_diagram_chart, self.selections, True))
         self.BP12_SSC_plot_all_action = self.BP12_SSC_diagram_menu.addAction(self.tr("Plot All"))
         self.BP12_SSC_plot_all_action.triggered.connect(
-            lambda: self.plot_chart(self.BP12_SSC_diagram_chart, self._dataset.samples, False))
+            lambda: self.plot_chart(self.BP12_SSC_diagram_chart, self._dataset, False))
         self.BP12_SSC_append_all_action = self.BP12_SSC_diagram_menu.addAction(self.tr("Append All"))
         self.BP12_SSC_append_all_action.triggered.connect(
-            lambda: self.plot_chart(self.BP12_SSC_diagram_chart, self._dataset.samples, True))
+            lambda: self.plot_chart(self.BP12_SSC_diagram_chart, self._dataset, True))
         self.previous_button.setEnabled(False)
         self.current_page_combo_box.setEnabled(False)
         self.next_button.setEnabled(False)
@@ -357,17 +357,18 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         if self.page_index < self.n_pages - 1:
             self.current_page_combo_box.setCurrentIndex(self.page_index + 1)
 
-    def plot_chart(self, chart, samples: List[Sample], append: bool):
+    def plot_chart(self, chart, samples: Iterable[Sample], append: bool):
+        copy_samples = list(samples)
         if self._dataset is None:
             self.show_error(self.tr("The dataset has not been loaded."))
-        elif len(samples) == 0:
+        elif len(copy_samples) == 0:
             self.show_error(self.tr("No sample was selected."))
         else:
             if isinstance(chart, DiagramChart):
                 kwargs = {"mfc": highlight_color()}
             else:
                 kwargs = {}
-            chart.show_samples(samples, append=append, **kwargs)
+            chart.show_samples(copy_samples, append=append, **kwargs)
             chart.show()
 
     def changeEvent(self, event: QtCore.QEvent):

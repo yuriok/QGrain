@@ -64,7 +64,7 @@ class SSUSettings(QtWidgets.QDialog):
         self.main_layout.addWidget(self.optimizer_max_niter_label, 6, 0)
         self.main_layout.addWidget(self.optimizer_max_niter_input, 6, 1)
         self.need_history_checkbox = QtWidgets.QCheckBox(self.tr("Need History"))
-        self.need_history_checkbox.setChecked(False)
+        self.need_history_checkbox.setChecked(True)
         self.need_history_checkbox.setToolTip(self.tr("Record the variation history of parameters or not."))
         self.main_layout.addWidget(self.need_history_checkbox, 7, 0, 1, 2)
 

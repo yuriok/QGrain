@@ -164,7 +164,7 @@ class DistributionChart(BaseChart):
         self._axes.set_title(result.name)
         self._axes.set_xlabel(self.xlabel)
         self._axes.set_ylabel(self.ylabel)
-        self._axes.plot(x, result.sample.distribution, c="#ffffff00", marker=".", ms=8, mfc=normal_color(),
+        self._axes.plot(x, result.sample.distribution, c="#ffffff00", marker=".", ms=3, mfc=normal_color(),
                         mec=normal_color(), label="Observation")
         self._axes.set_xlim(x[0], x[-1])
         self._axes.set_ylim(0.0, round(np.max(result.sample.distribution) * 1.2, 2))
@@ -200,7 +200,7 @@ class DistributionChart(BaseChart):
         self._axes.set_title(result.name)
         self._axes.set_xlabel(self.xlabel)
         self._axes.set_ylabel(self.ylabel)
-        observation_line = self._axes.plot(x, result.sample.distribution, c="#ffffff00", marker=".", ms=8,
+        observation_line = self._axes.plot(x, result.sample.distribution, c="#ffffff00", marker=".", ms=3,
                                            mfc=normal_color(), mec=normal_color(), label="Observation")[0]
         self._axes.set_xlim(x[0], x[-1])
         self._axes.set_ylim(0.0, round(np.max(result.sample.distribution) * 1.2, 2))
