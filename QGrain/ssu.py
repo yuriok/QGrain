@@ -108,28 +108,27 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
         x = x.reshape((1, distribution_class.N_PARAMETERS + 1, n_components))
         logger.debug(f"The global epoch {global_iteration} finished, x: {x}, function value: {f}, accepted: {accept}.")
 
-    with np.errstate(all="ignore"):
-        if try_global:
-            global_result = basinhopping(
-                closure, x0=x0, minimizer_kwargs=dict(
-                    method=optimizer, callback=callback, options=dict(maxiter=optimizer_max_niter)),
-                niter_success=global_niter_success, niter=global_max_niter,
-                stepsize=global_step_size, callback=global_callback)
-            if global_result.lowest_optimization_result.success or global_result.lowest_optimization_result.status == 9:
-                parameters = np.reshape(global_result.x, (1, distribution_class.N_PARAMETERS + 1, n_components))
-                message = global_result.message
-            else:
-                logger.error(f"The fitting process terminated with a error: {global_result.message}.")
-                return None, global_result.message
+    if try_global:
+        global_result = basinhopping(
+            closure, x0=x0, minimizer_kwargs=dict(
+                method=optimizer, callback=callback, options=dict(maxiter=optimizer_max_niter)),
+            niter_success=global_niter_success, niter=global_max_niter,
+            stepsize=global_step_size, callback=global_callback)
+        if global_result.lowest_optimization_result.success or global_result.lowest_optimization_result.status == 9:
+            parameters = np.reshape(global_result.x, (1, distribution_class.N_PARAMETERS + 1, n_components))
+            message = global_result.message
         else:
-            local_result = minimize(closure, x0=x0, method=optimizer,
-                                    callback=callback, options=dict(maxiter=optimizer_max_niter))
-            if local_result.success or local_result.status == 9:
-                parameters = np.reshape(local_result.x, (1, distribution_class.N_PARAMETERS + 1, n_components))
-                message = local_result.message
-            else:
-                logger.error(f"The fitting process terminated with a error: {local_result.message}.")
-                return None, local_result.message
+            logger.error(f"The fitting process terminated with a error: {global_result.message}.")
+            return None, global_result.message
+    else:
+        local_result = minimize(closure, x0=x0, method=optimizer,
+                                callback=callback, options=dict(maxiter=optimizer_max_niter))
+        if local_result.success or local_result.status == 9:
+            parameters = np.reshape(local_result.x, (1, distribution_class.N_PARAMETERS + 1, n_components))
+            message = local_result.message
+        else:
+            logger.error(f"The fitting process terminated with a error: {local_result.message}.")
+            return None, local_result.message
 
     time_spent = time.time() - start_time
     # sort the components by their grain sizes (from fine to coarse)

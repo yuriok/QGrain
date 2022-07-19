@@ -1,12 +1,29 @@
+import logging
 import os
 
 QGRAIN_VERSION = "0.5.0.0"
 QGRAIN_ROOT_PATH = os.path.dirname(__file__)
 
+HELLO_TEXT = r"""
+ _______  _______  _______  _______ _________ _       
+(  ___  )(  ____ \(  ____ )(  ___  )\__   __/( (    /|
+| (   ) || (    \/| (    )|| (   ) |   ) (   |  \  ( |
+| |   | || |      | (____)|| (___) |   | |   |   \ | |
+| |   | || | ____ |     __)|  ___  |   | |   | (\ \) |
+| | /\| || | \_  )| (\ (   | (   ) |   | |   | | \   |
+| (_\ \ || (___) || ) \ \__| )   ( |___) (___| )  \  |
+(____\/_)(_______)|/   \__/|/     \|\_______/|/    )_)
+
+An easy-to-use software for the analysis of grain size distributions
+
+"""
+
 
 def main():
+    print(HELLO_TEXT)
     import argparse
-
+    import numpy as np
+    np.seterr(all="ignore")
     parser = argparse.ArgumentParser(
         description="QGrain is an easy-to-use software for the analysis of grain size distributions.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -25,6 +42,15 @@ def main():
     args = parser.parse_args()
     if args.server:
         from .protos.server import QGrainServicer
+        format_str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        from logging.handlers import TimedRotatingFileHandler
+        file_handler = TimedRotatingFileHandler(
+            os.path.join(os.path.expanduser("~"), "QGrain", "logs", "qgrain_server.log"),
+            when="D", backupCount=8, encoding="utf-8")
+        file_handler.setLevel(logging.DEBUG)
+        file_handler.setFormatter(logging.Formatter(format_str))
+        logging.basicConfig(level=logging.DEBUG, format=format_str)
+        logging.getLogger().addHandler(file_handler)
         qgrain_server = QGrainServicer(
             address=args.address, max_workers=args.max_workers, max_message_length=args.max_message_length,
             max_dataset_size=args.max_dataset_size)
