@@ -19,6 +19,13 @@ An easy-to-use software for the analysis of grain size distributions
 """
 
 
+def start_local_server():
+    from QGrain.protos.server import QGrainServicer
+    qgrain_server = QGrainServicer(address="localhost:50051", max_workers=8,
+                                   max_message_length=2**30, max_dataset_size=2**30)
+    qgrain_server.serve()
+
+
 def main():
     print(HELLO_TEXT)
     import argparse
@@ -57,6 +64,27 @@ def main():
         qgrain_server.serve()
     else:
         from .protos.client import QGrainClient
-        from .ui.MainWindow import qgrain_app
+        from .ui import setup_app, setup_logging
+        from .ui.MainWindow import MainWindow
+        process = None
+        if args.target == "localhost:50051":
+            from multiprocessing import Process, freeze_support
+            freeze_support()
+            process = Process(target=start_local_server)
+            process.start()
         QGrainClient.set_target(args.target)
-        qgrain_app()
+        app = setup_app()
+        main_window = MainWindow()
+        # load the artificial dataset to show the functions of all modules
+        dataset = main_window.dataset_generator.get_random_dataset(100)
+        main_window.load_dataset_dialog.dataset_loaded.emit(dataset.dataset)
+        main_window.ssu_analyzer.on_try_fit_clicked()
+        main_window.parameter_editor.refer_parameters(dataset.distribution_type, dataset.parameters[0])
+        main_window.parameter_editor.enabled_checkbox.setChecked(True)
+        main_window.emma_analyzer.on_try_fit_clicked()
+        main_window.udm_analyzer.on_try_fit_clicked()
+        setup_logging(main_window.statusBar(), main_window.log_dialog)
+        main_window.show()
+        app.exec()
+        if process is not None:
+            process.terminate()
