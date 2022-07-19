@@ -226,7 +226,7 @@ def save_artificial_dataset(dataset: ArtificialDataset, filename: str, progress_
         else:
             style = "normal_light"
         write(row, 0, sample.name, s=style)
-        for j, component in enumerate(sample.components):
+        for j, component in enumerate(sample):
             for k in range(dataset.n_parameters):
                 write(row, dataset.n_parameters * j + k + 1, dataset.parameters[i, k, j], s=style)
         if progress_callback is not None:
@@ -246,10 +246,10 @@ def save_artificial_dataset(dataset: ArtificialDataset, filename: str, progress_
             else:
                 style = "normal_light"
             write(row, 0, sample.name, s=style)
-            for col, value in enumerate(sample.components[i].distribution, 1):
+            for col, value in enumerate(sample[i].distribution, 1):
                 write(row, col, value, s=style)
-        if progress_callback is not None:
-            progress_callback(((i*len(dataset) + row) / len(dataset)*dataset.n_components) * 0.6 + 0.4)
+            if progress_callback is not None:
+                progress_callback(((i*len(dataset) + row) / len(dataset)*dataset.n_components) * 0.6 + 0.4)
 
     wb.save(filename)
     wb.close()
