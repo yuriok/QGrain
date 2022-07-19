@@ -4,6 +4,7 @@ from typing import *
 
 import numpy as np
 from PySide6 import QtCore, QtWidgets
+from numpy import ndarray
 
 from ..statistics import interval_phi
 from ..models import DistributionType, SSUResult, ArtificialDataset
@@ -281,7 +282,24 @@ class ParameterEditor(QtWidgets.QDialog):
         sample = ArtificialDataset(np.expand_dims(self.parameters, axis=0), self.distribution_type)[0]
         self.preview_chart.show_chart(sample)
 
-    def refer_ssu_result(self, result: SSUResult):
+    def refer_parameters(self, distribution_type: DistributionType, parameters: ndarray):
+        assert isinstance(distribution_type, DistributionType)
+        assert isinstance(parameters, ndarray)
+        assert parameters.ndim == 2
+        n_parameters, n_components = parameters.shape
+        self.distribution_type_combo_box.setCurrentIndex(self.DISTRIBUTION_INDEX_MAP[distribution_type])
+        self.n_components_input.setValue(n_components)
+        enabled_components: List[ParameterComponent] = []
+        for _, _, components in self.component_sets:
+            for component in components:
+                if component.isEnabled():
+                    enabled_components.append(component)
+        for i, component in enumerate(enabled_components):
+            component.set_parameters(parameters[:, i])
+        self.update_chart()
+        self.update_cache()
+
+    def refer_result(self, result: SSUResult):
         self.distribution_type_combo_box.setCurrentIndex(self.DISTRIBUTION_INDEX_MAP[result.distribution_type])
         self.n_components_input.setValue(len(result))
         enabled_components: List[ParameterComponent] = []
