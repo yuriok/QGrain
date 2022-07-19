@@ -67,7 +67,7 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.auto_show_selected_action.setCheckable(True)
         self.auto_show_selected_action.setChecked(False)
         self.show_distance_action = self.menu.addAction(self.tr("Show Loss Series"))
-        self.show_distance_action.triggered.connect(self.show_distance_series)
+        self.show_distance_action.triggered.connect(self.show_loss_series)
         self.show_parameter_action = self.menu.addAction(self.tr("Show Parameters"))
         self.show_parameter_action.triggered.connect(self.show_parameters)
         self.detect_outliers_menu = self.menu.addMenu(self.tr("Check"))
@@ -92,8 +92,7 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.addActions(self.menu.actions())
 
         self.boxplot_chart = BoxplotChart()
-        self.distance_chart = LossSeriesChart()
-        self.file_dialog = QtWidgets.QFileDialog(parent=self)
+        self.loss_chart = LossSeriesChart()
         self.update_page_list()
         self.update_page(self.page_index)
         self.normal_msg = QtWidgets.QMessageBox(self)
@@ -275,16 +274,17 @@ class SSUResultViewer(QtWidgets.QWidget):
         if self.auto_show_selected:
             self.show_chart()
 
-    def show_distance_series(self):
+    def show_loss_series(self):
         results = [self._results[i] for i in self.selections]
         if results is None or len(results) == 0:
             return
         result = results[0]
-        self.distance_chart.show_distance_series(
-            result.loss_series(self.loss_name),
-            self.loss_name,
-            result.sample.name)
-        self.distance_chart.show()
+        series = result.loss_series(self.loss_name)
+        if len(series) == 1:
+            self.show_warning(self.tr("The variation history was not recorded, can not calculate the loss series."))
+            return
+        self.loss_chart.show_loss_series(series, self.loss_name, result.sample.name)
+        self.loss_chart.show()
 
     def show_parameters(self):
         results = [self._results[i] for i in self.selections]
@@ -295,7 +295,7 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.parameter_table.show()
 
     def load_results(self):
-        filename, _ = self.file_dialog.getOpenFileName(
+        filename, _ = QtWidgets.QFileDialog.getOpenFileName(
             self, self.tr("Choose the file which stores the dumped SSU results"),
             ".", "Dumped SSU Results (*.ssu)")
         if filename is None or filename == "":
@@ -336,7 +336,7 @@ class SSUResultViewer(QtWidgets.QWidget):
         if self.n_results == 0:
             self.show_error(self.tr("There is no SSU result."))
             return
-        filename, _ = self.file_dialog.getSaveFileName(
+        filename, _ = QtWidgets.QFileDialog.getSaveFileName(
             self, self.tr("Choose a filename to save the SSU Results"),
             ".", "Microsoft Excel (*.xlsx);;Dumped SSU Results (*.ssu)")
         if filename is None or filename == "":
@@ -418,10 +418,10 @@ class SSUResultViewer(QtWidgets.QWidget):
         loss_QR = value_3_4 - value_1_4
         outlier_results = []
         outlier_indexes = []
-        for i, (result, distance) in enumerate(zip(self._results, losses)):
-            if distance > value_3_4 + loss_QR * 1.5:
+        for i, (result, loss) in enumerate(zip(self._results, losses)):
+            if loss > value_3_4 + loss_QR * 1.5:
             # which error too small is not outlier
-            # if distance > value_3_4 + distance_QR * 1.5 or distance < value_1_4 - distance_QR * 1.5:
+            # if loss > value_3_4 + loss_QR * 1.5 or loss < value_1_4 - loss_QR * 1.5:
                 outlier_results.append(result)
                 outlier_indexes.append(i)
         self.logger.debug(f"Check the final losses using Whisker plot.")
@@ -465,12 +465,12 @@ class SSUResultViewer(QtWidgets.QWidget):
             lower_group = stacked_moments[np.less(stacked_moments, median)]
             value_1_4 = np.median(lower_group)
             value_3_4 = np.median(upper_group)
-            distance_QR = value_3_4 - value_1_4
+            moment_QR = value_3_4 - value_1_4
 
             for j, result in enumerate(self._results):
                 if len(result) > i:
-                    distance = result[i].moments[key]
-                    if distance > value_3_4 + distance_QR * 1.5 or distance < value_1_4 - distance_QR * 1.5:
+                    moment = result[i].moments[key]
+                    if moment > value_3_4 + moment_QR * 1.5 or moment < value_1_4 - moment_QR * 1.5:
                         outlier_dict[j] = result
 
         outlier_results = []

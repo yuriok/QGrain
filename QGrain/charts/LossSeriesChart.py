@@ -12,7 +12,7 @@ class LossSeriesChart(BaseChart):
         self._axes = self._figure.subplots()
         self._last_result = None
 
-    def show_distance_series(self, series: Sequence[float], ylabel: str, title: str = ""):
+    def show_loss_series(self, series: Sequence[float], ylabel: str, title: str = ""):
         self._axes.clear()
         self._axes.plot(series, label="series")
         self._axes.set_xlabel("Iteration index")
@@ -26,7 +26,7 @@ class LossSeriesChart(BaseChart):
         if self._last_result is not None:
             self._figure.clear()
             self._axes = self._figure.subplots()
-            self.show_distance_series(*self._last_result)
+            self.show_loss_series(*self._last_result)
 
     def retranslate(self):
         super().retranslate()
