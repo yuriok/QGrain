@@ -1,15 +1,14 @@
 
 import multiprocessing as mp
-import typing
 from enum import Enum, unique
-from uuid import UUID
+from typing import *
 
 import psutil
-from PySide6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
-from ..chart.config_matplotlib import backgroud_color
-from ..io import GrainSizeDataset
-from ..ssu import BasicResolver, DistributionType, SSUResult, SSUTask
+from ..models import SSUResult
+from ..ssu import try_ssu
+from ..charts import background_color
 
 
 @unique
@@ -20,48 +19,52 @@ class TaskState(Enum):
     Finished = 3
 
 
-def excute_tasks(
+def execute_tasks(
         task_queue: mp.Queue,
         result_queue: mp.Queue,
         failed_queue: mp.Queue,
         event_queue: mp.Queue,
         retry_times: int = 5):
-    resolver = BasicResolver()
     while True:
-        task = task_queue.get()
+        task_i, task = task_queue.get()
         left_times = retry_times
-        event_queue.put((task, TaskState.Processing))
+        event_queue.put((task_i, TaskState.Processing))
         while left_times > 0:
-            message, result = resolver.try_fit(task)
+            result, msg = try_ssu(**task)
             if isinstance(result, SSUResult):
-                result_queue.put(result)
+                result_queue.put((task_i, result))
                 break
             else:
                 left_times -= 1
         if left_times > 0:
-            event_queue.put((task, TaskState.Finished))
+            event_queue.put((task_i, TaskState.Finished))
         else:
-            failed_queue.put(task)
-            event_queue.put((task, TaskState.Failed))
+            failed_queue.put((task_i, task))
+            event_queue.put((task_i, TaskState.Failed))
 
 
 class TaskStateBubble(QtWidgets.QWidget):
     def __init__(self, size=16, border_radius=4):
         super().__init__()
         self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
-        self.__size = size
-        self.__border_radius = border_radius
-        self.init_ui()
+        self._size = size
+        self._border_radius = border_radius
+        self.main_layout = QtWidgets.QGridLayout(self)
+        self.display = QtWidgets.QLabel()
+        self.display.setFixedSize(self._size, self._size)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.addWidget(self.display)
+        self.change_state(TaskState.NotStarted)
 
     def get_qss(self, state: TaskState):
         if state == TaskState.NotStarted:
-            return f"border-radius: {self.__border_radius}px;border:0px;background:#7a7374"
+            return f"border-radius: {self._border_radius}px;border:0px;background:#7a7374"
         elif state == TaskState.Processing:
-            return f"border-radius: {self.__border_radius}px;border:0px;background:#ff9900"
+            return f"border-radius: {self._border_radius}px;border:0px;background:#ff9900"
         elif state == TaskState.Failed:
-            return f"border-radius: {self.__border_radius}px;border:0px;background:#36292f"
+            return f"border-radius: {self._border_radius}px;border:0px;background:#36292f"
         elif state == TaskState.Finished:
-            return f"border-radius: {self.__border_radius}px;border:0px;background:#8abcd1"
+            return f"border-radius: {self._border_radius}px;border:0px;background:#8abcd1"
         else:
             raise NotImplementedError(state)
 
@@ -69,16 +72,8 @@ class TaskStateBubble(QtWidgets.QWidget):
         qss = self.get_qss(state)
         self.display.setStyleSheet(qss)
 
-    def init_ui(self):
-        self.main_layout = QtWidgets.QGridLayout(self)
-        self.display = QtWidgets.QLabel()
-        self.display.setFixedSize(self.__size, self.__size)
-        self.main_layout.setContentsMargins(0, 0, 0, 0)
-        self.main_layout.addWidget(self.display)
-        self.change_state(TaskState.NotStarted)
-
     def make_transparent(self):
-        sheet = f"border-radius: {self.__border_radius}px;border:0px;background:{backgroud_color()}"
+        sheet = f"border-radius: {self._border_radius}px;border:0px;background:{background_color()}"
         self.display.setStyleSheet(sheet)
 
 
@@ -86,49 +81,25 @@ class SSUMulticoreAnalyzer(QtWidgets.QDialog):
     BUBBLE_ROWS = 10
     BUBBLE_COLUMNS = 20
     result_finished = QtCore.Signal(SSUResult)
+
     def __init__(self, parent=None):
-        super().__init__(parent=parent, f=QtCore.Qt.Window)
+        super().__init__(parent=parent)
         self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
         self.__task_queue = mp.Queue()
         self.__result_queue = mp.Queue()
         self.__failed_queue = mp.Queue()
         self.__event_queue = mp.Queue()
-        self.__tasks = [] # type: list[SSUTask]
-        self.__index_map = {} # type: dict[UUID, int]
-        self.__state_map = {} # type: dict[int, TaskState]
-        self.__results = {} # type: dict[int, SSUResult]
-        self.__failed_tasks = {} # type: dict[int, SSUTask]
-        self.__processes = [] # type: list[mp.Process]
+        self.__tasks: List[Dict] = []
+        self.__state_map: Dict[int, TaskState] = {}
+        self.__results: Dict[int, SSUResult] = {}
+        self.__failed_tasks: Dict[int, Dict] = {}
+        self.__processes: List[mp.Process] = []
         self.__start_flag = False
         self.__watcher = QtCore.QTimer()
         self.__watcher.setSingleShot(False)
         self.__watcher.setInterval(10)
         self.__watcher.timeout.connect(self.watch)
-        self.init_ui()
 
-    @property
-    def n_tasks(self) -> int:
-        return len(self.__tasks)
-
-    @property
-    def page_size(self) -> int:
-        return self.BUBBLE_ROWS * self.BUBBLE_COLUMNS
-
-    @property
-    def n_pages(self) -> int:
-        n_pages, left = divmod(self.n_tasks, self.page_size)
-        if left > 0:
-            n_pages += 1
-        return n_pages
-
-    @property
-    def page_index(self) -> int:
-        return self.page_combo_box.currentIndex()
-
-    def in_page(self, index: int) -> bool:
-        return self.page_size*self.page_index <= index < self.page_size * (self.page_index + 1)
-
-    def init_ui(self):
         self.setWindowTitle(self.tr("SSU Multicore Analyzer"))
         self.main_layout = QtWidgets.QGridLayout(self)
         self.control_group = QtWidgets.QGroupBox(self.tr("Control"))
@@ -185,12 +156,34 @@ class SSUMulticoreAnalyzer(QtWidgets.QDialog):
         self.main_layout.addWidget(self.control_group, 0, 0)
         self.main_layout.addWidget(self.state_group, 1, 0)
 
+    @property
+    def n_tasks(self) -> int:
+        return len(self.__tasks)
+
+    @property
+    def page_size(self) -> int:
+        return self.BUBBLE_ROWS * self.BUBBLE_COLUMNS
+
+    @property
+    def n_pages(self) -> int:
+        n_pages, left = divmod(self.n_tasks, self.page_size)
+        if left > 0:
+            n_pages += 1
+        return n_pages
+
+    @property
+    def page_index(self) -> int:
+        return self.page_combo_box.currentIndex()
+
+    def in_page(self, index: int) -> bool:
+        return self.page_size*self.page_index <= index < self.page_size * (self.page_index + 1)
+
     def setup_processes(self):
         self.__watcher.start()
         n_processes = self.n_workers_input.value()
         for i in range(n_processes):
             process = mp.Process(
-                target=excute_tasks,
+                target=execute_tasks,
                 args=(self.__task_queue,
                       self.__result_queue,
                       self.__failed_queue,
@@ -213,17 +206,15 @@ class SSUMulticoreAnalyzer(QtWidgets.QDialog):
         self.__failed_queue = mp.Queue()
         self.__event_queue = mp.Queue()
 
-    def setup_tasks(self, tasks: typing.List[SSUTask]):
+    def setup_tasks(self, tasks: List[Dict]):
         self.__tasks.clear()
-        self.__index_map.clear()
         self.__state_map.clear()
         self.__results.clear()
         self.__failed_tasks.clear()
         for i, task in enumerate(tasks):
-            self.__index_map[task.uuid] = i
             self.__state_map[i] = TaskState.NotStarted
             self.__tasks.append(task)
-            self.__task_queue.put(task)
+            self.__task_queue.put((i, task))
         self.n_tasks_display.setText(str(self.n_tasks))
         self.n_remains_display.setText(str(self.n_tasks))
         self.n_failed_tasks_display.setText("0")
@@ -249,42 +240,38 @@ class SSUMulticoreAnalyzer(QtWidgets.QDialog):
             bubble = self.__bubbles[i]
             if index >= self.n_tasks:
                 bubble.make_transparent()
-                bubble.setToolTip(None)
+                bubble.setToolTip("")
             else:
                 state = self.__state_map[index]
                 task = self.__tasks[index]
                 bubble.show()
                 bubble.change_state(state)
-                bubble.setToolTip(task.sample.name)
+                bubble.setToolTip(task["sample"].name)
 
     def watch(self):
         try:
             while True:
-                event = self.__event_queue.get(block=False) # type: typing.Tuple[SSUTask, TaskState]
-                task, state = event
-                index = self.__index_map[task.uuid]
-                self.__state_map[index] = state
-
-                if self.in_page(index):
+                event: Tuple[int, TaskState] = self.__event_queue.get(block=False)
+                task_i, state = event
+                self.__state_map[task_i] = state
+                if self.in_page(task_i):
                     offset = self.page_index*self.page_size
-                    bubble = self.__bubbles[index - offset]
+                    bubble = self.__bubbles[task_i - offset]
                     bubble.change_state(state)
         except Exception:
             pass
 
         try:
             while True:
-                result = self.__result_queue.get(block=False) # type: SSUResult
-                index = self.__index_map[result.task.uuid]
-                self.__results[index] = result
+                task_i, result = self.__result_queue.get(block=False)
+                self.__results[task_i] = result
         except Exception:
             pass
 
         try:
             while True:
-                task = self.__failed_queue.get(block=False) # type: SSUTask
-                index = self.__index_map[task.uuid]
-                self.__failed_tasks[index] = task
+                task_i, task = self.__failed_queue.get(block=False)
+                self.__failed_tasks[task_i] = task
         except Exception:
             pass
 

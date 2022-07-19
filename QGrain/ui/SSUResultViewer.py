@@ -2,37 +2,29 @@ __all__ = ["SSUResultViewer"]
 
 import logging
 import pickle
-import typing
+from typing import *
 
 import numpy as np
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from ..chart.BoxplotChart import BoxplotChart
-from ..chart.DistanceCurveChart import DistanceCurveChart
+from ..models import SSUResult
+from ..ssu import built_in_losses
+from ..metrics import loss_numpy
+from ..charts.BoxplotChart import BoxplotChart
+from ..charts.LossSeriesChart import LossSeriesChart
 from ..io import save_ssu
-from ..ssu import SSUResult, built_in_distances, get_distance_function
 from .ParameterTable import ParameterTable
 
 
 class SSUResultViewer(QtWidgets.QWidget):
     PAGE_ROWS = 20
     logger = logging.getLogger("QGrain.SSUResultViewer")
-    result_marked = QtCore.Signal(SSUResult)
     result_displayed = QtCore.Signal(SSUResult)
     result_referred = QtCore.Signal(SSUResult)
+
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.__results = [] # type: list[SSUResult]
-        self.init_ui()
-        self.boxplot_chart = BoxplotChart()
-        self.distance_chart = DistanceCurveChart()
-        self.file_dialog = QtWidgets.QFileDialog(parent=self)
-        self.update_page_list()
-        self.update_page(self.page_index)
-        self.normal_msg = QtWidgets.QMessageBox(self)
-        self.parameter_table = None
-
-    def init_ui(self):
+        self._results: List[SSUResult] = []
         self.setWindowTitle(self.tr("SSU Result Viewer"))
         self.data_table = QtWidgets.QTableWidget(100, 100)
         self.data_table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
@@ -41,7 +33,6 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.data_table.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.main_layout = QtWidgets.QGridLayout(self)
         self.main_layout.addWidget(self.data_table, 0, 0, 1, 3)
-
         self.previous_button = QtWidgets.QPushButton(self.tr("Previous"))
         self.previous_button.setToolTip(self.tr("Click to get back to the previous page."))
         self.page_combo_box = QtWidgets.QComboBox()
@@ -54,54 +45,59 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.main_layout.addWidget(self.previous_button, 1, 0)
         self.main_layout.addWidget(self.page_combo_box, 1, 1)
         self.main_layout.addWidget(self.next_button, 1, 2)
-
-        self.distance_label = QtWidgets.QLabel(self.tr("Distance Function"))
-        self.distance_label.setToolTip(self.tr("The function to calculate the difference (on the contrary, similarity) between two samples."))
-        self.distance_combo_box = QtWidgets.QComboBox()
-        self.distance_combo_box.addItems(built_in_distances)
-        self.distance_combo_box.setCurrentText("log10MSE")
-        self.distance_combo_box.currentTextChanged.connect(lambda: self.update_page(self.page_index))
-        self.main_layout.addWidget(self.distance_label, 2, 0)
-        self.main_layout.addWidget(self.distance_combo_box, 2, 1, 1, 2)
-        self.menu = QtWidgets.QMenu(self.data_table) # type: QtWidgets.QMenu
+        self.loss_label = QtWidgets.QLabel(self.tr("Loss"))
+        self.loss_label.setToolTip(self.tr("The function to calculate the difference between prediction and observation."))
+        self.loss_combo_box = QtWidgets.QComboBox()
+        self.loss_combo_box.addItems(built_in_losses)
+        self.loss_combo_box.setCurrentText("lmse")
+        self.loss_combo_box.currentTextChanged.connect(lambda: self.update_page(self.page_index))
+        self.main_layout.addWidget(self.loss_label, 2, 0)
+        self.main_layout.addWidget(self.loss_combo_box, 2, 1, 1, 2)
+        self.menu = QtWidgets.QMenu(self.data_table)
         self.menu.setShortcutAutoRepeat(True)
-        self.remove_action = self.menu.addAction(self.tr("Remove")) # type: QtGui.QAction
+        self.remove_action = self.menu.addAction(self.tr("Remove"))
         self.remove_action.triggered.connect(self.remove_selections)
-        self.remove_all_action = self.menu.addAction(self.tr("Remove All")) # type: QtGui.QAction
+        self.remove_all_action = self.menu.addAction(self.tr("Remove All"))
         self.remove_all_action.triggered.connect(self.remove_all_results)
-        self.mark_action = self.menu.addAction(self.tr("Mark Reference")) # type: QtGui.QAction
-        self.mark_action.triggered.connect(self.mark_selections)
-        self.refer_action = self.menu.addAction(self.tr("Refer Parameters")) # type: QtGui.QAction
+        self.refer_action = self.menu.addAction(self.tr("Refer Parameters"))
         self.refer_action.triggered.connect(self.refer_result)
-        self.show_chart_action = self.menu.addAction(self.tr("Show Chart")) # type: QtGui.QAction
+        self.show_chart_action = self.menu.addAction(self.tr("Show Chart"))
         self.show_chart_action.triggered.connect(self.show_chart)
-        self.auto_show_selected_action = self.menu.addAction(self.tr("Auto Show")) # type: QtGui.QAction
+        self.auto_show_selected_action = self.menu.addAction(self.tr("Auto Show"))
         self.auto_show_selected_action.setCheckable(True)
         self.auto_show_selected_action.setChecked(False)
-        self.show_distance_action = self.menu.addAction(self.tr("Show Distance Series")) # type: QtGui.QAction
+        self.show_distance_action = self.menu.addAction(self.tr("Show Loss Series"))
         self.show_distance_action.triggered.connect(self.show_distance_series)
-        self.show_parameter_action = self.menu.addAction(self.tr("Show Parameters")) # type: QtGui.QAction
+        self.show_parameter_action = self.menu.addAction(self.tr("Show Parameters"))
         self.show_parameter_action.triggered.connect(self.show_parameters)
-        self.detect_outliers_menu = self.menu.addMenu(self.tr("Check")) # type: QtWidgets.QMenu
-        self.check_nan_and_inf_action = self.detect_outliers_menu.addAction(self.tr("NaN / Inf")) # type: QtGui.QAction
+        self.detect_outliers_menu = self.menu.addMenu(self.tr("Check"))
+        self.check_nan_and_inf_action = self.detect_outliers_menu.addAction(self.tr("NaN / Inf"))
         self.check_nan_and_inf_action.triggered.connect(self.check_nan_and_inf)
-        self.check_final_distances_action = self.detect_outliers_menu.addAction(self.tr("Final Distance")) # type: QtGui.QAction
+        self.check_final_distances_action = self.detect_outliers_menu.addAction(self.tr("Final Loss"))
         self.check_final_distances_action.triggered.connect(self.check_final_distances)
-        self.check_mean_action = self.detect_outliers_menu.addAction(self.tr("Mean")) # type: QtGui.QAction
+        self.check_mean_action = self.detect_outliers_menu.addAction(self.tr("Mean"))
         self.check_mean_action.triggered.connect(lambda: self.check_component_moments("mean"))
-        self.check_std_action = self.detect_outliers_menu.addAction(self.tr("Sorting Coefficient")) # type: QtGui.QAction
+        self.check_std_action = self.detect_outliers_menu.addAction(self.tr("Sorting Coefficient"))
         self.check_std_action.triggered.connect(lambda: self.check_component_moments("std"))
-        self.check_skewness_action = self.detect_outliers_menu.addAction(self.tr("Skewness")) # type: QtGui.QAction
+        self.check_skewness_action = self.detect_outliers_menu.addAction(self.tr("Skewness"))
         self.check_skewness_action.triggered.connect(lambda: self.check_component_moments("skewness"))
-        self.check_kurtosis_action = self.detect_outliers_menu.addAction(self.tr("Kurtosis")) # type: QtGui.QAction
+        self.check_kurtosis_action = self.detect_outliers_menu.addAction(self.tr("Kurtosis"))
         self.check_kurtosis_action.triggered.connect(lambda: self.check_component_moments("kurtosis"))
-        self.check_proportion_action = self.detect_outliers_menu.addAction(self.tr("Proportion")) # type: QtGui.QAction
+        self.check_proportion_action = self.detect_outliers_menu.addAction(self.tr("Proportion"))
         self.check_proportion_action.triggered.connect(self.check_component_proportion)
         self.data_table.customContextMenuRequested.connect(self.show_menu)
         self.data_table.itemSelectionChanged.connect(self.on_selection_changed)
         # necessary to add actions of menu to this widget itself,
         # otherwise, the shortcuts will not be triggered
         self.addActions(self.menu.actions())
+
+        self.boxplot_chart = BoxplotChart()
+        self.distance_chart = LossSeriesChart()
+        self.file_dialog = QtWidgets.QFileDialog(parent=self)
+        self.update_page_list()
+        self.update_page(self.page_index)
+        self.normal_msg = QtWidgets.QMessageBox(self)
+        self.parameter_table = None
 
     def show_menu(self, pos: QtCore.QPoint):
         self.menu.popup(QtGui.QCursor.pos())
@@ -121,12 +117,12 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.show_message(self.tr("Error"), message)
 
     @property
-    def distance_name(self) -> str:
-        return self.distance_combo_box.currentText()
+    def loss_name(self) -> str:
+        return self.loss_combo_box.currentText()
 
     @property
-    def distance_function(self) -> typing.Callable:
-        return get_distance_function(self.distance_combo_box.currentText())
+    def distance_function(self) -> Callable:
+        return loss_numpy(self.loss_combo_box.currentText())
 
     @property
     def page_index(self) -> int:
@@ -138,10 +134,10 @@ class SSUResultViewer(QtWidgets.QWidget):
 
     @property
     def n_results(self) -> int:
-        return len(self.__results)
+        return len(self._results)
 
     @property
-    def selections(self) -> typing.List[int]:
+    def selections(self) -> List[int]:
         start = self.page_index*self.PAGE_ROWS
         temp = set()
         for item in self.data_table.selectedRanges():
@@ -152,8 +148,8 @@ class SSUResultViewer(QtWidgets.QWidget):
         return indexes
 
     @property
-    def all_results(self) -> typing.List[SSUResult]:
-        return self.__results.copy()
+    def all_results(self) -> List[SSUResult]:
+        return self._results.copy()
 
     @property
     def auto_show_selected(self) -> bool:
@@ -177,7 +173,7 @@ class SSUResultViewer(QtWidgets.QWidget):
         self.page_combo_box.blockSignals(False)
 
     def update_page(self, page_index: int):
-        def write(row: int, col: int, value: str):
+        def write(row: int, col: int, value: Union[int, float, str]):
             if isinstance(value, str):
                 pass
             elif isinstance(value, int):
@@ -203,42 +199,36 @@ class SSUResultViewer(QtWidgets.QWidget):
             self.tr("Number of Components"),
             self.tr("Number of Iterations"),
             self.tr("Spent Time [s]"),
-            self.tr("Final Distance"),
+            self.tr("Final Loss"),
             self.tr("Has Reference")])
         self.data_table.horizontalHeader().setDefaultAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.TextWordWrap)
-        sample_names = [result.sample.name for result in self.__results[start: end]]
+        sample_names = [result.sample.name for result in self._results[start: end]]
         self.data_table.setVerticalHeaderLabels(sample_names)
-        for row, result in enumerate(self.__results[start: end]):
-            write(row, 0, result.task.distribution_type.value)
-            write(row, 1, result.task.n_components)
+        for row, result in enumerate(self._results[start: end]):
+            write(row, 0, result.distribution_type.name)
+            write(row, 1, len(result))
             write(row, 2, result.n_iterations)
             write(row, 3, result.time_spent)
-            write(row, 4, self.distance_function(result.sample.distribution, result.distribution))
-            has_ref = result.task.initial_parameters is not None
-            write(row, 5, self.tr("Yes") if has_ref else self.tr("No"))
-
+            write(row, 4, result.loss(self.loss_name))
+            write(row, 5, self.tr("Yes") if result.x0 is not None else self.tr("No"))
         self.data_table.resizeColumnsToContents()
 
     def add_result(self, result: SSUResult):
-        if self.n_results == 0 or \
-            (self.page_index == self.n_pages - 1 and \
-            divmod(self.n_results, self.PAGE_ROWS)[-1] != 0):
+        if self.n_results == 0 or (self.page_index==self.n_pages-1 and divmod(self.n_results, self.PAGE_ROWS)[-1]!=0):
             need_update = True
         else:
             need_update = False
-        self.__results.append(result)
+        self._results.append(result)
         self.update_page_list()
         if need_update:
             self.update_page(self.page_index)
 
-    def add_results(self, results: typing.List[SSUResult]):
-        if self.n_results == 0 or \
-            (self.page_index == self.n_pages - 1 and \
-            divmod(self.n_results, self.PAGE_ROWS)[-1] != 0):
+    def add_results(self, results: List[SSUResult]):
+        if self.n_results == 0 or (self.page_index==self.n_pages-1 and divmod(self.n_results, self.PAGE_ROWS)[-1]!=0):
             need_update = True
         else:
             need_update = False
-        self.__results.extend(results)
+        self._results.extend(results)
         self.update_page_list()
         if need_update:
             self.update_page(self.page_index)
@@ -246,7 +236,7 @@ class SSUResultViewer(QtWidgets.QWidget):
     def remove_results(self, indexes):
         results = []
         for i in reversed(indexes):
-            res = self.__results.pop(i)
+            res = self._results.pop(i)
             results.append(res)
         self.update_page_list()
         self.update_page(self.page_index)
@@ -263,23 +253,19 @@ class SSUResultViewer(QtWidgets.QWidget):
         remove_msg.setText(self.tr("Are you sure to remove all SSU results?"))
         res = remove_msg.exec_()
         if res == QtWidgets.QMessageBox.Yes:
-            self.__results.clear()
+            self._results.clear()
             self.update_page_list()
             self.update_page(0)
 
-    def mark_selections(self):
-        for index in self.selections:
-            self.result_marked.emit(self.__results[index])
-
     def refer_result(self):
-        results = [self.__results[i] for i in self.selections]
+        results = [self._results[i] for i in self.selections]
         if results is None or len(results) == 0:
             return
         result = results[0]
         self.result_referred.emit(result)
 
     def show_chart(self):
-        results = [self.__results[i] for i in self.selections]
+        results = [self._results[i] for i in self.selections]
         if results is None or len(results) == 0:
             return
         result = results[0]
@@ -290,18 +276,18 @@ class SSUResultViewer(QtWidgets.QWidget):
             self.show_chart()
 
     def show_distance_series(self):
-        results = [self.__results[i] for i in self.selections]
+        results = [self._results[i] for i in self.selections]
         if results is None or len(results) == 0:
             return
         result = results[0]
         self.distance_chart.show_distance_series(
-            result.get_distance_series(self.distance_name),
-            self.distance_name,
+            result.loss_series(self.loss_name),
+            self.loss_name,
             result.sample.name)
         self.distance_chart.show()
 
     def show_parameters(self):
-        results = [self.__results[i] for i in self.selections]
+        results = [self._results[i] for i in self.selections]
         if results is None or len(results) == 0:
             return
         result = results[0]
@@ -311,7 +297,7 @@ class SSUResultViewer(QtWidgets.QWidget):
     def load_results(self):
         filename, _ = self.file_dialog.getOpenFileName(
             self, self.tr("Choose the file which stores the dumped SSU results"),
-            None, "Dumped SSU Results (*.ssu)")
+            ".", "Dumped SSU Results (*.ssu)")
         if filename is None or filename == "":
             return
         with open(filename, "rb") as f:
@@ -327,8 +313,8 @@ class SSUResultViewer(QtWidgets.QWidget):
 
             if valid:
                 if self.n_results != 0 and len(results) != 0:
-                    old_classes = self.__results[0].classes_φ
-                    new_classes = results[0].classes_φ
+                    old_classes = self._results[0].classes_phi
+                    new_classes = results[0].classes_phi
                     classes_inconsistent = False
                     if len(old_classes) != len(new_classes):
                         classes_inconsistent = True
@@ -351,38 +337,35 @@ class SSUResultViewer(QtWidgets.QWidget):
             self.show_error(self.tr("There is no SSU result."))
             return
         filename, _ = self.file_dialog.getSaveFileName(
-            None, self.tr("Choose a filename to save the SSU Results"),
-            None, "Microsoft Excel (*.xlsx);;Dumped SSU Results (*.ssu)")
+            self, self.tr("Choose a filename to save the SSU Results"),
+            ".", "Microsoft Excel (*.xlsx);;Dumped SSU Results (*.ssu)")
         if filename is None or filename == "":
             return
-        try:
             # Excel
-            if filename[-4:] == "xlsx":
-                progress_dialog = QtWidgets.QProgressDialog(
-                        self.tr("Saving the SSU results..."), self.tr("Cancel"),
-                        0, 100, self)
-                progress_dialog.setWindowTitle("QGrain")
-                progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
-                def callback(progress: float):
-                    if progress_dialog.wasCanceled():
-                        raise StopIteration()
-                    progress_dialog.setValue(int(progress*100))
-                    QtCore.QCoreApplication.processEvents()
-                save_ssu(self.__results, filename, align_components, progress_callback=callback, logger=self.logger)
-            else:
-                with open(filename, "wb") as f:
-                    pickle.dump(self.__results, f)
-                    self.logger.info("All SSU results have been dumped.")
-        except StopIteration as e:
-            self.logger.info("Saving task was canceled.")
-            progress_dialog.close()
-        except Exception as e:
-            progress_dialog.close()
-            self.logger.exception("An unknown exception was raised. Please check the logs for more details.", stack_info=True)
-            self.show_error(self.tr("An unknown exception was raised. Please check the logs for more details."))
+        if filename[-4:] == "xlsx":
+            progress_dialog = QtWidgets.QProgressDialog(
+                    self.tr("Saving the SSU results..."), self.tr("Cancel"),
+                    0, 100, self)
+            progress_dialog.setWindowTitle("QGrain")
+            progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
 
-    def ask_deal_outliers(self, outlier_results: typing.List[SSUResult],
-                          outlier_indexes: typing.List[int]):
+            def callback(progress: float):
+                if progress_dialog.wasCanceled():
+                    raise StopIteration()
+                progress_dialog.setValue(int(progress*100))
+                QtCore.QCoreApplication.processEvents()
+            try:
+                save_ssu(self._results, filename, align_components, progress_callback=callback, logger=self.logger)
+            except StopIteration as e:
+                self.logger.info("The saving task was canceled.")
+            finally:
+                progress_dialog.close()
+        else:
+            with open(filename, "wb") as f:
+                pickle.dump(self._results, f)
+                self.logger.info("All SSU results have been dumped.")
+
+    def ask_deal_outliers(self, outlier_results: List[SSUResult], outlier_indexes: List[int]):
         assert len(outlier_indexes) == len(outlier_results)
         if len(outlier_results) == 0:
             self.logger.info("There is no result was evaluated as the outlier.")
@@ -403,7 +386,7 @@ class SSUResultViewer(QtWidgets.QWidget):
             return
         outlier_results = []
         outlier_indexes = []
-        for i, result in enumerate(self.__results):
+        for i, result in enumerate(self._results):
             if not result.is_valid:
                 outlier_results.append(result)
                 outlier_indexes.append(i)
@@ -417,31 +400,31 @@ class SSUResultViewer(QtWidgets.QWidget):
         elif self.n_results < 10:
             self.show_error(self.tr("The number of results is not enough."))
             return
-        distances = []
-        for result in self.__results:
-            distances.append(result.get_distance(self.distance_name))
-        distances = np.array(distances)
-        self.boxplot_chart.show_dataset([distances], xlabels=[self.distance_name], ylabel="Distance")
+        losses = []
+        for result in self._results:
+            losses.append(result.loss(self.loss_name))
+        losses = np.array(losses)
+        self.boxplot_chart.show_dataset([losses], xlabels=[self.loss_name], ylabel="Loss")
         self.boxplot_chart.show()
 
-        # calculate the 1/4, 1/2, and 3/4 postion value to judge which result is invalid
+        # calculate the 1/4, 1/2, and 3/4 position value to judge which result is invalid
         # 1. the mean squared errors are much higher in the results which are lack of components
         # 2. with the component number getting higher, the mean squared error will get lower and finally reach the minimum
-        median = np.median(distances)
-        upper_group = distances[np.greater(distances, median)]
-        lower_group = distances[np.less(distances, median)]
+        median = np.median(losses)
+        upper_group = losses[np.greater(losses, median)]
+        lower_group = losses[np.less(losses, median)]
         value_1_4 = np.median(lower_group)
         value_3_4 = np.median(upper_group)
-        distance_QR = value_3_4 - value_1_4
+        loss_QR = value_3_4 - value_1_4
         outlier_results = []
         outlier_indexes = []
-        for i, (result, distance) in enumerate(zip(self.__results, distances)):
-            if distance > value_3_4 + distance_QR * 1.5:
+        for i, (result, distance) in enumerate(zip(self._results, losses)):
+            if distance > value_3_4 + loss_QR * 1.5:
             # which error too small is not outlier
             # if distance > value_3_4 + distance_QR * 1.5 or distance < value_1_4 - distance_QR * 1.5:
                 outlier_results.append(result)
                 outlier_indexes.append(i)
-        self.logger.debug(f"Check the final distances using Whisker plot.")
+        self.logger.debug(f"Check the final losses using Whisker plot.")
         self.ask_deal_outliers(outlier_results, outlier_indexes)
 
     def check_component_moments(self, key: str):
@@ -452,15 +435,15 @@ class SSUResultViewer(QtWidgets.QWidget):
             self.show_error(self.tr("The number of results is not enough."))
             return
         max_n_components = 0
-        for result in self.__results:
-            if result.n_components > max_n_components:
-                max_n_components = result.n_components
+        for result in self._results:
+            if len(result) > max_n_components:
+                max_n_components = len(result)
         moments = []
         for i in range(max_n_components):
             moments.append([])
 
-        for result in self.__results:
-            for i, component in enumerate(result.components):
+        for result in self._results:
+            for i, component in enumerate(result):
                 if np.isnan(component.moments[key]) or np.isinf(component.moments[key]):
                     pass
                 else:
@@ -474,7 +457,7 @@ class SSUResultViewer(QtWidgets.QWidget):
 
         for i in range(max_n_components):
             stacked_moments = np.array(moments[i])
-            # calculate the 1/4, 1/2, and 3/4 postion value to judge which result is invalid
+            # calculate the 1/4, 1/2, and 3/4 position value to judge which result is invalid
             # 1. the mean squared errors are much higher in the results which are lack of components
             # 2. with the component number getting higher, the mean squared error will get lower and finally reach the minimum
             median = np.median(stacked_moments)
@@ -484,9 +467,9 @@ class SSUResultViewer(QtWidgets.QWidget):
             value_3_4 = np.median(upper_group)
             distance_QR = value_3_4 - value_1_4
 
-            for j, result in enumerate(self.__results):
-                if result.n_components > i:
-                    distance = result.components[i].moments[key]
+            for j, result in enumerate(self._results):
+                if len(result) > i:
+                    distance = result[i].moments[key]
                     if distance > value_3_4 + distance_QR * 1.5 or distance < value_1_4 - distance_QR * 1.5:
                         outlier_dict[j] = result
 
@@ -501,8 +484,8 @@ class SSUResultViewer(QtWidgets.QWidget):
     def check_component_proportion(self):
         outlier_results = []
         outlier_indexes = []
-        for i, result in enumerate(self.__results):
-            for component in result.components:
+        for i, result in enumerate(self._results):
+            for component in result:
                 if component.proportion < 1e-3:
                     outlier_results.append(result)
                     outlier_indexes.append(i)
@@ -522,19 +505,18 @@ class SSUResultViewer(QtWidgets.QWidget):
             self.page_combo_box.setItemText(i, self.tr("Page {0}").format(i+1))
         self.next_button.setText(self.tr("Next"))
         self.next_button.setToolTip(self.tr("Click to jump to the next page."))
-        self.distance_label.setText(self.tr("Distance Function"))
-        self.distance_label.setToolTip(self.tr("The function to calculate the difference (on the contrary, similarity) between two samples."))
+        self.loss_label.setText(self.tr("Loss"))
+        self.loss_label.setToolTip(self.tr("The function to calculate the difference between prediction and observation."))
         self.remove_action.setText(self.tr("Remove"))
         self.remove_all_action.setText(self.tr("Remove All"))
-        self.mark_action.setText(self.tr("Mark Reference"))
         self.refer_action.setText(self.tr("Refer Parameters"))
         self.show_chart_action.setText(self.tr("Show Chart"))
         self.auto_show_selected_action.setText(self.tr("Auto Show"))
-        self.show_distance_action.setText(self.tr("Show Distance Series"))
+        self.show_distance_action.setText(self.tr("Show Loss Series"))
         self.show_parameter_action.setText(self.tr("Show Parameters"))
         self.detect_outliers_menu.setTitle(self.tr("Check"))
         self.check_nan_and_inf_action.setText(self.tr("NaN / Inf"))
-        self.check_final_distances_action.setText(self.tr("Final Distance"))
+        self.check_final_distances_action.setText(self.tr("Final Loss"))
         self.check_mean_action.setText(self.tr("Mean"))
         self.check_std_action.setText(self.tr("Sorting Coefficient"))
         self.check_skewness_action.setText(self.tr("Skewness"))

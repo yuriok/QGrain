@@ -2,7 +2,8 @@ psutil
 numpy
 scipy
 scikit-learn
-torch
+grpcio
+protobuf
 xlrd
 openpyxl
 PySide6 >= 6.2.0
