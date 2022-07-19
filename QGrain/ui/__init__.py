@@ -10,7 +10,8 @@ from .RuntimeLog import StatusBarLogHandler, GUILogHandler, RuntimeLog
 from .. import QGRAIN_VERSION, QGRAIN_ROOT_PATH
 from ..charts import setup_matplotlib
 
-EXTRA = {"font_family": "Roboto, Arial, Helvetica, Tahoma, Verdana, Microsoft YaHei UI, SimSum"}
+EXTRA = {"font_family": "Roboto, Arial, Helvetica, Tahoma, Verdana, Microsoft YaHei UI, SimSum",
+         "density_scale": "-1"}
 
 
 def get_dir_size(directory: str):
@@ -54,22 +55,12 @@ def setup_logging(status_bar: QtWidgets.QStatusBar, log_dialog: RuntimeLog):
 def setup_app():
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_DisableHighDpiScaling)
     app = QtWidgets.QApplication(sys.argv)
-    # for filename in os.listdir(os.path.join(QGRAIN_ROOT_PATH, "assets")):
-    #     if filename.endswith(".ttf"):
-    #         font_path = os.path.join(QGRAIN_ROOT_PATH, "assets", filename)
-    #         font_id = QtGui.QFontDatabase.addApplicationFont(font_path)
-    #         font_family = QtGui.QFontDatabase.applicationFontFamilies(font_id)
-    splash = QtWidgets.QSplashScreen()
     pixmap = QtGui.QPixmap(os.path.join(QGRAIN_ROOT_PATH, "assets", "icon.png"))
-    pixmap.setDevicePixelRatio(1.0)
-    splash.setPixmap(pixmap)
-    splash.show()
     create_necessary_folders()
     app.setWindowIcon(QtGui.QIcon(pixmap))
-    # app.setApplicationDisplayName(f"QGrain ({QGRAIN_VERSION})")
     app.setApplicationVersion(QGRAIN_VERSION)
     from qt_material import apply_stylesheet
     apply_stylesheet(app, theme="light_cyan.xml", invert_secondary=True, extra=EXTRA)
     setup_matplotlib()
     setup_language(app, "en")
-    return app, splash
+    return app

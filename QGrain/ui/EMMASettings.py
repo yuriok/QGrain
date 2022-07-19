@@ -99,7 +99,7 @@ class EMMASettings(QtWidgets.QDialog):
         self.main_layout.addWidget(self.update_EMs_checkbox, 9, 0, 1, 2)
         self.need_history_checkbox = QtWidgets.QCheckBox(self.tr("Need History"))
         self.need_history_checkbox.setToolTip(self.tr("Record the variation history of parameters or not."))
-        self.need_history_checkbox.setChecked(False)
+        self.need_history_checkbox.setChecked(True)
         self.main_layout.addWidget(self.need_history_checkbox, 10, 0, 1, 2)
         self._update_device_list()
 
