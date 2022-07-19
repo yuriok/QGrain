@@ -105,6 +105,8 @@ venv.bak/
 
 # vscode
 .vscode
+
+# pycharm
 .idea
-.run
-/unittests/.temp
+/.run
+/unittests/.temp/
