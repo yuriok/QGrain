@@ -1,3 +1,4 @@
+import logging
 import string
 from concurrent import futures
 
@@ -15,6 +16,8 @@ from . import qgrain_pb2_grpc as qgrain_pb2_grpc
 
 
 class QGrainServicer(qgrain_pb2_grpc.QGrainServicer):
+    logger = logging.getLogger("QGrain.QGrainServicer")
+
     def __init__(self, address: str = "localhost:50051", max_workers: int = 8, max_message_length: int = 2**30,
                  max_dataset_size: int = 100000):
         super(QGrainServicer, self).__init__()
@@ -106,14 +109,15 @@ class QGrainServicer(qgrain_pb2_grpc.QGrainServicer):
                         global_step_size=request.global_step_size, optimizer_max_niter=request.optimizer_max_niter,
                         need_history=request.need_history)
         try:
-            result, message = try_ssu(sample, distribution_type, request.n_components, x0=x0, **settings)
+            result, message = try_ssu(sample, distribution_type, request.n_components, x0=x0,
+                                      **settings, logger=self.logger)
         except AssertionError as e:
             return qgrain_pb2.SSUResponse(message=f"The algorithm settings in request is invalid, please check: {e}.")
         if isinstance(result, SSUResult):
-            response = qgrain_pb2.SSUResponse(message=f"Success! The SSU result of sample {sample.name} is available.",
-                                              time_spent=result.time_spent, n_iterations=result.n_iterations,
-                                              n_parameters=result.n_parameters, n_components=len(result),
-                                              parameters=result.parameters.astype(np.float32).tobytes())
+            response = qgrain_pb2.SSUResponse(
+                message=f"Success! The SSU result of sample {sample.name} is available.", time_spent=result.time_spent,
+                n_iterations=result.n_iterations, n_parameters=result.n_parameters, n_components=len(result),
+                parameters=result.parameters.astype(np.float32).tobytes())
             return response
         else:
             response = qgrain_pb2.SSUResponse(message=message)
@@ -138,7 +142,7 @@ class QGrainServicer(qgrain_pb2_grpc.QGrainServicer):
                         learning_rate=request.learning_rate, betas=tuple(request.betas),
                         update_end_members=request.update_end_members, need_history=request.need_history)
         try:
-            result = try_emma(dataset, kernel_type, request.n_members, x0=x0, **settings)
+            result = try_emma(dataset, kernel_type, request.n_members, x0=x0, **settings, logger=self.logger)
         except AssertionError as e:
             return qgrain_pb2.EMMAResponse(message=f"The algorithm settings in request is invalid, please check: {e}.")
         response = qgrain_pb2.EMMAResponse(
@@ -167,7 +171,7 @@ class QGrainServicer(qgrain_pb2_grpc.QGrainServicer):
                         betas=tuple(request.betas), constraint_level=request.constraint_level,
                         need_history=request.need_history)
         try:
-            result = try_udm(dataset, kernel_type, request.n_components, x0=x0, **settings)
+            result = try_udm(dataset, kernel_type, request.n_components, x0=x0, **settings, logger=self.logger)
         except AssertionError as e:
             return qgrain_pb2.UDMResponse(
                 message=f"The algorithm settings in request is invalid, please check: {e}.")
@@ -180,6 +184,10 @@ class QGrainServicer(qgrain_pb2_grpc.QGrainServicer):
         return response
 
     def serve(self):
+        self.logger.info(f"Starting the server and listening the address: {self._address}. "
+                         f"Max thread workers is {self._max_workers}. "
+                         f"Max length of the message is {self._max_message_length} bytes. "
+                         f"Max size of the grain size dataset is {self._max_dataset_size} samples.\n")
         server = grpc.server(futures.ThreadPoolExecutor(max_workers=self._max_workers),
                              options=[("grpc.max_send_message_length", self._max_message_length),
                                       ("grpc.max_receive_message_length", self._max_message_length)])
