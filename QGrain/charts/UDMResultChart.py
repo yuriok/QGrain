@@ -15,7 +15,7 @@ from ..utils import get_image_by_proportions
 
 def summarize(components: ndarray, q=0.01):
     mean = np.mean(components, axis=0)
-    upper = np.quantile(components, q=1-q, axis=0)
+    upper = np.quantile(components, q=1 - q, axis=0)
     lower = np.quantile(components, q=q, axis=0)
     return mean, lower, upper
 
@@ -62,7 +62,7 @@ class UDMResultChart(BaseChart):
         self.repeat_action.setChecked(False)
         self.save_animation_action = QtGui.QAction(self.tr("Save Animation"))
         self.menu.addAction(self.save_animation_action)
-        self.save_animation_action.triggered.connect(self.save_animation)
+        self.save_animation_action.triggered.connect(lambda: self.save_animation())
         self._last_result = None
 
     @property
@@ -149,7 +149,7 @@ class UDMResultChart(BaseChart):
         if self._animation is not None:
             self._animation._stop()
             self._animation = None
-        interval = max(1, result.n_samples//self.N_DISPLAY_SAMPLES)
+        interval = max(1, result.n_samples // self.N_DISPLAY_SAMPLES)
         iteration_indexes = np.linspace(1, len(result.loss_series("total")), len(result.loss_series("total")))
         classes = self.transfer(result.dataset.classes_phi)
         sample_axes = self._figure.add_subplot(2, 2, 1)
@@ -158,15 +158,15 @@ class UDMResultChart(BaseChart):
         if self.xlog:
             sample_axes.set_xscale("log")
         sample_axes.set_xlim(classes[0], classes[-1])
-        sample_axes.set_ylim(0.0, round(np.max(result.dataset.distributions)*1.2, 2))
+        sample_axes.set_ylim(0.0, round(np.max(result.dataset.distributions) * 1.2, 2))
         sample_axes.set_xlabel(self.xlabel)
         sample_axes.set_ylabel(self.ylabel)
         sample_axes.set_title("GSDs")
         loss_axes = self._figure.add_subplot(2, 2, 2)
-        loss_axes.plot(result.loss_series("total"), color=plt.get_cmap()(0), label="Sum")
-        loss_axes.plot(result.loss_series("distribution"), color=plt.get_cmap()(1), label="GSDs")
-        loss_axes.plot(result.loss_series("component"), color=plt.get_cmap()(2), label="Components")
-        loss_axes.set_xlim(iteration_indexes[0], iteration_indexes[-1])
+        loss_axes.plot(iteration_indexes, result.loss_series("total"), color=plt.get_cmap()(0), label="Sum")
+        loss_axes.plot(iteration_indexes, result.loss_series("distribution"), color=plt.get_cmap()(1), label="GSDs")
+        loss_axes.plot(iteration_indexes, result.loss_series("component"), color=plt.get_cmap()(2), label="Components")
+        loss_axes.set_xlim(0, len(result.loss_series("total")))
         loss_axes.set_xlabel("Iteration")
         loss_axes.set_ylabel("Loss")
         loss_axes.set_title("Loss variation")
@@ -174,23 +174,22 @@ class UDMResultChart(BaseChart):
         component_axes = self._figure.add_subplot(2, 2, 3)
         mean, lower, upper = summarize(result.components, q=0.01)
         for i in range(result.n_components):
-            component_axes.plot(classes, mean[i], c=plt.get_cmap()(i), zorder=20+i)
-            component_axes.fill_between(
-                classes, lower[i], upper[i],
-                color=plt.get_cmap()(i),
-                alpha=0.2, lw=0.02, zorder=10+i)
+            component_axes.plot(classes, mean[i], c=plt.get_cmap()(i), zorder=20 + i)
+            component_axes.fill_between(classes, lower[i], upper[i], lw=0.02,
+                                        color=plt.get_cmap()(i), alpha=0.2, zorder=10 + i)
         if self.xlog:
             component_axes.set_xscale("log")
         component_axes.set_xlim(classes[0], classes[-1])
-        component_axes.set_ylim(0.0, round(np.max(mean)*1.2, 2))
+        component_axes.set_ylim(0.0, round(np.max(mean) * 1.2, 2))
         component_axes.set_xlabel(self.xlabel)
         component_axes.set_ylabel(self.ylabel)
         component_axes.set_title("Components")
         proportion_axes = self._figure.add_subplot(2, 2, 4)
         image = get_image_by_proportions(result.proportions[:, 0, :], resolution=100)
-        proportion_axes.imshow(image, plt.get_cmap(), aspect="auto", vmin=0, vmax=9)
-        proportion_axes.set_xlim(-0.5, result.n_samples - 0.5)
-        proportion_axes.set_ylim(-0.5, 99.5)
+        proportion_axes.imshow(image, plt.get_cmap(), aspect="auto", vmin=0, vmax=9,
+                               extent=(0.0, result.n_samples, 100, 0.0))
+        proportion_axes.set_xlim(0, result.n_samples)
+        proportion_axes.set_ylim(0, 100)
         proportion_axes.set_yticks([0, 20, 40, 60, 80, 100], ["0.0", "0.2", "0.4", "0.6", "0.8", "1.0"])
         proportion_axes.set_xlabel("Sample index")
         proportion_axes.set_ylabel("Proportion")
@@ -199,6 +198,7 @@ class UDMResultChart(BaseChart):
         self._canvas.draw()
 
     def show_animation(self, result: UDMResult):
+        assert result.n_iterations > 1
         self._last_result = result
         self._figure.clear()
         if self._animation is not None:
@@ -215,16 +215,15 @@ class UDMResultChart(BaseChart):
         if self.xlog:
             sample_axes.set_xscale("log")
         sample_axes.set_xlim(classes[0], classes[-1])
-        sample_axes.set_ylim(0.0, round(np.max(result.dataset.distributions)*1.2, 2))
+        sample_axes.set_ylim(0.0, round(np.max(result.dataset.distributions) * 1.2, 2))
         sample_axes.set_xlabel(self.xlabel)
         sample_axes.set_ylabel(self.ylabel)
         sample_axes.set_title("GSDs")
-
         loss_axes = self._figure.add_subplot(2, 2, 2)
-        loss_axes.plot(result.loss_series("total"), color=plt.get_cmap()(0), label="Sum")
-        loss_axes.plot(result.loss_series("distribution"), color=plt.get_cmap()(1), label="GSDs")
-        loss_axes.plot(result.loss_series("component"), color=plt.get_cmap()(2), label="Components")
-        loss_axes.set_xlim(iteration_indexes[0], iteration_indexes[-1])
+        loss_axes.plot(iteration_indexes, result.loss_series("total"), color=plt.get_cmap()(0), label="Sum")
+        loss_axes.plot(iteration_indexes, result.loss_series("distribution"), color=plt.get_cmap()(1), label="GSDs")
+        loss_axes.plot(iteration_indexes, result.loss_series("component"), color=plt.get_cmap()(2), label="Components")
+        loss_axes.set_xlim(0, len(result.loss_series("total")))
         loss_axes.set_xlabel("Iteration")
         loss_axes.set_ylabel("Loss")
         loss_axes.set_title("Loss variation")
@@ -234,64 +233,67 @@ class UDMResultChart(BaseChart):
         if self.xlog:
             component_axes.set_xscale("log")
         component_axes.set_xlim(classes[0], classes[-1])
-        component_axes.set_ylim(0.0, round(np.max(mean)*1.2, 2))
+        component_axes.set_ylim(0.0, round(np.max(mean) * 1.2, 2))
         component_axes.set_xlabel(self.xlabel)
         component_axes.set_ylabel(self.ylabel)
         component_axes.set_title("Components")
         proportion_axes = self._figure.add_subplot(2, 2, 4)
-        proportion_axes.set_xlim(-0.5, result.n_samples - 0.5)
-        proportion_axes.set_ylim(-0.5, 99.5)
+        proportion_axes.set_xlim(0, result.n_samples)
+        proportion_axes.set_ylim(0, 100)
         proportion_axes.set_yticks([0, 20, 40, 60, 80, 100], ["0.0", "0.2", "0.4", "0.6", "0.8", "1.0"])
         proportion_axes.set_xlabel("Sample index")
         proportion_axes.set_ylabel("Proportion [%]")
         proportion_axes.set_title("Proportions")
-        # self.figure.tight_layout()
-        # self.canvas.draw()
+
+        iteration_line: Optional[plt.Line2D] = None
+        component_curves: List[plt.Line2D] = []
+        component_shadows: List[plt.Artist] = []
+        proportion_image: Optional[plt.Artist] = None
 
         def init():
-            self.iteration_line = loss_axes.plot([1, 1], [min_distance, max_distance], c=normal_color())[0]
-            self.component_curves = []
-            self.component_shadows = []
-            mean, lower, upper = summarize(result.components, q=0.01)
-            for i in range(result.n_components):
-                component_curve = component_axes.plot(classes, mean[i], c=plt.get_cmap()(i), zorder=20+i)[0]
-                component_shadow = component_axes.fill_between(
-                    classes, lower[i], upper[i],
-                    color=plt.get_cmap()(i),
-                    alpha=0.2, lw=0.02, zorder=10+i)
-                self.component_curves.append(component_curve)
-                self.component_shadows.append(component_shadow)
-            image = get_image_by_proportions(result.proportions[:, 0, :], resolution=100)
-            self.proportion_image = proportion_axes.imshow(image, plt.get_cmap(), aspect="auto", vmin=0, vmax=9)
-            return self.iteration_line, self.proportion_image, *(self.component_curves + self.component_shadows)
+            nonlocal iteration_line
+            nonlocal component_curves
+            nonlocal component_shadows
+            nonlocal proportion_image
+            if iteration_line is None:
+                iteration_line = loss_axes.plot([1, 1], [min_distance, max_distance], c=normal_color())[0]
+                mean, lower, upper = summarize(result.components, q=0.01)
+                for i in range(result.n_components):
+                    curve = component_axes.plot(classes, mean[i], c=plt.get_cmap()(i), zorder=20 + i)[0]
+                    shadow = component_axes.fill_between(classes, lower[i], upper[i], lw=0.02,
+                                                         color=plt.get_cmap()(i), alpha=0.2, zorder=10 + i)
+                    component_curves.append(curve)
+                    component_shadows.append(shadow)
+                image = get_image_by_proportions(result.proportions[:, 0, :], resolution=100)
+                proportion_image = proportion_axes.imshow(image, plt.get_cmap(), aspect="auto", vmin=0, vmax=9)
+            return iteration_line, proportion_image, *component_curves, *component_shadows
 
         def animate(args: Tuple[int, UDMResult]):
+            nonlocal iteration_line
+            nonlocal component_curves
+            nonlocal component_shadows
+            nonlocal proportion_image
             iteration, current = args
             mean, lower, upper = summarize(current.components, q=0.01)
-            self.iteration_line.set_xdata([iteration, iteration])
+            iteration_line.set_xdata([iteration, iteration])
             for i in range(current.n_components):
-                self.component_curves[i].set_ydata(mean[i])
-                verts_lower = np.concatenate([np.expand_dims(classes, axis=1), np.expand_dims(lower[i], axis=1)], axis=1)
-                verts_upper = np.concatenate([np.expand_dims(classes[::-1], axis=1), np.expand_dims(upper[i][::-1], axis=1)], axis=1)
+                component_curves[i].set_ydata(mean[i])
+                verts_lower = np.concatenate([np.expand_dims(classes, axis=1),
+                                              np.expand_dims(lower[i], axis=1)], axis=1)
+                verts_upper = np.concatenate([np.expand_dims(classes[::-1], axis=1),
+                                              np.expand_dims(upper[i][::-1], axis=1)], axis=1)
                 verts = np.concatenate([verts_lower, verts_upper], axis=0)
-                self.component_shadows[i].set_verts([verts])
+                component_shadows[i].set_verts([verts])
             image = get_image_by_proportions(current.proportions[:, 0, :], resolution=100)
-            self.proportion_image.set_data(image)
-            return self.iteration_line, self.proportion_image, *(self.component_curves + self.component_shadows)
+            proportion_image.set_data(image)
+            return iteration_line, proportion_image, *component_curves, *component_shadows
 
-        self._animation = FuncAnimation(
-            self._figure, animate, init_func=init,
-            frames=enumerate(result.history), interval=self.animation_interval,
-            blit=True, repeat=self.repeat_animation,
-            repeat_delay=3.0, save_count=result.n_iterations)
+        self._animation = FuncAnimation(self._figure, animate, init_func=init, frames=enumerate(result.history),
+                                        interval=self.animation_interval, blit=True, repeat=self.repeat_animation,
+                                        repeat_delay=5.0, save_count=result.n_iterations)
 
     def show_result(self, result: UDMResult):
-        self._last_result = result
-        self._figure.clear()
-        if self._animation is not None:
-            self._animation._stop()
-            self._animation = None
-        if self.animated:
+        if self.animated and result.n_iterations > 1:
             self.show_animation(result)
         else:
             self.show_chart(result)

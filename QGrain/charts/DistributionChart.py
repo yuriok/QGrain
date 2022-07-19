@@ -65,7 +65,7 @@ class DistributionChart(BaseChart):
         self.repeat_animation_action.setChecked(False)
         self.save_animation_action = QtGui.QAction(self.tr("Save Animation"))
         self.menu.addAction(self.save_animation_action)
-        self.save_animation_action.triggered.connect(self.save_animation)
+        self.save_animation_action.triggered.connect(lambda: self.save_animation())
         self._last_result: Union[ArtificialSample, SSUResult, None] = None
 
     @property
@@ -187,6 +187,8 @@ class DistributionChart(BaseChart):
         self._canvas.draw()
 
     def show_animation(self, result: SSUResult):
+        assert isinstance(result, SSUResult)
+        assert result.n_iterations > 1
         self._last_result = result
         self._axes.clear()
         if self._animation is not None:
@@ -270,17 +272,11 @@ class DistributionChart(BaseChart):
                                         interval=self.animation_interval, blit=True, repeat=self.repeat_animation,
                                         repeat_delay=5.0, save_count=result.n_iterations)
 
-    def show_result(self, result: SSUResult):
-        self._last_result = result
-        self._axes.clear()
-        if self._animation is not None:
-            self._animation._stop()
-            self._animation = None
-        if self.animated:
+    def show_result(self, result: Union[ArtificialSample, SSUResult]):
+        if self.animated and isinstance(result, SSUResult) and result.n_iterations > 1:
             self.show_animation(result)
         else:
             self.show_chart(result)
-        self._last_result = result
 
     def update_chart(self):
         self._figure.clear()
