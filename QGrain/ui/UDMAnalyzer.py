@@ -270,6 +270,7 @@ class UDMAnalyzer(QtWidgets.QWidget):
                 0, 100, self)
             progress_dialog.setWindowTitle("QGrain")
             progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
+
             def callback(progress: float):
                 if progress_dialog.wasCanceled():
                     raise StopIteration()
@@ -282,9 +283,10 @@ class UDMAnalyzer(QtWidgets.QWidget):
             finally:
                 progress_dialog.close()
         # Binary File
-        with open(filename, "wb") as f:
-            pickle.dump(self.selected_result, f)
-            self.logger.info("The selected UDM result has been dumped.")
+        else:
+            with open(filename, "wb") as f:
+                pickle.dump(self.selected_result, f)
+                self.logger.info("The selected UDM result has been dumped.")
 
     def changeEvent(self, event: QtCore.QEvent):
         if event.type() == QtCore.QEvent.LanguageChange:
