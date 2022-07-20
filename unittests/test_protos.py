@@ -30,7 +30,7 @@ class TestServer:
         sample_pb2 = QGrainClient._to_sample_pb2(self.dataset[0])
         distribution_type_pb2 = DistributionType.Normal.value
         x0_pb2 = bytes()
-        settings = dict(loss="lmse", optimizer="SLSQP", try_global=False, global_max_niter=100,
+        settings = dict(loss="lmse", optimizer="L-BFGS-B", try_global=False, global_max_niter=100,
                         global_niter_success=5, global_step_size=0.2,
                         optimizer_max_niter=10000, need_history=True)
         request = qgrain_pb2.SSURequest(sample=sample_pb2, distribution_type=distribution_type_pb2,
