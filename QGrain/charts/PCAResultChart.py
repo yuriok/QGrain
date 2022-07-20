@@ -64,5 +64,6 @@ class PCAResultChart(BaseChart):
             self.show_dataset(self._last_dataset)
 
     def retranslate(self):
-        super().retranslate()
         self.setWindowTitle(self.tr("PCA Chart"))
+        self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.save_figure_action.setText(self.tr("Save Figure"))

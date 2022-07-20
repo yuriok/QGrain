@@ -29,5 +29,6 @@ class LossSeriesChart(BaseChart):
             self.show_loss_series(*self._last_result)
 
     def retranslate(self):
-        super().retranslate()
         self.setWindowTitle(self.tr("Loss Series"))
+        self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.save_figure_action.setText(self.tr("Save Figure"))

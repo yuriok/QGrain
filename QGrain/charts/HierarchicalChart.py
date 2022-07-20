@@ -38,5 +38,6 @@ class HierarchicalChart(BaseChart):
             self.show_matrix(*self._last_result)
 
     def retranslate(self):
-        super().retranslate()
         self.setWindowTitle(self.tr("Hierarchical Clustering"))
+        self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.save_figure_action.setText(self.tr("Save Figure"))

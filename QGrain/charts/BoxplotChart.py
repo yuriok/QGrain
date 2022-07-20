@@ -46,5 +46,6 @@ class BoxplotChart(BaseChart):
             self.show_dataset(*self._last_result)
 
     def retranslate(self):
-        super().retranslate()
         self.setWindowTitle(self.tr("Boxplot Chart"))
+        self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.save_figure_action.setText(self.tr("Save Figure"))
