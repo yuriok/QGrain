@@ -18,6 +18,7 @@ from ..statistics import to_microns, mode
 class DistributionChart(BaseChart):
     def __init__(self, parent=None, size=(3, 2.5)):
         super().__init__(parent=parent, figsize=size)
+        self.setWindowTitle(self.tr("Distribution Chart"))
         self._axes: plt.Axes = self._figure.subplots()
         self.scale_menu = QtWidgets.QMenu(self.tr("Scale"))
         self.menu.insertMenu(self.edit_figure_action, self.scale_menu)
@@ -285,7 +286,9 @@ class DistributionChart(BaseChart):
             self.show_result(self._last_result)
 
     def retranslate(self):
-        super().retranslate()
+        self.setWindowTitle(self.tr("Distribution Chart"))
+        self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.save_figure_action.setText(self.tr("Save Figure"))
         self.scale_menu.setTitle(self.tr("Scale"))
         for action, (key, name) in zip(self.scale_actions, self.supported_scales):
             action.setText(name)

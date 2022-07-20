@@ -190,8 +190,9 @@ class Folk54GSMDiagramChart(DiagramChart):
         return sand, gravel
 
     def retranslate(self):
-        super().retranslate()
         self.setWindowTitle(self.tr("GSM Diagram (Folk, 1954)"))
+        self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.save_figure_action.setText(self.tr("Save Figure"))
 
 
 class Folk54SSCDiagramChart(DiagramChart):
@@ -275,8 +276,9 @@ class Folk54SSCDiagramChart(DiagramChart):
         return silt, sand
 
     def retranslate(self):
-        super().retranslate()
         self.setWindowTitle(self.tr("SSC Diagram (Folk, 1954)"))
+        self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.save_figure_action.setText(self.tr("Save Figure"))
 
 
 class BP12GSMDiagramChart(DiagramChart):
@@ -534,8 +536,9 @@ class BP12GSMDiagramChart(DiagramChart):
         return sand, gravel
 
     def retranslate(self):
-        super().retranslate()
         self.setWindowTitle(self.tr("GSM Diagram (Blott & Pye, 2012)"))
+        self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.save_figure_action.setText(self.tr("Save Figure"))
 
 
 class BP12SSCDiagramChart(DiagramChart):
@@ -795,5 +798,6 @@ class BP12SSCDiagramChart(DiagramChart):
         return silt, sand
 
     def retranslate(self):
-        super().retranslate()
         self.setWindowTitle(self.tr("SSC Diagram (Blott & Pye, 2012)"))
+        self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.save_figure_action.setText(self.tr("Save Figure"))

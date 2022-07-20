@@ -145,8 +145,7 @@ class BaseChart(QtWidgets.QWidget):
             progress_dialog.close()
 
     def retranslate(self):
-        self.edit_figure_action.setText(self.tr("Edit Figure"))
-        self.save_figure_action.setText(self.tr("Save Figure"))
+        pass
 
     def changeEvent(self, event: QtCore.QEvent):
         if event.type() == QtCore.QEvent.StyleChange:

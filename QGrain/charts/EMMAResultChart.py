@@ -20,6 +20,7 @@ class EMMAResultChart(BaseChart):
 
     def __init__(self, parent=None, figsize=(4.4, 4.4)):
         super().__init__(parent=parent, figsize=figsize)
+        self.setWindowTitle(self.tr("EMMA Chart"))
         # self.axes = self.figure.subplots()
         self.scale_menu = QtWidgets.QMenu(self.tr("Scale"))
         self.menu.insertMenu(self.edit_figure_action, self.scale_menu)
@@ -314,7 +315,9 @@ class EMMAResultChart(BaseChart):
             self.show_result(self._last_result)
 
     def retranslate(self):
-        super().retranslate()
+        self.setWindowTitle(self.tr("EMMA Chart"))
+        self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.save_figure_action.setText(self.tr("Save Figure"))
         self.scale_menu.setTitle(self.tr("Scale"))
         for action, (key, name) in zip(self.scale_actions, self.supported_scales):
             action.setText(name)

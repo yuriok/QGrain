@@ -125,18 +125,24 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Theme
         self.theme_menu = self.menuBar().addMenu(self.tr("Theme"))
+        self.light_theme_menu = self.theme_menu.addMenu(self.tr("Light Theme"))
+        self.dark_theme_menu = self.theme_menu.addMenu(self.tr("Dark Theme"))
         self.theme_group = QtGui.QActionGroup(self.theme_menu)
         self.theme_group.setExclusive(True)
         self.theme_actions = []
         for theme in list_themes():
-            action = self.theme_group.addAction(string.capwords(theme[:-4].replace("_", " ")))
+            theme_name = string.capwords(" ".join(theme[:-4].split("_")[1:]))
+            action = self.theme_group.addAction(theme_name)
             action.setCheckable(True)
             app = QtCore.QCoreApplication.instance()
             invert = theme.startswith("light")
             action.triggered.connect(lambda checked=False, t=theme, i=invert:
                                      apply_stylesheet(app, theme=t, invert_secondary=i, extra=EXTRA))
-            self.theme_menu.addAction(action)
             self.theme_actions.append(action)
+            if invert:
+                self.light_theme_menu.addAction(action)
+            else:
+                self.dark_theme_menu.addAction(action)
             if theme == "light_cyan.xml":
                 action.setChecked(True)
 
@@ -371,6 +377,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.save_all_ssu_figures_action.setText(self.tr("Save Figures For All SSU Results"))
         self.language_menu.setTitle(self.tr("Language"))
         self.theme_menu.setTitle(self.tr("Theme"))
+        self.light_theme_menu.setTitle(self.tr("Light Theme"))
+        self.dark_theme_menu.setTitle(self.tr("Dark Theme"))
         self.log_action.setText(self.tr("Log"))
         self.about_action.setText(self.tr("About"))
         self.tab_widget.setTabText(0, self.tr("Generator"))
