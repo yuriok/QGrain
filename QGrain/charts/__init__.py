@@ -103,10 +103,11 @@ class BaseChart(QtWidgets.QWidget):
     def save_animation(self, filename: str = None):
         if self._animation is None:
             return
+        self._animation.pause()
         if filename is None:
             filename, format_str = QtWidgets.QFileDialog.getSaveFileName(
                 self, self.tr("Choose a filename to save the animation of this SSU result"),
-                ".", "Html Animation (*.html);;MPEG-4 Video File (*.mp4);;Graphics Interchange Format (*.gif)")
+                ".", "MPEG-4 Video File (*.mp4);;Html Animation (*.html);;Graphics Interchange Format (*.gif)")
         if filename is None or filename == "":
             return
         progress_dialog = QtWidgets.QProgressDialog(
@@ -115,19 +116,21 @@ class BaseChart(QtWidgets.QWidget):
         progress_dialog.setWindowTitle("QGrain")
         progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
 
-        def callback(progress: float):
+        def callback(frame_number, total_frames):
             if progress_dialog.wasCanceled():
                 raise StopIteration()
-            progress_dialog.setValue(int(progress * 100))
+            progress_dialog.setValue(int(frame_number / total_frames * 100))
             QtCore.QCoreApplication.processEvents()
 
         try:
             if filename[-5:] == ".html":
-                progress_dialog.close()
-                self.show_info(self.tr("Rendering the animation to a html5 video, it will take several minutes."))
-                html = self._animation.to_html5_video()
-                with open(filename, "w") as f:
-                    f.write(html)
+                if not FFMpegWriter.isAvailable():
+                    self.show_error(self.tr("FFMpeg is not installed."))
+                else:
+                    self.show_info(self.tr("Rendering the animation to a html5 video, it will take several minutes."))
+                    html = self._animation.to_html5_video()
+                    with open(filename, "w") as f:
+                        f.write(html)
             elif filename[-4:] == ".gif":
                 if not ImageMagickWriter.isAvailable():
                     self.show_error(self.tr("ImageMagick is not installed."))
@@ -140,6 +143,7 @@ class BaseChart(QtWidgets.QWidget):
                     self._animation.save(filename, writer="ffmpeg", fps=10, progress_callback=callback)
         except StopIteration:
             self.logger.info("The saving task was canceled.")
+        finally:
             progress_dialog.close()
 
     def retranslate(self):

@@ -68,9 +68,6 @@ class EMMAResultChart(BaseChart):
         self.menu.insertAction(self.edit_figure_action, self.repeat_action)
         self.repeat_action.setCheckable(True)
         self.repeat_action.setChecked(False)
-        self.save_animation_action = QtGui.QAction(self.tr("Save Animation"))
-        self.menu.addAction(self.save_animation_action)
-        self.save_animation_action.triggered.connect(lambda: self.save_animation())
         self._last_result: Optional[EMMAResult] = None
 
     @property
@@ -170,7 +167,6 @@ class EMMAResultChart(BaseChart):
     def show_menu(self, pos: QtCore.QPoint):
         self.edit_figure_action.setEnabled(self._last_result is not None and not self.animated)
         self.save_figure_action.setEnabled(self._last_result is not None and not self.animated)
-        self.save_animation_action.setEnabled(self._last_result is not None and self.animated)
         self.menu.popup(QtGui.QCursor.pos())
 
     def show_chart(self, result: EMMAResult):
@@ -329,4 +325,3 @@ class EMMAResultChart(BaseChart):
         for action, (interval, name) in zip(self.interval_actions, self.supported_intervals):
             action.setText(name)
         self.repeat_action.setText(self.tr("Repeat Animation"))
-        self.save_animation_action.setText(self.tr("Save Animation"))

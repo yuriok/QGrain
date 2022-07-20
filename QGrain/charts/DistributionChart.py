@@ -64,9 +64,6 @@ class DistributionChart(BaseChart):
         self.menu.insertAction(self.edit_figure_action, self.repeat_animation_action)
         self.repeat_animation_action.setCheckable(True)
         self.repeat_animation_action.setChecked(False)
-        self.save_animation_action = QtGui.QAction(self.tr("Save Animation"))
-        self.menu.addAction(self.save_animation_action)
-        self.save_animation_action.triggered.connect(lambda: self.save_animation())
         self._last_result: Union[ArtificialSample, SSUResult, None] = None
 
     @property
@@ -152,7 +149,6 @@ class DistributionChart(BaseChart):
     def show_menu(self, pos: QtCore.QPoint):
         self.edit_figure_action.setEnabled(self._animation is None and self._last_result is not None)
         self.save_figure_action.setEnabled(self._animation is None and self._last_result is not None)
-        self.save_animation_action.setEnabled(self._animation is not None)
         self.menu.popup(QtGui.QCursor.pos())
 
     def show_chart(self, result: Union[ArtificialSample, SSUResult]):
@@ -299,4 +295,3 @@ class DistributionChart(BaseChart):
         for action, (interval, name) in zip(self.interval_actions, self.supported_intervals):
             action.setText(name)
         self.repeat_animation_action.setText(self.tr("Repeat Animation"))
-        self.save_animation_action.setText(self.tr("Save Animation"))
