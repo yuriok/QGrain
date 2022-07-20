@@ -123,21 +123,19 @@ class BaseChart(QtWidgets.QWidget):
 
         try:
             if filename[-5:] == ".html":
-                html = self._animation.to_jshtml(fps=10)
+                progress_dialog.close()
+                self.show_info(self.tr("Rendering the animation to a html5 video, it will take several minutes."))
+                html = self._animation.to_html5_video()
                 with open(filename, "w") as f:
                     f.write(html)
             elif filename[-4:] == ".gif":
                 if not ImageMagickWriter.isAvailable():
-                    self.normal_msg.setWindowTitle(self.tr("Error"))
-                    self.normal_msg.setText(self.tr("ImageMagick is not installed."))
-                    self.normal_msg.exec_()
+                    self.show_error(self.tr("ImageMagick is not installed."))
                 else:
                     self._animation.save(filename, writer="imagemagick", fps=10, progress_callback=callback)
             elif filename[-4:] == ".mp4":
                 if not FFMpegWriter.isAvailable():
-                    self.normal_msg.setWindowTitle(self.tr("Error"))
-                    self.normal_msg.setText(self.tr("FFMpeg is not installed."))
-                    self.normal_msg.exec_()
+                    self.show_error(self.tr("FFMpeg is not installed."))
                 else:
                     self._animation.save(filename, writer="ffmpeg", fps=10, progress_callback=callback)
         except StopIteration:
