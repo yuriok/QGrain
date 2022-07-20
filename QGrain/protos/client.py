@@ -74,7 +74,7 @@ class QGrainClient:
                 return response.message
 
     def get_ssu_result(self, sample: Union[ArtificialDataset, Sample], distribution_type: DistributionType,
-                       n_components: int, x0: ndarray = None, loss: str = "lmse", optimizer: str = "SLSQP",
+                       n_components: int, x0: ndarray = None, loss: str = "lmse", optimizer: str = "L-BFGS-B",
                        try_global: bool = False, global_max_niter: int = 100, global_niter_success: int = 5,
                        global_step_size: float = 0.2, optimizer_max_niter: int = 10000, need_history: bool = True) -> \
             Union[SSUResult, str]:

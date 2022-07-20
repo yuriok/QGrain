@@ -25,7 +25,7 @@ class SSUSettings(QtWidgets.QDialog):
         self.optimizer_label.setToolTip(self.tr("The optimizer to find the minimum of loss function."))
         self.optimizer_combo_box = QtWidgets.QComboBox()
         self.optimizer_combo_box.addItems(built_in_optimizers)
-        self.optimizer_combo_box.setCurrentText("SLSQP")
+        self.optimizer_combo_box.setCurrentText("L-BFGS-B")
         self.main_layout.addWidget(self.optimizer_label, 1, 0)
         self.main_layout.addWidget(self.optimizer_combo_box, 1, 1)
         self.try_global_checkbox = QtWidgets.QCheckBox(self.tr("Global Optimization"))
