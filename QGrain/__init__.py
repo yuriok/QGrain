@@ -83,6 +83,7 @@ def main():
         main_window.parameter_editor.enabled_checkbox.setChecked(True)
         main_window.emma_analyzer.on_try_fit_clicked()
         main_window.udm_analyzer.on_try_fit_clicked()
+        main_window.parameter_editor.enabled_checkbox.setChecked(False)
         setup_logging(main_window.statusBar(), main_window.log_dialog)
         main_window.show()
         app.exec()
