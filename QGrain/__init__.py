@@ -49,6 +49,8 @@ def main():
     args = parser.parse_args()
     if args.server:
         from .protos.server import QGrainServicer
+        from .ui import create_necessary_folders
+        create_necessary_folders()
         format_str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
         from logging.handlers import TimedRotatingFileHandler
         file_handler = TimedRotatingFileHandler(
