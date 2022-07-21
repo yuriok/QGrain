@@ -125,11 +125,18 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Theme
         self.theme_menu = self.menuBar().addMenu(self.tr("Theme"))
-        self.light_theme_menu = self.theme_menu.addMenu(self.tr("Light Theme"))
-        self.dark_theme_menu = self.theme_menu.addMenu(self.tr("Dark Theme"))
         self.theme_group = QtGui.QActionGroup(self.theme_menu)
         self.theme_group.setExclusive(True)
         self.theme_actions = []
+        self.default_theme_action = self.theme_group.addAction(self.tr("Default"))
+        self.default_theme_action.setCheckable(True)
+        self.default_theme_action.setChecked(True)
+        self.default_theme_action.triggered.connect(lambda: apply_stylesheet(app, theme=os.path.join(
+            QGRAIN_ROOT_PATH, "assets", "themes", "default.xml"), invert_secondary=True, extra=EXTRA))
+        self.theme_menu.addAction(self.default_theme_action)
+        self.theme_actions.append(self.default_theme_action)
+        self.light_theme_menu = self.theme_menu.addMenu(self.tr("Light Theme"))
+        self.dark_theme_menu = self.theme_menu.addMenu(self.tr("Dark Theme"))
         for theme in list_themes():
             theme_name = string.capwords(" ".join(theme[:-4].split("_")[1:]))
             action = self.theme_group.addAction(theme_name)
@@ -143,8 +150,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.light_theme_menu.addAction(action)
             else:
                 self.dark_theme_menu.addAction(action)
-            if theme == "light_cyan.xml":
-                action.setChecked(True)
 
         # Log
         self.log_action = QtGui.QAction(self.tr("Log"))
