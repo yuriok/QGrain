@@ -60,7 +60,7 @@ def setup_app():
     app.setWindowIcon(QtGui.QIcon(pixmap))
     app.setApplicationVersion(QGRAIN_VERSION)
     from qt_material import apply_stylesheet
-    apply_stylesheet(app, theme=os.path.join(QGRAIN_ROOT_PATH, "assets", "themes", "default.xml"),
+    apply_stylesheet(app, theme=os.path.join(QGRAIN_ROOT_PATH, "assets", "default_theme.xml"),
                      invert_secondary=True, extra=EXTRA)
     setup_matplotlib()
     setup_language(app, "en")
