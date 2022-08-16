@@ -132,7 +132,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.default_theme_action.setCheckable(True)
         self.default_theme_action.setChecked(True)
         self.default_theme_action.triggered.connect(lambda: apply_stylesheet(app, theme=os.path.join(
-            QGRAIN_ROOT_PATH, "assets", "themes", "default.xml"), invert_secondary=True, extra=EXTRA))
+            QGRAIN_ROOT_PATH, "assets", "default_theme.xml"), invert_secondary=True, extra=EXTRA))
         self.theme_menu.addAction(self.default_theme_action)
         self.theme_actions.append(self.default_theme_action)
         self.light_theme_menu = self.theme_menu.addMenu(self.tr("Light Theme"))
