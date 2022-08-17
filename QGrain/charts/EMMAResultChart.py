@@ -208,8 +208,8 @@ class EMMAResultChart(BaseChart):
         end_member_axes.set_title("End members")
         proportion_axes = self._figure.add_subplot(2, 2, 4)
         image = get_image_by_proportions(result.proportions, resolution=100)
-        proportion_axes.imshow(
-            image, plt.get_cmap(), aspect="auto", vmin=0, vmax=9, extent=(0.0, result.n_samples, 100, 0.0))
+        proportion_axes.imshow(image, plt.get_cmap(), aspect="auto", vmin=0, vmax=9,
+                               extent=(0.0, result.n_samples, 100, 0.0), interpolation="none")
         proportion_axes.set_xlim(0, result.n_samples)
         proportion_axes.set_ylim(0, 100)
         proportion_axes.set_yticks([0, 20, 40, 60, 80, 100], ["0.0", "0.2", "0.4", "0.6", "0.8", "1.0"])
@@ -281,7 +281,8 @@ class EMMAResultChart(BaseChart):
                     end_member_curves.append(curve)
                 image = get_image_by_proportions(result.proportions, resolution=100)
                 proportion_image = proportion_axes.imshow(
-                    image, plt.get_cmap(), aspect="auto", vmin=0, vmax=9, extent=(0.0, result.n_samples, 100, 0.0))
+                    image, plt.get_cmap(), aspect="auto", vmin=0, vmax=9,
+                    extent=(0.0, result.n_samples, 100, 0.0), interpolation="none")
             return iteration_line, proportion_image, *end_member_curves
 
         def animate(args: Tuple[int, EMMAResult]):

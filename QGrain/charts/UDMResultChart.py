@@ -185,7 +185,7 @@ class UDMResultChart(BaseChart):
         proportion_axes = self._figure.add_subplot(2, 2, 4)
         image = get_image_by_proportions(result.proportions[:, 0, :], resolution=100)
         proportion_axes.imshow(image, plt.get_cmap(), aspect="auto", vmin=0, vmax=9,
-                               extent=(0.0, result.n_samples, 100, 0.0))
+                               extent=(0.0, result.n_samples, 100, 0.0), interpolation="none")
         proportion_axes.set_xlim(0, result.n_samples)
         proportion_axes.set_ylim(0, 100)
         proportion_axes.set_yticks([0, 20, 40, 60, 80, 100], ["0.0", "0.2", "0.4", "0.6", "0.8", "1.0"])
@@ -264,7 +264,9 @@ class UDMResultChart(BaseChart):
                     component_curves.append(curve)
                     component_shadows.append(shadow)
                 image = get_image_by_proportions(result.proportions[:, 0, :], resolution=100)
-                proportion_image = proportion_axes.imshow(image, plt.get_cmap(), aspect="auto", vmin=0, vmax=9)
+                proportion_image = proportion_axes.imshow(
+                    image, plt.get_cmap(), aspect="auto", vmin=0, vmax=9,
+                    extent=(0.0, result.n_samples, 100, 0.0), interpolation="none")
             return iteration_line, proportion_image, *component_curves, *component_shadows
 
         def animate(args: Tuple[int, UDMResult]):
