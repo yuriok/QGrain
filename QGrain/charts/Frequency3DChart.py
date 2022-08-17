@@ -4,6 +4,7 @@ from typing import *
 
 import numpy as np
 from PySide6 import QtGui, QtWidgets
+from matplotlib.ticker import FuncFormatter
 from mpl_toolkits.mplot3d import Axes3D
 from numpy import ndarray
 
@@ -29,7 +30,7 @@ class Frequency3DChart(BaseChart):
             scale_action.triggered.connect(self.update_chart)
             self.scale_menu.addAction(scale_action)
             self.scale_actions.append(scale_action)
-        self.scale_actions[2].setChecked(True)
+        self.scale_actions[0].setChecked(True)
         self._last_samples = []
 
     @property
@@ -50,7 +51,7 @@ class Frequency3DChart(BaseChart):
     @property
     def transfer(self) -> Callable[[Union[int, float, ndarray]], Union[int, float, ndarray]]:
         if self.scale == "log-linear":
-            return lambda classes_phi: to_microns(classes_phi)
+            return lambda classes_phi: np.log10(to_microns(classes_phi))
         elif self.scale == "log":
             return lambda classes_phi: np.log(to_microns(classes_phi))
         elif self.scale == "phi":
@@ -104,10 +105,9 @@ class Frequency3DChart(BaseChart):
         self._axes.set_ylabel(self.tr("Sample index"))
         self._axes.set_zlabel(self.ylabel)
         self._last_samples = record_samples
-        if self.scale == "linear":
-            self._axes.view_init(elev=15.0, azim=45)
-        else:
-            self._axes.view_init(elev=45.0, azim=-120)
+        if self.scale == "log-linear":
+            self._axes.xaxis.set_major_formatter(FuncFormatter(lambda v, p=None: f"{10**v}"))
+        self._axes.view_init(elev=20.0, azim=-120)
         self._canvas.draw()
 
     def retranslate(self):
