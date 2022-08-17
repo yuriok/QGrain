@@ -102,7 +102,7 @@ class Frequency3DChart(BaseChart):
         self._axes.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap="binary")
         self._axes.set_xlim(x[0], x[-1])
         self._axes.set_xlabel(self.xlabel)
-        self._axes.set_ylabel(self.tr("Sample index"))
+        self._axes.set_ylabel("Sample index")
         self._axes.set_zlabel(self.ylabel)
         self._last_samples = record_samples
         if self.scale == "log-linear":
