@@ -6,8 +6,9 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from ..statistics import all_statistics
 from ..models import Dataset, Sample
-from ..charts import (highlight_color, FrequencyChart, CumulativeChart, Frequency3DChart, DiagramChart,
-                      BP12SSCDiagramChart, BP12GSMDiagramChart, Folk54SSCDiagramChart, Folk54GSMDiagramChart)
+from ..charts import (highlight_color, FrequencyChart, Frequency3DChart, FrequencyHeatmap, CumulativeChart,
+                      DiagramChart, BP12SSCDiagramChart, BP12GSMDiagramChart, Folk54SSCDiagramChart,
+                      Folk54GSMDiagramChart)
 
 
 class StatisticalAnalyzer(QtWidgets.QWidget):
@@ -99,6 +100,19 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         self.frequency_3D_append_all_action = self.plot_frequency_curve_3D_menu.addAction(self.tr("Append All"))
         self.frequency_3D_append_all_action.triggered.connect(
             lambda: self.plot_chart(self.frequency_curve_3D_chart, self._dataset, True))
+        self.plot_frequency_heatmap_menu = self.menu.addMenu(self.tr("Plot Frequency Heatmap"))
+        self.frequency_heatmap_plot_selected_action = self.plot_frequency_heatmap_menu.addAction(self.tr("Plot"))
+        self.frequency_heatmap_plot_selected_action.triggered.connect(
+            lambda: self.plot_chart(self.frequency_heatmap, self.selections, False))
+        self.frequency_heatmap_append_selected_action = self.plot_frequency_heatmap_menu.addAction(self.tr("Append"))
+        self.frequency_heatmap_append_selected_action.triggered.connect(
+            lambda: self.plot_chart(self.frequency_heatmap, self.selections, True))
+        self.frequency_heatmap_plot_all_action = self.plot_frequency_heatmap_menu.addAction(self.tr("Plot All"))
+        self.frequency_heatmap_plot_all_action.triggered.connect(
+            lambda: self.plot_chart(self.frequency_heatmap, self._dataset, False))
+        self.frequency_heatmap_append_all_action = self.plot_frequency_heatmap_menu.addAction(self.tr("Append All"))
+        self.frequency_heatmap_append_all_action.triggered.connect(
+            lambda: self.plot_chart(self.frequency_heatmap, self._dataset, True))
         self.folk54_GSM_diagram_menu = self.menu.addMenu(self.tr("Plot GSM Diagram (Folk, 1954)"))
         self.folk54_GSM_plot_selected_action = self.folk54_GSM_diagram_menu.addAction(self.tr("Plot"))
         self.folk54_GSM_plot_selected_action.triggered.connect(
@@ -157,6 +171,7 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         self.data_table.customContextMenuRequested.connect(self.show_menu)
         self.frequency_curve_chart = FrequencyChart()
         self.frequency_curve_3D_chart = Frequency3DChart()
+        self.frequency_heatmap = FrequencyHeatmap()
         self.cumulative_curve_chart = CumulativeChart()
         self.folk54_GSM_diagram_chart = Folk54GSMDiagramChart()
         self.folk54_SSC_diagram_chart = Folk54SSCDiagramChart()
@@ -416,6 +431,11 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         self.frequency_3D_append_selected_action.setText(self.tr("Append"))
         self.frequency_3D_plot_all_action.setText(self.tr("Plot All"))
         self.frequency_3D_append_all_action.setText(self.tr("Append All"))
+        self.plot_frequency_heatmap_menu.setTitle(self.tr("Plot Frequency Heatmap"))
+        self.frequency_heatmap_plot_selected_action.setText(self.tr("Plot"))
+        self.frequency_heatmap_append_selected_action.setText(self.tr("Append"))
+        self.frequency_heatmap_plot_all_action.setText(self.tr("Plot All"))
+        self.frequency_heatmap_append_all_action.setText(self.tr("Append All"))
         self.folk54_GSM_diagram_menu.setTitle(self.tr("Plot GSM Diagram (Folk, 1954)"))
         self.folk54_GSM_plot_selected_action.setText(self.tr("Plot"))
         self.folk54_GSM_append_selected_action.setText(self.tr("Append"))
