@@ -382,6 +382,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.save_all_ssu_figures_action.setText(self.tr("Save Figures For All SSU Results"))
         self.language_menu.setTitle(self.tr("Language"))
         self.theme_menu.setTitle(self.tr("Theme"))
+        self.default_theme_action.setText(self.tr("Default"))
         self.light_theme_menu.setTitle(self.tr("Light Theme"))
         self.dark_theme_menu.setTitle(self.tr("Dark Theme"))
         self.log_action.setText(self.tr("Log"))
