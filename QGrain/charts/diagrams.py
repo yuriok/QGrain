@@ -93,7 +93,7 @@ class DiagramChart(BaseChart):
 
 
 class Folk54GSMDiagramChart(DiagramChart):
-    def __init__(self, parent=None, figsize=(8, 6)):
+    def __init__(self, parent=None, figsize=(6, 4.5)):
         super().__init__(parent=parent, figsize=figsize)
         self.setWindowTitle(self.tr("GSM Diagram (Folk, 1954)"))
 
@@ -196,7 +196,7 @@ class Folk54GSMDiagramChart(DiagramChart):
 
 
 class Folk54SSCDiagramChart(DiagramChart):
-    def __init__(self, parent=None, figsize=(8, 6)):
+    def __init__(self, parent=None, figsize=(6, 4.5)):
         super().__init__(parent=parent, figsize=figsize)
         self.setWindowTitle(self.tr("SSC Diagram (Folk, 1954)"))
 
@@ -282,7 +282,7 @@ class Folk54SSCDiagramChart(DiagramChart):
 
 
 class BP12GSMDiagramChart(DiagramChart):
-    def __init__(self, parent=None, figsize=(8, 6)):
+    def __init__(self, parent=None, figsize=(6, 4.5)):
         super().__init__(parent=parent, figsize=figsize)
         self.setWindowTitle(self.tr("GSM Diagram (Blott & Pye, 2012)"))
 
@@ -495,9 +495,9 @@ class BP12GSMDiagramChart(DiagramChart):
                  "( ) - Slightly (qualification)",
                  "(v ) - Very slightly (qualification)"]
         for row, text in enumerate(texts, 1):
-            x = x0 + 2 * span
+            x = x0 + span
             y = y0 - span - row * (row_h + span)
-            self.axes.text(x, y, text, ha="left", va="top", fontsize=7, color=normal_color())
+            self.axes.text(x, y, text, ha="left", va="top", fontsize=6, color=normal_color())
 
         x0, y0 = 0.9, 0.7
         w, h = 0.3, 0.32
@@ -516,9 +516,9 @@ class BP12GSMDiagramChart(DiagramChart):
                  "(vs) - Very slightly sandy",
                  "(vm) - Very slightly muddy"]
         for row, text in enumerate(texts, 1):
-            x = x0 + 2 * span
+            x = x0 + span
             y = y0 - span - row * (row_h + span)
-            self.axes.text(x, y, text, ha="left", va="top", fontsize=7, color=normal_color())
+            self.axes.text(x, y, text, ha="left", va="top", fontsize=6, color=normal_color())
 
     def trans_pos(self, a, b):
         a, b = np.array(a), np.array(b)
@@ -542,7 +542,7 @@ class BP12GSMDiagramChart(DiagramChart):
 
 
 class BP12SSCDiagramChart(DiagramChart):
-    def __init__(self, parent=None, figsize=(8, 6)):
+    def __init__(self, parent=None, figsize=(6, 4.5)):
         super().__init__(parent=parent, figsize=figsize)
         self.setWindowTitle(self.tr("SSC Diagram (Blott & Pye, 2012)"))
 
@@ -762,9 +762,9 @@ class BP12SSCDiagramChart(DiagramChart):
                  "( ) - Slightly (qualification)",
                  "(v ) - Very slightly (qualification)"]
         for row, text in enumerate(texts, 1):
-            x = x0 + 2 * span
+            x = x0 + span
             y = y0 - span - row * (row_h + span)
-            self.axes.text(x, y, text, ha="left", va="top", fontsize=7, color=normal_color())
+            self.axes.text(x, y, text, ha="left", va="top", fontsize=6, color=normal_color())
 
         x0, y0 = 0.9, 0.7
         w, h = 0.3, 0.32
@@ -783,9 +783,9 @@ class BP12SSCDiagramChart(DiagramChart):
                  "(vsi) - Very slightly silty",
                  "(vc)  - Very slightly clayey"]
         for row, text in enumerate(texts, 1):
-            x = x0 + 2 * span
+            x = x0 + span
             y = y0 - span - row * (row_h + span)
-            self.axes.text(x, y, text, ha="left", va="top", fontsize=7, color=normal_color())
+            self.axes.text(x, y, text, ha="left", va="top", fontsize=6, color=normal_color())
 
     def convert_samples(self, samples: List[Sample]) -> Tuple[Sequence[float], Sequence[float]]:
         silt = []
