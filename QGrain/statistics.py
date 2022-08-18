@@ -122,6 +122,21 @@ def to_microns(sizes_phi: ndarray):
     return np.exp2(-sizes_phi) * 1000.0
 
 
+def cm(classes_phi: ndarray, distribution: ndarray) -> Tuple[float, float]:
+    """
+    Get the C and M values of a grain size distribution.
+    C is the first percentile in phi scale, and M is the median in phi scale.
+
+    :param classes_phi: The grain size classes in phi values.
+    :param distribution: The frequency distribution of grain size classes.
+        Note, the sum of frequencies should be equal to 1.
+    :return: A tuple that contains the C and M values.
+    """
+    ppf = reversed_phi_ppf(classes_phi, distribution)
+    CM = ppf(0.99), ppf(0.5)
+    return CM
+
+
 # The following five formulas of calculating the statistical parameters referred to Blott & Pye (2001)'s work
 # DOI: 10.1002/esp.261
 def arithmetic(classes: ndarray, distribution: ndarray) -> Dict[str, float]:

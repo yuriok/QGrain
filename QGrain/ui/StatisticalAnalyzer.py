@@ -8,7 +8,7 @@ from ..statistics import all_statistics
 from ..models import Dataset, Sample
 from ..charts import (highlight_color, FrequencyChart, Frequency3DChart, FrequencyHeatmap, CumulativeChart,
                       DiagramChart, BP12SSCDiagramChart, BP12GSMDiagramChart, Folk54SSCDiagramChart,
-                      Folk54GSMDiagramChart)
+                      Folk54GSMDiagramChart, CMDiagramChart)
 
 
 class StatisticalAnalyzer(QtWidgets.QWidget):
@@ -165,6 +165,19 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         self.BP12_SSC_append_all_action = self.BP12_SSC_diagram_menu.addAction(self.tr("Append All"))
         self.BP12_SSC_append_all_action.triggered.connect(
             lambda: self.plot_chart(self.BP12_SSC_diagram_chart, self._dataset, True))
+        self.CM_diagram_menu = self.menu.addMenu(self.tr("Plot C-M Diagram"))
+        self.CM_plot_selected_action = self.CM_diagram_menu.addAction(self.tr("Plot"))
+        self.CM_plot_selected_action.triggered.connect(
+            lambda: self.plot_chart(self.CM_diagram_chart, self.selections, False))
+        self.CM_append_selected_action = self.CM_diagram_menu.addAction(self.tr("Append"))
+        self.CM_append_selected_action.triggered.connect(
+            lambda: self.plot_chart(self.CM_diagram_chart, self.selections, True))
+        self.CM_plot_all_action = self.CM_diagram_menu.addAction(self.tr("Plot All"))
+        self.CM_plot_all_action.triggered.connect(
+            lambda: self.plot_chart(self.CM_diagram_chart, self._dataset, False))
+        self.CM_append_all_action = self.CM_diagram_menu.addAction(self.tr("Append All"))
+        self.CM_append_all_action.triggered.connect(
+            lambda: self.plot_chart(self.CM_diagram_chart, self._dataset, True))
         self.previous_button.setEnabled(False)
         self.current_page_combo_box.setEnabled(False)
         self.next_button.setEnabled(False)
@@ -177,6 +190,7 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         self.folk54_SSC_diagram_chart = Folk54SSCDiagramChart()
         self.BP12_GSM_diagram_chart = BP12GSMDiagramChart()
         self.BP12_SSC_diagram_chart = BP12SSCDiagramChart()
+        self.CM_diagram_chart = CMDiagramChart()
         self.normal_msg = QtWidgets.QMessageBox(self)
 
     def show_menu(self, pos):
@@ -456,3 +470,8 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
         self.BP12_SSC_append_selected_action.setText(self.tr("Append"))
         self.BP12_SSC_plot_all_action.setText(self.tr("Plot All"))
         self.BP12_SSC_append_all_action.setText(self.tr("Append All"))
+        self.CM_diagram_menu.setTitle(self.tr("Plot C-M Diagram"))
+        self.CM_plot_selected_action.setText(self.tr("Plot"))
+        self.CM_append_selected_action.setText(self.tr("Append"))
+        self.CM_plot_all_action.setText(self.tr("Plot All"))
+        self.CM_append_all_action.setText(self.tr("Append All"))
