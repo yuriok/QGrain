@@ -35,7 +35,7 @@ def synchronize_theme():
     plt.rcParams["ytick.labelcolor"] = os.environ["QTMATERIAL_SECONDARYTEXTCOLOR"]
 
     plt.rcParams["savefig.dpi"] = 300.0
-    plt.rcParams["savefig.transparent"] = True
+    plt.rcParams["savefig.transparent"] = False
     plt.rcParams["figure.max_open_warning"] = False
 
 

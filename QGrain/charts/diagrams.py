@@ -3,16 +3,19 @@ __all__ = [
     "Folk54GSMDiagramChart",
     "Folk54SSCDiagramChart",
     "BP12GSMDiagramChart",
-    "BP12SSCDiagramChart"]
+    "BP12SSCDiagramChart",
+    "CMDiagramChart"]
 
 from typing import *
 
 import numpy as np
+from matplotlib.path import Path
+from matplotlib.patches import Circle, PathPatch
 
 from . import BaseChart
-from . import normal_color
+from . import normal_color, background_color
 from ..models import Sample
-from ..statistics import proportions_gsm, proportions_ssc
+from ..statistics import cm, proportions_gsm, proportions_ssc, to_phi, to_microns
 
 
 class DiagramChart(BaseChart):
@@ -47,14 +50,14 @@ class DiagramChart(BaseChart):
     def draw_base(self):
         self.axes.axis("off")
         self.axes.set_aspect(1)
-        self.axes.set_title(self.title)
+        # self.axes.set_title(self.title)
 
-        for sand, clay, kwargs in self.lines:
-            x, y = self.trans_pos(sand, clay)
+        for a, b, kwargs in self.lines:
+            x, y = self.trans_pos(a, b)
             self.axes.plot(x, y, **kwargs, label="_")
 
-        for (sand, clay), text, kwargs in self.labels:
-            x, y = self.trans_pos(sand, clay)
+        for (a, b), text, kwargs in self.labels:
+            x, y = self.trans_pos(a, b)
             self.axes.text(x, y, text, color=normal_color(), label="_", **kwargs)
 
         self.plot_legend()
@@ -75,7 +78,8 @@ class DiagramChart(BaseChart):
             self._sample_batches.clear()
         a, b = self.convert_samples(samples)
         x, y = self.trans_pos(a, b)
-        self.axes.plot(x, y, c=c, marker=marker, ms=ms, mfc=mfc, mew=mew, **kwargs, label=f"batch_{self.n_batches}")
+        self.axes.plot(x, y, c=c, marker=marker, ms=ms, mfc=mfc, mew=mew, label=f"batch_{self.n_batches}",
+                       zorder=100, **kwargs)
         self._canvas.draw()
         plot_kwargs = dict(c=c, marker=marker, ms=ms, mfc=mfc, mew=mew)
         plot_kwargs.update(kwargs)
@@ -552,7 +556,7 @@ class BP12SSCDiagramChart(DiagramChart):
 
     @property
     def lines(self):
-        span = 0.01
+        s = 0.01
         STRUCTURAL_LINES = [
             ([0.0, 0.0, 1.0, 0.0], [0.0, 1.0, 0.0, 0.0], dict(c=normal_color(), linewidth=0.8)),
             # the 3 sides of this equilateral triangle
@@ -572,71 +576,71 @@ class BP12SSCDiagramChart(DiagramChart):
             ([0.8, 0.0], [0.0, 0.8], dict(c=normal_color(), linewidth=0.8)),  # clay = 20%
             ([0.5, 1 / 3, 0.0], [0.0, 1 / 3, 0.5], dict(c=normal_color(), linewidth=0.8))]  # clay = 50%, 33%
         ADDITIONAL_LINES = [
-            ([0.0, -span], [0.0, -span], dict(c=normal_color(), linewidth=0.4)),  # S
-            ([0.0, -2 * span], [1.0, 1 + 4 * span], dict(c=normal_color(), linewidth=0.4)),  # SI
-            ([1.0, 1 + 2 * span], [0.0, -span], dict(c=normal_color(), linewidth=0.4)),  # C
+            ([0.0, -s], [0.0, -s], dict(c=normal_color(), linewidth=0.4)),  # S
+            ([0.0, -2 * s], [1.0, 1 + 4 * s], dict(c=normal_color(), linewidth=0.4)),  # SI
+            ([1.0, 1 + 2 * s], [0.0, -s], dict(c=normal_color(), linewidth=0.4)),  # C
             # ticks of Sand
-            ([0.0, -span], [1.0, 1.0 + span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.0, -span], [0.9, 0.9 + span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.0, -span], [0.8, 0.8 + span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.0, -span], [0.7, 0.7 + span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.0, -span], [0.6, 0.6 + span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.0, -span], [0.5, 0.5 + span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.0, -span], [0.4, 0.4 + span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.0, -span], [0.3, 0.3 + span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.0, -span], [0.2, 0.2 + span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.0, -span], [0.1, 0.1 + span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.0, -span], [0.0, span], dict(c=normal_color(), linewidth=0.4)),
+            ([0.0, -s], [1.0, 1.0 + s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.0, -s], [0.9, 0.9 + s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.0, -s], [0.8, 0.8 + s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.0, -s], [0.7, 0.7 + s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.0, -s], [0.6, 0.6 + s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.0, -s], [0.5, 0.5 + s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.0, -s], [0.4, 0.4 + s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.0, -s], [0.3, 0.3 + s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.0, -s], [0.2, 0.2 + s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.0, -s], [0.1, 0.1 + s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.0, -s], [0.0, s], dict(c=normal_color(), linewidth=0.4)),
             # ticks of Silt
-            ([0.0, 0.0 + 0.1 * span], [1.0, 1.0 + span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.1, 0.1 + 0.1 * span], [0.9, 0.9 + span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.2, 0.2 + 0.1 * span], [0.8, 0.8 + span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.3, 0.3 + 0.1 * span], [0.7, 0.7 + span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.4, 0.4 + 0.1 * span], [0.6, 0.6 + span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.5, 0.5 + 0.1 * span], [0.5, 0.5 + span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.6, 0.6 + 0.1 * span], [0.4, 0.4 + span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.7, 0.7 + 0.1 * span], [0.3, 0.3 + span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.8, 0.8 + 0.1 * span], [0.2, 0.2 + span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.9, 0.9 + 0.1 * span], [0.1, 0.1 + span], dict(c=normal_color(), linewidth=0.4)),
-            ([1.0, 1.0 + 0.1 * span], [0.0, span], dict(c=normal_color(), linewidth=0.4)),
+            ([0.0, 0.0 + 0.1 * s], [1.0, 1.0 + s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.1, 0.1 + 0.1 * s], [0.9, 0.9 + s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.2, 0.2 + 0.1 * s], [0.8, 0.8 + s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.3, 0.3 + 0.1 * s], [0.7, 0.7 + s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.4, 0.4 + 0.1 * s], [0.6, 0.6 + s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.5, 0.5 + 0.1 * s], [0.5, 0.5 + s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.6, 0.6 + 0.1 * s], [0.4, 0.4 + s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.7, 0.7 + 0.1 * s], [0.3, 0.3 + s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.8, 0.8 + 0.1 * s], [0.2, 0.2 + s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.9, 0.9 + 0.1 * s], [0.1, 0.1 + s], dict(c=normal_color(), linewidth=0.4)),
+            ([1.0, 1.0 + 0.1 * s], [0.0, s], dict(c=normal_color(), linewidth=0.4)),
             # ticks of Caly
-            ([0.0, span], [0.0, -span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.1, 0.1 + span], [0.0, -span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.2, 0.2 + span], [0.0, -span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.3, 0.3 + span], [0.0, -span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.4, 0.4 + span], [0.0, -span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.5, 0.5 + span], [0.0, -span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.6, 0.6 + span], [0.0, -span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.7, 0.7 + span], [0.0, -span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.8, 0.8 + span], [0.0, -span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.9, 0.9 + span], [0.0, -span], dict(c=normal_color(), linewidth=0.4)),
-            ([1.0, 1.0 - span], [0.0, -span], dict(c=normal_color(), linewidth=0.4)),
+            ([0.0, s], [0.0, -s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.1, 0.1 + s], [0.0, -s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.2, 0.2 + s], [0.0, -s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.3, 0.3 + s], [0.0, -s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.4, 0.4 + s], [0.0, -s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.5, 0.5 + s], [0.0, -s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.6, 0.6 + s], [0.0, -s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.7, 0.7 + s], [0.0, -s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.8, 0.8 + s], [0.0, -s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.9, 0.9 + s], [0.0, -s], dict(c=normal_color(), linewidth=0.4)),
+            ([1.0, 1.0 - s], [0.0, -s], dict(c=normal_color(), linewidth=0.4)),
 
             # guide lines
-            ([0.03, 0.03 + 4 * span], [0.0, -2 * span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.13, 0.13 + 4 * span], [0.0, -2 * span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.33, 0.33 + 4 * span], [0.0, -2 * span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.63, 0.63 + 4 * span], [0.0, -2 * span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.83, 0.83 + 4 * span], [0.0, -2 * span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.97, 0.97], [0.0, -2 * span], dict(c=normal_color(), linewidth=0.4)),
+            ([0.03, 0.03 + 4 * s], [0.0, -2 * s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.13, 0.13 + 4 * s], [0.0, -2 * s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.33, 0.33 + 4 * s], [0.0, -2 * s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.63, 0.63 + 4 * s], [0.0, -2 * s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.83, 0.83 + 4 * s], [0.0, -2 * s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.97, 0.97], [0.0, -2 * s], dict(c=normal_color(), linewidth=0.4)),
 
-            ([0.0, -2 * span], [0.03, 0.03 + 2 * span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.0, -2 * span], [0.13, 0.13 + 2 * span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.0, -2 * span], [0.33, 0.33 + 2 * span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.0, -2 * span], [0.63, 0.63 + 2 * span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.0, -2 * span], [0.83, 0.83 + 2 * span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.0, -2 * span], [0.97, 0.97], dict(c=normal_color(), linewidth=0.4)),
+            ([0.0, -2 * s], [0.03, 0.03 + 2 * s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.0, -2 * s], [0.13, 0.13 + 2 * s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.0, -2 * s], [0.33, 0.33 + 2 * s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.0, -2 * s], [0.63, 0.63 + 2 * s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.0, -2 * s], [0.83, 0.83 + 2 * s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.0, -2 * s], [0.97, 0.97], dict(c=normal_color(), linewidth=0.4)),
 
-            ([0.97, 0.97 + 0.2 * span], [0.03, 0.03 + 2 * span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.87, 0.87 + 0.2 * span], [0.13, 0.13 + 2 * span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.67, 0.67 + 0.2 * span], [0.33, 0.33 + 2 * span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.37, 0.37 + 0.2 * span], [0.63, 0.63 + 2 * span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.17, 0.17 + 0.2 * span], [0.83, 0.83 + 2 * span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.03, 0.03 + 0.2 * span], [0.97, 0.97 + 2 * span], dict(c=normal_color(), linewidth=0.4)),
+            ([0.97, 0.97 + 0.2 * s], [0.03, 0.03 + 2 * s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.87, 0.87 + 0.2 * s], [0.13, 0.13 + 2 * s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.67, 0.67 + 0.2 * s], [0.33, 0.33 + 2 * s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.37, 0.37 + 0.2 * s], [0.63, 0.63 + 2 * s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.17, 0.17 + 0.2 * s], [0.83, 0.83 + 2 * s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.03, 0.03 + 0.2 * s], [0.97, 0.97 + 2 * s], dict(c=normal_color(), linewidth=0.4)),
 
-            ([0.03, 0.03 + 2 * span], [0.95, 0.95 + 2 * span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.03, -2 * span], [0.03, 0.03 + 4 * span], dict(c=normal_color(), linewidth=0.4)),
-            ([0.94, 0.94 + 0.4 * span], [0.03, 0.03 + 4 * span], dict(c=normal_color(), linewidth=0.4)),
+            ([0.03, 0.03 + 2 * s], [0.95, 0.95 + 2 * s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.03, -2 * s], [0.03, 0.03 + 4 * s], dict(c=normal_color(), linewidth=0.4)),
+            ([0.94, 0.94 + 0.4 * s], [0.03, 0.03 + 4 * s], dict(c=normal_color(), linewidth=0.4)),
 
         ]
         return STRUCTURAL_LINES + ADDITIONAL_LINES
@@ -799,5 +803,212 @@ class BP12SSCDiagramChart(DiagramChart):
 
     def retranslate(self):
         self.setWindowTitle(self.tr("SSC Diagram (Blott & Pye, 2012)"))
+        self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.save_figure_action.setText(self.tr("Save Figure"))
+
+
+class CMDiagramChart(DiagramChart):
+    """
+    The C-M diagram referred to Mycielska-Dowgiałło and Ludwikowska-Kędzia (2011).
+
+    Mycielska-Dowgiałło, E., Ludwikowska-Kędzia, M., 2011. Alternative interpretations of grain-size data from
+        Quaternary deposits. Geologos 17. https://doi.org/10.2478/v10118-011-0010-9
+
+    """
+    GRID_C = (0.02, 0.04, 0.06, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 2.0, 4.0, 6.0, 8.0, 10.0, 20.0, 40.0)
+    GRID_M = (0.004, 0.01, 0.015, 0.02, 0.04, 0.06, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8)
+
+    def __init__(self, parent=None, figsize=(4.4, 6.0)):
+        super().__init__(parent=parent, figsize=figsize)
+        self.setWindowTitle(self.tr("C-M Diagram"))
+
+    @property
+    def title(self) -> str:
+        return "C-M Diagram"
+
+    @property
+    def lines(self):
+        STRUCTURAL_LINES = [([0.003, 0.01, 1.0, 1.0, 0.003, 0.003], [0.01, 0.01, 1.0, 60.0, 60.0, 0.01],
+                             dict(c=normal_color(), linewidth=0.8))]
+        for m in self.GRID_M:
+            line = ([m, m], [max(m, 0.01), 60.0], dict(c=normal_color(), linewidth=0.5))
+            STRUCTURAL_LINES.append(line)
+        for c in self.GRID_C:
+            line = ([0.003, min(c, 1.0)], [c, c], dict(c=normal_color(), linewidth=0.5))
+            STRUCTURAL_LINES.append(line)
+
+        ADDITIONAL_LINES = [([0.365, 1.25], [0.600, 0.600], dict(c=normal_color(), linestyle="--", linewidth=0.8)),
+                            ([0.50, 1.25], [0.900, 0.900], dict(c=normal_color(), linestyle="--", linewidth=0.8)),
+                            ([0.50, 1.25], [18.00, 18.00], dict(c=normal_color(), linestyle="--", linewidth=0.8)),
+                            ([0.15, 1.25], [0.2383, 0.2383], dict(c=normal_color(), linestyle="--", linewidth=0.8)),
+                            ([0.27, 1.25], [0.4366, 0.4366], dict(c=normal_color(), linestyle="--", linewidth=0.8)),
+                            ([0.50, 1.25], [1.0734, 1.0734], dict(c=normal_color(), linestyle="--", linewidth=0.8)),
+
+                            ([0.7, 0.7], [2.05, 1.5], dict(c=normal_color(), linestyle="-", linewidth=0.5)),
+                            ([0.24, 0.275], [2.00, 1.2], dict(c=normal_color(), linestyle="-", linewidth=0.5)),
+                            ([0.15, 0.2], [1.0, 0.9], dict(c=normal_color(), linestyle="-", linewidth=0.5)),
+                            ([0.35, 0.15], [0.32, 0.32], dict(c=normal_color(), linestyle="-", linewidth=0.5)),
+                            ([0.07, 0.07], [0.16, 0.2], dict(c=normal_color(), linestyle="-", linewidth=0.5)),
+
+                            ([0.006, 0.006], [0.065, 0.05], dict(c=normal_color(), linestyle="-", linewidth=0.5)),
+                            ([0.5, 0.5], [40, 25], dict(c=normal_color(), linestyle="-", linewidth=0.5)),
+                            ([0.25, 0.35], [5.0, 5.0], dict(c=normal_color(), linestyle="-", linewidth=0.5)),
+                            ([0.58, 0.30], [0.5, 0.8], dict(c=normal_color(), linestyle="-", linewidth=0.5)),
+                            ([0.02, 0.025], [0.95, 0.5], dict(c=normal_color(), linestyle="-", linewidth=0.5)),
+                            ([0.01, 0.02], [0.15, 0.1], dict(c=normal_color(), linestyle="-", linewidth=0.5))]
+        for x, y, kwargs in ADDITIONAL_LINES:
+            kwargs["zorder"] = 10
+
+        return STRUCTURAL_LINES + ADDITIONAL_LINES
+
+    @property
+    def labels(self):
+        s = 0.05
+        LABELS = [
+            ((0.00125, 2.0), "C (first percentile)",
+             dict(ha="right", va="center", rotation=90.0, fontsize=8, fontweight="bold")),
+            ((0.05, 110.0), "M (median)", dict(ha="center", va="center", fontsize=8, fontweight="bold")),
+            ((0.15, 0.15), "C = M", dict(ha="center", va="top", rotation=45.0, fontsize=8, fontweight="bold")),
+            ((0.003 * (1 - s), 60.0), "mm", dict(ha="right", va="center", fontsize=6)),
+            ((0.002 * (1 - s), 60.0), r"phi ($\phi$)", dict(ha="right", va="center", fontsize=6)),
+            ((1.0, 60.0 * (1 + s)), "1.0", dict(ha="center", va="bottom", fontsize=6)),
+            ((1.0, 70.0 * (1 + s)), "0.0", dict(ha="center", va="bottom", fontsize=6)),
+            ((1.5, 60.0 * (1 + s)), "mm", dict(ha="center", va="bottom", fontsize=6)),
+            ((1.5, 70.0 * (1 + s)), r"phi ($\phi$)", dict(ha="center", va="bottom", fontsize=6)),
+
+            ((0.70, 3.30), "I", dict(ha="center", va="center", fontsize=8, fontweight="bold")),
+            ((0.15, 3.30), "II", dict(ha="center", va="center", fontsize=8, fontweight="bold")),
+            ((0.03, 3.30), "III", dict(ha="center", va="center", fontsize=8, fontweight="bold")),
+            ((0.51, 0.68), "IV", dict(ha="center", va="center", fontsize=8, fontweight="bold")),
+            ((0.15, 0.68), "V", dict(ha="center", va="center", fontsize=8, fontweight="bold")),
+            ((0.05, 0.13), "VI", dict(ha="center", va="center", fontsize=8, fontweight="bold")),
+            ((0.03, 0.68), "VII", dict(ha="center", va="center", fontsize=8, fontweight="bold")),
+            ((0.007, 0.68), "VIII", dict(ha="center", va="center", fontsize=8, fontweight="bold")),
+            ((0.007, 3.30), "IX", dict(ha="center", va="center", fontsize=8, fontweight="bold")),
+
+            ((0.0175, 0.200), "S", dict(ha="center", va="center", fontsize=7)),
+            ((0.1168, 0.234), "R", dict(ha="center", va="center", fontsize=7)),
+            ((0.2077, 0.436), "Q", dict(ha="center", va="center", fontsize=7)),
+            ((0.2200, 1.142), "P", dict(ha="center", va="center", fontsize=7)),
+            ((0.5500, 1.265), "O", dict(ha="center", va="center", fontsize=7)),
+            ((0.8000, 1.482), "N", dict(ha="center", va="center", fontsize=7)),
+            ((0.0055, 0.032), "T", dict(ha="center", va="center", fontsize=7)),
+
+            ((0.0125, 0.475), "S", dict(ha="center", va="center", fontsize=8, fontweight="bold")),
+            ((0.1500, 0.475), "R", dict(ha="center", va="center", fontsize=8, fontweight="bold")),
+            ((0.3500, 0.975), "Q", dict(ha="center", va="center", fontsize=8, fontweight="bold")),
+            ((0.3700, 23.700), "P", dict(ha="center", va="center", fontsize=8, fontweight="bold")),
+            ((0.7000, 23.700), "O", dict(ha="center", va="center", fontsize=8, fontweight="bold")),
+            ((0.0250, 0.125), "T", dict(ha="center", va="center", fontsize=8, fontweight="bold")),
+
+            ((1.5, 0.595), "Cu", dict(ha="center", va="center", fontsize=8, fontweight="bold")),
+            ((1.5, 0.900), "Cs", dict(ha="center", va="center", fontsize=8, fontweight="bold")),
+            ((1.5, 18.00), "Cr", dict(ha="center", va="center", fontsize=8, fontweight="bold")),
+            ((1.5, 0.2383), "Cu", dict(ha="center", va="center", fontsize=8, fontstyle="italic")),
+            ((1.5, 0.4366), "Cs", dict(ha="center", va="center", fontsize=8, fontstyle="italic")),
+            ((1.5, 1.0734), "Cr", dict(ha="center", va="center", fontsize=8, fontstyle="italic")),
+
+            ((0.7, 2.25), "rolling", dict(ha="center", va="center", fontsize=6)),
+            ((0.15, 2.0), "rolling and\nsuspension",
+             dict(ha="center", va="center", fontsize=6, backgroundcolor=background_color())),
+            ((0.10, 1.2), "suspension\nand rolling",
+             dict(ha="center", va="center", fontsize=6, backgroundcolor=background_color())),
+            ((0.36, 0.32), "graded suspension", dict(ha="left", va="center", fontsize=6)),
+            ((0.075, 0.125), "uniform\nsuspension", dict(ha="center", va="center", fontsize=6)),
+            ((0.0068, 0.08), "pelagic\nsuspension",
+             dict(ha="center", va="center", fontsize=6, backgroundcolor=background_color())),
+
+            ((0.5, 45.0), "rolling", dict(ha="center", va="center", fontsize=6, backgroundcolor=background_color())),
+            ((0.25, 4.86), "saltation and rolling",
+             dict(ha="right", va="center", fontsize=6, backgroundcolor=background_color())),
+            ((0.60, 0.55), "saltation", dict(ha="left", va="top", fontsize=6)),
+            ((0.02, 1.0), "suspension", dict(ha="center", va="bottom", fontsize=6, backgroundcolor=background_color())),
+            ((0.0068, 0.14), "overbank-pool\nfacies\nsuspension",
+             dict(ha="center", va="center", fontsize=6, backgroundcolor=background_color()))]
+
+        for m in self.GRID_M:
+            label_mm = ((m, 60.0 * (1 + s)), f"{m}"[1:], dict(ha="center", va="bottom", fontsize=6))
+            label_phi = ((m, 70.0 * (1 + s)), f"{to_phi(m * 1000):0.1f}", dict(ha="center", va="bottom", fontsize=6))
+            LABELS.append(label_mm)
+            LABELS.append(label_phi)
+        for c in self.GRID_C:
+            label_mm = ((0.003 * (1 - s), c), f"{c}", dict(ha="right", va="center", fontsize=6))
+            label_phi = ((0.002 * (1 - s), c), f"{to_phi(c * 1000):0.1f}", dict(ha="right", va="center", fontsize=6))
+            LABELS.append(label_mm)
+            LABELS.append(label_phi)
+
+        return LABELS
+
+    def trans_pos(self, a, b):
+        return np.log10(a), np.log10(b)
+
+    def plot_legend(self):
+        def pixel_to_mc(x, y):
+            m = 0.01 * 10 ** ((x - 388) / 400)
+            c = 20.0 / 10 ** ((y - 345) / 407)
+            return m, c
+
+        passega_t = Circle(self.trans_pos(*pixel_to_mc(284, 1484)), radius=(369 - 284) / 400,
+                           linewidth=1.0, edgecolor=normal_color(), facecolor="#747474", alpha=0.8)
+        self.axes.add_patch(passega_t)
+        passega_chanel = dict(data=[
+            (Path.MOVETO, (512, 1182)), (Path.LINETO, (781, 1182)), (Path.CURVE3, (802, 1178)),
+            (Path.CURVE3, (824, 1159)), (Path.LINETO, (925, 1059)), (Path.CURVE3, (938, 1039)),
+            (Path.CURVE3, (940, 1027)), (Path.LINETO, (940, 892)), (Path.CURVE4, (944, 873)),
+            (Path.CURVE4, (952, 861)), (Path.CURVE4, (979, 859)), (Path.LINETO, (1092, 859)),
+            (Path.CURVE3, (1126, 852)), (Path.CURVE3, (1145, 838)), (Path.LINETO, (1157, 829)),
+            (Path.CURVE4, (1198, 786)), (Path.CURVE4, (1165, 747)), (Path.CURVE4, (1120, 793)),
+            (Path.CURVE3, (1105, 805)), (Path.CURVE3, (1073, 811)), (Path.LINETO, (948, 811)),
+            (Path.CURVE4, (889, 811)), (Path.CURVE4, (889, 863)), (Path.CURVE4, (889, 877)),
+            (Path.LINETO, (891, 1007)), (Path.CURVE3, (885, 1029)), (Path.CURVE3, (870, 1043)),
+            (Path.LINETO, (806, 1106)), (Path.CURVE3, (781, 1127)), (Path.CURVE3, (751, 1133)),
+            (Path.LINETO, (481, 1133)), (Path.CURVE4, (426, 1133)), (Path.CURVE4, (426, 1182)),
+            (Path.CURVE4, (481, 1182)), (Path.CLOSEPOLY, (512, 1182))],
+            linewidth=1.0, facecolor="#747474", alpha=0.8)
+        lk2000_chanel = dict(data=[
+            (Path.MOVETO, (512, 1094)), (Path.LINETO, (817, 1094)), (Path.CURVE3, (890, 1094)),
+            (Path.CURVE3, (925, 1056)), (Path.LINETO, (1037, 946)), (Path.CURVE3, (1061, 911)),
+            (Path.CURVE3, (1067, 859)), (Path.LINETO, (1067, 395)), (Path.CURVE3, (1065, 354)),
+            (Path.CURVE3, (1110, 350)), (Path.CURVE4, (1165, 350)), (Path.CURVE4, (1165, 272)),
+            (Path.CURVE4, (1110, 272)), (Path.LINETO, (1037, 272)), (Path.CURVE4, (1000, 272)),
+            (Path.CURVE4, (985, 287)), (Path.CURVE4, (985, 324)), (Path.LINETO, (985, 821)),
+            (Path.CURVE3, (985, 862)), (Path.CURVE3, (964, 893)), (Path.LINETO, (907, 945)),
+            (Path.CURVE3, (882, 965)), (Path.CURVE3, (839, 965)), (Path.LINETO, (456, 965)),
+            (Path.CURVE4, (363, 965)), (Path.CURVE4, (363, 1094)), (Path.CURVE4, (456, 1094)),
+            (Path.CLOSEPOLY, (512, 1094))],
+            linewidth=1.0, facecolor="#cfcfcf", alpha=0.8)
+        lk2000_t = dict(data=[
+            (Path.MOVETO, (512, 1339)), (Path.LINETO, (669, 1183)), (Path.CURVE4, (709, 1143)),
+            (Path.CURVE4, (658, 1091)), (Path.CURVE4, (618, 1131)), (Path.LINETO, (444, 1304)),
+            (Path.CURVE4, (404, 1344)), (Path.CURVE4, (456, 1397)), (Path.CURVE4, (496, 1357)),
+            (Path.CLOSEPOLY, (512, 1339))],
+            linewidth=1.0, facecolor="#cfcfcf", alpha=0.8)
+
+        patchs = [lk2000_chanel, lk2000_t, passega_chanel]
+        for patch_define in patchs:
+            codes, pixels = zip(*patch_define["data"])
+            verts = []
+            for x, y in pixels:
+                verts.append(self.trans_pos(*pixel_to_mc(x, y)))
+            path = Path(verts, codes)
+            patch = PathPatch(path, linewidth=patch_define["linewidth"], edgecolor=normal_color(),
+                              facecolor=patch_define["facecolor"], alpha=patch_define["alpha"])
+            self.axes.add_patch(patch)
+        # caption = "This C-M diagram is modified after Mycielska-Dowgiałło & Ludwikowska-Kędzia (2011). " \
+        #           "See the description geological meanings of symbols from Passega (1964),
+        #           "Passega & Byramjee (1969) and Mycielska-Dowgiałło & Ludwikowska-Kędzia (2011)."
+        # self.axes.text(*self.trans_pos(0.003, 0.01), caption, fontsize=6, ha="left", va="top", wrap=True)
+
+    def convert_samples(self, samples: List[Sample]) -> Tuple[Sequence[float], Sequence[float]]:
+        c = []
+        m = []
+        for i, sample in enumerate(samples):
+            c_i, m_i = cm(sample.classes_phi, sample.distribution)
+            c.append(to_microns(c_i) / 1000)
+            m.append(to_microns(m_i) / 1000)
+        return m, c
+
+    def retranslate(self):
+        self.setWindowTitle(self.tr("C-M Diagram"))
         self.edit_figure_action.setText(self.tr("Edit Figure"))
         self.save_figure_action.setText(self.tr("Save Figure"))
