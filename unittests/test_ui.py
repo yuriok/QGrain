@@ -150,14 +150,6 @@ class TestDistributionChart:
         chart.show_chart(self.dataset[0])
         chart.save_chart("./.temp/distribution.png", dpi=300.0, transparent=False)
 
-    def test_animation(self):
-        ssu_result, message = try_ssu(self.dataset[0], DistributionType.Normal, self.dataset.n_components)
-        assert isinstance(ssu_result, SSUResult)
-        chart = DistributionChart()
-        chart.show_chart(ssu_result)
-        chart.show_animation(ssu_result)
-        chart.save_animation("./.temp/ssu_animation.html")
-
 
 class TestEMMAResultChart:
     dataset = random_dataset(**SIMPLE_PRESET, n_samples=100)
@@ -170,12 +162,6 @@ class TestEMMAResultChart:
         chart.show_chart(self.emma_result)
         chart.save_chart("./.temp/emma.png", dpi=300.0, transparent=False)
 
-    def test_animation(self):
-        chart = EMMAResultChart()
-        chart.show_chart(self.emma_result)
-        chart.show_animation(self.emma_result)
-        chart.save_animation("./.temp/emma_animation.html")
-
 
 class TestUDMResultChart:
     dataset = random_dataset(**SIMPLE_PRESET, n_samples=100)
@@ -187,12 +173,6 @@ class TestUDMResultChart:
         chart = UDMResultChart()
         chart.show_chart(self.udm_result)
         chart.save_chart("./.temp/udm.png", dpi=300.0, transparent=False)
-
-    def test_animation(self):
-        chart = UDMResultChart()
-        chart.show_chart(self.udm_result)
-        chart.show_animation(self.udm_result)
-        chart.save_animation("./.temp/udm_animation.html")
 
 
 class TestUI:
