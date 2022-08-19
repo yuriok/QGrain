@@ -995,7 +995,7 @@ class CMDiagramChart(DiagramChart):
                               facecolor=patch_define["facecolor"], alpha=patch_define["alpha"])
             self.axes.add_patch(patch)
         # caption = "This C-M diagram is modified after Mycielska-Dowgiałło & Ludwikowska-Kędzia (2011). " \
-        #           "See the description geological meanings of symbols from Passega (1964),
+        #           "See the description of symbols from Passega (1964),
         #           "Passega & Byramjee (1969) and Mycielska-Dowgiałło & Ludwikowska-Kędzia (2011)."
         # self.axes.text(*self.trans_pos(0.003, 0.01), caption, fontsize=6, ha="left", va="top", wrap=True)
 
