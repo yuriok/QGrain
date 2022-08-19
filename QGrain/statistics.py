@@ -1,3 +1,9 @@
+__all__ = ["mode", "modes", "to_cumulative", "reversed_phi_ppf", "interval_phi", "to_phi", "to_microns", "cm",
+           "arithmetic", "geometric", "logarithmic", "logarithmic_fw57", "geometric_fw57", "scale_description",
+           "proportions_gsm", "proportions_ssc", "proportions_bgssc", "all_proportions",
+           "group_gsm_folk54", "group_ssc_folk54", "group_folk54", "GROUP_BP12_SYMBOL_MAP",
+           "group_gsm_bp12", "group_ssc_bp12", "group_bp12", "major_statistics", "all_statistics"]
+
 import string
 from typing import *
 
@@ -169,6 +175,7 @@ def geometric(classes: ndarray, distribution: ndarray) -> Dict[str, Union[float,
         `dict(mean=..., std=..., skewness=..., kurtosis=..., std_description=..., skewness_description=...,
             kurtosis_description=...)`
     """
+
     def std_description(std_value):
         if std_value < 1.27:
             return "Very well sorted"
@@ -232,6 +239,7 @@ def logarithmic(classes_phi: ndarray, distribution: ndarray) -> Dict[str, Union[
         `dict(mean=..., std=..., skewness=..., kurtosis=..., std_description=..., skewness_description=...,
             kurtosis_description=...)`
     """
+
     def std_description(std_value):
         if std_value < 0.35:
             return "Very well sorted"
@@ -295,6 +303,7 @@ def logarithmic_fw57(_ppf: Callable[[Union[int, float, np.ndarray]], Union[int, 
         `dict(mean=..., std=..., skewness=..., kurtosis=..., std_description=..., skewness_description=...,
             kurtosis_description=...)`
     """
+
     def ppf(x):
         if not isinstance(x, ndarray):
             x = np.array(x)
@@ -366,6 +375,7 @@ def geometric_fw57(_ppf: Callable[[Union[int, float, np.ndarray]], Union[int, fl
         `dict(mean=..., std=..., skewness=..., kurtosis=..., std_description=..., skewness_description=...,
             kurtosis_description=...)`
     """
+
     def log_ppf(x):
         if not isinstance(x, ndarray):
             x = np.array(x)
