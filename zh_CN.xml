@@ -825,135 +825,190 @@
     <name>EMMASettings</name>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="22"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="158"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="182"/>
         <source>EMMA Settings</source>
         <translation>EMMA设置</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="25"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="159"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="183"/>
         <source>Device</source>
         <translation>设备</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="26"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="160"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="184"/>
         <source>PyTorch can use the NVIDIA GPU to do calculations.</source>
         <translation>PyTorch可以使用NVIDIA的GPU进行计算。</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="30"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="161"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="185"/>
         <source>Loss</source>
         <translation>损失函数</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="32"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="163"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="187"/>
         <source>The function to calculate the difference between prediction and observation.</source>
         <translation>该函数被用来计算预测和观测数据之间的差异。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="38"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="164"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="39"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="190"/>
         <source>Pretrain Epochs</source>
         <translation>预训练轮数</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="41"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="167"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="42"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="193"/>
         <source>The number of epochs before formal training. The pretrain process only update the proportions of end members.</source>
         <translation>正式训练之前的训练轮数。预训练过程只更新端元的相对含量。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="47"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="168"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="48"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="194"/>
         <source>Minimum Number of Epochs</source>
         <translation>最小轮数</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="48"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="169"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="49"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="195"/>
         <source>Minimum number of epochs to be performed.</source>
         <translation>算法执行的最小轮数。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="54"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="170"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="55"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="196"/>
         <source>Maximum Number of Epochs</source>
         <translation>最大轮数</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="55"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="171"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="56"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="197"/>
         <source>Maximum number of epochs to be performed.</source>
         <translation>算法执行的最大轮数。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="61"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="172"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="62"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="198"/>
         <source>Precision</source>
         <translation>精度</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="62"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="173"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="63"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="199"/>
         <source>It controls the precision of final loss.</source>
         <translation>它决定了算法中损失函数最终值的精度。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="68"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="174"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="69"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="200"/>
         <source>Learning Rate (x10&lt;sup&gt;-3&lt;/sup&gt;)</source>
         <translation>学习率 (x10&lt;sup&gt;-3&lt;/sup&gt;)</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="70"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="176"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="71"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="202"/>
         <source>The learning rate of the neural network to update its weights from gradient.</source>
         <translation>神经网络从梯度更新权重时的学习率。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="77"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="177"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="78"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="203"/>
         <source>Beta 1</source>
         <translation>Beta 1</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="79"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="88"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="179"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="182"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="80"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="89"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="205"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="208"/>
         <source>Betas are the coefficients used for computing running averages of gradient and its square.</source>
         <translation>Beta值是用于滑动平均梯度的系数。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="86"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="180"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="87"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="206"/>
         <source>Beta 2</source>
         <translation>Beta 2</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="95"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="183"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="96"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="209"/>
         <source>Update End Members</source>
         <translation>更新端元</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="97"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="185"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="98"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="211"/>
         <source>Update the distributions of end members while training the model or not.</source>
         <translation>是否在训练模型时更新端元的分布。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="101"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="187"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="102"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="213"/>
         <source>Record the variation history of parameters or not.</source>
         <translation>是否记录参数的变化历史。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/EMMASettings.py" line="100"/>
-        <location filename="QGrain/ui/EMMASettings.py" line="186"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="109"/>
+        <source>1 Norm</source>
+        <translation>1-范数</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/EMMASettings.py" line="110"/>
+        <source>2 Norm</source>
+        <translation>2-范数</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/EMMASettings.py" line="111"/>
+        <source>3 Norm</source>
+        <translation>3-范数</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/EMMASettings.py" line="112"/>
+        <source>4 Norm</source>
+        <translation>4-范数</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/EMMASettings.py" line="113"/>
+        <source>MAE</source>
+        <translation>MAE</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/EMMASettings.py" line="114"/>
+        <source>MSE</source>
+        <translation>MSE</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/EMMASettings.py" line="115"/>
+        <source>RMSE</source>
+        <translation>RMSE</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/EMMASettings.py" line="116"/>
+        <source>RMLSE</source>
+        <translation>RMLSE</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/EMMASettings.py" line="117"/>
+        <source>LMSE</source>
+        <translation>LMSE</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/EMMASettings.py" line="118"/>
+        <source>Cosine</source>
+        <translation>Cosine</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/EMMASettings.py" line="119"/>
+        <source>Angular</source>
+        <translation>Angular</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/EMMASettings.py" line="101"/>
+        <location filename="QGrain/ui/EMMASettings.py" line="212"/>
         <source>Need History</source>
         <translation>需要历史</translation>
     </message>
@@ -2091,106 +2146,196 @@ Deviation</source>
 <context>
     <name>SSUSettings</name>
     <message>
-        <location filename="QGrain/ui/SSUSettings.py" line="13"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="106"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="11"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="144"/>
         <source>SSU Settings</source>
         <translation>SSU设置</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUSettings.py" line="16"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="107"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="14"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="145"/>
         <source>Loss Function</source>
         <translation>损失函数</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUSettings.py" line="18"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="109"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="16"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="147"/>
         <source>The function to calculate the difference between prediction and observation.</source>
         <translation>该函数被用来计算预测和观测数据之间的差异。</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUSettings.py" line="24"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="110"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="23"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="150"/>
         <source>Optimizer</source>
         <translation>优化器</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUSettings.py" line="25"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="111"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="24"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="151"/>
         <source>The optimizer to find the minimum of loss function.</source>
         <translation>被用来寻找损失函数最小值的优化器。</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="31"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="112"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="154"/>
         <source>Global Optimization</source>
         <translation>全局优化</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="33"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="113"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="155"/>
         <source>Try global optimization or not.</source>
         <translation>是否尝试全局优化算法。</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="36"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="114"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="156"/>
         <source>Maximum Number of Iterations</source>
         <translation>最大迭代次数</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="37"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="115"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="157"/>
         <source>Maximum number of iterations of global optimization.</source>
         <translation>全局优化过程中的最大迭代次数。</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="43"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="116"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="158"/>
         <source>Success Number of Iterations</source>
         <translation>成功迭代次数</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="45"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="118"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="160"/>
         <source>The number of iterations that reaching the same minimum value.</source>
         <translation>达到同一个最小值的次数。</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="51"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="119"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="161"/>
         <source>Step Size</source>
         <translation>步长</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="52"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="120"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="162"/>
         <source>The step size of searching the global minimum.</source>
         <translation>搜索全局最小值的步长。</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="58"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="121"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="163"/>
         <source>Maximum Number of Iterations of Optimizer</source>
         <translation>优化器的最大迭代次数</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="60"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="123"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="165"/>
         <source>Maximum number of iterations of the optimizer in global and local optimization.</source>
         <translation>全局和局部优化过程中使用的优化器的最大迭代次数。</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="66"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="124"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="166"/>
         <source>Need History</source>
         <translation>需要历史</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="68"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="125"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="167"/>
         <source>Record the variation history of parameters or not.</source>
         <translation>是否记录参数变化历史。</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUSettings.py" line="73"/>
+        <source>1 Norm</source>
+        <translation>1-范数</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUSettings.py" line="74"/>
+        <source>2 Norm</source>
+        <translation>2-范数</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUSettings.py" line="75"/>
+        <source>3 Norm</source>
+        <translation>3-范数</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUSettings.py" line="76"/>
+        <source>4 Norm</source>
+        <translation>4-范数</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUSettings.py" line="77"/>
+        <source>MAE</source>
+        <translation>MAE</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUSettings.py" line="78"/>
+        <source>MSE</source>
+        <translation>MSE</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUSettings.py" line="79"/>
+        <source>RMSE</source>
+        <translation>RMSE</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUSettings.py" line="80"/>
+        <source>RMLSE</source>
+        <translation>RMLSE</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUSettings.py" line="81"/>
+        <source>LMSE</source>
+        <translation>LMSE</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUSettings.py" line="82"/>
+        <source>Cosine</source>
+        <translation>Cosine</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUSettings.py" line="83"/>
+        <source>Angular</source>
+        <translation>Angular</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUSettings.py" line="88"/>
+        <source>Nelder-Mead</source>
+        <translation>Nelder-Mead</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUSettings.py" line="89"/>
+        <source>Powell</source>
+        <translation>Powell</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUSettings.py" line="90"/>
+        <source>CG</source>
+        <translation>CG</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUSettings.py" line="91"/>
+        <source>BFGS</source>
+        <translation>BFGS</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUSettings.py" line="92"/>
+        <source>L-BFGS-B</source>
+        <translation>L-BFGS-B</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUSettings.py" line="93"/>
+        <source>TNC</source>
+        <translation>TNC</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUSettings.py" line="94"/>
+        <source>SLSQP</source>
+        <translation>SLSQP</translation>
     </message>
 </context>
 <context>
@@ -2755,105 +2900,105 @@ Deviation</source>
     <name>UDMSettings</name>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="18"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="151"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="153"/>
         <source>UDM Settings</source>
         <translation>UDM设置</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="21"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="152"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="154"/>
         <source>Device</source>
         <translation>设备</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="23"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="154"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="156"/>
         <source>PyTorch can use the NVIDIA GPU to do calculations.</source>
         <translation>PyTorch可以使用NVIDIA的GPU进行计算。</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="27"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="155"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="157"/>
         <source>Pretrain Epochs</source>
         <translation>预训练轮数</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="30"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="158"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="160"/>
         <source>The number of epochs before formal training. The pretrain process only update the proportions of end members.</source>
         <translation>正式训练之前的训练轮数。预训练过程只更新端元的相对含量。</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="36"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="159"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="161"/>
         <source>Minimum Number of Epochs</source>
         <translation>最小轮数</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="37"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="160"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="162"/>
         <source>Minimum number of epochs to be performed.</source>
         <translation>算法执行的最小轮数。</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="43"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="161"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="163"/>
         <source>Maximum Number of Epochs</source>
         <translation>最大轮数</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="44"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="162"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="164"/>
         <source>Maximum number of epochs to be performed.</source>
         <translation>算法执行的最大轮数。</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="50"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="163"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="165"/>
         <source>Precision</source>
         <translation>精度</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="52"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="165"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="167"/>
         <source>It controls the precision of final loss.</source>
         <translation>它决定了算法最终损失值的精度。</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="58"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="166"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="168"/>
         <source>Learning Rate (x10&lt;sup&gt;-3&lt;/sup&gt;)</source>
         <translation>学习率 (x10&lt;sup&gt;-3&lt;/sup&gt;)</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="60"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="168"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="170"/>
         <source>The learning rate of the neural network to update its weights from gradient.</source>
         <translation>神经网络从梯度更新权重时的学习率。</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="67"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="169"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="171"/>
         <source>Beta 1</source>
         <translation>Beta 1</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="69"/>
         <location filename="QGrain/ui/UDMSettings.py" line="78"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="171"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="174"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="173"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="176"/>
         <source>Betas are the coefficients used for computing running averages of gradient and its square.</source>
         <translation>Beta值是用于滑动平均梯度的系数。</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="76"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="172"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="174"/>
         <source>Beta 2</source>
         <translation>Beta 2</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="85"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="175"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="177"/>
         <source>Constraint Level</source>
         <translation>约束等级</translation>
     </message>
@@ -2864,13 +3009,13 @@ Deviation</source>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="95"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="179"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="181"/>
         <source>Need History</source>
         <translation>需要历史</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="96"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="180"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="182"/>
         <source>Record the variation history of parameters or not.</source>
         <translation>是否记录参数的变化历史。</translation>
     </message>

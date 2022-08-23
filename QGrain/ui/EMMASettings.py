@@ -31,8 +31,9 @@ class EMMASettings(QtWidgets.QDialog):
         self.loss_label.setToolTip(self.tr(
             "The function to calculate the difference between prediction and observation."))
         self.loss_combo_box = QtWidgets.QComboBox()
-        self.loss_combo_box.addItems(built_in_losses)
-        self.loss_combo_box.setCurrentText("lmse")
+        for key, name in self.supported_losses:
+            self.loss_combo_box.addItem(name)
+        self.loss_combo_box.setCurrentIndex(8)
         self.main_layout.addWidget(self.loss_label, 1, 0)
         self.main_layout.addWidget(self.loss_combo_box, 1, 1)
         self.pretrain_epochs_label = QtWidgets.QLabel(self.tr("Pretrain Epochs"))
@@ -104,10 +105,29 @@ class EMMASettings(QtWidgets.QDialog):
         self._update_device_list()
 
     @property
+    def supported_losses(self) -> Sequence[Tuple[str, str]]:
+        losses = (("1-norm", self.tr("1 Norm")),
+                  ("2-norm", self.tr("2 Norm")),
+                  ("3-norm", self.tr("3 Norm")),
+                  ("4-norm", self.tr("4 Norm")),
+                  ("mae", self.tr("MAE")),
+                  ("mse", self.tr("MSE")),
+                  ("rmse", self.tr("RMSE")),
+                  ("rmlse", self.tr("RMLSE")),
+                  ("lmse", self.tr("LMSE")),
+                  ("cosine", self.tr("Cosine")),
+                  ("angular", self.tr("Angular")))
+        return losses
+
+    @property
+    def loss(self) -> str:
+        return self.supported_losses[self.loss_combo_box.currentIndex()][0]
+
+    @property
     def settings(self) -> Dict[str, Any]:
         settings = dict(
             device=self.device_combo_box.currentText(),
-            loss=self.loss_combo_box.currentText(),
+            loss=self.loss,
             pretrain_epochs=self.pretrain_epochs_input.value(),
             min_epochs=self.min_epochs_input.value(),
             max_epochs=self.max_epochs_input.value(),
@@ -120,8 +140,10 @@ class EMMASettings(QtWidgets.QDialog):
 
     @settings.setter
     def settings(self, s: Dict):
+        loss_map = {key: i for i, (key, name) in enumerate(self.supported_losses)}
+        assert s["loss"] in loss_map
         self.device_combo_box.setCurrentIndex(s["device"])
-        self.loss_combo_box.setCurrentText(s["loss"])
+        self.loss_combo_box.setCurrentIndex(loss_map[s["loss"]])
         self.pretrain_epochs_input.setValue(s["pretrain_epochs"])
         self.min_epochs_input.setValue(s["min_epochs"])
         self.max_epochs_input.setValue(s["max_epochs"])
@@ -163,6 +185,8 @@ class EMMASettings(QtWidgets.QDialog):
         self.loss_label.setText(self.tr("Loss"))
         self.loss_label.setToolTip(self.tr(
             "The function to calculate the difference between prediction and observation."))
+        for i, (key, name) in enumerate(self.supported_losses):
+            self.loss_combo_box.setItemText(i, name)
         self.pretrain_epochs_label.setText(self.tr("Pretrain Epochs"))
         self.pretrain_epochs_label.setToolTip(self.tr(
             "The number of epochs before formal training. "
