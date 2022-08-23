@@ -56,6 +56,8 @@ def try_emma(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType
     if torch.cuda.is_available():
         available_devices.append("cuda")
     available_devices.extend([f"cuda:{i}" for i in range(torch.cuda.device_count())])
+    if "cuda:0" in available_devices:
+        available_devices.remove("cuda:0")
     assert device in available_devices
     assert loss in built_in_losses
     assert isinstance(pretrain_epochs, int)
