@@ -4,8 +4,6 @@ from typing import *
 
 from PySide6 import QtCore, QtWidgets
 
-from ..ssu import built_in_losses, built_in_optimizers
-
 
 class SSUSettings(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -17,15 +15,17 @@ class SSUSettings(QtWidgets.QDialog):
         self.loss_label.setToolTip(self.tr(
             "The function to calculate the difference between prediction and observation."))
         self.loss_combo_box = QtWidgets.QComboBox()
-        self.loss_combo_box.addItems(built_in_losses)
-        self.loss_combo_box.setCurrentText("lmse")
+        for key, name in self.supported_losses:
+            self.loss_combo_box.addItem(name)
+        self.loss_combo_box.setCurrentIndex(8)
         self.main_layout.addWidget(self.loss_label, 0, 0)
         self.main_layout.addWidget(self.loss_combo_box, 0, 1)
         self.optimizer_label = QtWidgets.QLabel(self.tr("Optimizer"))
         self.optimizer_label.setToolTip(self.tr("The optimizer to find the minimum of loss function."))
         self.optimizer_combo_box = QtWidgets.QComboBox()
-        self.optimizer_combo_box.addItems(built_in_optimizers)
-        self.optimizer_combo_box.setCurrentText("L-BFGS-B")
+        for key, name in self.supported_optimizers:
+            self.optimizer_combo_box.addItem(name)
+        self.optimizer_combo_box.setCurrentIndex(6)
         self.main_layout.addWidget(self.optimizer_label, 1, 0)
         self.main_layout.addWidget(self.optimizer_combo_box, 1, 1)
         self.try_global_checkbox = QtWidgets.QCheckBox(self.tr("Global Optimization"))
@@ -69,10 +69,44 @@ class SSUSettings(QtWidgets.QDialog):
         self.main_layout.addWidget(self.need_history_checkbox, 7, 0, 1, 2)
 
     @property
+    def supported_losses(self) -> Sequence[Tuple[str, str]]:
+        losses = (("1-norm", self.tr("1 Norm")),
+                  ("2-norm", self.tr("2 Norm")),
+                  ("3-norm", self.tr("3 Norm")),
+                  ("4-norm", self.tr("4 Norm")),
+                  ("mae", self.tr("MAE")),
+                  ("mse", self.tr("MSE")),
+                  ("rmse", self.tr("RMSE")),
+                  ("rmlse", self.tr("RMLSE")),
+                  ("lmse", self.tr("LMSE")),
+                  ("cosine", self.tr("Cosine")),
+                  ("angular", self.tr("Angular")))
+        return losses
+
+    @property
+    def supported_optimizers(self) -> Sequence[Tuple[str, str]]:
+        optimizers = (("Nelder-Mead", self.tr("Nelder-Mead")),
+                      ("Powell", self.tr("Powell")),
+                      ("CG", self.tr("CG")),
+                      ("BFGS", self.tr("BFGS")),
+                      ("L-BFGS-B", self.tr("L-BFGS-B")),
+                      ("TNC", self.tr("TNC")),
+                      ("SLSQP", self.tr("SLSQP")))
+        return optimizers
+
+    @property
+    def loss(self) -> str:
+        return self.supported_losses[self.loss_combo_box.currentIndex()][0]
+
+    @property
+    def optimizer(self) -> str:
+        return self.supported_optimizers[self.optimizer_combo_box.currentIndex()][0]
+
+    @property
     def settings(self) -> Dict:
         s = dict(
-            loss=self.loss_combo_box.currentText(),
-            optimizer=self.optimizer_combo_box.currentText(),
+            loss=self.loss,
+            optimizer=self.optimizer,
             try_global=self.try_global_checkbox.isChecked(),
             global_max_niter=self.global_max_niter_input.value(),
             global_niter_success=self.global_niter_success_input.value(),
@@ -83,8 +117,12 @@ class SSUSettings(QtWidgets.QDialog):
 
     @settings.setter
     def settings(self, s: Dict[str, Any]):
-        self.loss_combo_box.setCurrentText(s["loss"])
-        self.optimizer_combo_box.setCurrentText(s["optimizer"])
+        loss_map = {key: i for i, (key, name) in enumerate(self.supported_losses)}
+        assert s["loss"] in loss_map
+        optimizer_map = {key: i for i, (key, name) in enumerate(self.supported_optimizers)}
+        assert s["optimizer"] in optimizer_map
+        self.loss_combo_box.setCurrentIndex(loss_map[s["loss"]])
+        self.optimizer_combo_box.setCurrentIndex(optimizer_map[s["optimizer"]])
         self.try_global_checkbox.setChecked(s["try_global"])
         self.global_max_niter_input.setValue(s["global_max_niter"])
         self.global_niter_success_input.setValue(s["global_niter_success"])
@@ -107,8 +145,12 @@ class SSUSettings(QtWidgets.QDialog):
         self.loss_label.setText(self.tr("Loss Function"))
         self.loss_label.setToolTip(self.tr(
             "The function to calculate the difference between prediction and observation."))
+        for i, (key, name) in enumerate(self.supported_losses):
+            self.loss_combo_box.setItemText(i, name)
         self.optimizer_label.setText(self.tr("Optimizer"))
         self.optimizer_label.setToolTip(self.tr("The optimizer to find the minimum of loss function."))
+        for i, (key, name) in enumerate(self.supported_optimizers):
+            self.optimizer_combo_box.setItemText(i, name)
         self.try_global_checkbox.setText(self.tr("Global Optimization"))
         self.try_global_checkbox.setToolTip(self.tr("Try global optimization or not."))
         self.global_max_niter_label.setText(self.tr("Maximum Number of Iterations"))
