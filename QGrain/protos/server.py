@@ -61,6 +61,8 @@ class QGrainServicer(qgrain_pb2_grpc.QGrainServicer):
         if torch.cuda.is_available():
             devices.append("cuda")
         devices.extend([f"cuda:{i}" for i in range(torch.cuda.device_count())])
+        if "cuda:0" in devices:
+            devices.remove("cuda:0")
         state = dict(max_workers=self._max_workers, max_message_length=self._max_message_length,
                      max_dataset_size=self._max_dataset_size, available_devices=tuple(devices))
         response = qgrain_pb2.ServiceStateResponse(**state)

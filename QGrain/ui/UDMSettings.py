@@ -141,6 +141,8 @@ class UDMSettings(QtWidgets.QDialog):
         if torch.cuda.is_available():
             available_devices.append("cuda")
         available_devices.extend([f"cuda:{i}" for i in range(torch.cuda.device_count())])
+        if "cuda:0" in available_devices:
+            available_devices.remove("cuda:0")
         self.device_combo_box.addItems(available_devices)
 
     def changeEvent(self, event: QtCore.QEvent):
