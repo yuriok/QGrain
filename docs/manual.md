@@ -1,9 +1,5 @@
 # Users Guide for QGrain
 
-
-
-
-
 ## Introduction
 
 ![QGrain logo](./images/logos/200x200.png)
@@ -11,10 +7,6 @@
 ### Objective
 
 Grain size distributions (GSDs) of clastic sediments can record direct information on changes in the source of material, transporting mechanism and sedimentary environment ([Friedman and Sanders, 1978](https://agris.fao.org/agris-search/search.do?recordID=US201300560426)). Therefore, it has the potential to reveal key information about the paleoenvironment and paleoclimate by analyzing the GSDs. In the past decades, lots of analysis tools have been proposed, which greatly promoted the development of sedimentology. However, no platform can provide most of the analysis methods to facilitate researchers. QGrain aims to provide an easy-to-use and comprehensive analysis platform for grain size distributions. QGrain has implemented many functions, e.g., all functions of GRADISTAT ([Blott and Pye, 2001](https://doi.org/10.1002/esp.261)), single sample unmixing (SSU, previously called curve-fitting), and end member modeling analysis (EMMA). However, there still are many useful tools that have not been contained. Hence, we published QGrain as an open-source project, and welcome other researchers to contribute their ideas and codes. All source codes are available at this GitHub [repository](https://github.com/yuriok/QGrain/).
-
-
-
-
 
 ### Current functions
 
@@ -85,8 +77,8 @@ Finally, you will see the initial interface below.
 
 <figure>
     <img src="./images/generator_panel.png" alt="Initial interface & generator panel"/>
-    <figcaption><bold>Figure 1.</bold> The initial interface of QGrain App. It is showing the generator panel.<figcaption>
-<figure>
+    <figcaption><bold>Figure 1.</bold> The initial interface of QGrain App. It is showing the generator panel.</figcaption>
+</figure>
 
 ### Enable CUDA
 
@@ -110,8 +102,8 @@ By clicking the `Grain Size Dataset` action in the `Open` menu, you will see a d
 
 <figure>
     <img src="./images/dataset_loader.png" alt="Dataset loader"/>
-    <figcaption><bold>Figure 2.</bold> The dialog of dataset loader.
-<figure>
+    <figcaption><bold>Figure 2.</bold> The dialog of dataset loader.</figcaption>
+</figure>
 
 For Excel files, one file can contain multiple sheets, it's suitable for placing the related but different types of information in different sheets. For example, the output files of QGrain usually put a `README` sheet to give a brief description of this file and put other sheets after this sheet. Here, we need to choose the `Dataset` sheet. By default, it will load the first row as the grain size classes, and the first column is used to put the names of samples, GSDs are tight with the classes and names. The default output layout of QGrain is correct, so, just click the `Try Load` button. If your dataset does not follow this data layout, i.e., it has additional rows or columns, you can change the layout settings to load it. Considering the complexity, we only support the horizontal layout (i.e., each row is one sample). If your dataset is vertical (i.e., each column is one sample), it's easy to transform it using other software (e.g., Microsoft Excel).
 
@@ -144,7 +136,6 @@ $$
 \Phi(x) = \int_{-\infty}^{x} \phi(t)\ dt = \frac{1}{2}\left[1+\operatorname{erf}\left(\frac{x}{\sqrt{2}}\right)\right]
 $$
 
-
 where $\operatorname{erf}$ is the [error](https://en.wikipedia.org/wiki/Error_function) function. Then the PDF of the skew-normal distribution with the shape parameter $\alpha$ is given by
 
 $$
@@ -168,8 +159,6 @@ $$
 \boldsymbol{f} = p_1 \boldsymbol{f}_1 + p_2 \boldsymbol{f}_2 + \cdots + p_q \boldsymbol{f}_q.
 $$
 
-
-
 For other distribution functions, just change the PDF. Of course, the parameters except $x$ may be different.
 
 #### Generate a batch of samples
@@ -186,8 +175,8 @@ This panel is designed to provide the basic analysis and visualization for a bri
 
 <figure>
     <img src="./images/statistics_panel.png" alt="Statistics Panel"/>
-    <figcaption><bold>Figure 3.</bold> The interface of the statistics panel.
-<figure>
+    <figcaption><bold>Figure 3.</bold> The interface of the statistics panel.</figcaption>
+</figure>
 
 You can choose the option `Statistical Result` in the `Save` menu to save the statistical result to an Excel file.
 
@@ -208,20 +197,17 @@ The cumulative frequency chart is classical. It is used to discriminate differen
 
 <figure>
     <img src="./images/cumulative.svg" alt="Cumulative Frequency Chart"/>
-    <figcaption><bold>Figure 4.</bold> The cumulative frequency chart shows two artificial samples.
-<figure>
-
+    <figcaption><bold>Figure 4.</bold> The cumulative frequency chart shows two artificial samples.</figcaption>
+</figure>
 
 #### Frequency distribution chart
-
 
 The frequency distribution chart is the most commonly used chart to show the detailed characteristics of grain size samples. With this chart, you can easily recognize the particle abundances of different grain size classes. And you can easily take a comparison of several samples.
 
 <figure>
     <img src="./images/frequency.svg" alt="Frequency Distribution Chart"/>
-    <figcaption><bold>Figure 5.</bold> The frequency distribution chart shows two artificial samples.
-<figure>
-
+    <figcaption><bold>Figure 5.</bold> The frequency distribution chart shows two artificial samples.</figcaption>
+</figure>
 
 #### Frequency 3D chart
 
@@ -229,58 +215,49 @@ If you want to show a batch of samples, the frequency distribution chart may be 
 
 <figure>
     <img src="./images/frequency3d.png" alt="Frequency 3D Chart"/>
-    <figcaption><bold>Figure 6.</bold> The frequency 3D chart simultaneously shows a batch of samples as a 3D surface.
-<figure>
+    <figcaption><bold>Figure 6.</bold> The frequency 3D chart simultaneously shows a batch of samples as a 3D surface.</figcaption>
+</figure>
 
 #### Frequency heatmap
-
 
 The frequency heatmap is another way to visualize the GSDs of many samples and has been widely used in publications.
 
 <figure>
     <img src="./images/frequency_heatmap.svg" alt="Frequency Heatmap"/>
-    <figcaption><bold>Figure 7.</bold> The frequency heatmap simultaneously shows a batch of samples as a heatmap.
-<figure>
-
+    <figcaption><bold>Figure 7.</bold> The frequency heatmap simultaneously shows a batch of samples as a heatmap.</figcaption>
+</figure>
 
 #### Classification diagrams
 
 There are many different classification diagrams which have been widely used in sedimentology, geomorphology, soil science, aquatic ecology and civil engineering ([Blott & Pye, 2012](https://doi.org/10.1111/j.1365-3091.2012.01335.x)). Due to the limitation of time, only [Folk (1954)](http://www.jstor.org/stable/30065016)'s and [Blott & Pye (2012)](https://doi.org/10.1111/j.1365-3091.2012.01335.x)'s schemes are provided at present.
 
-
-
 ##### Gravel-sand-mud diagram (Folk, 1954)
 
 <figure>
     <img src="./images/gsm_folk54.svg" alt="Gravel-sand-mud diagram (Folk, 1954)"/>
-    <figcaption><bold>Figure 8.</bold> The gravel-sand-mud diagram (Folk, 1954) shows the classification groups of a batch of samples.
-<figure>
-
+    <figcaption><bold>Figure 8.</bold> The gravel-sand-mud diagram (Folk, 1954) shows the classification groups of a batch of samples.</figcaption>
+</figure>
 
 ##### Sand-silt-clay diagram (Folk, 1954)
 
 <figure>
     <img src="./images/ssc_folk54.svg" alt="Sand-silt-clay diagram (Folk, 1954)"/>
-    <figcaption><bold>Figure 9.</bold> The sand-silt-clay diagram (Folk, 1954).
-<figure>
-
+    <figcaption><bold>Figure 9.</bold> The sand-silt-clay diagram (Folk, 1954).</figcaption>
+</figure>
 
 ##### Gravel-sand-mud diagram (Blott & Pye, 2012)
 
 <figure>
     <img src="./images/gsm_bp12.svg" alt="Gravel-sand-mud diagram (Blott & Pye, 2012)"/>
-    <figcaption><bold>Figure 10.</bold> The gravel-sand-mud diagram (Blott & Pye, 2012).
-<figure>
-
+    <figcaption><bold>Figure 10.</bold> The gravel-sand-mud diagram (Blott & Pye, 2012).</figcaption>
+</figure>
 
 ##### Sand-silt-clay diagram (Blott & Pye, 2012)
 
 <figure>
     <img src="./images/ssc_bp12.svg" alt="Sand-silt-clay diagram (Blott & Pye, 2012)"/>
-    <figcaption><bold>Figure 11.</bold> The sand-silt-clay diagram (Blott & Pye, 2012).
-<figure>
-
-
+    <figcaption><bold>Figure 11.</bold> The sand-silt-clay diagram (Blott & Pye, 2012).</figcaption>
+</figure>
 
 #### C-M diagram
 
@@ -288,10 +265,8 @@ Since the first discussion of C-M patterns ([Passega, 1957](https://doi.org/10.1
 
 <figure>
     <img src="./images/cm.svg" alt="C-M diagram"/>
-    <figcaption><bold>Figure 12.</bold> The C-M diagram of generated samples.
-<figure>
-
-
+    <figcaption><bold>Figure 12.</bold> The C-M diagram of generated samples.</figcaption>
+</figure>
 
 ### PCA panel
 
@@ -299,8 +274,8 @@ Since the first discussion of C-M patterns ([Passega, 1957](https://doi.org/10.1
 
 <figure>
     <img src="./images/pca_panel.png" alt="PCA Panel"/>
-    <figcaption><bold>Figure 13.</bold> The interface of the PCA panel.
-<figure>
+    <figcaption><bold>Figure 13.</bold> The interface of the PCA panel.</figcaption>
+</figure>
 
 
 The only question for you is how to understand the result. There are many documents introducing the algorithm of PCA. After reading them, you may understand the result better. The subfigure at the top-left is modified from the biplot, it uses the principal components, PC1 and PC2, to construct the coordinate system, hence showing the relationships of the original dimensions. Because the number of dimensions of GSDs is too large, it is not suitable to show all dimensions with arrows. Therefore, only the dimensions which are closest to PC1 and PC2 are presented with arrows. The points of other dimensions are connected to form a shape. The gray points show the grain size samples.
@@ -315,9 +290,8 @@ The subfigure at the bottom shows the variations of eigenvalues of PC1 and PC2. 
 
 <figure>
     <img src="./images/clustering_panel.png" alt="Clustering Panel"/>
-    <figcaption><bold>Figure 14.</bold> The interface of the clustering panel.
-<figure>
-
+    <figcaption><bold>Figure 14.</bold> The interface of the clustering panel.</figcaption>
+</figure>
 
 You could see a dendrogram at the interface. It shows the relationships between different samples. At the top, all samples are in the same cluster. When it goes down, the cluster will be split into two new clusters, and so on. At the bottom, each sample is in its cluster. If the number of samples is too great, it’s difficult to show all labels of the bottom layer. Hence, it’s truncated and only shows `p` bottom leaves, you can change the `p` to show more or fewer bottom leaves. Note that, `p` only affects the figure, it has no influence on the clustering result. You can change the `Number of Clusters` to control the clustering algorithm.
 
@@ -331,35 +305,27 @@ The interface of the SSU panel is the most complex among these panels. But don't
 
 <figure>
     <img src="./images/ssu_panel.png" alt="SSU Panel"/>
-    <figcaption><bold>Figure 15.</bold> The interface of the SSU panel.
-<figure>
-
+    <figcaption><bold>Figure 15.</bold> The interface of the SSU panel.</figcaption>
+</figure>
 
 You can adjust the `Sample Index` to switch the current sample which is ready for fitting. The `Sample Name` below is going to change synchronously as `Sample Index` changes. By clicking the `Try Fit` button, the current sample will be decomposed with current settings. The introduction to adjusting the settings will be given at the following paragraphs. By clicking the `Try Previous` or `Try Next` button, you can decompose the previous or next sample. After fitting, the decomposed result will be displayed in the `Result` table, you can see some basic information about the fitting process.  At the same time, the result will be visualized in the chart.
 
 Right-click on the `Result` table, you can see the menu to do actions on the decomposed results, e.g., remove the selected or all results. You also can show the selected result in the chart if you want to check the previous result. While the `Auto Show` option is checked, the selected result will be automatically displayed in the chart. In addition, you can show the variation of loss in the fitting process and the resolved parameters. There are several sub-options in the `Check` action, you can use them to remove the outliers in the table. Right-click on the `Chart` region, you can see the menu to affect the chart. By checking the `Animated` option, the fitting process will be displayed with the animation.
-
-<figure>
-    <img src="./images/ssu_result_menu.png" alt="SSU Result Menu"/>
-    <img src="./images/ssu_chart_menu.png" alt="SSU Chart Menu"/>
-    <figcaption><bold>Figure 16.</bold> The result (left) and chart (right) menus of the SSU panel.
-<figure>
 
 
 You can click the `SSU Algorithm` option in the `Configure` menu to open the dialog to adjust the algorithm settings of SSU. Basically, you don't need to change the following settings. At first, you can choose the loss function to calculate the distance between the observed and predicated GSDs. In practice, the logarithmic mean squared error (LMSE) is better than other loss functions. Moreover, you can select the optimizer (i.e. optimization algorithm). For some optimizers (e.g., Powell), it needs more iterations, you may need to change the `Maximum Number of Iterations of Optimizer`. If you check the `Global Optimization`, it will use the [`basinhopping`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.basinhopping.html) algorithm to find the global minimum.
 
 <figure>
     <img src="./images/ssu_settings.png" alt="SSU Settings"/>
-    <figcaption><bold>Figure 17.</bold> The algorithm settings of SSU.
-<figure>
+    <figcaption><bold>Figure 16.</bold> The algorithm settings of SSU.</figcaption>
+</figure>
+
 If your sample has more than 3 components and the proportions of some components are very low, it's recommended to click the `Edit Parameters` button to fitting the current sample manually. At the `Parameter Editor`, you can manually set the initial parameters to each component. No need to be very accurate. Then click the `Enable` checkbox, and try to fit the sample again. **Note that, if the `Enable` checkbox is not checked, the parameters in the `Parameter Editor` will not work.** The `Parameter Editor` is very important. It enables you to handle the complex samples. By clicking the `Refer Parameter` action in the result menu of SSU, you can transmit the resolved parameters of the selected SSU result to the `Parameter Editor`. It is convenient to utilize the fitting results of other samples as the references to decompose the next sample. Furthermore, the panels of SSU, EMMA and UDM share the same `Parameter Editor`, which means you can utilize the result of SSU while performing the EMMA or UDM algorithm to the whole dataset.
 
 <figure>
     <img src="./images/parameter_editor.png" alt="Parameter Editor"/>
-    <figcaption><bold>Figure 17.</bold> The interface of the parameter editor.
-<figure>
-
-
+    <figcaption><bold>Figure 17.</bold> The interface of the parameter editor.</figcaption>
+</figure>
 
 Finally, you can select the `SSU Results` action in the `Save` menu to save the results into an Excel file or a binary file. **It's recommended to also save a binary file because it could preserve the fitting history and could be reloaded by the QGrain software.**
 
@@ -369,32 +335,24 @@ This panel provides a new EMMA algorithm (NNEMMA) which is based on the basic ne
 
 <figure>
     <img src="./images/emma_panel.png" alt="EMMA Panel"/>
-    <figcaption><bold>Figure 18.</bold> The interface of the EMMA panel.
-<figure>
-
-
+    <figcaption><bold>Figure 18.</bold> The interface of the EMMA panel.</figcaption>
+</figure>
 
 You can click the `EMMA Algorithm` option in the `Configure` menu to open the dialog to adjust the algorithm settings of NNEMMA. By observing the chart of the selected fitting result, you can judge that whether the algorithm has converged to the limit and whether the fitting result has unmixed the end members well. If it did not converge to the limit, please increase the minimum and maximum number of epochs in the algorithm settings. If the loss variation is too volatile, you need to decrease the learning rate. Adjust the settings until you are satisfied, and then save the corresponding result to an Excel file or a binary file.
 
 <figure>
     <img src="./images/emma_settings.png" alt="EMMA Settings"/>
-    <figcaption><bold>Figure 19.</bold> The algorithm settings of EMMA.
-<figure>
-
-
+    <figcaption><bold>Figure 19.</bold> The algorithm settings of EMMA.</figcaption>
+</figure>
 
 ### UDM panel
 
 The interface of the UDM panel is very similar to that of the EMMA panel.
 
-
-
 <figure>
     <img src="./images/udm_panel.png" alt="UDM Panel"/>
-    <figcaption><bold>Figure 20.</bold> The interface of the UDM panel.
-<figure>
-
-
+    <figcaption><bold>Figure 20.</bold> The interface of the UDM panel.</figcaption>
+</figure>
 
 ---
 
@@ -510,10 +468,8 @@ save_artificial_dataset(dataset, "./Artificial Dataset.xlsx")
 
 <figure>
     <img src="./images/ad_frequency_heatmap.svg" alt="The Frequency Heatmap"/>
-    <figcaption><bold>Figure 21.</bold> The frequency heatmap of this artificial dataset.
-<figure>
-
-
+    <figcaption><bold>Figure 21.</bold> The frequency heatmap of this artificial dataset.</figcaption>
+</figure>
 
 ### How to perform statistical analysis and save the result
 
