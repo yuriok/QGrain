@@ -51,7 +51,11 @@ def validate_classes(classes: Sequence[float]) -> Tuple[bool, Union[ndarray, str
     """
     if classes is None:
         return False, "The passed classes can not be `None`."
-    array: ndarray = np.array(classes, dtype=np.float64)
+    try:
+        array: ndarray = np.array(classes, dtype=np.float64)
+    except ValueError as e:
+        return False, "Can not convert the classes to a numerical array, " \
+                      f"it may contains invalid values (e.g. text). {e}"
     if array.ndim != 1:
         return False, "The passed classes should be one-dimensional."
     if len(array) == 0:
@@ -88,7 +92,11 @@ def validate_distributions(distributions: Sequence[Sequence[float]]) -> Tuple[bo
     """
     if distributions is None:
         return False, "The passed distributions can not be `None`."
-    array = np.array(distributions, dtype=np.float64)
+    try:
+        array: ndarray = np.array(distributions, dtype=np.float64)
+    except ValueError as e:
+        return False, "Can not convert the distributions to a numerical array, " \
+                      f"it may contains invalid values (e.g. text). {e}"
     if array.ndim != 2:
         return False, "The passed distributions should be two-dimensional."
     n_samples, n_classes = array.shape
