@@ -36,12 +36,6 @@ class TestTryEMMA:
         self.log_message(result)
         assert isinstance(result, EMMAResult)
 
-    def test_cuda0(self):
-        result = try_emma(self.dataset, KernelType.Normal, self.dataset.n_components, x0=self.x0,
-                          device="cuda:0", pretrain_epochs=100)
-        self.log_message(result)
-        assert isinstance(result, EMMAResult)
-
     def test_no_device(self):
         with pytest.raises(AssertionError):
             result = try_emma(self.dataset, KernelType.Normal, self.dataset.n_components, x0=self.x0,

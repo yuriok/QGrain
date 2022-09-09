@@ -37,12 +37,6 @@ class TestTryUDM:
         self.log_message(result)
         assert isinstance(result, UDMResult)
 
-    def test_cuda0(self):
-        result = try_udm(self.dataset, KernelType.Normal, self.dataset.n_components, x0=self.x0,
-                         device="cuda:0", pretrain_epochs=100)
-        self.log_message(result)
-        assert isinstance(result, UDMResult)
-
     def test_no_device(self):
         with pytest.raises(AssertionError):
             result = try_udm(self.dataset, KernelType.Normal, self.dataset.n_components, x0=self.x0,
