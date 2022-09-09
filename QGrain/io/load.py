@@ -207,7 +207,3 @@ def load_dataset(filename: str,
     except IndexError as e:
         logger.error(f"The row or column index is out of range, please check. {e}")
         return None
-    except ValueError as e:
-        logger.error(f"Can not convert the values to a numerical array, "
-                     "it may contains invalid values (e.g. text). {e}")
-        return None
