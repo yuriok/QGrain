@@ -200,7 +200,7 @@ def load_dataset(filename: str,
             logger.info("This dataset has been loaded successfully.")
             return dataset
         else:
-            logger.error(f"The assigned series of grain size classes is invalid. {array_or_msg}")
+            logger.error(f"There is at least one grain size distribution is invalid. {array_or_msg}")
     except IOError as e:
         logger.error(f"Can not open this file. {e}")
         return None
