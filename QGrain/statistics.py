@@ -46,7 +46,7 @@ def modes(classes: ndarray,
     :param classes_phi: The grain size classes in phi values.
     :param distribution: The frequency distribution of grain size classes.
         Note, the sum of frequencies should be equal to 1.
-    :param is_geometric: If it‘s `True`, the returned mode size is in microns, else it's in phi values.
+    :param is_geometric: If it's `True`, the returned mode size is in microns, else it's in phi values.
     :param trace: If the peak frequency is less than `trace`, it will be ignored.
     :returns:
         modes: The mode sizes of a grain size distribution.
