@@ -11,6 +11,8 @@ from numpy import ndarray
 from .models import KernelType, Dataset, UDMResult, ArtificialDataset
 from .kernels import ProportionModule, get_kernel
 
+torch.set_default_dtype(torch.float64)
+
 
 class UDMModule(torch.nn.Module):
     def __init__(self, n_samples: int, n_components: int, classes_phi: np.ndarray,
@@ -52,7 +54,7 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
         assert isinstance(x0, ndarray)
         assert x0.ndim == 2
         assert x0.shape[1] == n_components
-        x0 = x0.astype(np.float32)
+        x0 = x0.astype(np.float64)
     available_devices = ["cpu"]
     if torch.cuda.is_available():
         available_devices.append("cuda")
@@ -99,8 +101,8 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
     Need history: {need_history}"""
     logger.debug(start_text)
 
-    observation = torch.from_numpy(dataset.distributions.astype(np.float32)).to(device)
-    udm = UDMModule(len(dataset), n_components, dataset.classes_phi.astype(np.float32), kernel_type, x0).to(device)
+    observation = torch.from_numpy(dataset.distributions.astype(np.float64)).to(device)
+    udm = UDMModule(len(dataset), n_components, dataset.classes_phi.astype(np.float64), kernel_type, x0).to(device)
     optimizer = torch.optim.Adam(udm.parameters(), lr=learning_rate, betas=betas)
     distribution_loss_series = []
     component_loss_series = []
