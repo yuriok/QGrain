@@ -497,6 +497,12 @@ class SSUResultViewer(QtWidgets.QWidget):
         if event.type() == QtCore.QEvent.LanguageChange:
             self.retranslate()
 
+    def keyPressEvent(self, event: QtGui.QKeyEvent):
+        if event.key() == QtCore.Qt.Key_Up:
+            self.page_combo_box.setCurrentIndex(max(self.page_index-1, 0))
+        elif event.key() == QtCore.Qt.Key_Down:
+            self.page_combo_box.setCurrentIndex(min(self.page_index+1, self.n_pages-1))
+
     def retranslate(self):
         self.setWindowTitle(self.tr("SSU Result Viewer"))
         self.previous_button.setText(self.tr("Previous"))
