@@ -1,5 +1,6 @@
 import logging
 import os
+import socket
 
 QGRAIN_VERSION = "0.5.2.1"
 QGRAIN_ROOT_PATH = os.path.dirname(__file__)
@@ -17,6 +18,14 @@ HELLO_TEXT = r"""
 An easy-to-use software for the analysis of grain size distributions
 
 """
+
+
+def get_free_tcp_port():
+    tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    tcp.bind(("", 0))
+    _, port = tcp.getsockname()
+    tcp.close()
+    return port
 
 
 def start_local_server():
