@@ -1,7 +1,7 @@
 import logging
 import os
 
-QGRAIN_VERSION = "0.5.2.0"
+QGRAIN_VERSION = "0.5.2.1"
 QGRAIN_ROOT_PATH = os.path.dirname(__file__)
 
 HELLO_TEXT = r"""
