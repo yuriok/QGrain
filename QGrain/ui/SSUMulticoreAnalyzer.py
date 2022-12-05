@@ -207,6 +207,7 @@ class SSUMulticoreAnalyzer(QtWidgets.QDialog):
         self.__event_queue = mp.Queue()
 
     def setup_tasks(self, tasks: List[Dict]):
+        self.kill_processes()
         self.__tasks.clear()
         self.__state_map.clear()
         self.__results.clear()
