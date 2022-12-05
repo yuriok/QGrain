@@ -54,7 +54,10 @@ def setup_logging(status_bar: QtWidgets.QStatusBar, log_dialog: RuntimeLog):
 
 def setup_app():
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_DisableHighDpiScaling)
-    app = QtWidgets.QApplication(sys.argv)
+    if not QtWidgets.QApplication.instance():
+        app = QtWidgets.QApplication(sys.argv)
+    else:
+        app = QtWidgets.QApplication.instance()
     pixmap = QtGui.QPixmap(os.path.join(QGRAIN_ROOT_PATH, "assets", "icon.png"))
     create_necessary_folders()
     app.setWindowIcon(QtGui.QIcon(pixmap))
