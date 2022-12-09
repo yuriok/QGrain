@@ -156,7 +156,7 @@ class EMMASettings(QtWidgets.QDialog):
         self.need_history_checkbox.setChecked(s["need_history"])
 
     def _update_device_list(self):
-        if self._client is not None:
+        if self._client is not None and self._client.has_target:
             try:
                 server_state = self._client.get_service_state()
                 available_devices = server_state["available_devices"]

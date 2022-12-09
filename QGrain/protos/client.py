@@ -13,7 +13,7 @@ MAX_MESSAGE_LENGTH = 2**30
 
 
 class QGrainClient:
-    _target = "localhost:50051"
+    _target = ""
 
     def __init__(self):
         pass
@@ -47,6 +47,10 @@ class QGrainClient:
         for key in other_keys:
             statistics[key] = getattr(response, key)
         return statistics
+
+    @property
+    def has_target(self) -> bool:
+        return self._target != ""
 
     def get_service_state(self):
         with grpc.insecure_channel(self._target, options=[

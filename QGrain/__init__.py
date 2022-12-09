@@ -28,13 +28,6 @@ def get_free_tcp_port():
     return port
 
 
-def start_local_server():
-    from QGrain.protos.server import QGrainServicer
-    qgrain_server = QGrainServicer(address="localhost:50051", max_workers=8,
-                                   max_message_length=2**30, max_dataset_size=2**30)
-    qgrain_server.serve()
-
-
 def main():
     print(HELLO_TEXT)
     import argparse
@@ -53,7 +46,7 @@ def main():
                         help="specify the max length of grpc messages (bytes).", dest="max_message_length")
     parser.add_argument("--max-dataset-size", type=int, default=100000, help="specify the max size of dataset.",
                         dest="max_dataset_size")
-    parser.add_argument("--target", type=str, default="localhost:50051",
+    parser.add_argument("--target", type=str, default="",
                         help="specify the remote ip address of the grpc server")
     args = parser.parse_args()
     if args.server:
@@ -77,13 +70,8 @@ def main():
         from .protos.client import QGrainClient
         from .ui import setup_app, setup_logging
         from .ui.MainWindow import MainWindow
-        process = None
-        if args.target == "localhost:50051":
-            from multiprocessing import Process, freeze_support
-            freeze_support()
-            process = Process(target=start_local_server)
-            process.start()
-        QGrainClient.set_target(args.target)
+        if args.target != "":
+            QGrainClient.set_target(args.target)
         app = setup_app()
         main_window = MainWindow()
         # load the artificial dataset to show the functions of all modules
@@ -98,5 +86,3 @@ def main():
         setup_logging(main_window.statusBar(), main_window.log_dialog)
         main_window.show()
         app.exec()
-        if process is not None:
-            process.terminate()
