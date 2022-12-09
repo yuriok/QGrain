@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="QGrain",
-    version="0.5.2.1",
+    version="0.5.2.2",
     description="An easy-to-use software for the comprehensive analysis of grain size distributions",
     platforms="all",
     author="Yuming Liu",
