@@ -158,7 +158,7 @@ class EMMAAnalyzer(QtWidgets.QWidget):
             settings["n_members"] = self.n_members
         self.logger.debug(f"Try to perform the EMMA algorithm. Algorithm settings: {settings}.")
 
-        if self._client is not None:
+        if self._client is not None and self._client.has_target:
             try:
                 server_state = self._client.get_service_state()
                 if len(self._dataset) > server_state["max_dataset_size"]:
