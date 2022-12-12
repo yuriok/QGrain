@@ -168,6 +168,7 @@ from .BoxplotChart import BoxplotChart
 from .FrequencyChart import FrequencyChart
 from .Frequency3DChart import Frequency3DChart
 from .FrequencyHeatmap import FrequencyHeatmap
+from .FrequencyGroupChart import FrequencyGroupChart
 from .CumulativeChart import CumulativeChart
 from .diagrams import *
 from .HierarchicalChart import HierarchicalChart
