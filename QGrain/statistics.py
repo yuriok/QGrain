@@ -863,6 +863,7 @@ def major_statistics(classes: ndarray, classes_phi: ndarray,
     """
     reverse_phi_ppf = reversed_phi_ppf(classes_phi, distribution)
     median_phi = np.max(reverse_phi_ppf(0.5))
+    first_percentile_phi = np.max(reverse_phi_ppf(0.99))
     statistics = {}
     if is_geometric:
         if is_fw57:
@@ -871,6 +872,7 @@ def major_statistics(classes: ndarray, classes_phi: ndarray,
             statistics.update(geometric(classes, distribution))
         mean_phi = to_phi(statistics["mean"])
         statistics["median"] = to_microns(median_phi)
+        statistics["first_percentile"] = to_microns(first_percentile_phi)
     else:
         if is_fw57:
             statistics = logarithmic_fw57(reverse_phi_ppf)
@@ -878,6 +880,7 @@ def major_statistics(classes: ndarray, classes_phi: ndarray,
             statistics = logarithmic(classes_phi, distribution)
         mean_phi = statistics["mean"]
         statistics["median"] = median_phi
+        statistics["first_percentile"] = first_percentile_phi
     mean_description = string.capwords(" ".join(scale_description(mean_phi))).strip()
     statistics["mean_description"] = mean_description
     statistics["mode"] = mode(classes, classes_phi, distribution, is_geometric=is_geometric)
