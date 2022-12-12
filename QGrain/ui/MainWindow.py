@@ -127,29 +127,23 @@ class MainWindow(QtWidgets.QMainWindow):
         self.theme_menu = self.menuBar().addMenu(self.tr("Theme"))
         self.theme_group = QtGui.QActionGroup(self.theme_menu)
         self.theme_group.setExclusive(True)
-        self.theme_actions = []
         self.default_theme_action = self.theme_group.addAction(self.tr("Default"))
         self.default_theme_action.setCheckable(True)
         self.default_theme_action.setChecked(True)
+        app = QtWidgets.QApplication.instance()
         self.default_theme_action.triggered.connect(lambda: apply_stylesheet(app, theme=os.path.join(
             QGRAIN_ROOT_PATH, "assets", "default_theme.xml"), invert_secondary=True, extra=EXTRA))
         self.theme_menu.addAction(self.default_theme_action)
-        self.theme_actions.append(self.default_theme_action)
-        self.light_theme_menu = self.theme_menu.addMenu(self.tr("Light Theme"))
-        self.dark_theme_menu = self.theme_menu.addMenu(self.tr("Dark Theme"))
-        for theme in list_themes():
-            theme_name = string.capwords(" ".join(theme[:-4].split("_")[1:]))
-            action = self.theme_group.addAction(theme_name)
-            action.setCheckable(True)
-            app = QtCore.QCoreApplication.instance()
-            invert = theme.startswith("light")
-            action.triggered.connect(lambda checked=False, t=theme, i=invert:
-                                     apply_stylesheet(app, theme=t, invert_secondary=i, extra=EXTRA))
-            self.theme_actions.append(action)
-            if invert:
-                self.light_theme_menu.addAction(action)
-            else:
-                self.dark_theme_menu.addAction(action)
+        self.light_theme_action = self.theme_group.addAction(self.tr("Light"))
+        self.light_theme_action.setCheckable(True)
+        self.light_theme_action.triggered.connect(lambda: apply_stylesheet(app, theme=os.path.join(
+            QGRAIN_ROOT_PATH, "assets", "light_theme.xml"), invert_secondary=True, extra=EXTRA))
+        self.theme_menu.addAction(self.light_theme_action)
+        self.dark_theme_action = self.theme_group.addAction(self.tr("Dark"))
+        self.dark_theme_action.setCheckable(True)
+        self.dark_theme_action.triggered.connect(lambda: apply_stylesheet(app, theme=os.path.join(
+            QGRAIN_ROOT_PATH, "assets", "dark_theme.xml"), invert_secondary=False, extra=EXTRA))
+        self.theme_menu.addAction(self.dark_theme_action)
 
         # Log
         self.log_action = QtGui.QAction(self.tr("Log"))
@@ -383,8 +377,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.language_menu.setTitle(self.tr("Language"))
         self.theme_menu.setTitle(self.tr("Theme"))
         self.default_theme_action.setText(self.tr("Default"))
-        self.light_theme_menu.setTitle(self.tr("Light Theme"))
-        self.dark_theme_menu.setTitle(self.tr("Dark Theme"))
+        self.light_theme_action.setTitle(self.tr("Light"))
+        self.dark_theme_action.setTitle(self.tr("Dark"))
         self.log_action.setText(self.tr("Log"))
         self.about_action.setText(self.tr("About"))
         self.tab_widget.setTabText(0, self.tr("Generator"))
