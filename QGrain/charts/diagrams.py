@@ -818,7 +818,7 @@ class CMDiagramChart(DiagramChart):
     GRID_C = (0.02, 0.04, 0.06, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 2.0, 4.0, 6.0, 8.0, 10.0, 20.0, 40.0)
     GRID_M = (0.004, 0.01, 0.015, 0.02, 0.04, 0.06, 0.08, 0.1, 0.2, 0.4, 0.6, 0.8)
 
-    def __init__(self, parent=None, figsize=(4.4, 6.0)):
+    def __init__(self, parent=None, figsize=(4.4, 5.5)):
         super().__init__(parent=parent, figsize=figsize)
         self.setWindowTitle(self.tr("C-M Diagram"))
 
