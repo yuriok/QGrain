@@ -52,7 +52,9 @@ def setup_logging(status_bar: QtWidgets.QStatusBar, log_dialog: RuntimeLog):
     mpl.set_loglevel("error")
 
 
-def setup_app():
+def setup_app(language="en", theme="default"):
+    assert language in ("en", "zh_CN")
+    assert theme in ("default", "light", "dark")
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_DisableHighDpiScaling)
     if not QtWidgets.QApplication.instance():
         app = QtWidgets.QApplication(sys.argv)
@@ -63,8 +65,8 @@ def setup_app():
     app.setWindowIcon(QtGui.QIcon(pixmap))
     app.setApplicationVersion(QGRAIN_VERSION)
     from qt_material import apply_stylesheet
-    apply_stylesheet(app, theme=os.path.join(QGRAIN_ROOT_PATH, "assets", "default_theme.xml"),
+    apply_stylesheet(app, theme=os.path.join(QGRAIN_ROOT_PATH, "assets", f"{theme}_theme.xml"),
                      invert_secondary=True, extra=EXTRA)
     setup_matplotlib()
-    setup_language(app, "en")
+    setup_language(app, f"{language}")
     return app
