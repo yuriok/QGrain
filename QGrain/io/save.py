@@ -350,7 +350,8 @@ def save_statistics(dataset: Dataset, filename: str, progress_callback: Callable
             keys = [
                 (lambda s: s[method]["mean"], f"Mean [{unit}]", small_width),
                 (lambda s: s[method]["mean_description"], "Mean Description", median_width),
-                (lambda s: s[method]["median"], f"Median [{unit}]", small_width),
+                (lambda s: s[method]["first_percentile"], f"First Percentile (C) [{unit}]", small_width),
+                (lambda s: s[method]["median"], f"Median (M) [{unit}]", small_width),
                 (lambda s: s[method]["mode"], f"Mode [{unit}]", small_width),
                 (lambda s: len(s[method]["modes"]), f"Number of Modes", small_width),
                 (lambda s: ", ".join([f"{mode: 0.4f}" for mode in s[method]["modes"]]), f"Modes [{unit}]", median_width),
