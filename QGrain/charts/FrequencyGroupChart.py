@@ -113,7 +113,6 @@ class FrequencyGroupChart(BaseChart):
         self._canvas.draw()
 
     def retranslate(self):
-        self.setWindowTitle(self.tr("Frequency Chart"))
         self.edit_figure_action.setText(self.tr("Edit Figure"))
         self.save_figure_action.setText(self.tr("Save Figure"))
         self.scale_menu.setTitle(self.tr("Scale"))
