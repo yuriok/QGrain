@@ -46,19 +46,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tab_widget = QtWidgets.QTabWidget(self)
         self.tab_widget.setTabPosition(QtWidgets.QTabWidget.West)
         self.setCentralWidget(self.tab_widget)
-        self.dataset_generator = DatasetGenerator()
+        self.dataset_generator = DatasetGenerator(self)
         self.tab_widget.addTab(self.dataset_generator, self.tr("Generator"))
-        self.dataset_viewer = StatisticalAnalyzer()
+        self.dataset_viewer = StatisticalAnalyzer(self)
         self.tab_widget.addTab(self.dataset_viewer, self.tr("Statistics"))
-        self.pca_analyzer = PCAAnalyzer()
+        self.pca_analyzer = PCAAnalyzer(self)
         self.tab_widget.addTab(self.pca_analyzer, self.tr("PCA"))
-        self.clustering_analyzer = ClusteringAnalyzer()
+        self.clustering_analyzer = ClusteringAnalyzer(self)
         self.tab_widget.addTab(self.clustering_analyzer, self.tr("Clustering"))
-        self.ssu_analyzer = SSUAnalyzer(self.ssu_setting_dialog, self.parameter_editor)
+        self.ssu_analyzer = SSUAnalyzer(self.ssu_setting_dialog, self.parameter_editor, parent=self)
         self.tab_widget.addTab(self.ssu_analyzer, self.tr("SSU"))
-        self.emma_analyzer = EMMAAnalyzer(self.emma_setting_dialog, self.parameter_editor, client=self._client)
+        self.emma_analyzer = EMMAAnalyzer(self.emma_setting_dialog, self.parameter_editor, client=self._client, parent=self)
         self.tab_widget.addTab(self.emma_analyzer, self.tr("EMMA"))
-        self.udm_analyzer = UDMAnalyzer(self.udm_setting_dialog, self.parameter_editor, client=self._client)
+        self.udm_analyzer = UDMAnalyzer(self.udm_setting_dialog, self.parameter_editor, client=self._client, parent=self)
         self.tab_widget.addTab(self.udm_analyzer, self.tr("UDM"))
 
         # Open
@@ -345,6 +345,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def closeEvent(self, event: QtGui.QCloseEvent):
         res = self.close_msg.exec_()
         if res == QtWidgets.QMessageBox.Yes:
+            self.clustering_analyzer.closeEvent(event)
             event.accept()
         else:
             event.ignore()

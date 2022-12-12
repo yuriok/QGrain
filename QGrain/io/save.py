@@ -504,6 +504,7 @@ def save_pca(dataset: Dataset, filename: str, progress_callback: Callable[[float
 
 
 def save_clustering(dataset: Dataset, flags: Sequence[int], filename: str,
+                    data_key: Tuple, linkage_method: str, metric: str,
                     progress_callback: Callable[[float], None] = None, logger: logging.Logger = None):
     assert dataset is not None
     if logger is None:
@@ -536,6 +537,10 @@ def save_clustering(dataset: Dataset, flags: Sequence[int], filename: str,
         The base hierarchy clustering algorithm is implemented by Scipy.
         You can get the details of algorithm from the following website.
         https://docs.scipy.org/doc/scipy/reference/cluster.hierarchy.html
+        
+        Data key: {data_key}
+        Linkage method: {linkage_method}
+        Metric: {metric}
         """
     _write_readme_sheet(wb.active, readme_text)
     logger.debug("Creating the GSDs sheet.")
