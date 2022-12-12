@@ -39,16 +39,19 @@ class PCAResultChart(BaseChart):
                               color=cmap(1), ha='center', va='center')
         self.sample_axes.set_xlabel("PC1")
         self.sample_axes.set_ylabel("PC2")
-        self.shape_axes.plot(dataset.classes, pca.components_[0], color=cmap(0), label="PC1")
-        self.shape_axes.plot(dataset.classes, pca.components_[1], color=cmap(1), label="PC2")
+        cumulative_ratio = 0.0
+        for i, ratio in enumerate(pca.explained_variance_ratio_):
+            cumulative_ratio += ratio
+            self.shape_axes.plot(dataset.classes, pca.components_[i], color=cmap(i), label=f"PC{i+1}")
+            self.series_axes.plot(transformed[:, i], color=cmap(i),
+                                  label=f"PC{i + 1} ({pca.explained_variance_ratio_[i]:0.2%})",
+                                  lw=1.0, alpha=0.8)
+            if i > 0 and cumulative_ratio > 0.95:
+                break
         self.shape_axes.set_xscale("log")
         self.shape_axes.set_xlabel("Grain size (microns)")
         self.shape_axes.set_ylabel("Transformed value")
         self.shape_axes.legend(loc="upper left")
-        for i in range(2):
-            self.series_axes.plot(transformed[:, i], color=cmap(i),
-                                  label=f"PC{i+1} ({pca.explained_variance_ratio_[i]:0.2%})",
-                                  lw=1.0, alpha=0.8)
         self.series_axes.set_xlabel("Sample index")
         self.series_axes.set_ylabel("Transformed value")
         self.series_axes.legend(loc="upper left")
