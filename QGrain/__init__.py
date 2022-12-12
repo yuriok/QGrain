@@ -2,7 +2,7 @@ import logging
 import os
 import socket
 
-QGRAIN_VERSION = "0.5.2.2"
+QGRAIN_VERSION = "0.5.3.0"
 QGRAIN_ROOT_PATH = os.path.dirname(__file__)
 
 HELLO_TEXT = r"""

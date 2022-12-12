@@ -51,7 +51,7 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
         self.skewness_checkbox = QtWidgets.QCheckBox(self.tr("Skewness"))
         self.kurtosis_checkbox = QtWidgets.QCheckBox(self.tr("Kurtosis"))
         self.standardize_checkbox = QtWidgets.QCheckBox(self.tr("Standardize"))
-        self.standardize_checkbox.setToolTip(self.tr("Standardization is necessary to balance different feature."))
+        self.standardize_checkbox.setToolTip(self.tr("Standardization is necessary to balance different features."))
         self.standardize_checkbox.setChecked(True)
         self.main_layout.addWidget(self.pca_checkbox, 1, 0, 1, 2)
         self.main_layout.addWidget(self.pca_ratio_label, 1, 2)
@@ -394,7 +394,7 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
         self.skewness_checkbox.setText(self.tr("Skewness"))
         self.kurtosis_checkbox.setText(self.tr("Kurtosis"))
         self.standardize_checkbox.setText(self.tr("Standardize"))
-        self.standardize_checkbox.setToolTip(self.tr("Standardization is necessary to balance different feature."))
+        self.standardize_checkbox.setToolTip(self.tr("Standardization is necessary to balance different features."))
         self.linkage_label.setText(self.tr("Linkage"))
         self.linkage_label.setToolTip(self.tr("The linkage method for calculating the distance between "
                                               "the newly formed cluster and each observation vector."))
