@@ -321,11 +321,12 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
                           f"Linkage: {linkage_method}. Metric: {metric}. Number of clusters: {self.n_clusters}.")
         unique_flags = np.unique(flags)
         chart = CMDiagramChart()
+        marker_size = min(max(2, 5000//len(flags)), 8)
         for i, flag in enumerate(unique_flags):
             key = np.equal(flags, flag)
             samples = [sample for in_cluster, sample in zip(key, self._last_dataset) if in_cluster]
             color = plt.get_cmap("gist_rainbow")(i/len(unique_flags))
-            chart.show_samples(samples, append=True, ms=2, mfc=color)
+            chart.show_samples(samples, append=True, ms=marker_size, mfc=color, mew=0.0)
         chart.show()
 
     def save_result(self):
