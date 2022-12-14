@@ -162,6 +162,11 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
                 return f"PCA ({self.pca_ratio_input.value()})", "standardized"
             else:
                 return f"PCA ({self.pca_ratio_input.value()})",
+        elif (not self.pca_checkbox.isChecked()) and len(stat_keys) > 0:
+            if self.standardize_checkbox.isChecked():
+                return *stat_keys, "standardized"
+            else:
+                return stat_keys
         elif len(stat_keys) > 0:
             if self.standardize_checkbox.isChecked():
                 return f"PCA ({self.pca_ratio_input.value()})", *stat_keys, "standardized"
@@ -209,7 +214,20 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
                 return standardized, data_key
             else:
                 return transformed, data_key
-        elif len(stat_keys) > 0:
+        elif (not self.pca_checkbox.isChecked()) and len(stat_keys) > 0:
+            all_stats = []
+            for sample in self._last_dataset:
+                stats = major_statistics(sample.classes, sample.classes_phi, sample.distribution,
+                                         is_geometric=True, is_fw57=False)
+                selected_stats = [stats[key] for key in stat_keys]
+                all_stats.append(selected_stats)
+            all_stats = np.array(all_stats)
+            if self.standardize_checkbox.isChecked():
+                standardized = StandardScaler().fit_transform(all_stats)
+                return standardized, data_key
+            else:
+                return all_stats, data_key
+        elif self.pca_checkbox.isChecked() and len(stat_keys) > 0:
             pca = PCA(n_components=self.pca_ratio_input.value())
             transformed = pca.fit_transform(self._last_dataset.distributions)
             all_stats = []
