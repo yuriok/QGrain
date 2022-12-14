@@ -179,7 +179,7 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
         self.n_clusters_input.setMaximum(len(dataset) - 1)
         if len(dataset) > 20:
             self.p_input.setValue(10)
-        self.perform()
+        # self.perform()
 
     def _get_data_for_clustering(self) -> typing.Tuple[np.ndarray, typing.Tuple]:
         if self._last_dataset is None:
@@ -240,7 +240,8 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
                 self.chart.show_matrix(linkage_matrix, p=self.p)
                 return
         self.logger.debug(
-            f"Calculate the linkage matrix with the data key ({self.data_key}), method ({self.linkage_name}) and metric ({self.metric_name}).")
+            f"Calculate the linkage matrix with the data key ({self.data_key}), "
+            f"method ({self.linkage_name}) and metric ({self.metric_name}).")
         data, data_key = self._get_data_for_clustering()
         try:
             linkage_matrix = linkage(data, method=self.linkage_name, metric=self.metric_name)
