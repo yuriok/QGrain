@@ -121,7 +121,6 @@ class MainWindow(QtWidgets.QMainWindow):
             action.triggered.connect(lambda checked=False, language=key: self.switch_language(language))
             self.language_menu.addAction(action)
             self.language_actions.append(action)
-        self.language_actions[0].setChecked(True)
 
         # Theme
         self.theme_menu = self.menuBar().addMenu(self.tr("Theme"))
@@ -144,7 +143,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.dark_theme_action.triggered.connect(lambda: apply_stylesheet(app, theme=os.path.join(
             QGRAIN_ROOT_PATH, "assets", "dark_theme.xml"), invert_secondary=False, extra=EXTRA))
         self.theme_menu.addAction(self.dark_theme_action)
-
+        self.theme_actions: List[QtGui.QAction] = [self.default_theme_action,
+                                                   self.light_theme_action,
+                                                   self.dark_theme_action]
         # Log
         self.log_action = QtGui.QAction(self.tr("Log"))
         self.log_action.triggered.connect(lambda: self.log_dialog.show())
@@ -175,10 +176,30 @@ class MainWindow(QtWidgets.QMainWindow):
         self.close_msg.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
         self.close_msg.setDefaultButton(QtWidgets.QMessageBox.No)
 
+        settings = QtCore.QSettings(os.path.join(os.path.expanduser("~"), "QGrain", "qgrain.ini"),
+                                    QtCore.QSettings.Format.IniFormat)
+        language = settings.value("language", "en", type=str)
+        for (key, name), action in zip(self.supported_languages, self.language_actions):
+            if key == language:
+                action.setChecked(True)
+                break
+        theme = settings.value("theme", "default", type=str)
+        for (key, name), action in zip(self.supported_themes, self.theme_actions):
+            if key == theme:
+                action.setChecked(True)
+                break
+
     @property
     def supported_languages(self) -> List[Tuple[str, str]]:
         languages = [("en", "English"),
                      ("zh_CN", "简体中文")]
+        return languages
+
+    @property
+    def supported_themes(self) -> List[Tuple[str, str]]:
+        languages = [("default", self.tr("Default")),
+                     ("light", self.tr("Light")),
+                     ("dark", self.tr("Dark"))]
         return languages
 
     @property
@@ -192,7 +213,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def theme(self) -> str:
         for i, theme_action in enumerate(self.theme_actions):
             if theme_action.isChecked():
-                theme = list_themes()[i]
+                theme, name = self.supported_themes[i]
                 return theme
 
     def show_message(self, title: str, message: str):
@@ -345,6 +366,10 @@ class MainWindow(QtWidgets.QMainWindow):
     def closeEvent(self, event: QtGui.QCloseEvent):
         res = self.close_msg.exec_()
         if res == QtWidgets.QMessageBox.Yes:
+            settings = QtCore.QSettings(os.path.join(os.path.expanduser("~"), "QGrain", "qgrain.ini"),
+                                        QtCore.QSettings.Format.IniFormat)
+            settings.setValue("language", self.language)
+            settings.setValue("theme", self.theme)
             self.clustering_analyzer.closeEvent(event)
             event.accept()
         else:
@@ -378,8 +403,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.language_menu.setTitle(self.tr("Language"))
         self.theme_menu.setTitle(self.tr("Theme"))
         self.default_theme_action.setText(self.tr("Default"))
-        self.light_theme_action.setTitle(self.tr("Light"))
-        self.dark_theme_action.setTitle(self.tr("Dark"))
+        self.light_theme_action.setText(self.tr("Light"))
+        self.dark_theme_action.setText(self.tr("Dark"))
         self.log_action.setText(self.tr("Log"))
         self.about_action.setText(self.tr("About"))
         self.tab_widget.setTabText(0, self.tr("Generator"))
