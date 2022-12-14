@@ -67,12 +67,18 @@ def main():
             max_dataset_size=args.max_dataset_size)
         qgrain_server.serve()
     else:
+        from PySide6 import QtCore
         from .protos.client import QGrainClient
-        from .ui import setup_app, setup_logging
+        from .ui import setup_app, setup_logging, create_necessary_folders
         from .ui.MainWindow import MainWindow
+        create_necessary_folders()
         if args.target != "":
             QGrainClient.set_target(args.target)
-        app = setup_app()
+        settings = QtCore.QSettings(os.path.join(os.path.expanduser("~"), "QGrain", "qgrain.ini"),
+                                    QtCore.QSettings.Format.IniFormat)
+        language = settings.value("language", "en", type=str)
+        theme = settings.value("theme", "default", type=str)
+        app = setup_app(language, theme)
         main_window = MainWindow()
         # load the artificial dataset to show the functions of all modules
         dataset = main_window.dataset_generator.get_random_dataset(100)
