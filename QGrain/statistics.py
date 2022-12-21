@@ -1,4 +1,4 @@
-__all__ = ["mode", "modes", "to_cumulative", "reversed_phi_ppf", "interval_phi", "to_phi", "to_microns", "cm",
+__all__ = ["mode", "modes", "to_cumulative", "reversed_phi_ppf", "interval_phi", "to_phi", "to_microns", "cm", "ss",
            "arithmetic", "geometric", "logarithmic", "logarithmic_fw57", "geometric_fw57", "scale_description",
            "proportions_gsm", "proportions_ssc", "proportions_bgssc", "all_proportions",
            "group_gsm_folk54", "group_ssc_folk54", "group_folk54", "GROUP_BP12_SYMBOL_MAP",
@@ -141,6 +141,20 @@ def cm(classes_phi: ndarray, distribution: ndarray) -> Tuple[float, float]:
     ppf = reversed_phi_ppf(classes_phi, distribution)
     CM = ppf(0.99), ppf(0.5)
     return CM
+
+
+def ss(classes: ndarray, distribution: ndarray) -> Tuple[float, float]:
+    """
+        Get the proportion and mean size of sortable silt (10-63 microns).
+        :param classes: The grain size classes in microns.
+        :param distribution: The frequency distribution of grain size classes.
+            Note, the sum of frequencies should be equal to 1.
+        :return: A tuple that contains the proportion and mean size.
+        """
+    key = np.logical_and(classes > 10.0, classes < 63.0)
+    proportion_ss = np.sum(distribution[key])
+    mean_ss = np.exp(np.sum(distribution[key] * np.log(classes[key])) / proportion_ss)
+    return proportion_ss, mean_ss
 
 
 # The following five formulas of calculating the statistical parameters referred to Blott & Pye (2001)'s work
@@ -864,6 +878,7 @@ def major_statistics(classes: ndarray, classes_phi: ndarray,
     reverse_phi_ppf = reversed_phi_ppf(classes_phi, distribution)
     median_phi = np.max(reverse_phi_ppf(0.5))
     first_percentile_phi = np.max(reverse_phi_ppf(0.99))
+    proportion_ss, mean_ss = ss(classes, distribution)
     statistics = {}
     if is_geometric:
         if is_fw57:
@@ -873,6 +888,8 @@ def major_statistics(classes: ndarray, classes_phi: ndarray,
         mean_phi = to_phi(statistics["mean"])
         statistics["median"] = to_microns(median_phi)
         statistics["first_percentile"] = to_microns(first_percentile_phi)
+        statistics["proportion_ss"] = proportion_ss
+        statistics["mean_ss"] = mean_ss
     else:
         if is_fw57:
             statistics = logarithmic_fw57(reverse_phi_ppf)
@@ -881,6 +898,8 @@ def major_statistics(classes: ndarray, classes_phi: ndarray,
         mean_phi = statistics["mean"]
         statistics["median"] = median_phi
         statistics["first_percentile"] = first_percentile_phi
+        statistics["proportion_ss"] = proportion_ss
+        statistics["mean_ss"] = to_phi(mean_ss)
     mean_description = string.capwords(" ".join(scale_description(mean_phi))).strip()
     statistics["mean_description"] = mean_description
     statistics["mode"] = mode(classes, classes_phi, distribution, is_geometric=is_geometric)
