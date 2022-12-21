@@ -355,6 +355,8 @@ def save_statistics(dataset: Dataset, filename: str, progress_callback: Callable
                 (lambda s: s[method]["mode"], f"Mode [{unit}]", small_width),
                 (lambda s: len(s[method]["modes"]), f"Number of Modes", small_width),
                 (lambda s: ", ".join([f"{mode: 0.4f}" for mode in s[method]["modes"]]), f"Modes [{unit}]", median_width),
+                (lambda s: s[method]["proportion_ss"] * 100.0, "Sortable Silt Proportion [%]", small_width),
+                (lambda s: s[method]["mean_ss"], f"Mean Sortable Silt Size [{unit}]", small_width),
                 (lambda s: s[method]["std"], "Sorting Coefficient", small_width),
                 (lambda s: s[method]["std_description"], "Sorting Description", median_width),
                 (lambda s: s[method]["skewness"], "Skewness", small_width),
