@@ -10,9 +10,8 @@ from .RuntimeLog import StatusBarLogHandler, GUILogHandler, RuntimeLog
 from .. import QGRAIN_VERSION, QGRAIN_ROOT_PATH
 from ..charts import setup_matplotlib
 
-EXTRA = {"font_family": "Roboto, Arial, Helvetica, Tahoma, Verdana, Microsoft YaHei UI, SimSum",
+EXTRA = {"font_family": "Source Han Sans CN",
          "density_scale": "-1"}
-
 
 def get_dir_size(directory: str):
     size = 0
@@ -55,11 +54,15 @@ def setup_logging(status_bar: QtWidgets.QStatusBar, log_dialog: RuntimeLog):
 def setup_app(language="en", theme="default"):
     assert language in ("en", "zh_CN")
     assert theme in ("default", "light", "dark")
-    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_DisableHighDpiScaling)
+
     if not QtWidgets.QApplication.instance():
         app = QtWidgets.QApplication(sys.argv)
     else:
         app = QtWidgets.QApplication.instance()
+    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    fonts_path = os.path.join(QGRAIN_ROOT_PATH, "assets", "fonts")
+    for font in os.listdir(fonts_path):
+        QtGui.QFontDatabase.addApplicationFont(os.path.join(fonts_path, font))
     pixmap = QtGui.QPixmap(os.path.join(QGRAIN_ROOT_PATH, "assets", "icon.png"))
     create_necessary_folders()
     app.setWindowIcon(QtGui.QIcon(pixmap))
