@@ -2,11 +2,14 @@ import logging
 import os
 from typing import *
 
-import matplotlib.pyplot as plt
 from PySide6 import QtCore, QtGui, QtWidgets
+import matplotlib.pyplot as plt
+from matplotlib import font_manager
 from matplotlib.animation import FFMpegWriter, FuncAnimation, ImageMagickWriter
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT as NavigationToolbar
+
+from .. import QGRAIN_ROOT_PATH
 
 
 def normal_color():
@@ -43,7 +46,10 @@ def setup_matplotlib():
     plt.style.use(["science", "no-latex"])
     plt.set_cmap("tab10")
     plt.rcParams['axes.unicode_minus'] = False
-    plt.rcParams["font.family"] = "DejaVu Sans"
+    fonts_path = os.path.join(QGRAIN_ROOT_PATH, "assets", "fonts")
+    for font in os.listdir(fonts_path):
+        font_manager.fontManager.addfont(os.path.join(fonts_path, font))
+    plt.rcParams["font.family"] = "Source Han Sans CN"
     plt.rcParams["font.size"] = 8
     plt.rcParams["axes.titlesize"] = 8
     plt.rcParams["axes.labelsize"] = 8
