@@ -56,19 +56,19 @@ class FrequencyGroupChart(BaseChart):
             return lambda classes_phi: to_microns(classes_phi)
 
     @property
-    def xlabel(self) -> str:
+    def x_label(self) -> str:
         if self.scale == "log-linear":
-            return "Grain size (microns)"
+            return self.tr("Grain size ({0})").format(r"$\rm \mu m$")
         elif self.scale == "log":
-            return "Ln(grain size in microns)"
+            return self.tr("Ln(grain size) ({0})").format(r"$\rm \mu m$")
         elif self.scale == "phi":
-            return "Grain size (phi)"
+            return self.tr("Grain size ({0})").format(r"$\rm \phi$")
         elif self.scale == "linear":
-            return "Grain size (microns)"
+            return self.tr("Grain size ({0})").format(r"$\rm \mu m$")
 
     @property
-    def ylabel(self) -> str:
-        return "Frequency"
+    def y_label(self) -> str:
+        return self.tr("Frequency ({0})").format(r"$\%$")
 
     @property
     def xlog(self) -> bool:
@@ -99,14 +99,14 @@ class FrequencyGroupChart(BaseChart):
             return median, lower, upper
 
         median, upper, lower = summarize(distributions, q=0.01)
-        self._axes.fill_between(x, upper, lower, color=normal_color(), linewidth=0.0, alpha=0.2)
+        self._axes.fill_between(x, upper*100, lower*100, color=normal_color(), linewidth=0.0, alpha=0.2)
         median, upper, lower = summarize(distributions, q=0.05)
-        self._axes.fill_between(x, upper, lower, color=normal_color(), linewidth=0.0, alpha=0.4)
-        self._axes.plot(x, median, color=normal_color(), linewidth=1.0, linestyle="--")
+        self._axes.fill_between(x, upper*100, lower*100, color=normal_color(), linewidth=0.0, alpha=0.4)
+        self._axes.plot(x, median*100, color=normal_color(), linewidth=1.0, linestyle="--")
 
         self._axes.set_title(title)
-        self._axes.set_xlabel(self.xlabel)
-        self._axes.set_ylabel(self.ylabel)
+        self._axes.set_xlabel(self.x_label)
+        self._axes.set_ylabel(self.y_label)
         self._axes.set_xlim(x[0], x[-1])
         self._axes.set_ylim(0.0, None)
         self._figure.tight_layout()
@@ -114,5 +114,6 @@ class FrequencyGroupChart(BaseChart):
 
     def retranslate(self):
         self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.configure_subplots_action.setText(self.tr("Configure Subplots"))
         self.save_figure_action.setText(self.tr("Save Figure"))
         self.scale_menu.setTitle(self.tr("Scale"))

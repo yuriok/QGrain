@@ -60,19 +60,23 @@ class Frequency3DChart(BaseChart):
             return lambda classes_phi: to_microns(classes_phi)
 
     @property
-    def xlabel(self) -> str:
+    def x_label(self) -> str:
         if self.scale == "log-linear":
-            return "Grain size (microns)"
+            return self.tr("Grain size ({0})").format(r"$\rm \mu m$")
         elif self.scale == "log":
-            return "Ln(grain size in microns)"
+            return self.tr("Ln(grain size) ({0})").format(r"$\rm \mu m$")
         elif self.scale == "phi":
-            return "Grain size (phi)"
+            return self.tr("Grain size ({0})").format(r"$\rm \phi$")
         elif self.scale == "linear":
-            return "Grain size (microns)"
+            return self.tr("Grain size ({0})").format(r"$\rm \mu m$")
 
     @property
-    def ylabel(self) -> str:
-        return "Frequency"
+    def y_label(self) -> str:
+        return self.tr("Sample index")
+
+    @property
+    def z_label(self) -> str:
+        return self.tr("Frequency ({0})").format(r"$\%$")
 
     def update_chart(self):
         self._figure.clear()
@@ -95,15 +99,15 @@ class Frequency3DChart(BaseChart):
         for sample in samples:
             record_samples.append(sample)
             sample_distributions.append(sample.distribution)
-        Z = np.array(sample_distributions)
+        Z = np.array(sample_distributions)*100
         x = self.transfer(record_samples[0].classes_phi)
         y = np.linspace(1, len(Z), len(Z))
         X, Y = np.meshgrid(x, y)
         self._axes.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap="binary")
         self._axes.set_xlim(x[0], x[-1])
-        self._axes.set_xlabel(self.xlabel)
-        self._axes.set_ylabel("Sample index")
-        self._axes.set_zlabel(self.ylabel)
+        self._axes.set_xlabel(self.x_label)
+        self._axes.set_ylabel(self.y_label)
+        self._axes.set_zlabel(self.z_label)
         self._last_samples = record_samples
         if self.scale == "log-linear":
             self._axes.xaxis.set_major_formatter(FuncFormatter(lambda v, p=None: f"{10**v}"))
@@ -113,5 +117,6 @@ class Frequency3DChart(BaseChart):
     def retranslate(self):
         self.setWindowTitle(self.tr("Frequency 3D Chart"))
         self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.configure_subplots_action.setText(self.tr("Configure Subplots"))
         self.save_figure_action.setText(self.tr("Save Figure"))
         self.scale_menu.setTitle(self.tr("Scale"))

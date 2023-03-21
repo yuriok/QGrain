@@ -37,7 +37,7 @@ def synchronize_theme():
     plt.rcParams["ytick.color"] = os.environ["QTMATERIAL_SECONDARYTEXTCOLOR"]
     plt.rcParams["ytick.labelcolor"] = os.environ["QTMATERIAL_SECONDARYTEXTCOLOR"]
 
-    plt.rcParams["savefig.dpi"] = 300.0
+    plt.rcParams["savefig.dpi"] = 1200.0
     plt.rcParams["savefig.transparent"] = False
     plt.rcParams["figure.max_open_warning"] = False
 
@@ -78,6 +78,8 @@ class BaseChart(QtWidgets.QWidget):
         self.customContextMenuRequested.connect(self.show_menu)
         self.edit_figure_action = self.menu.addAction(self.tr("Edit Figure"))
         self.edit_figure_action.triggered.connect(lambda: self._toolbar.edit_parameters())
+        self.configure_subplots_action = self.menu.addAction(self.tr("Configure Subplots"))
+        self.configure_subplots_action.triggered.connect(lambda: self._toolbar.configure_subplots())
         self.save_figure_action = self.menu.addAction(self.tr("Save Figure"))
         self.save_figure_action.triggered.connect(lambda: self._toolbar.save_figure())
         self.normal_msg = QtWidgets.QMessageBox(parent=self)

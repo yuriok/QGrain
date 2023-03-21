@@ -61,17 +61,17 @@ class FrequencyChart(BaseChart):
     @property
     def xlabel(self) -> str:
         if self.scale == "log-linear":
-            return "Grain size (microns)"
+            return self.tr("Grain size ({0})").format(r"$\rm \mu m$")
         elif self.scale == "log":
-            return "Ln(grain size in microns)"
+            return self.tr("Ln(grain size) ({0})").format(r"$\rm \mu m$")
         elif self.scale == "phi":
-            return "Grain size (phi)"
+            return self.tr("Grain size ({0})").format(r"$\rm \phi$")
         elif self.scale == "linear":
-            return "Grain size (microns)"
+            return self.tr("Grain size ({0})").format(r"$\rm \mu m$")
 
     @property
     def ylabel(self) -> str:
-        return "Frequency"
+        return self.tr("Frequency ({0})").format(r"$\%$")
 
     @property
     def xlog(self) -> bool:
@@ -100,17 +100,18 @@ class FrequencyChart(BaseChart):
             self._axes.set_ylabel(self.ylabel)
             self._axes.set_xlim(x[0], x[-1])
             distributions = np.array([sample.distribution for sample in samples])
-            self._axes.set_ylim(0.0, round(np.max(distributions) * 1.2, 2))
+            self._axes.set_ylim(0.0, round(np.max(distributions) * 1.2, 2) * 100)
         for i, sample in enumerate(samples):
             self._last_samples.append(sample)
             x = self.transfer(sample.classes_phi)
             c = plt.get_cmap()(i % 10)
-            self._axes.plot(x, sample.distribution, c=c, marker=".", mfc=c, mec=c, label=sample.name)
+            self._axes.plot(x, sample.distribution*100, c=c, marker=".", mfc=c, mec=c, label=sample.name)
         self._figure.tight_layout()
         self._canvas.draw()
 
     def retranslate(self):
         self.setWindowTitle(self.tr("Frequency Chart"))
         self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.configure_subplots_action.setText(self.tr("Configure Subplots"))
         self.save_figure_action.setText(self.tr("Save Figure"))
         self.scale_menu.setTitle(self.tr("Scale"))

@@ -76,11 +76,11 @@ class DistributionChart(BaseChart):
 
     @property
     def supported_intervals(self) -> Sequence[Tuple[int, str]]:
-        intervals = ((5, self.tr("5 Milliseconds")),
-                     (10, self.tr("10 Milliseconds")),
-                     (20, self.tr("20 Milliseconds")),
-                     (30, self.tr("30 Milliseconds")),
-                     (60, self.tr("60 Milliseconds")))
+        intervals = ((5, self.tr("5 ms")),
+                     (10, self.tr("10 ms")),
+                     (20, self.tr("20 ms")),
+                     (30, self.tr("30 ms")),
+                     (60, self.tr("60 ms")))
         return intervals
 
     @property
@@ -125,19 +125,19 @@ class DistributionChart(BaseChart):
             return lambda classes_phi: to_microns(classes_phi)
 
     @property
-    def xlabel(self) -> str:
+    def x_label(self) -> str:
         if self.scale == "log-linear":
-            return "Grain size (microns)"
+            return self.tr("Grain size ({0})").format(r"$\rm \mu m$")
         elif self.scale == "log":
-            return "Ln(grain size in microns)"
+            return self.tr("Ln(grain size) ({0})").format(r"$\rm \mu m$")
         elif self.scale == "phi":
-            return "Grain size (phi)"
+            return self.tr("Grain size ({0})").format(r"$\rm \phi$")
         elif self.scale == "linear":
-            return "Grain size (microns)"
+            return self.tr("Grain size ({0})").format(r"$\rm \mu m$")
 
     @property
-    def ylabel(self) -> str:
-        return "Frequency"
+    def y_label(self) -> str:
+        return self.tr("Frequency ({0})").format(r"$\%$")
 
     @property
     def xlog(self) -> bool:
@@ -159,27 +159,29 @@ class DistributionChart(BaseChart):
             self._animation = None
         x = self.transfer(result.classes_phi)
         self._axes.set_title(result.name)
-        self._axes.set_xlabel(self.xlabel)
-        self._axes.set_ylabel(self.ylabel)
-        self._axes.plot(x, result.sample.distribution, c="#ffffff00", marker=".", ms=3, mfc=normal_color(),
-                        mec=normal_color(), label="Observation")
+        self._axes.set_xlabel(self.x_label)
+        self._axes.set_ylabel(self.y_label)
+        self._axes.plot(x, result.sample.distribution*100, c="#ffffff00", marker=".", ms=3, mfc=normal_color(),
+                        mec=normal_color(), label=self.tr("Observation"))
         self._axes.set_xlim(x[0], x[-1])
-        self._axes.set_ylim(0.0, round(np.max(result.sample.distribution) * 1.2, 2))
+        self._axes.set_ylim(0.0, round(np.max(result.sample.distribution) * 1.2, 2) * 100)
         lmse_loss = loss_numpy("lmse")(result.distribution, result.sample.distribution, None)
-        self._axes.plot(x, result.distribution, c=normal_color(), label=f"Prediction (LMSE={lmse_loss:.2f})")
+        self._axes.plot(x, result.distribution*100, c=normal_color(),
+                        label=self.tr("Prediction (LMSE={0:.2f})").format(lmse_loss))
         for i, component in enumerate(result):
             mode_micron = mode(result.classes, result.classes_phi, component.distribution, is_geometric=True)
-            self._axes.plot(x, component.distribution * component.proportion, c=plt.get_cmap()(i),
-                            label=f"C{i + 1} ({mode_micron:.2f} μm, {component.proportion:.2%}))")
+            self._axes.plot(x, component.distribution*component.proportion*100, c=plt.get_cmap()(i),
+                            label=r"$\rm C_{0}$ ({1:.2f} $\rm \mu m$, {2:.2%})".format(
+                                i+1, mode_micron, component.proportion))
         if self.xlog:
             self._axes.set_xscale("log")
         if self.show_mode:
             modes = [self.transfer(mode(result.classes, result.classes_phi, component.distribution,
                                         is_geometric=False)) for component in result]
             colors = [plt.get_cmap()(i) for i in range(len(result))]
-            self._axes.vlines(modes, 0.0, 1.0, colors=colors)
+            self._axes.vlines(modes, 0.0, 100.0, colors=colors)
         if self.show_legend:
-            self._axes.legend(loc="upper left")
+            self._axes.legend(loc="upper left", prop={"size": 6})
         self._figure.tight_layout()
         self._canvas.draw()
 
@@ -195,12 +197,12 @@ class DistributionChart(BaseChart):
         if self.xlog:
             self._axes.set_xscale("log")
         self._axes.set_title(result.name)
-        self._axes.set_xlabel(self.xlabel)
-        self._axes.set_ylabel(self.ylabel)
-        observation_line = self._axes.plot(x, result.sample.distribution, c="#ffffff00", marker=".", ms=3,
-                                           mfc=normal_color(), mec=normal_color(), label="Observation")[0]
+        self._axes.set_xlabel(self.x_label)
+        self._axes.set_ylabel(self.y_label)
+        observation_line = self._axes.plot(x, result.sample.distribution*100, c="#ffffff00", marker=".", ms=3,
+                                           mfc=normal_color(), mec=normal_color(), label=self.tr("Observation"))[0]
         self._axes.set_xlim(x[0], x[-1])
-        self._axes.set_ylim(0.0, round(np.max(result.sample.distribution) * 1.2, 2))
+        self._axes.set_ylim(0.0, round(np.max(result.sample.distribution) * 1.2, 2) * 100)
 
         prediction_line: Optional[plt.Line2D] = None
         component_lines: List[plt.Line2D] = []
@@ -214,20 +216,21 @@ class DistributionChart(BaseChart):
             nonlocal legend
             if prediction_line is None:
                 lmse_loss = loss_numpy("lmse")(result.distribution, result.sample.distribution, None)
-                prediction_line = self._axes.plot(x, result.distribution, c=normal_color(),
-                                                  label=f"Prediction (LMSE={lmse_loss:.2f})")[0]
+                prediction_line = self._axes.plot(x, result.distribution*100, c=normal_color(),
+                                                  label=self.tr("Prediction (LMSE={0:.2f})").format(lmse_loss))[0]
                 for i, component in enumerate(result):
                     mode_micron = mode(result.classes, result.classes_phi, component.distribution, is_geometric=True)
-                    line = self._axes.plot(x, component.distribution * component.proportion, c=plt.get_cmap()(i),
-                                           label=f"C{i + 1} ({mode_micron:.2f} μm, {component.proportion:.2%}))")[0]
+                    line = self._axes.plot(x, component.distribution*component.proportion*100, c=plt.get_cmap()(i),
+                                           label=r"$\rm C_{0}$ ({1:.2f} $\rm \mu m$, {2:.2%})".format(
+                                               i + 1, mode_micron, component.proportion))[0]
                     component_lines.append(line)
                 if self.show_mode:
                     modes = [self.transfer(mode(result.classes, result.classes_phi, component.distribution,
                                                 is_geometric=False)) for component in result]
                     colors = [plt.get_cmap()(i) for i in range(len(result))]
-                    mode_lines = self._axes.vlines(modes, 0.0, 1.0, colors=colors)
+                    mode_lines = self._axes.vlines(modes, 0.0, 100.0, colors=colors)
                 if self.show_legend:
-                    legend = self._axes.legend(loc="upper left")
+                    legend = self._axes.legend(loc="upper left", prop={"size": 6})
             artists = [prediction_line, *component_lines]
             if mode_lines is not None:
                 artists.append(mode_lines)
@@ -240,28 +243,30 @@ class DistributionChart(BaseChart):
             nonlocal component_lines
             nonlocal mode_lines
             nonlocal legend
-            prediction_line.set_ydata(current.distribution)
+            prediction_line.set_ydata(current.distribution*100)
             for i, (line, component) in enumerate(zip(component_lines, current)):
                 mode_micron = mode(current.classes, current.classes_phi, component.distribution, is_geometric=True)
-                line.set_ydata(component.distribution * component.proportion)
-                line.set_label(f"C{i + 1} ({mode_micron:.2f} μm, {component.proportion:.2%}))")
+                line.set_ydata(component.distribution*component.proportion*100)
+                line.set_label(r"$\rm C_{0}$ ({1:.2f} $\rm \mu m$, {2:.2%})".format(
+                    i + 1, mode_micron, component.proportion))
             artists = [prediction_line, *component_lines]
             if self.show_mode:
                 mode_lines.remove()
                 modes = [self.transfer(mode(current.classes, current.classes_phi, component.distribution,
                                             is_geometric=False)) for component in current]
                 colors = [plt.get_cmap()(i) for i in range(len(current))]
-                mode_lines = self._axes.vlines(modes, 0.0, 1.0, colors=colors)
+                mode_lines = self._axes.vlines(modes, 0.0, 100.0, colors=colors)
                 artists.append(mode_lines)
             if self.show_legend:
                 lmse_loss = loss_numpy("lmse")(current.distribution, current.sample.distribution, None)
                 handles = [observation_line, prediction_line, *component_lines]
-                labels = ["Observation", f"Prediction (LMSE={lmse_loss:.2f})"]
+                labels = [self.tr("Observation"), self.tr("Prediction (LMSE={0:.2f})").format(lmse_loss)]
                 for i, component in enumerate(current):
                     mode_micron = mode(current.classes, current.classes_phi, component.distribution, is_geometric=True)
-                    label = f"C{i + 1} ({mode_micron:.2f} μm, {component.proportion:.2%})"
+                    label = r"$\rm C_{0}$ ({1:.2f} $\rm \mu m$, {2:.2%})".format(
+                        i + 1, mode_micron, component.proportion)
                     labels.append(label)
-                legend = self._axes.legend(handles=handles, labels=labels, loc="upper left")
+                legend = self._axes.legend(handles=handles, labels=labels, loc="upper left", prop={"size": 6})
                 artists.append(legend)
             return artists
 
@@ -284,6 +289,7 @@ class DistributionChart(BaseChart):
     def retranslate(self):
         self.setWindowTitle(self.tr("Distribution Chart"))
         self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.configure_subplots_action.setText(self.tr("Configure Subplots"))
         self.save_figure_action.setText(self.tr("Save Figure"))
         self.scale_menu.setTitle(self.tr("Scale"))
         for action, (key, name) in zip(self.scale_actions, self.supported_scales):
