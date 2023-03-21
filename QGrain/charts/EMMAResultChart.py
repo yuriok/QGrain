@@ -95,11 +95,11 @@ class EMMAResultChart(BaseChart):
 
     @property
     def supported_intervals(self) -> Sequence[Tuple[int, str]]:
-        intervals = ((5, self.tr("5 Milliseconds")),
-                     (10, self.tr("10 Milliseconds")),
-                     (20, self.tr("20 Milliseconds")),
-                     (30, self.tr("30 Milliseconds")),
-                     (60, self.tr("60 Milliseconds")))
+        intervals = ((5, self.tr("5 ms")),
+                     (10, self.tr("10 ms")),
+                     (20, self.tr("20 ms")),
+                     (30, self.tr("30 ms")),
+                     (60, self.tr("60 ms")))
         return intervals
 
     @property
@@ -143,19 +143,19 @@ class EMMAResultChart(BaseChart):
             return lambda classes_phi: to_microns(classes_phi)
 
     @property
-    def xlabel(self) -> str:
+    def x_label(self) -> str:
         if self.scale == "log-linear":
-            return "Grain size (microns)"
+            return self.tr("Grain size ({0})").format(r"$\rm \mu m$")
         elif self.scale == "log":
-            return "Ln(grain size in microns)"
+            return self.tr("Ln(grain size) ({0})").format(r"$\rm \mu m$")
         elif self.scale == "phi":
-            return "Grain size (phi)"
+            return self.tr("Grain size ({0})").format(r"$\rm \phi$")
         elif self.scale == "linear":
-            return "Grain size (microns)"
+            return self.tr("Grain size ({0})").format(r"$\rm \mu m$")
 
     @property
-    def ylabel(self) -> str:
-        return "Frequency"
+    def y_label(self) -> str:
+        return self.tr("Frequency ({0})").format(r"$\%$")
 
     @property
     def xlog(self) -> bool:
@@ -182,40 +182,41 @@ class EMMAResultChart(BaseChart):
         interval = max(1, result.n_samples // self.N_DISPLAY_SAMPLES)
         sample_axes = self._figure.add_subplot(2, 2, 1)
         for sample in result.dataset[::interval]:
-            sample_axes.plot(classes, sample.distribution, c=normal_color(), alpha=0.2)
+            sample_axes.plot(classes, sample.distribution*100, c=normal_color(), alpha=0.2)
         if self.xlog:
             sample_axes.set_xscale("log")
         sample_axes.set_xlim(classes[0], classes[-1])
-        sample_axes.set_ylim(0.0, round(np.max(result.dataset.distributions) * 1.2, 2))
-        sample_axes.set_xlabel(self.xlabel)
-        sample_axes.set_ylabel(self.ylabel)
-        sample_axes.set_title("GSDs")
+        sample_axes.set_ylim(0.0, round(np.max(result.dataset.distributions) * 1.2, 2)*100)
+        sample_axes.set_xlabel(self.x_label)
+        sample_axes.set_ylabel(self.y_label)
+        sample_axes.set_title(self.tr("GSDs"))
         loss_axes = self._figure.add_subplot(2, 2, 2)
         loss_axes.plot(iteration_indexes, loss_series, c=normal_color())
         loss_axes.set_xlim(0, len(loss_series))
-        loss_axes.set_xlabel("Iteration")
+        loss_axes.set_xlabel(self.tr("Iteration"))
         loss_axes.set_ylabel(loss_name)
-        loss_axes.set_title("Loss variation")
+        loss_axes.set_title(self.tr("Loss variation"))
         end_member_axes = self._figure.add_subplot(2, 2, 3)
         if self.xlog:
             end_member_axes.set_xscale("log")
         for i in range(result.n_members):
-            end_member_axes.plot(classes, result.end_members[i], c=plt.get_cmap()(i), label=f"EM{i + 1}", zorder=10 + i)
+            end_member_axes.plot(classes, result.end_members[i]*100, c=plt.get_cmap()(i),
+                                 label=r"$\rm EM_{0}$".format(i+1), zorder=10 + i)
         end_member_axes.set_xlim(classes[0], classes[-1])
-        end_member_axes.set_ylim(0.0, round(np.max(result.end_members) * 1.2, 2))
-        end_member_axes.set_xlabel(self.xlabel)
-        end_member_axes.set_ylabel(self.ylabel)
-        end_member_axes.set_title("End members")
+        end_member_axes.set_ylim(0.0, round(np.max(result.end_members) * 1.2, 2)*100)
+        end_member_axes.set_xlabel(self.x_label)
+        end_member_axes.set_ylabel(self.y_label)
+        end_member_axes.set_title(self.tr("End members"))
         proportion_axes = self._figure.add_subplot(2, 2, 4)
         image = get_image_by_proportions(result.proportions, resolution=100)
         proportion_axes.imshow(image, plt.get_cmap(), aspect="auto", vmin=0, vmax=9,
                                extent=(0.0, result.n_samples, 100, 0.0), interpolation="none")
         proportion_axes.set_xlim(0, result.n_samples)
         proportion_axes.set_ylim(0, 100)
-        proportion_axes.set_yticks([0, 20, 40, 60, 80, 100], ["0.0", "0.2", "0.4", "0.6", "0.8", "1.0"])
-        proportion_axes.set_xlabel("Sample index")
-        proportion_axes.set_ylabel("Proportion")
-        proportion_axes.set_title("Proportions")
+        proportion_axes.set_yticks([0, 20, 40, 60, 80, 100], ["0", "20", "40", "60", "80", "100"])
+        proportion_axes.set_xlabel(self.tr("Sample index"))
+        proportion_axes.set_ylabel(self.tr("Proportion ({0})").format(r"$\%$"))
+        proportion_axes.set_title(self.tr("Proportions"))
         self._figure.tight_layout()
         self._canvas.draw()
 
@@ -235,35 +236,35 @@ class EMMAResultChart(BaseChart):
         interval = max(1, result.n_samples // self.N_DISPLAY_SAMPLES)
         sample_axes = self._figure.add_subplot(2, 2, 1)
         for sample in result.dataset[::interval]:
-            sample_axes.plot(classes, sample.distribution, c=normal_color(), alpha=0.2)
+            sample_axes.plot(classes, sample.distribution*100, c=normal_color(), alpha=0.2)
         if self.xlog:
             sample_axes.set_xscale("log")
         sample_axes.set_xlim(classes[0], classes[-1])
-        sample_axes.set_ylim(0.0, round(np.max(result.dataset.distributions) * 1.2, 2))
-        sample_axes.set_xlabel(self.xlabel)
-        sample_axes.set_ylabel(self.ylabel)
-        sample_axes.set_title("GSDs")
+        sample_axes.set_ylim(0.0, round(np.max(result.dataset.distributions) * 1.2, 2)*100)
+        sample_axes.set_xlabel(self.x_label)
+        sample_axes.set_ylabel(self.y_label)
+        sample_axes.set_title(self.tr("GSDs"))
         loss_axes = self._figure.add_subplot(2, 2, 2)
         loss_axes.plot(iteration_indexes, loss_series, c=normal_color())
         loss_axes.set_xlim(0, len(loss_series))
-        loss_axes.set_xlabel("Iteration")
+        loss_axes.set_xlabel(self.tr("Iteration"))
         loss_axes.set_ylabel(loss_name)
-        loss_axes.set_title("Loss variation")
+        loss_axes.set_title(self.tr("Loss variation"))
         end_member_axes = self._figure.add_subplot(2, 2, 3)
         if self.xlog:
             end_member_axes.set_xscale("log")
         end_member_axes.set_xlim(classes[0], classes[-1])
-        end_member_axes.set_ylim(0, round(np.max(result.end_members) * 1.2, 2))
-        end_member_axes.set_xlabel(self.xlabel)
-        end_member_axes.set_ylabel(self.ylabel)
-        end_member_axes.set_title("End members")
+        end_member_axes.set_ylim(0, round(np.max(result.end_members) * 1.2, 2)*100)
+        end_member_axes.set_xlabel(self.x_label)
+        end_member_axes.set_ylabel(self.y_label)
+        end_member_axes.set_title(self.tr("End members"))
         proportion_axes = self._figure.add_subplot(2, 2, 4)
         proportion_axes.set_xlim(0, result.n_samples)
         proportion_axes.set_ylim(0, 100)
-        proportion_axes.set_yticks([0, 20, 40, 60, 80, 100], ["0.0", "0.2", "0.4", "0.6", "0.8", "1.0"])
-        proportion_axes.set_xlabel("Sample index")
-        proportion_axes.set_ylabel("Proportion")
-        proportion_axes.set_title("Proportions")
+        proportion_axes.set_yticks([0, 20, 40, 60, 80, 100], ["0", "20", "40", "60", "80", "100"])
+        proportion_axes.set_xlabel(self.tr("Sample index"))
+        proportion_axes.set_ylabel(self.tr("Proportion ({0})").format(r"$\%$"))
+        proportion_axes.set_title(self.tr("Proportions"))
 
         iteration_line: Optional[plt.Line2D] = None
         end_member_curves: List[plt.Line2D] = []
@@ -276,8 +277,8 @@ class EMMAResultChart(BaseChart):
             if iteration_line is None:
                 iteration_line = loss_axes.plot([1, 1], [min_distance, max_distance], c=normal_color())[0]
                 for i in range(result.n_members):
-                    curve = end_member_axes.plot(classes, result.end_members[i],
-                                                 c=plt.get_cmap()(i), label=f"EM{i + 1}")[0]
+                    curve = end_member_axes.plot(classes, result.end_members[i]*100,
+                                                 c=plt.get_cmap()(i), label=r"$\rm EM_{0}$".format(i+1))[0]
                     end_member_curves.append(curve)
                 image = get_image_by_proportions(result.proportions, resolution=100)
                 proportion_image = proportion_axes.imshow(
@@ -292,7 +293,7 @@ class EMMAResultChart(BaseChart):
             iteration, current = args
             iteration_line.set_xdata((iteration, iteration))
             for i in range(current.n_members):
-                end_member_curves[i].set_ydata(current.end_members[i])
+                end_member_curves[i].set_ydata(current.end_members[i]*100)
             image = get_image_by_proportions(current.proportions, resolution=100)
             proportion_image.set_data(image)
             return iteration_line, proportion_image, *end_member_curves
@@ -314,6 +315,7 @@ class EMMAResultChart(BaseChart):
     def retranslate(self):
         self.setWindowTitle(self.tr("EMMA Chart"))
         self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.configure_subplots_action.setText(self.tr("Configure Subplots"))
         self.save_figure_action.setText(self.tr("Save Figure"))
         self.scale_menu.setTitle(self.tr("Scale"))
         for action, (key, name) in zip(self.scale_actions, self.supported_scales):

@@ -73,11 +73,11 @@ class UDMResultChart(BaseChart):
 
     @property
     def supported_intervals(self) -> Sequence[Tuple[int, str]]:
-        intervals = ((5, self.tr("5 Milliseconds")),
-                     (10, self.tr("10 Milliseconds")),
-                     (20, self.tr("20 Milliseconds")),
-                     (30, self.tr("30 Milliseconds")),
-                     (60, self.tr("60 Milliseconds")))
+        intervals = ((5, self.tr("5 ms")),
+                     (10, self.tr("10 ms")),
+                     (20, self.tr("20 ms")),
+                     (30, self.tr("30 ms")),
+                     (60, self.tr("60 ms")))
         return intervals
 
     @property
@@ -114,19 +114,19 @@ class UDMResultChart(BaseChart):
             return lambda classes_phi: to_microns(classes_phi)
 
     @property
-    def xlabel(self) -> str:
+    def x_label(self) -> str:
         if self.scale == "log-linear":
-            return "Grain size (microns)"
+            return self.tr("Grain size ({0})").format(r"$\rm \mu m$")
         elif self.scale == "log":
-            return "Ln(grain size in microns)"
+            return self.tr("Ln(grain size) ({0})").format(r"$\rm \mu m$")
         elif self.scale == "phi":
-            return "Grain size (phi)"
+            return self.tr("Grain size ({0})").format(r"$\rm \phi$")
         elif self.scale == "linear":
-            return "Grain size (microns)"
+            return self.tr("Grain size ({0})").format(r"$\rm \mu m$")
 
     @property
-    def ylabel(self) -> str:
-        return "Frequency"
+    def y_label(self) -> str:
+        return self.tr("Frequency ({0})").format(r"$\%$")
 
     @property
     def xlog(self) -> bool:
@@ -152,46 +152,49 @@ class UDMResultChart(BaseChart):
         classes = self.transfer(result.dataset.classes_phi)
         sample_axes = self._figure.add_subplot(2, 2, 1)
         for sample in result.dataset[::interval]:
-            sample_axes.plot(classes, sample.distribution, c=normal_color(), alpha=0.2)
+            sample_axes.plot(classes, sample.distribution*100, c=normal_color(), alpha=0.2)
         if self.xlog:
             sample_axes.set_xscale("log")
         sample_axes.set_xlim(classes[0], classes[-1])
-        sample_axes.set_ylim(0.0, round(np.max(result.dataset.distributions) * 1.2, 2))
-        sample_axes.set_xlabel(self.xlabel)
-        sample_axes.set_ylabel(self.ylabel)
-        sample_axes.set_title("GSDs")
+        sample_axes.set_ylim(0.0, round(np.max(result.dataset.distributions) * 1.2, 2)*100)
+        sample_axes.set_xlabel(self.x_label)
+        sample_axes.set_ylabel(self.y_label)
+        sample_axes.set_title(self.tr("GSDs"))
         loss_axes = self._figure.add_subplot(2, 2, 2)
-        loss_axes.plot(iteration_indexes, result.loss_series("total"), color=plt.get_cmap()(0), label="Sum")
-        loss_axes.plot(iteration_indexes, result.loss_series("distribution"), color=plt.get_cmap()(1), label="GSDs")
-        loss_axes.plot(iteration_indexes, result.loss_series("component"), color=plt.get_cmap()(2), label="Components")
+        loss_axes.plot(iteration_indexes, result.loss_series("total"),
+                       color=plt.get_cmap()(0), label=r"$loss$")
+        loss_axes.plot(iteration_indexes, result.loss_series("distribution"),
+                       color=plt.get_cmap()(1), label=r"$loss_d$")
+        loss_axes.plot(iteration_indexes, result.loss_series("component"),
+                       color=plt.get_cmap()(2), label=r"$loss_c$")
         loss_axes.set_xlim(0, len(result.loss_series("total")))
-        loss_axes.set_xlabel("Iteration")
-        loss_axes.set_ylabel("Loss")
-        loss_axes.set_title("Loss variation")
+        loss_axes.set_xlabel(self.tr("Iteration"))
+        loss_axes.set_ylabel(self.tr("Loss value"))
+        loss_axes.set_title(self.tr("Loss variation"))
         loss_axes.legend(loc="upper right")
         component_axes = self._figure.add_subplot(2, 2, 3)
         mean, lower, upper = summarize(result.components, q=0.01)
         for i in range(result.n_components):
-            component_axes.plot(classes, mean[i], c=plt.get_cmap()(i), zorder=20 + i)
-            component_axes.fill_between(classes, lower[i], upper[i], lw=0.02,
+            component_axes.plot(classes, mean[i]*100, c=plt.get_cmap()(i), zorder=20 + i)
+            component_axes.fill_between(classes, lower[i]*100, upper[i]*100, lw=0.02,
                                         color=plt.get_cmap()(i), alpha=0.2, zorder=10 + i)
         if self.xlog:
             component_axes.set_xscale("log")
         component_axes.set_xlim(classes[0], classes[-1])
-        component_axes.set_ylim(0.0, round(np.max(mean) * 1.2, 2))
-        component_axes.set_xlabel(self.xlabel)
-        component_axes.set_ylabel(self.ylabel)
-        component_axes.set_title("Components")
+        component_axes.set_ylim(0.0, round(np.max(mean) * 1.2, 2)*100)
+        component_axes.set_xlabel(self.x_label)
+        component_axes.set_ylabel(self.y_label)
+        component_axes.set_title(self.tr("Components"))
         proportion_axes = self._figure.add_subplot(2, 2, 4)
         image = get_image_by_proportions(result.proportions[:, 0, :], resolution=100)
         proportion_axes.imshow(image, plt.get_cmap(), aspect="auto", vmin=0, vmax=9,
                                extent=(0.0, result.n_samples, 100, 0.0), interpolation="none")
         proportion_axes.set_xlim(0, result.n_samples)
         proportion_axes.set_ylim(0, 100)
-        proportion_axes.set_yticks([0, 20, 40, 60, 80, 100], ["0.0", "0.2", "0.4", "0.6", "0.8", "1.0"])
-        proportion_axes.set_xlabel("Sample index")
-        proportion_axes.set_ylabel("Proportion")
-        proportion_axes.set_title("Proportions")
+        proportion_axes.set_yticks([0, 20, 40, 60, 80, 100], ["0", "20", "40", "60", "80", "100"])
+        proportion_axes.set_xlabel(self.tr("Sample index"))
+        proportion_axes.set_ylabel(self.tr("Proportion ({0})").format(r"$\%$"))
+        proportion_axes.set_title(self.tr("Proportions"))
         self._figure.tight_layout()
         self._canvas.draw()
 
@@ -210,39 +213,42 @@ class UDMResultChart(BaseChart):
         min_distance, max_distance = np.min(losses), np.max(losses)
         sample_axes = self._figure.add_subplot(2, 2, 1)
         for sample in result.dataset[::interval]:
-            sample_axes.plot(classes, sample.distribution, c=normal_color(), alpha=0.2)
+            sample_axes.plot(classes, sample.distribution*100, c=normal_color(), alpha=0.2)
         if self.xlog:
             sample_axes.set_xscale("log")
         sample_axes.set_xlim(classes[0], classes[-1])
-        sample_axes.set_ylim(0.0, round(np.max(result.dataset.distributions) * 1.2, 2))
-        sample_axes.set_xlabel(self.xlabel)
-        sample_axes.set_ylabel(self.ylabel)
-        sample_axes.set_title("GSDs")
+        sample_axes.set_ylim(0.0, round(np.max(result.dataset.distributions) * 1.2, 2)*100)
+        sample_axes.set_xlabel(self.x_label)
+        sample_axes.set_ylabel(self.y_label)
+        sample_axes.set_title(self.tr("GSDs"))
         loss_axes = self._figure.add_subplot(2, 2, 2)
-        loss_axes.plot(iteration_indexes, result.loss_series("total"), color=plt.get_cmap()(0), label="Sum")
-        loss_axes.plot(iteration_indexes, result.loss_series("distribution"), color=plt.get_cmap()(1), label="GSDs")
-        loss_axes.plot(iteration_indexes, result.loss_series("component"), color=plt.get_cmap()(2), label="Components")
+        loss_axes.plot(iteration_indexes, result.loss_series("total"),
+                       color=plt.get_cmap()(0), label=r"$loss$")
+        loss_axes.plot(iteration_indexes, result.loss_series("distribution"),
+                       color=plt.get_cmap()(1), label=r"$loss_d$")
+        loss_axes.plot(iteration_indexes, result.loss_series("component"),
+                       color=plt.get_cmap()(2), label=r"$loss_c$")
         loss_axes.set_xlim(0, len(result.loss_series("total")))
-        loss_axes.set_xlabel("Iteration")
-        loss_axes.set_ylabel("Loss")
-        loss_axes.set_title("Loss variation")
+        loss_axes.set_xlabel(self.tr("Iteration"))
+        loss_axes.set_ylabel(self.tr("Loss value"))
+        loss_axes.set_title(self.tr("Loss variation"))
         loss_axes.legend(loc="upper right")
         component_axes = self._figure.add_subplot(2, 2, 3)
         mean, lower, upper = summarize(result.components, q=0.01)
         if self.xlog:
             component_axes.set_xscale("log")
         component_axes.set_xlim(classes[0], classes[-1])
-        component_axes.set_ylim(0.0, round(np.max(mean) * 1.2, 2))
-        component_axes.set_xlabel(self.xlabel)
-        component_axes.set_ylabel(self.ylabel)
-        component_axes.set_title("Components")
+        component_axes.set_ylim(0.0, round(np.max(mean) * 1.2, 2)*100)
+        component_axes.set_xlabel(self.x_label)
+        component_axes.set_ylabel(self.y_label)
+        component_axes.set_title(self.tr("Components"))
         proportion_axes = self._figure.add_subplot(2, 2, 4)
         proportion_axes.set_xlim(0, result.n_samples)
         proportion_axes.set_ylim(0, 100)
-        proportion_axes.set_yticks([0, 20, 40, 60, 80, 100], ["0.0", "0.2", "0.4", "0.6", "0.8", "1.0"])
-        proportion_axes.set_xlabel("Sample index")
-        proportion_axes.set_ylabel("Proportion [%]")
-        proportion_axes.set_title("Proportions")
+        proportion_axes.set_yticks([0, 20, 40, 60, 80, 100], ["0", "20", "40", "60", "80", "100"])
+        proportion_axes.set_xlabel(self.tr("Sample index"))
+        proportion_axes.set_ylabel(self.tr("Proportion ({0})").format(r"$\%$"))
+        proportion_axes.set_title(self.tr("Proportions"))
 
         iteration_line: Optional[plt.Line2D] = None
         component_curves: List[plt.Line2D] = []
@@ -258,8 +264,8 @@ class UDMResultChart(BaseChart):
                 iteration_line = loss_axes.plot([1, 1], [min_distance, max_distance], c=normal_color())[0]
                 mean, lower, upper = summarize(result.components, q=0.01)
                 for i in range(result.n_components):
-                    curve = component_axes.plot(classes, mean[i], c=plt.get_cmap()(i), zorder=20 + i)[0]
-                    shadow = component_axes.fill_between(classes, lower[i], upper[i], lw=0.02,
+                    curve = component_axes.plot(classes, mean[i]*100, c=plt.get_cmap()(i), zorder=20 + i)[0]
+                    shadow = component_axes.fill_between(classes, lower[i]*100, upper[i]*100, lw=0.02,
                                                          color=plt.get_cmap()(i), alpha=0.2, zorder=10 + i)
                     component_curves.append(curve)
                     component_shadows.append(shadow)
@@ -278,7 +284,7 @@ class UDMResultChart(BaseChart):
             mean, lower, upper = summarize(current.components, q=0.01)
             iteration_line.set_xdata([iteration, iteration])
             for i in range(current.n_components):
-                component_curves[i].set_ydata(mean[i])
+                component_curves[i].set_ydata(mean[i]*100)
                 verts_lower = np.concatenate([np.expand_dims(classes, axis=1),
                                               np.expand_dims(lower[i], axis=1)], axis=1)
                 verts_upper = np.concatenate([np.expand_dims(classes[::-1], axis=1),
@@ -306,6 +312,7 @@ class UDMResultChart(BaseChart):
     def retranslate(self):
         self.setWindowTitle(self.tr("UDM Chart"))
         self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.configure_subplots_action.setText(self.tr("Configure Subplots"))
         self.save_figure_action.setText(self.tr("Save Figure"))
         self.scale_menu.setTitle(self.tr("Scale"))
         for action, (key, name) in zip(self.scale_actions, self.supported_scales):

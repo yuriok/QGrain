@@ -37,24 +37,24 @@ class PCAResultChart(BaseChart):
         self.sample_axes.arrow(0, 0, pca.components_[0, yi], pca.components_[1, yi], color=cmap(1), width=0.001)
         self.sample_axes.text(pca.components_[0, yi], pca.components_[1, yi], f"{dataset.classes[yi]: 0.4f}",
                               color=cmap(1), ha='center', va='center')
-        self.sample_axes.set_xlabel("PC1")
-        self.sample_axes.set_ylabel("PC2")
+        self.sample_axes.set_xlabel(r"$\rm PC_1$")
+        self.sample_axes.set_ylabel(r"$\rm PC_2$")
         cumulative_ratio = 0.0
         for i, ratio in enumerate(pca.explained_variance_ratio_):
             cumulative_ratio += ratio
-            self.shape_axes.plot(dataset.classes, pca.components_[i], color=cmap(i), label=f"PC{i+1}")
+            self.shape_axes.plot(dataset.classes, pca.components_[i], color=cmap(i), label=r"$\rm PC_{0}$".format(i+1))
             self.series_axes.plot(transformed[:, i], color=cmap(i),
-                                  label=f"PC{i + 1} ({pca.explained_variance_ratio_[i]:0.2%})",
+                                  label=r"$\rm PC_{0}$".format(i+1) + f" ({pca.explained_variance_ratio_[i]:0.2%})",
                                   lw=1.0, alpha=0.8)
             if i > 0 and cumulative_ratio > 0.95:
                 break
         self.shape_axes.set_xscale("log")
-        self.shape_axes.set_xlabel("Grain size (microns)")
-        self.shape_axes.set_ylabel("Transformed value")
-        self.shape_axes.legend(loc="upper left")
-        self.series_axes.set_xlabel("Sample index")
-        self.series_axes.set_ylabel("Transformed value")
-        self.series_axes.legend(loc="upper left")
+        self.shape_axes.set_xlabel(self.tr("Grain size ({0})").format(r"$\rm \mu m$"))
+        self.shape_axes.set_ylabel(self.tr("Transformed value"))
+        self.shape_axes.legend(loc="upper left", prop={"size": 6})
+        self.series_axes.set_xlabel(self.tr("Sample index"))
+        self.series_axes.set_ylabel(self.tr("Transformed value"))
+        self.series_axes.legend(loc="upper left", prop={"size": 6})
         self._figure.tight_layout()
         self._canvas.draw()
 
@@ -69,4 +69,5 @@ class PCAResultChart(BaseChart):
     def retranslate(self):
         self.setWindowTitle(self.tr("PCA Chart"))
         self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.configure_subplots_action.setText(self.tr("Configure Subplots"))
         self.save_figure_action.setText(self.tr("Save Figure"))

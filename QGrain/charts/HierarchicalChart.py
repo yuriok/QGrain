@@ -25,8 +25,8 @@ class HierarchicalChart(BaseChart):
         self._last_result = (linkage_matrix, p)
         self._axes.clear()
         dendrogram(linkage_matrix, p=p, truncate_mode="lastp", no_labels=False, leaf_font_size=7, ax=self._axes)
-        self._axes.set_xlabel("Sample count/index")
-        self._axes.set_ylabel("Distance")
+        self._axes.set_xlabel(self.tr("Sample count/index"))
+        self._axes.set_ylabel(self.tr("Distance"))
         self._figure.tight_layout()
         self._canvas.draw()
 
@@ -39,4 +39,5 @@ class HierarchicalChart(BaseChart):
     def retranslate(self):
         self.setWindowTitle(self.tr("Hierarchical Clustering"))
         self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.configure_subplots_action.setText(self.tr("Configure Subplots"))
         self.save_figure_action.setText(self.tr("Save Figure"))

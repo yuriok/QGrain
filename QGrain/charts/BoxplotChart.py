@@ -48,4 +48,5 @@ class BoxplotChart(BaseChart):
     def retranslate(self):
         self.setWindowTitle(self.tr("Boxplot Chart"))
         self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.configure_subplots_action.setText(self.tr("Configure Subplots"))
         self.save_figure_action.setText(self.tr("Save Figure"))

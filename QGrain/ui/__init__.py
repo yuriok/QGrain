@@ -13,6 +13,7 @@ from ..charts import setup_matplotlib
 EXTRA = {"font_family": "Source Han Sans CN",
          "density_scale": "-1"}
 
+
 def get_dir_size(directory: str):
     size = 0
     for root, _, files in os.walk(directory):

@@ -57,19 +57,23 @@ class FrequencyHeatmap(BaseChart):
             return lambda classes_phi: to_microns(classes_phi)
 
     @property
-    def xlabel(self) -> str:
+    def x_label(self) -> str:
         if self.scale == "log-linear":
-            return "Grain size (microns)"
+            return self.tr("Grain size ({0})").format(r"$\rm \mu m$")
         elif self.scale == "log":
-            return "Ln(grain size in microns)"
+            return self.tr("Ln(grain size) ({0})").format(r"$\rm \mu m$")
         elif self.scale == "phi":
-            return "Grain size (phi)"
+            return self.tr("Grain size ({0})").format(r"$\rm \phi$")
         elif self.scale == "linear":
-            return "Grain size (microns)"
+            return self.tr("Grain size ({0})").format(r"$\rm \mu m$")
 
     @property
-    def ylabel(self) -> str:
-        return "Frequency"
+    def y_label(self) -> str:
+        return self.tr("Sample index")
+
+    @property
+    def z_label(self) -> str:
+        return self.tr("Frequency ({0})").format(r"$\%$")
 
     def update_chart(self):
         self._figure.clear()
@@ -93,15 +97,15 @@ class FrequencyHeatmap(BaseChart):
             record_samples.append(sample)
             sample_distributions.append(sample.distribution)
 
-        Z = np.array(sample_distributions)
+        Z = np.array(sample_distributions)*100
         x = self.transfer(record_samples[0].classes_phi)
         y = np.arange(0, len(Z)+1)
         extent = [x[0], x[-1], y[0], y[-1]]
         im = self._axes.imshow(Z[::-1], cmap="coolwarm", aspect="auto", extent=extent, interpolation="gaussian")
         cbar = self._axes.figure.colorbar(im, ax=self._axes)
-        cbar.ax.set_ylabel(self.ylabel)
-        self._axes.set_xlabel(self.xlabel)
-        self._axes.set_ylabel("Sample index")
+        cbar.ax.set_ylabel(self.z_label)
+        self._axes.set_xlabel(self.x_label)
+        self._axes.set_ylabel(self.y_label)
         self._last_samples = record_samples
         if self.scale == "log-linear":
             self._axes.xaxis.set_major_formatter(FuncFormatter(lambda v, p=None: f"{10 ** v}"))
@@ -110,5 +114,6 @@ class FrequencyHeatmap(BaseChart):
     def retranslate(self):
         self.setWindowTitle(self.tr("Frequency Heatmap"))
         self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.configure_subplots_action.setText(self.tr("Configure Subplots"))
         self.save_figure_action.setText(self.tr("Save Figure"))
         self.scale_menu.setTitle(self.tr("Scale"))

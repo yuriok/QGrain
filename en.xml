@@ -1,13 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="zh_CN">
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE TS><TS version="2.1" language="zh_CN">
 <context>
     <name>About</name>
     <message>
         <location filename="QGrain/ui/About.py" line="13"/>
         <location filename="QGrain/ui/About.py" line="29"/>
         <source>About</source>
-        <translation>关于</translation>
+        <translation>About</translation>
     </message>
 </context>
 <context>
@@ -16,22 +14,22 @@
         <location filename="QGrain/charts/diagrams.py" line="293"/>
         <location filename="QGrain/charts/diagrams.py" line="545"/>
         <source>GSM Diagram (Blott &amp; Pye, 2012)</source>
-        <translation>砾-砂-泥图解 (Blott &amp; Pye, 2012)</translation>
+        <translation>GSM Diagram (Blott &amp; Pye, 2012)</translation>
     </message>
     <message>
         <location filename="QGrain/charts/diagrams.py" line="546"/>
         <source>Edit Figure</source>
-        <translation>编辑图片</translation>
+        <translation>Edit Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/diagrams.py" line="547"/>
         <source>Configure Subplots</source>
-        <translation>设置子图</translation>
+        <translation>Configure Subplots</translation>
     </message>
     <message>
         <location filename="QGrain/charts/diagrams.py" line="548"/>
         <source>Save Figure</source>
-        <translation>保存图片</translation>
+        <translation>Save Figure</translation>
     </message>
 </context>
 <context>
@@ -40,22 +38,22 @@
         <location filename="QGrain/charts/diagrams.py" line="554"/>
         <location filename="QGrain/charts/diagrams.py" line="808"/>
         <source>SSC Diagram (Blott &amp; Pye, 2012)</source>
-        <translation>砂-粉砂-粘土 图解 (Blott &amp; Pye, 2012)</translation>
+        <translation>SSC Diagram (Blott &amp; Pye, 2012)</translation>
     </message>
     <message>
         <location filename="QGrain/charts/diagrams.py" line="809"/>
         <source>Edit Figure</source>
-        <translation>编辑图片</translation>
+        <translation>Edit Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/diagrams.py" line="810"/>
         <source>Configure Subplots</source>
-        <translation>设置子图</translation>
+        <translation>Configure Subplots</translation>
     </message>
     <message>
         <location filename="QGrain/charts/diagrams.py" line="811"/>
         <source>Save Figure</source>
-        <translation>保存图片</translation>
+        <translation>Save Figure</translation>
     </message>
 </context>
 <context>
@@ -64,22 +62,22 @@
         <location filename="QGrain/charts/BoxplotChart.py" line="15"/>
         <location filename="QGrain/charts/BoxplotChart.py" line="49"/>
         <source>Boxplot Chart</source>
-        <translation>箱线图</translation>
+        <translation>Boxplot Chart</translation>
     </message>
     <message>
         <location filename="QGrain/charts/BoxplotChart.py" line="50"/>
         <source>Edit Figure</source>
-        <translation>编辑图片</translation>
+        <translation>Edit Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/BoxplotChart.py" line="51"/>
         <source>Configure Subplots</source>
-        <translation>设置子图</translation>
+        <translation>Configure Subplots</translation>
     </message>
     <message>
         <location filename="QGrain/charts/BoxplotChart.py" line="52"/>
         <source>Save Figure</source>
-        <translation>保存图片</translation>
+        <translation>Save Figure</translation>
     </message>
 </context>
 <context>
@@ -88,22 +86,22 @@
         <location filename="QGrain/charts/diagrams.py" line="827"/>
         <location filename="QGrain/charts/diagrams.py" line="1016"/>
         <source>C-M Diagram</source>
-        <translation>C-M 图解</translation>
+        <translation>C-M Diagram</translation>
     </message>
     <message>
         <location filename="QGrain/charts/diagrams.py" line="1017"/>
         <source>Edit Figure</source>
-        <translation>编辑图片</translation>
+        <translation>Edit Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/diagrams.py" line="1018"/>
         <source>Configure Subplots</source>
-        <translation>设置子图</translation>
+        <translation>Configure Subplots</translation>
     </message>
     <message>
         <location filename="QGrain/charts/diagrams.py" line="1019"/>
         <source>Save Figure</source>
-        <translation>保存图片</translation>
+        <translation>Save Figure</translation>
     </message>
 </context>
 <context>
@@ -112,19 +110,19 @@
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="32"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="404"/>
         <source>Clustering Analyzer</source>
-        <translation>聚类分析</translation>
+        <translation>Clustering Analyzer</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="70"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="420"/>
         <source>The linkage method for calculating the distance between the newly formed cluster and each observation vector.</source>
-        <translation>连接方法是用于计算新形成的簇与每个观测向量的距离的函数。</translation>
+        <translation>The linkage method for calculating the distance between the newly formed cluster and each observation vector.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="68"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="418"/>
         <source>Linkage</source>
-        <translation>连接方法</translation>
+        <translation>Linkage</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="37"/>
@@ -136,184 +134,184 @@
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="38"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="406"/>
         <source>If use the decomposed features of PCA.</source>
-        <translation>是否使用PCA分解的特征。</translation>
+        <translation>If use the decomposed features of PCA.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="40"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="407"/>
         <source>Variance Ratio</source>
-        <translation>方差比例</translation>
+        <translation>Variance Ratio</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="41"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="408"/>
         <source>It determines the numbers of PCs.</source>
-        <translation>它决定了主成分的数量。</translation>
+        <translation>It determines the numbers of PCs.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="46"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="409"/>
         <source>Mean</source>
-        <translation>平均粒径</translation>
+        <translation>Mean</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="47"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="410"/>
         <source>Mode</source>
-        <translation>峰值粒径</translation>
+        <translation>Mode</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="48"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="411"/>
         <source>First Percentile (C)</source>
-        <translation>第一百分位 (C值)</translation>
+        <translation>First Percentile (C)</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="49"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="412"/>
         <source>Median (M)</source>
-        <translation>中值粒径 (M值)</translation>
+        <translation>Median (M)</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="50"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="413"/>
         <source>Sorting Coefficient</source>
-        <translation>分选系数</translation>
+        <translation>Sorting Coefficient</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="51"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="414"/>
         <source>Skewness</source>
-        <translation>偏度</translation>
+        <translation>Skewness</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="52"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="415"/>
         <source>Kurtosis</source>
-        <translation>峰度</translation>
+        <translation>Kurtosis</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="53"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="416"/>
         <source>Standardize</source>
-        <translation>标准化</translation>
+        <translation>Standardize</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="54"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="417"/>
         <source>Standardization is necessary to balance different features.</source>
         <oldsource>Standardization is necessary to balance different feature.</oldsource>
-        <translation>标为了平衡不同的特征，标准化是必要的。</translation>
+        <translation>Standardization is necessary to balance different features.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="74"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="421"/>
         <source>Metric</source>
-        <translation>度量</translation>
+        <translation>Metric</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="75"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="422"/>
         <source>The distance metric.</source>
-        <translation>距离的度量。</translation>
+        <translation>The distance metric.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="83"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="423"/>
         <source>p</source>
-        <translation>p值</translation>
+        <translation>p</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="84"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="424"/>
         <source>The number of leaves at the bottom level of the figure.</source>
-        <translation>图表最底层的叶节点的数量。</translation>
+        <translation>The number of leaves at the bottom level of the figure.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="89"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="425"/>
         <source>Number of Clusters</source>
-        <translation>簇的数量</translation>
+        <translation>Number of Clusters</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="90"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="426"/>
         <source>The number of clusters.</source>
-        <translation>簇的数量。</translation>
+        <translation>The number of clusters.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="93"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="427"/>
         <source>Perform</source>
-        <translation>执行</translation>
+        <translation>Perform</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="95"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="428"/>
         <source>Preview</source>
-        <translation>预览</translation>
+        <translation>Preview</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="97"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="429"/>
         <source>Close Preview Charts</source>
-        <translation>关闭预览图表</translation>
+        <translation>Close Preview Charts</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="99"/>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="430"/>
         <source>Show C-M Diagram</source>
-        <translation>显示C-M图解</translation>
+        <translation>Show C-M Diagram</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="119"/>
         <source>Info</source>
-        <translation>信息</translation>
+        <translation>Info</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="122"/>
         <source>Warning</source>
-        <translation>警告</translation>
+        <translation>Warning</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="125"/>
         <source>Error</source>
-        <translation>错误</translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="271"/>
         <source>The linkage method is not compatible with the distance metric.</source>
-        <translation>当前所选的连接方法与距离度量不匹配。</translation>
+        <translation>The linkage method is not compatible with the distance metric.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="354"/>
         <source>The dataset has not been loaded.</source>
-        <translation>数据集尚未被加载。</translation>
+        <translation>The dataset has not been loaded.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="358"/>
         <source>The clustering algorithm has not been performed.</source>
-        <translation>尚未执行聚类算法。</translation>
+        <translation>The clustering algorithm has not been performed.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="361"/>
         <source>Choose a filename to save the clustering result</source>
-        <translation>选取一个文件来保存聚类结果</translation>
+        <translation>Choose a filename to save the clustering result</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="365"/>
         <source>Saving the clustering result...</source>
-        <translation>正在保存聚类分析结果...</translation>
+        <translation>Saving the clustering result...</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="366"/>
         <source>Cancel</source>
-        <translation>取消</translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ClusteringAnalyzer.py" line="388"/>
         <source>An unknown exception was raised. Please check the logs for more details.</source>
-        <translation>出现了一个未知的异常。请检查日志以获取详情。</translation>
+        <translation>An unknown exception was raised. Please check the logs for more details.</translation>
     </message>
 </context>
 <context>
@@ -322,65 +320,65 @@
         <location filename="QGrain/charts/CumulativeChart.py" line="18"/>
         <location filename="QGrain/charts/CumulativeChart.py" line="112"/>
         <source>Cumulative Frequency Chart</source>
-        <translation>累计频率图</translation>
+        <translation>Cumulative Frequency Chart</translation>
     </message>
     <message>
         <location filename="QGrain/charts/CumulativeChart.py" line="20"/>
         <location filename="QGrain/charts/CumulativeChart.py" line="116"/>
         <source>Scale</source>
-        <translation>标尺</translation>
+        <translation>Scale</translation>
     </message>
     <message>
         <location filename="QGrain/charts/CumulativeChart.py" line="36"/>
         <source>Log-linear</source>
-        <translation>对数线性</translation>
+        <translation>Log-linear</translation>
     </message>
     <message>
         <location filename="QGrain/charts/CumulativeChart.py" line="37"/>
         <source>Log</source>
-        <translation>对数</translation>
+        <translation>Log</translation>
     </message>
     <message>
         <location filename="QGrain/charts/CumulativeChart.py" line="38"/>
         <source>Phi</source>
-        <translation>Phi值</translation>
+        <translation>Phi</translation>
     </message>
     <message>
         <location filename="QGrain/charts/CumulativeChart.py" line="39"/>
         <source>Linear</source>
-        <translation>线性</translation>
+        <translation>Linear</translation>
     </message>
     <message>
         <location filename="QGrain/charts/CumulativeChart.py" line="63"/>
         <location filename="QGrain/charts/CumulativeChart.py" line="67"/>
         <location filename="QGrain/charts/CumulativeChart.py" line="69"/>
         <source>Grain size ({0})</source>
-        <translation>粒径 ({0})</translation>
+        <translation>Grain size ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/CumulativeChart.py" line="65"/>
         <source>Ln(grain size) ({0})</source>
-        <translation>Ln(粒径) ({0})</translation>
+        <translation>Ln(grain size) ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/CumulativeChart.py" line="73"/>
         <source>Frequency ({0})</source>
-        <translation>频率 ({0})</translation>
+        <translation>Frequency ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/CumulativeChart.py" line="113"/>
         <source>Edit Figure</source>
-        <translation>编辑图片</translation>
+        <translation>Edit Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/CumulativeChart.py" line="114"/>
         <source>Configure Subplots</source>
-        <translation>设置子图</translation>
+        <translation>Configure Subplots</translation>
     </message>
     <message>
         <location filename="QGrain/charts/CumulativeChart.py" line="115"/>
         <source>Save Figure</source>
-        <translation>保存图片</translation>
+        <translation>Save Figure</translation>
     </message>
 </context>
 <context>
@@ -389,7 +387,7 @@
         <location filename="QGrain/ui/DatasetGenerator.py" line="156"/>
         <location filename="QGrain/ui/DatasetGenerator.py" line="402"/>
         <source>Distribution Type</source>
-        <translation>分布类型</translation>
+        <translation>Distribution Type</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="195"/>
@@ -398,87 +396,87 @@
         <location filename="QGrain/ui/DatasetGenerator.py" line="400"/>
         <location filename="QGrain/ui/DatasetGenerator.py" line="411"/>
         <source>Preview</source>
-        <translation>预览</translation>
+        <translation>Preview</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="182"/>
         <location filename="QGrain/ui/DatasetGenerator.py" line="406"/>
         <source>Data Precision</source>
-        <translation>数据精度</translation>
+        <translation>Data Precision</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="334"/>
         <location filename="QGrain/ui/DatasetGenerator.py" line="409"/>
         <source>Stop</source>
-        <translation>停止</translation>
+        <translation>Stop</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="339"/>
         <source>Choose a filename to save the generated dataset</source>
-        <translation>选取一个文件来保存生成的数据集</translation>
+        <translation>Choose a filename to save the generated dataset</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="164"/>
         <location filename="QGrain/ui/DatasetGenerator.py" line="403"/>
         <source>Minimum Size</source>
         <oldsource>Minimum Size [{0}]</oldsource>
-        <translation>最小粒级</translation>
+        <translation>Minimum Size</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="169"/>
         <location filename="QGrain/ui/DatasetGenerator.py" line="404"/>
         <source>Maximum Size</source>
         <oldsource>Maximum Size [{0}]</oldsource>
-        <translation>最大粒级</translation>
+        <translation>Maximum Size</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="148"/>
         <location filename="QGrain/ui/DatasetGenerator.py" line="399"/>
         <source>Control</source>
-        <translation>控制</translation>
+        <translation>Control</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="152"/>
         <location filename="QGrain/ui/DatasetGenerator.py" line="401"/>
         <source>Number of Components</source>
-        <translation>组分的数量</translation>
+        <translation>Number of Components</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="178"/>
         <location filename="QGrain/ui/DatasetGenerator.py" line="405"/>
         <source>Number of Classes</source>
-        <translation>粒级的数量</translation>
+        <translation>Number of Classes</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="190"/>
         <location filename="QGrain/ui/DatasetGenerator.py" line="407"/>
         <source>Number of Samples</source>
-        <translation>样本的数量</translation>
+        <translation>Number of Samples</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="282"/>
         <source>Info</source>
-        <translation>信息</translation>
+        <translation>Info</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="285"/>
         <source>Warning</source>
-        <translation>警告</translation>
+        <translation>Warning</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="288"/>
         <source>Error</source>
-        <translation>错误</translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="347"/>
         <source>Saving the generated dataset...</source>
-        <translation>正在保存生成的数据集...</translation>
+        <translation>Saving the generated dataset...</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="347"/>
         <source>Cancel</source>
-        <translation>取消</translation>
+        <translation>Cancel</translation>
     </message>
 </context>
 <context>
@@ -487,105 +485,105 @@
         <location filename="QGrain/ui/DatasetLoader.py" line="22"/>
         <location filename="QGrain/ui/DatasetLoader.py" line="161"/>
         <source>Dataset Loader</source>
-        <translation>加载数据集</translation>
+        <translation>Dataset Loader</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetLoader.py" line="24"/>
         <source>Filename Unknown</source>
-        <translation>文件名未知</translation>
+        <translation>Filename Unknown</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetLoader.py" line="26"/>
         <location filename="QGrain/ui/DatasetLoader.py" line="165"/>
         <source>Select</source>
-        <translation>选择</translation>
+        <translation>Select</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetLoader.py" line="29"/>
         <location filename="QGrain/ui/DatasetLoader.py" line="166"/>
         <source>Sheet Name</source>
-        <translation>表格名称</translation>
+        <translation>Sheet Name</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetLoader.py" line="31"/>
         <location filename="QGrain/ui/DatasetLoader.py" line="164"/>
         <source>Empty</source>
-        <translation>空</translation>
+        <translation>Empty</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetLoader.py" line="34"/>
         <location filename="QGrain/ui/DatasetLoader.py" line="167"/>
         <source>Row With Grain Size Classes</source>
-        <translation>含有粒级的行</translation>
+        <translation>Row With Grain Size Classes</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetLoader.py" line="39"/>
         <location filename="QGrain/ui/DatasetLoader.py" line="168"/>
         <source>Column With Sample Names</source>
-        <translation>含有样本名称的列</translation>
+        <translation>Column With Sample Names</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetLoader.py" line="129"/>
         <source>Loading the grain size distributions...</source>
-        <translation>正在加载粒度分布...</translation>
+        <translation>Loading the grain size distributions...</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetLoader.py" line="144"/>
         <source>Can not load the grain size dataset from this file. Please check the logs for more details.</source>
-        <translation>无法从该文件 中加载粒度数据集。请检查日志以获取详情。</translation>
+        <translation>Can not load the grain size dataset from this file. Please check the logs for more details.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetLoader.py" line="54"/>
         <location filename="QGrain/ui/DatasetLoader.py" line="171"/>
         <source>Try Load</source>
-        <translation>尝试加载</translation>
+        <translation>Try Load</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetLoader.py" line="125"/>
         <source>The current layout setting is invalid.</source>
-        <translation>当前对数据布局的设置是无效的。</translation>
+        <translation>The current layout setting is invalid.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetLoader.py" line="87"/>
         <source>Info</source>
-        <translation>信息</translation>
+        <translation>Info</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetLoader.py" line="44"/>
         <location filename="QGrain/ui/DatasetLoader.py" line="169"/>
         <source>Start Row of Distributions</source>
-        <translation>分布数据的起始行</translation>
+        <translation>Start Row of Distributions</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetLoader.py" line="49"/>
         <location filename="QGrain/ui/DatasetLoader.py" line="170"/>
         <source>Start Column of Distributions</source>
-        <translation>分布数据的起始列</translation>
+        <translation>Start Column of Distributions</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetLoader.py" line="90"/>
         <source>Warning</source>
-        <translation>警告</translation>
+        <translation>Warning</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetLoader.py" line="93"/>
         <source>Error</source>
-        <translation>错误</translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetLoader.py" line="97"/>
         <source>Select a file which stores the grain size dataset</source>
-        <translation>选则一个保存了粒度数据集的文件</translation>
+        <translation>Select a file which stores the grain size dataset</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetLoader.py" line="129"/>
         <source>Cancel</source>
-        <translation>取消</translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetLoader.py" line="163"/>
         <source>Filename Unspecified</source>
-        <translation>文件名未指定</translation>
+        <translation>Filename Unspecified</translation>
     </message>
 </context>
 <context>
@@ -594,39 +592,39 @@
         <location filename="QGrain/charts/DistributionChart.py" line="23"/>
         <location filename="QGrain/charts/DistributionChart.py" line="294"/>
         <source>Scale</source>
-        <translation>标尺</translation>
+        <translation>Scale</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="50"/>
         <location filename="QGrain/charts/DistributionChart.py" line="300"/>
         <source>Animation Interval</source>
-        <translation>动画间隔</translation>
+        <translation>Animation Interval</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="62"/>
         <location filename="QGrain/charts/DistributionChart.py" line="303"/>
         <source>Repeat Animation</source>
-        <translation>循环播放</translation>
+        <translation>Repeat Animation</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="71"/>
         <source>Log-linear</source>
-        <translation>对数线性</translation>
+        <translation>Log-linear</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="72"/>
         <source>Log</source>
-        <translation>对数</translation>
+        <translation>Log</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="73"/>
         <source>Phi</source>
-        <translation>Phi值</translation>
+        <translation>Phi</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="74"/>
         <source>Linear</source>
-        <translation>线性</translation>
+        <translation>Linear</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="79"/>
@@ -658,71 +656,71 @@
         <location filename="QGrain/charts/DistributionChart.py" line="134"/>
         <location filename="QGrain/charts/DistributionChart.py" line="136"/>
         <source>Grain size ({0})</source>
-        <translation>粒径 ({0})</translation>
+        <translation>Grain size ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="132"/>
         <source>Ln(grain size) ({0})</source>
         <oldsource>Ln(grain size in {0})</oldsource>
-        <translation>Ln(粒径) ({0})</translation>
+        <translation>Ln(grain size) ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="140"/>
         <source>Frequency ({0})</source>
-        <translation>频率 ({0})</translation>
+        <translation>Frequency ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="165"/>
         <location filename="QGrain/charts/DistributionChart.py" line="203"/>
         <location filename="QGrain/charts/DistributionChart.py" line="263"/>
         <source>Observation</source>
-        <translation>观测</translation>
+        <translation>Observation</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="170"/>
         <location filename="QGrain/charts/DistributionChart.py" line="220"/>
         <location filename="QGrain/charts/DistributionChart.py" line="263"/>
         <source>Prediction (LMSE={0:.2f})</source>
-        <translation>预测 (LMSE={0:.2f})</translation>
+        <translation>Prediction (LMSE={0:.2f})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="291"/>
         <source>Edit Figure</source>
-        <translation>编辑图片</translation>
+        <translation>Edit Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="292"/>
         <source>Configure Subplots</source>
-        <translation>设置子图</translation>
+        <translation>Configure Subplots</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="293"/>
         <source>Save Figure</source>
-        <translation>保存图片</translation>
+        <translation>Save Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="35"/>
         <location filename="QGrain/charts/DistributionChart.py" line="297"/>
         <source>Show Mode Lines</source>
-        <translation>显示峰值线</translation>
+        <translation>Show Mode Lines</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="21"/>
         <location filename="QGrain/charts/DistributionChart.py" line="290"/>
         <source>Distribution Chart</source>
-        <translation>粒度分布图</translation>
+        <translation>Distribution Chart</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="40"/>
         <location filename="QGrain/charts/DistributionChart.py" line="298"/>
         <source>Show Legend</source>
-        <translation>显示图例</translation>
+        <translation>Show Legend</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="45"/>
         <location filename="QGrain/charts/DistributionChart.py" line="299"/>
         <source>Animated</source>
-        <translation>动画</translation>
+        <translation>Animated</translation>
     </message>
 </context>
 <context>
@@ -731,127 +729,127 @@
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="36"/>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="291"/>
         <source>EMMA Analyzer</source>
-        <translation>EMMA分析</translation>
+        <translation>EMMA Analyzer</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="39"/>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="292"/>
         <source>Control</source>
-        <translation>控制</translation>
+        <translation>Control</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="42"/>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="293"/>
         <source>Kernel Type</source>
-        <translation>内核类型</translation>
+        <translation>Kernel Type</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="54"/>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="295"/>
         <source>Try Fit</source>
-        <translation>尝试拟合</translation>
+        <translation>Try Fit</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="57"/>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="296"/>
         <source>Edit Parameters</source>
-        <translation>编辑参数</translation>
+        <translation>Edit Parameters</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="62"/>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="297"/>
         <source>Result</source>
-        <translation>结果</translation>
+        <translation>Result</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="67"/>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="298"/>
         <source>Remove</source>
-        <translation>删除</translation>
+        <translation>Remove</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="75"/>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="300"/>
         <source>Chart</source>
-        <translation>图表</translation>
+        <translation>Chart</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="98"/>
         <source>Info</source>
-        <translation>信息</translation>
+        <translation>Info</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="101"/>
         <source>Warning</source>
-        <translation>警告</translation>
+        <translation>Warning</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="104"/>
         <source>Error</source>
-        <translation>错误</translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="147"/>
         <source>The dataset has not been loaded.</source>
-        <translation>数据集尚未被加载。</translation>
+        <translation>The dataset has not been loaded.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="167"/>
         <source>The dataset size exceeded the limitation of remote grpc server.</source>
-        <translation>数据集的大小超出了远程GRPC服务器的限制。</translation>
+        <translation>The dataset size exceeded the limitation of remote grpc server.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="178"/>
         <source>The EMMA fitting task failed, please check the logs for more details.</source>
-        <translation>EMMA的拟合任务失败了，请检查日志以获取详情。</translation>
+        <translation>The EMMA fitting task failed, please check the logs for more details.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="186"/>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="265"/>
         <source>Cancel</source>
-        <translation>取消</translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="254"/>
         <source>There is no EMMA result.</source>
-        <translation>没有EMMA结果。</translation>
+        <translation>There is no EMMA result.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="257"/>
         <source>Choose a filename to save the selected EMMA result</source>
-        <translation>选取一个文件来保存EMMA结果</translation>
+        <translation>Choose a filename to save the selected EMMA result</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="265"/>
         <source>Saving the EMMA result...</source>
-        <translation>正在保存EMMA结果...</translation>
+        <translation>Saving the EMMA result...</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="48"/>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="294"/>
         <source>Number of End Members</source>
-        <translation>端元的数量</translation>
+        <translation>Number of End Members</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="69"/>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="299"/>
         <source>Show</source>
-        <translation>显示</translation>
+        <translation>Show</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="186"/>
         <source>Performing the EMMA algorithm...</source>
-        <translation>正在执行EMMA算法...</translation>
+        <translation>Performing the EMMA algorithm...</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="238"/>
         <source>Choose the file which stores the dumped EMMA result</source>
-        <translation>选择一个储存了EMMA结果的文件</translation>
+        <translation>Choose the file which stores the dumped EMMA result</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMAAnalyzer.py" line="248"/>
         <source>The binary file is invalid (i.e., the object in it is not the EMMA result).</source>
-        <translation>这个二进制文件是无效的（里面的对象不是EMMA结果）。</translation>
+        <translation>The binary file is invalid (i.e., the object in it is not the EMMA result).</translation>
     </message>
 </context>
 <context>
@@ -859,72 +857,72 @@
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="75"/>
         <source>Log-linear</source>
-        <translation>对数线性</translation>
+        <translation>Log-linear</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="76"/>
         <source>Log</source>
-        <translation>对数</translation>
+        <translation>Log</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="78"/>
         <source>Linear</source>
-        <translation>线性</translation>
+        <translation>Linear</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="25"/>
         <location filename="QGrain/charts/EMMAResultChart.py" line="320"/>
         <source>Scale</source>
-        <translation>标尺</translation>
+        <translation>Scale</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="23"/>
         <location filename="QGrain/charts/EMMAResultChart.py" line="316"/>
         <source>EMMA Chart</source>
-        <translation>EMMA图表</translation>
+        <translation>EMMA Chart</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="37"/>
         <location filename="QGrain/charts/EMMAResultChart.py" line="323"/>
         <source>Loss Function</source>
-        <translation>损失函数</translation>
+        <translation>Loss Function</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="54"/>
         <location filename="QGrain/charts/EMMAResultChart.py" line="327"/>
         <source>Animation Interval</source>
-        <translation>动画间隔</translation>
+        <translation>Animation Interval</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="66"/>
         <location filename="QGrain/charts/EMMAResultChart.py" line="330"/>
         <source>Repeat Animation</source>
-        <translation>循环播放</translation>
+        <translation>Repeat Animation</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="77"/>
         <source>Phi</source>
-        <translation>Phi值</translation>
+        <translation>Phi</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="83"/>
         <source>1 Norm</source>
-        <translation>1-范数</translation>
+        <translation>1 Norm</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="84"/>
         <source>2 Norm</source>
-        <translation>2-范数</translation>
+        <translation>2 Norm</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="85"/>
         <source>3 Norm</source>
-        <translation>3-范数</translation>
+        <translation>3 Norm</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="86"/>
         <source>4 Norm</source>
-        <translation>4-范数</translation>
+        <translation>4 Norm</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="87"/>
@@ -991,80 +989,80 @@
         <location filename="QGrain/charts/EMMAResultChart.py" line="152"/>
         <location filename="QGrain/charts/EMMAResultChart.py" line="154"/>
         <source>Grain size ({0})</source>
-        <translation>粒径 ({0})</translation>
+        <translation>Grain size ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="150"/>
         <source>Ln(grain size) ({0})</source>
-        <translation>Ln(粒径) ({0})</translation>
+        <translation>Ln(grain size) ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="158"/>
         <source>Frequency ({0})</source>
-        <translation>频率 ({0})</translation>
+        <translation>Frequency ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="192"/>
         <location filename="QGrain/charts/EMMAResultChart.py" line="246"/>
         <source>GSDs</source>
-        <translation>粒度分布</translation>
+        <translation>GSDs</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="196"/>
         <location filename="QGrain/charts/EMMAResultChart.py" line="250"/>
         <source>Iteration</source>
-        <translation>迭代次数</translation>
+        <translation>Iteration</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="198"/>
         <location filename="QGrain/charts/EMMAResultChart.py" line="252"/>
         <source>Loss variation</source>
-        <translation>损失变化</translation>
+        <translation>Loss variation</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="209"/>
         <location filename="QGrain/charts/EMMAResultChart.py" line="260"/>
         <source>End members</source>
-        <translation>端元</translation>
+        <translation>End members</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="217"/>
         <location filename="QGrain/charts/EMMAResultChart.py" line="265"/>
         <source>Sample index</source>
-        <translation>样本索引</translation>
+        <translation>Sample index</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="218"/>
         <location filename="QGrain/charts/EMMAResultChart.py" line="266"/>
         <source>Proportion ({0})</source>
-        <translation>比例 ({0})</translation>
+        <translation>Proportion ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="219"/>
         <location filename="QGrain/charts/EMMAResultChart.py" line="267"/>
         <source>Proportions</source>
-        <translation>比例</translation>
+        <translation>Proportions</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="317"/>
         <source>Edit Figure</source>
-        <translation>编辑图片</translation>
+        <translation>Edit Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="318"/>
         <source>Configure Subplots</source>
-        <translation>设置子图</translation>
+        <translation>Configure Subplots</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="319"/>
         <source>Save Figure</source>
-        <translation>保存图片</translation>
+        <translation>Save Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="49"/>
         <location filename="QGrain/charts/EMMAResultChart.py" line="326"/>
         <source>Animated</source>
-        <translation>动画</translation>
+        <translation>Animated</translation>
     </message>
 </context>
 <context>
@@ -1073,91 +1071,91 @@
         <location filename="QGrain/ui/EMMASettings.py" line="22"/>
         <location filename="QGrain/ui/EMMASettings.py" line="182"/>
         <source>EMMA Settings</source>
-        <translation>EMMA设置</translation>
+        <translation>EMMA Settings</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="25"/>
         <location filename="QGrain/ui/EMMASettings.py" line="183"/>
         <source>Device</source>
-        <translation>设备</translation>
+        <translation>Device</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="26"/>
         <location filename="QGrain/ui/EMMASettings.py" line="184"/>
         <source>PyTorch can use the NVIDIA GPU to do calculations.</source>
-        <translation>PyTorch可以使用NVIDIA的GPU进行计算。</translation>
+        <translation>PyTorch can use the NVIDIA GPU to do calculations.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="30"/>
         <location filename="QGrain/ui/EMMASettings.py" line="185"/>
         <source>Loss</source>
-        <translation>损失函数</translation>
+        <translation>Loss</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="32"/>
         <location filename="QGrain/ui/EMMASettings.py" line="187"/>
         <source>The function to calculate the difference between prediction and observation.</source>
-        <translation>该函数被用来计算预测和观测数据之间的差异。</translation>
+        <translation>The function to calculate the difference between prediction and observation.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="39"/>
         <location filename="QGrain/ui/EMMASettings.py" line="190"/>
         <source>Pretrain Epochs</source>
-        <translation>预训练轮数</translation>
+        <translation>Pretrain Epochs</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="42"/>
         <location filename="QGrain/ui/EMMASettings.py" line="193"/>
         <source>The number of epochs before formal training. The pretrain process only update the proportions of end members.</source>
-        <translation>正式训练之前的训练轮数。预训练过程只更新端元的相对含量。</translation>
+        <translation>The number of epochs before formal training. The pretrain process only update the proportions of end members.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="48"/>
         <location filename="QGrain/ui/EMMASettings.py" line="194"/>
         <source>Minimum Number of Epochs</source>
-        <translation>最小轮数</translation>
+        <translation>Minimum Number of Epochs</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="49"/>
         <location filename="QGrain/ui/EMMASettings.py" line="195"/>
         <source>Minimum number of epochs to be performed.</source>
-        <translation>算法执行的最小轮数。</translation>
+        <translation>Minimum number of epochs to be performed.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="55"/>
         <location filename="QGrain/ui/EMMASettings.py" line="196"/>
         <source>Maximum Number of Epochs</source>
-        <translation>最大轮数</translation>
+        <translation>Maximum Number of Epochs</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="56"/>
         <location filename="QGrain/ui/EMMASettings.py" line="197"/>
         <source>Maximum number of epochs to be performed.</source>
-        <translation>算法执行的最大轮数。</translation>
+        <translation>Maximum number of epochs to be performed.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="62"/>
         <location filename="QGrain/ui/EMMASettings.py" line="198"/>
         <source>Precision</source>
-        <translation>精度</translation>
+        <translation>Precision</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="63"/>
         <location filename="QGrain/ui/EMMASettings.py" line="199"/>
         <source>It controls the precision of final loss.</source>
-        <translation>它决定了算法中损失函数最终值的精度。</translation>
+        <translation>It controls the precision of final loss.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="69"/>
         <location filename="QGrain/ui/EMMASettings.py" line="200"/>
         <source>Learning Rate (x10&lt;sup&gt;-3&lt;/sup&gt;)</source>
-        <translation>学习率 (x10&lt;sup&gt;-3&lt;/sup&gt;)</translation>
+        <translation>Learning Rate (x10&lt;sup&gt;-3&lt;/sup&gt;)</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="71"/>
         <location filename="QGrain/ui/EMMASettings.py" line="202"/>
         <source>The learning rate of the neural network to update its weights from gradient.</source>
-        <translation>神经网络从梯度更新权重时的学习率。</translation>
+        <translation>The learning rate of the neural network to update its weights from gradient.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="78"/>
@@ -1171,7 +1169,7 @@
         <location filename="QGrain/ui/EMMASettings.py" line="205"/>
         <location filename="QGrain/ui/EMMASettings.py" line="208"/>
         <source>Betas are the coefficients used for computing running averages of gradient and its square.</source>
-        <translation>Beta值是用于滑动平均梯度的系数。</translation>
+        <translation>Betas are the coefficients used for computing running averages of gradient and its square.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="87"/>
@@ -1183,39 +1181,39 @@
         <location filename="QGrain/ui/EMMASettings.py" line="96"/>
         <location filename="QGrain/ui/EMMASettings.py" line="209"/>
         <source>Update End Members</source>
-        <translation>更新端元</translation>
+        <translation>Update End Members</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="98"/>
         <location filename="QGrain/ui/EMMASettings.py" line="211"/>
         <source>Update the distributions of end members while training the model or not.</source>
-        <translation>是否在训练模型时更新端元的分布。</translation>
+        <translation>Update the distributions of end members while training the model or not.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="102"/>
         <location filename="QGrain/ui/EMMASettings.py" line="213"/>
         <source>Record the variation history of parameters or not.</source>
-        <translation>是否记录参数的变化历史。</translation>
+        <translation>Record the variation history of parameters or not.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="109"/>
         <source>1 Norm</source>
-        <translation>1-范数</translation>
+        <translation>1 Norm</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="110"/>
         <source>2 Norm</source>
-        <translation>2-范数</translation>
+        <translation>2 Norm</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="111"/>
         <source>3 Norm</source>
-        <translation>3-范数</translation>
+        <translation>3 Norm</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="112"/>
         <source>4 Norm</source>
-        <translation>4-范数</translation>
+        <translation>4 Norm</translation>
     </message>
     <message>
         <location filename="QGrain/ui/EMMASettings.py" line="113"/>
@@ -1256,7 +1254,7 @@
         <location filename="QGrain/ui/EMMASettings.py" line="101"/>
         <location filename="QGrain/ui/EMMASettings.py" line="212"/>
         <source>Need History</source>
-        <translation>需要历史</translation>
+        <translation>Need History</translation>
     </message>
 </context>
 <context>
@@ -1265,22 +1263,22 @@
         <location filename="QGrain/charts/diagrams.py" line="102"/>
         <location filename="QGrain/charts/diagrams.py" line="197"/>
         <source>GSM Diagram (Folk, 1954)</source>
-        <translation>砾-砂-泥图解 (Folk, 1954)</translation>
+        <translation>GSM Diagram (Folk, 1954)</translation>
     </message>
     <message>
         <location filename="QGrain/charts/diagrams.py" line="198"/>
         <source>Edit Figure</source>
-        <translation>编辑图片</translation>
+        <translation>Edit Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/diagrams.py" line="199"/>
         <source>Configure Subplots</source>
-        <translation>设置子图</translation>
+        <translation>Configure Subplots</translation>
     </message>
     <message>
         <location filename="QGrain/charts/diagrams.py" line="200"/>
         <source>Save Figure</source>
-        <translation>保存图片</translation>
+        <translation>Save Figure</translation>
     </message>
 </context>
 <context>
@@ -1289,22 +1287,22 @@
         <location filename="QGrain/charts/diagrams.py" line="206"/>
         <location filename="QGrain/charts/diagrams.py" line="284"/>
         <source>SSC Diagram (Folk, 1954)</source>
-        <translation>砂-粉砂-粘土 图解 (Folk, 1954)</translation>
+        <translation>SSC Diagram (Folk, 1954)</translation>
     </message>
     <message>
         <location filename="QGrain/charts/diagrams.py" line="285"/>
         <source>Edit Figure</source>
-        <translation>编辑图片</translation>
+        <translation>Edit Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/diagrams.py" line="286"/>
         <source>Configure Subplots</source>
-        <translation>设置子图</translation>
+        <translation>Configure Subplots</translation>
     </message>
     <message>
         <location filename="QGrain/charts/diagrams.py" line="287"/>
         <source>Save Figure</source>
-        <translation>保存图片</translation>
+        <translation>Save Figure</translation>
     </message>
 </context>
 <context>
@@ -1313,70 +1311,70 @@
         <location filename="QGrain/charts/Frequency3DChart.py" line="19"/>
         <location filename="QGrain/charts/Frequency3DChart.py" line="118"/>
         <source>Frequency 3D Chart</source>
-        <translation>频率3D图</translation>
+        <translation>Frequency 3D Chart</translation>
     </message>
     <message>
         <location filename="QGrain/charts/Frequency3DChart.py" line="22"/>
         <location filename="QGrain/charts/Frequency3DChart.py" line="122"/>
         <source>Scale</source>
-        <translation>标尺</translation>
+        <translation>Scale</translation>
     </message>
     <message>
         <location filename="QGrain/charts/Frequency3DChart.py" line="38"/>
         <source>Log-linear</source>
-        <translation>对数线性</translation>
+        <translation>Log-linear</translation>
     </message>
     <message>
         <location filename="QGrain/charts/Frequency3DChart.py" line="39"/>
         <source>Log</source>
-        <translation>对数</translation>
+        <translation>Log</translation>
     </message>
     <message>
         <location filename="QGrain/charts/Frequency3DChart.py" line="40"/>
         <source>Phi</source>
-        <translation>Phi值</translation>
+        <translation>Phi</translation>
     </message>
     <message>
         <location filename="QGrain/charts/Frequency3DChart.py" line="41"/>
         <source>Linear</source>
-        <translation>线性</translation>
+        <translation>Linear</translation>
     </message>
     <message>
         <location filename="QGrain/charts/Frequency3DChart.py" line="65"/>
         <location filename="QGrain/charts/Frequency3DChart.py" line="69"/>
         <location filename="QGrain/charts/Frequency3DChart.py" line="71"/>
         <source>Grain size ({0})</source>
-        <translation>粒径 ({0})</translation>
+        <translation>Grain size ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/Frequency3DChart.py" line="67"/>
         <source>Ln(grain size) ({0})</source>
-        <translation>Ln(粒径) ({0})</translation>
+        <translation>Ln(grain size) ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/Frequency3DChart.py" line="77"/>
         <source>Sample index</source>
-        <translation>样本索引</translation>
+        <translation>Sample index</translation>
     </message>
     <message>
         <location filename="QGrain/charts/Frequency3DChart.py" line="79"/>
         <source>Frequency ({0})</source>
-        <translation>频率 ({0})</translation>
+        <translation>Frequency ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/Frequency3DChart.py" line="119"/>
         <source>Edit Figure</source>
-        <translation>编辑图片</translation>
+        <translation>Edit Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/Frequency3DChart.py" line="120"/>
         <source>Configure Subplots</source>
-        <translation>设置子图</translation>
+        <translation>Configure Subplots</translation>
     </message>
     <message>
         <location filename="QGrain/charts/Frequency3DChart.py" line="121"/>
         <source>Save Figure</source>
-        <translation>保存图片</translation>
+        <translation>Save Figure</translation>
     </message>
 </context>
 <context>
@@ -1385,66 +1383,66 @@
         <location filename="QGrain/charts/FrequencyChart.py" line="18"/>
         <location filename="QGrain/charts/FrequencyChart.py" line="113"/>
         <source>Frequency Chart</source>
-        <translation>频率图</translation>
+        <translation>Frequency Chart</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyChart.py" line="21"/>
         <location filename="QGrain/charts/FrequencyChart.py" line="117"/>
         <source>Scale</source>
-        <translation>标尺</translation>
+        <translation>Scale</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyChart.py" line="37"/>
         <source>Log-linear</source>
-        <translation>对数线性</translation>
+        <translation>Log-linear</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyChart.py" line="38"/>
         <source>Log</source>
-        <translation>对数</translation>
+        <translation>Log</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyChart.py" line="39"/>
         <source>Phi</source>
-        <translation>Phi值</translation>
+        <translation>Phi</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyChart.py" line="40"/>
         <source>Linear</source>
-        <translation>线性</translation>
+        <translation>Linear</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyChart.py" line="64"/>
         <location filename="QGrain/charts/FrequencyChart.py" line="68"/>
         <location filename="QGrain/charts/FrequencyChart.py" line="70"/>
         <source>Grain size ({0})</source>
-        <translation>粒径 ({0})</translation>
+        <translation>Grain size ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyChart.py" line="66"/>
         <source>Ln(grain size) ({0})</source>
         <oldsource>Ln(grain size in {0})</oldsource>
-        <translation>Ln(粒径) ({0})</translation>
+        <translation>Ln(grain size) ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyChart.py" line="74"/>
         <source>Frequency ({0})</source>
-        <translation>频率 ({0})</translation>
+        <translation>Frequency ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyChart.py" line="114"/>
         <source>Edit Figure</source>
-        <translation>编辑图片</translation>
+        <translation>Edit Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyChart.py" line="115"/>
         <source>Configure Subplots</source>
-        <translation>设置子图</translation>
+        <translation>Configure Subplots</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyChart.py" line="116"/>
         <source>Save Figure</source>
-        <translation>保存图片</translation>
+        <translation>Save Figure</translation>
     </message>
 </context>
 <context>
@@ -1453,59 +1451,59 @@
         <location filename="QGrain/charts/FrequencyGroupChart.py" line="17"/>
         <location filename="QGrain/charts/FrequencyGroupChart.py" line="119"/>
         <source>Scale</source>
-        <translation>标尺</translation>
+        <translation>Scale</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyGroupChart.py" line="34"/>
         <source>Log-linear</source>
-        <translation>对数线性</translation>
+        <translation>Log-linear</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyGroupChart.py" line="35"/>
         <source>Log</source>
-        <translation>对数</translation>
+        <translation>Log</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyGroupChart.py" line="36"/>
         <source>Phi</source>
-        <translation>Phi值</translation>
+        <translation>Phi</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyGroupChart.py" line="37"/>
         <source>Linear</source>
-        <translation>线性</translation>
+        <translation>Linear</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyGroupChart.py" line="61"/>
         <location filename="QGrain/charts/FrequencyGroupChart.py" line="65"/>
         <location filename="QGrain/charts/FrequencyGroupChart.py" line="67"/>
         <source>Grain size ({0})</source>
-        <translation>粒径 ({0})</translation>
+        <translation>Grain size ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyGroupChart.py" line="63"/>
         <source>Ln(grain size) ({0})</source>
-        <translation>Ln(粒径) ({0})</translation>
+        <translation>Ln(grain size) ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyGroupChart.py" line="71"/>
         <source>Frequency ({0})</source>
-        <translation>频率 ({0})</translation>
+        <translation>Frequency ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyGroupChart.py" line="116"/>
         <source>Edit Figure</source>
-        <translation>编辑图片</translation>
+        <translation>Edit Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyGroupChart.py" line="117"/>
         <source>Configure Subplots</source>
-        <translation>设置子图</translation>
+        <translation>Configure Subplots</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyGroupChart.py" line="118"/>
         <source>Save Figure</source>
-        <translation>保存图片</translation>
+        <translation>Save Figure</translation>
     </message>
 </context>
 <context>
@@ -1514,65 +1512,65 @@
         <location filename="QGrain/charts/FrequencyHeatmap.py" line="18"/>
         <location filename="QGrain/charts/FrequencyHeatmap.py" line="115"/>
         <source>Frequency Heatmap</source>
-        <translation>频率热力图</translation>
+        <translation>Frequency Heatmap</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyHeatmap.py" line="20"/>
         <location filename="QGrain/charts/FrequencyHeatmap.py" line="119"/>
         <source>Scale</source>
-        <translation>标尺</translation>
+        <translation>Scale</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyHeatmap.py" line="36"/>
         <source>Log-linear</source>
-        <translation>对数线性</translation>
+        <translation>Log-linear</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyHeatmap.py" line="37"/>
         <source>Log</source>
-        <translation>对数</translation>
+        <translation>Log</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyHeatmap.py" line="38"/>
         <source>Phi</source>
-        <translation>Phi值</translation>
+        <translation>Phi</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyHeatmap.py" line="62"/>
         <location filename="QGrain/charts/FrequencyHeatmap.py" line="66"/>
         <location filename="QGrain/charts/FrequencyHeatmap.py" line="68"/>
         <source>Grain size ({0})</source>
-        <translation>粒径 ({0})</translation>
+        <translation>Grain size ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyHeatmap.py" line="64"/>
         <source>Ln(grain size) ({0})</source>
-        <translation>Ln(粒径) ({0})</translation>
+        <translation>Ln(grain size) ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyHeatmap.py" line="74"/>
         <source>Sample index</source>
-        <translation>样本索引</translation>
+        <translation>Sample index</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyHeatmap.py" line="76"/>
         <source>Frequency ({0})</source>
-        <translation>频率 ({0})</translation>
+        <translation>Frequency ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyHeatmap.py" line="116"/>
         <source>Edit Figure</source>
-        <translation>编辑图片</translation>
+        <translation>Edit Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyHeatmap.py" line="117"/>
         <source>Configure Subplots</source>
-        <translation>设置子图</translation>
+        <translation>Configure Subplots</translation>
     </message>
     <message>
         <location filename="QGrain/charts/FrequencyHeatmap.py" line="118"/>
         <source>Save Figure</source>
-        <translation>保存图片</translation>
+        <translation>Save Figure</translation>
     </message>
 </context>
 <context>
@@ -1601,14 +1599,15 @@
         <location filename="QGrain/ui/DatasetGenerator.py" line="81"/>
         <location filename="QGrain/ui/DatasetGenerator.py" line="128"/>
         <source>Mean</source>
-        <translation>平均值</translation>
+        <translation>Mean</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="83"/>
         <location filename="QGrain/ui/DatasetGenerator.py" line="129"/>
         <source>Standard
 Deviation</source>
-        <translation>标准差</translation>
+        <translation>Standard
+Deviation</translation>
     </message>
 </context>
 <context>
@@ -1617,32 +1616,32 @@ Deviation</source>
         <location filename="QGrain/charts/HierarchicalChart.py" line="14"/>
         <location filename="QGrain/charts/HierarchicalChart.py" line="40"/>
         <source>Hierarchical Clustering</source>
-        <translation>层次聚类</translation>
+        <translation>Hierarchical Clustering</translation>
     </message>
     <message>
         <location filename="QGrain/charts/HierarchicalChart.py" line="28"/>
         <source>Sample count/index</source>
-        <translation>样本数量/索引</translation>
+        <translation>Sample count/index</translation>
     </message>
     <message>
         <location filename="QGrain/charts/HierarchicalChart.py" line="29"/>
         <source>Distance</source>
-        <translation>距离</translation>
+        <translation>Distance</translation>
     </message>
     <message>
         <location filename="QGrain/charts/HierarchicalChart.py" line="41"/>
         <source>Edit Figure</source>
-        <translation>编辑图片</translation>
+        <translation>Edit Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/HierarchicalChart.py" line="42"/>
         <source>Configure Subplots</source>
-        <translation>设置子图</translation>
+        <translation>Configure Subplots</translation>
     </message>
     <message>
         <location filename="QGrain/charts/HierarchicalChart.py" line="43"/>
         <source>Save Figure</source>
-        <translation>保存图片</translation>
+        <translation>Save Figure</translation>
     </message>
 </context>
 <context>
@@ -1651,27 +1650,27 @@ Deviation</source>
         <location filename="QGrain/charts/LossSeriesChart.py" line="11"/>
         <location filename="QGrain/charts/LossSeriesChart.py" line="32"/>
         <source>Loss Series</source>
-        <translation>损失变化序列</translation>
+        <translation>Loss Series</translation>
     </message>
     <message>
         <location filename="QGrain/charts/LossSeriesChart.py" line="18"/>
         <source>Iteration</source>
-        <translation>迭代次数</translation>
+        <translation>Iteration</translation>
     </message>
     <message>
         <location filename="QGrain/charts/LossSeriesChart.py" line="33"/>
         <source>Edit Figure</source>
-        <translation>编辑图片</translation>
+        <translation>Edit Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/LossSeriesChart.py" line="34"/>
         <source>Configure Subplots</source>
-        <translation>设置子图</translation>
+        <translation>Configure Subplots</translation>
     </message>
     <message>
         <location filename="QGrain/charts/LossSeriesChart.py" line="35"/>
         <source>Save Figure</source>
-        <translation>保存图片</translation>
+        <translation>Save Figure</translation>
     </message>
 </context>
 <context>
@@ -1681,79 +1680,79 @@ Deviation</source>
         <location filename="QGrain/ui/MainWindow.py" line="228"/>
         <location filename="QGrain/ui/MainWindow.py" line="380"/>
         <source>Warning</source>
-        <translation>警告</translation>
+        <translation>Warning</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="65"/>
         <location filename="QGrain/ui/MainWindow.py" line="382"/>
         <source>Open</source>
-        <translation>打开</translation>
+        <translation>Open</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="66"/>
         <location filename="QGrain/ui/MainWindow.py" line="384"/>
         <source>Grain Size Dataset</source>
-        <translation>粒度数据集</translation>
+        <translation>Grain Size Dataset</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="76"/>
         <location filename="QGrain/ui/MainWindow.py" line="383"/>
         <source>Save</source>
-        <translation>保存</translation>
+        <translation>Save</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="114"/>
         <location filename="QGrain/ui/MainWindow.py" line="403"/>
         <source>Language</source>
-        <translation>语言</translation>
+        <translation>Language</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="126"/>
         <location filename="QGrain/ui/MainWindow.py" line="404"/>
         <source>Theme</source>
-        <translation>主题</translation>
+        <translation>Theme</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="136"/>
         <location filename="QGrain/ui/MainWindow.py" line="201"/>
         <location filename="QGrain/ui/MainWindow.py" line="406"/>
         <source>Light</source>
-        <translation>明亮</translation>
+        <translation>Light</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="141"/>
         <location filename="QGrain/ui/MainWindow.py" line="202"/>
         <location filename="QGrain/ui/MainWindow.py" line="407"/>
         <source>Dark</source>
-        <translation>暗黑</translation>
+        <translation>Dark</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="155"/>
         <location filename="QGrain/ui/MainWindow.py" line="409"/>
         <source>About</source>
-        <translation>关于</translation>
+        <translation>About</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="225"/>
         <source>Info</source>
-        <translation>信息</translation>
+        <translation>Info</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="231"/>
         <source>Error</source>
-        <translation>错误</translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="301"/>
         <location filename="QGrain/ui/MainWindow.py" line="328"/>
         <source>The dataset has not been loaded.</source>
-        <translation>数据集尚未被加载。</translation>
+        <translation>The dataset has not been loaded.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="175"/>
         <location filename="QGrain/ui/MainWindow.py" line="381"/>
         <source>Closing this window will terminate all running tasks, are you sure to close it?</source>
-        <translation>关闭该窗口将会终止所有运行中的任务，你确定要关闭它吗？</translation>
+        <translation>Closing this window will terminate all running tasks, are you sure to close it?</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="50"/>
@@ -1795,32 +1794,32 @@ Deviation</source>
         <location filename="QGrain/ui/MainWindow.py" line="77"/>
         <location filename="QGrain/ui/MainWindow.py" line="388"/>
         <source>Artificial Dataset</source>
-        <translation>人造数据集</translation>
+        <translation>Artificial Dataset</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="81"/>
         <location filename="QGrain/ui/MainWindow.py" line="390"/>
         <source>PCA Result</source>
-        <translation>PCA结果</translation>
+        <translation>PCA Result</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="83"/>
         <location filename="QGrain/ui/MainWindow.py" line="391"/>
         <source>Clustering Result</source>
-        <translation>聚类分析结果</translation>
+        <translation>Clustering Result</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="129"/>
         <location filename="QGrain/ui/MainWindow.py" line="200"/>
         <location filename="QGrain/ui/MainWindow.py" line="405"/>
         <source>Default</source>
-        <translation>默认</translation>
+        <translation>Default</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="150"/>
         <location filename="QGrain/ui/MainWindow.py" line="408"/>
         <source>Log</source>
-        <translation>日志</translation>
+        <translation>Log</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="250"/>
@@ -1828,17 +1827,17 @@ Deviation</source>
         <location filename="QGrain/ui/MainWindow.py" line="309"/>
         <location filename="QGrain/ui/MainWindow.py" line="336"/>
         <source>Cancel</source>
-        <translation>取消</translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="331"/>
         <source>Choose a filename to save the PCA result</source>
-        <translation>保存PCA结果</translation>
+        <translation>Choose a filename to save the PCA result</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="336"/>
         <source>Saving the PCA result...</source>
-        <translation>正在保存PCA结果...</translation>
+        <translation>Saving the PCA result...</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="68"/>
@@ -1846,19 +1845,19 @@ Deviation</source>
         <location filename="QGrain/ui/MainWindow.py" line="385"/>
         <location filename="QGrain/ui/MainWindow.py" line="392"/>
         <source>SSU Results</source>
-        <translation>SSU结果</translation>
+        <translation>SSU Results</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="102"/>
         <location filename="QGrain/ui/MainWindow.py" line="399"/>
         <source>Experimental</source>
-        <translation>实验性</translation>
+        <translation>Experimental</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="104"/>
         <location filename="QGrain/ui/MainWindow.py" line="400"/>
         <source>Perform SSU For All Samples</source>
-        <translation>为所有样本执行SSU算法</translation>
+        <translation>Perform SSU For All Samples</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="52"/>
@@ -1872,7 +1871,7 @@ Deviation</source>
         <location filename="QGrain/ui/MainWindow.py" line="386"/>
         <location filename="QGrain/ui/MainWindow.py" line="393"/>
         <source>EMMA Result</source>
-        <translation>EMMA结果</translation>
+        <translation>EMMA Result</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="72"/>
@@ -1880,84 +1879,84 @@ Deviation</source>
         <location filename="QGrain/ui/MainWindow.py" line="387"/>
         <location filename="QGrain/ui/MainWindow.py" line="394"/>
         <source>UDM Result</source>
-        <translation>UDM结果</translation>
+        <translation>UDM Result</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="93"/>
         <location filename="QGrain/ui/MainWindow.py" line="395"/>
         <source>Configure</source>
-        <translation>配置</translation>
+        <translation>Configure</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="94"/>
         <location filename="QGrain/ui/MainWindow.py" line="396"/>
         <source>SSU Algorithm</source>
-        <translation>SSU算法</translation>
+        <translation>SSU Algorithm</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="96"/>
         <location filename="QGrain/ui/MainWindow.py" line="397"/>
         <source>EMMA Algorithm</source>
-        <translation>EMMA算法</translation>
+        <translation>EMMA Algorithm</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="98"/>
         <location filename="QGrain/ui/MainWindow.py" line="398"/>
         <source>UDM Algorithm</source>
-        <translation>UDM算法</translation>
+        <translation>UDM Algorithm</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="107"/>
         <location filename="QGrain/ui/MainWindow.py" line="401"/>
         <source>Convert Selected UDM Result To SSU Results</source>
-        <translation>将选中的UDM结果转换为SSU结果</translation>
+        <translation>Convert Selected UDM Result To SSU Results</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="245"/>
         <source>There is no UDM result.</source>
-        <translation>UDM结果不存在。</translation>
+        <translation>There is no UDM result.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="79"/>
         <location filename="QGrain/ui/MainWindow.py" line="389"/>
         <source>Statistical Result</source>
-        <translation>统计学结果</translation>
+        <translation>Statistical Result</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="250"/>
         <source>Converting the selected UDM result to SSU results...</source>
-        <translation>正在将选中的UDM结果转换为SSU结果...</translation>
+        <translation>Converting the selected UDM result to SSU results...</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="304"/>
         <source>Choose a filename to save the statistical result</source>
-        <translation>选取一个文件来保存统计学结果</translation>
+        <translation>Choose a filename to save the statistical result</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="309"/>
         <source>Saving the statistical result...</source>
-        <translation>正在保存统计学结果...</translation>
+        <translation>Saving the statistical result...</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="110"/>
         <location filename="QGrain/ui/MainWindow.py" line="402"/>
         <source>Save Figures For All SSU Results</source>
-        <translation>保存所有SSU结果的图片</translation>
+        <translation>Save Figures For All SSU Results</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="266"/>
         <source>There is no SSU result.</source>
-        <translation>没有SSU结果。</translation>
+        <translation>There is no SSU result.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="269"/>
         <source>Choose a directory to save the figures for all SSU results</source>
-        <translation>选择一个目录来保存所有SSU结果的图片</translation>
+        <translation>Choose a directory to save the figures for all SSU results</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="274"/>
         <source>Saving the figures for all SSU results...</source>
-        <translation>正在保存所有SSU结果的图片...</translation>
+        <translation>Saving the figures for all SSU results...</translation>
     </message>
 </context>
 <context>
@@ -1966,22 +1965,22 @@ Deviation</source>
         <location filename="QGrain/ui/PCAAnalyzer.py" line="12"/>
         <location filename="QGrain/ui/PCAAnalyzer.py" line="43"/>
         <source>PCA Analyzer</source>
-        <translation>PCA分析</translation>
+        <translation>PCA Analyzer</translation>
     </message>
     <message>
         <location filename="QGrain/ui/PCAAnalyzer.py" line="26"/>
         <source>Info</source>
-        <translation>信息</translation>
+        <translation>Info</translation>
     </message>
     <message>
         <location filename="QGrain/ui/PCAAnalyzer.py" line="29"/>
         <source>Warning</source>
-        <translation>警告</translation>
+        <translation>Warning</translation>
     </message>
     <message>
         <location filename="QGrain/ui/PCAAnalyzer.py" line="32"/>
         <source>Error</source>
-        <translation>错误</translation>
+        <translation>Error</translation>
     </message>
 </context>
 <context>
@@ -1990,38 +1989,38 @@ Deviation</source>
         <location filename="QGrain/charts/PCAResultChart.py" line="18"/>
         <location filename="QGrain/charts/PCAResultChart.py" line="70"/>
         <source>PCA Chart</source>
-        <translation>PCA图表</translation>
+        <translation>PCA Chart</translation>
     </message>
     <message>
         <location filename="QGrain/charts/PCAResultChart.py" line="52"/>
         <source>Grain size ({0})</source>
-        <translation>粒径 ({0})</translation>
+        <translation>Grain size ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/PCAResultChart.py" line="53"/>
         <location filename="QGrain/charts/PCAResultChart.py" line="56"/>
         <source>Transformed value</source>
-        <translation>变换值</translation>
+        <translation>Transformed value</translation>
     </message>
     <message>
         <location filename="QGrain/charts/PCAResultChart.py" line="55"/>
         <source>Sample index</source>
-        <translation>样本索引</translation>
+        <translation>Sample index</translation>
     </message>
     <message>
         <location filename="QGrain/charts/PCAResultChart.py" line="71"/>
         <source>Edit Figure</source>
-        <translation>编辑图片</translation>
+        <translation>Edit Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/PCAResultChart.py" line="72"/>
         <source>Configure Subplots</source>
-        <translation>设置子图</translation>
+        <translation>Configure Subplots</translation>
     </message>
     <message>
         <location filename="QGrain/charts/PCAResultChart.py" line="73"/>
         <source>Save Figure</source>
-        <translation>保存图片</translation>
+        <translation>Save Figure</translation>
     </message>
 </context>
 <context>
@@ -2050,7 +2049,7 @@ Deviation</source>
         <location filename="QGrain/ui/ParameterEditor.py" line="71"/>
         <location filename="QGrain/ui/ParameterEditor.py" line="106"/>
         <source>Value</source>
-        <translation>值</translation>
+        <translation>Value</translation>
     </message>
 </context>
 <context>
@@ -2059,25 +2058,25 @@ Deviation</source>
         <location filename="QGrain/ui/ParameterEditor.py" line="131"/>
         <location filename="QGrain/ui/ParameterEditor.py" line="320"/>
         <source>Parameter Editor</source>
-        <translation>参数编辑</translation>
+        <translation>Parameter Editor</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ParameterEditor.py" line="134"/>
         <location filename="QGrain/ui/ParameterEditor.py" line="321"/>
         <source>Control</source>
-        <translation>控制</translation>
+        <translation>Control</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ParameterEditor.py" line="136"/>
         <location filename="QGrain/ui/ParameterEditor.py" line="322"/>
         <source>Preset Archive</source>
-        <translation>当前的存档</translation>
+        <translation>Preset Archive</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ParameterEditor.py" line="141"/>
         <location filename="QGrain/ui/ParameterEditor.py" line="323"/>
         <source>Enabled</source>
-        <translation>启用</translation>
+        <translation>Enabled</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ParameterEditor.py" line="142"/>
@@ -2085,19 +2084,19 @@ Deviation</source>
         <location filename="QGrain/ui/ParameterEditor.py" line="324"/>
         <location filename="QGrain/ui/ParameterEditor.py" line="327"/>
         <source>Preview</source>
-        <translation>预览</translation>
+        <translation>Preview</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ParameterEditor.py" line="148"/>
         <location filename="QGrain/ui/ParameterEditor.py" line="325"/>
         <source>Number of Components</source>
-        <translation>组分的数量</translation>
+        <translation>Number of Components</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ParameterEditor.py" line="153"/>
         <location filename="QGrain/ui/ParameterEditor.py" line="326"/>
         <source>Distribution Type</source>
-        <translation>分布类型</translation>
+        <translation>Distribution Type</translation>
     </message>
 </context>
 <context>
@@ -2126,7 +2125,7 @@ Deviation</source>
         <location filename="QGrain/ui/ParameterTable.py" line="23"/>
         <location filename="QGrain/ui/ParameterTable.py" line="44"/>
         <source>Resolved Parameters</source>
-        <translation>拟合的参数</translation>
+        <translation>Resolved Parameters</translation>
     </message>
 </context>
 <context>
@@ -2135,7 +2134,7 @@ Deviation</source>
         <location filename="QGrain/ui/RuntimeLog.py" line="18"/>
         <location filename="QGrain/ui/RuntimeLog.py" line="51"/>
         <source>Runtime Log</source>
-        <translation>运行日志</translation>
+        <translation>Runtime Log</translation>
     </message>
 </context>
 <context>
@@ -2144,100 +2143,100 @@ Deviation</source>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="28"/>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="199"/>
         <source>SSU Analyzer</source>
-        <translation>SSU分析</translation>
+        <translation>SSU Analyzer</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="31"/>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="200"/>
         <source>Control</source>
-        <translation>控制</translation>
+        <translation>Control</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="33"/>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="201"/>
         <source>Distribution Type</source>
-        <translation>分布类型</translation>
+        <translation>Distribution Type</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="36"/>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="202"/>
         <source>Number of Components</source>
-        <translation>组分的数量</translation>
+        <translation>Number of Components</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="44"/>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="203"/>
         <source>Sample Index</source>
-        <translation>样本索引</translation>
+        <translation>Sample Index</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="50"/>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="204"/>
         <source>Sample Name</source>
-        <translation>样本名称</translation>
+        <translation>Sample Name</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="51"/>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="206"/>
         <source>Unknown</source>
-        <translation>未知</translation>
+        <translation>Unknown</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="54"/>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="207"/>
         <source>Try Fit</source>
-        <translation>尝试拟合</translation>
+        <translation>Try Fit</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="57"/>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="208"/>
         <source>Edit Parameters</source>
-        <translation>编辑参数</translation>
+        <translation>Edit Parameters</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="61"/>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="209"/>
         <source>Try Previous</source>
-        <translation>尝试前一个</translation>
+        <translation>Try Previous</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="64"/>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="210"/>
         <source>Try Next</source>
-        <translation>尝试下一个</translation>
+        <translation>Try Next</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="69"/>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="211"/>
         <source>Chart</source>
-        <translation>图表</translation>
+        <translation>Chart</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="73"/>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="212"/>
         <source>Result</source>
-        <translation>结果</translation>
+        <translation>Result</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="163"/>
         <source>The SSU fitting task failed: {0}.</source>
         <oldsource>The SSU fitting failed: {0}.</oldsource>
-        <translation>SSU的拟合任务失败了：{0}。</translation>
+        <translation>The SSU fitting task failed: {0}.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="106"/>
         <source>Info</source>
-        <translation>信息</translation>
+        <translation>Info</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="109"/>
         <source>Warning</source>
-        <translation>警告</translation>
+        <translation>Warning</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUAnalyzer.py" line="112"/>
         <source>Error</source>
-        <translation>错误</translation>
+        <translation>Error</translation>
     </message>
 </context>
 <context>
@@ -2246,7 +2245,7 @@ Deviation</source>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="104"/>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="301"/>
         <source>Control</source>
-        <translation>控制</translation>
+        <translation>Control</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="107"/>
@@ -2258,79 +2257,79 @@ Deviation</source>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="310"/>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="311"/>
         <source>Unknown</source>
-        <translation>未知</translation>
+        <translation>Unknown</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="108"/>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="303"/>
         <source>Number of Workers</source>
-        <translation>进程的数量</translation>
+        <translation>Number of Workers</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="114"/>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="305"/>
         <source>Number of Finished Tasks</source>
-        <translation>完成的任务的数量</translation>
+        <translation>Number of Finished Tasks</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="116"/>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="306"/>
         <source>Number of Failed Tasks</source>
-        <translation>失败的任务的数量</translation>
+        <translation>Number of Failed Tasks</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="118"/>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="316"/>
         <source>Start</source>
-        <translation>开始</translation>
+        <translation>Start</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="132"/>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="317"/>
         <source>State</source>
-        <translation>状态</translation>
+        <translation>State</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="143"/>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="318"/>
         <source>Previous</source>
-        <translation>前一页</translation>
+        <translation>Previous</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="145"/>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="312"/>
         <source>No Page</source>
-        <translation>无页面</translation>
+        <translation>No Page</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="146"/>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="319"/>
         <source>Next</source>
-        <translation>后一页</translation>
+        <translation>Next</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="224"/>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="315"/>
         <source>Page {0}</source>
-        <translation>第 {0} 页</translation>
+        <translation>Page {0}</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="102"/>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="300"/>
         <source>SSU Multicore Analyzer</source>
-        <translation>SSU多核分析器</translation>
+        <translation>SSU Multicore Analyzer</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="106"/>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="302"/>
         <source>Total Number of Tasks</source>
-        <translation>任务的总量</translation>
+        <translation>Total Number of Tasks</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="112"/>
         <location filename="QGrain/ui/SSUMulticoreAnalyzer.py" line="304"/>
         <source>Number of Remaining Tasks</source>
-        <translation>剩下的任务的数量</translation>
+        <translation>Number of Remaining Tasks</translation>
     </message>
 </context>
 <context>
@@ -2339,152 +2338,152 @@ Deviation</source>
         <location filename="QGrain/ui/SSUResultViewer.py" line="28"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="507"/>
         <source>SSU Result Viewer</source>
-        <translation>浏览SSU结果</translation>
+        <translation>SSU Result Viewer</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="36"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="508"/>
         <source>Previous</source>
-        <translation>前一页</translation>
+        <translation>Previous</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="37"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="509"/>
         <source>Click to get back to the previous page.</source>
-        <translation>点击回到前一页。</translation>
+        <translation>Click to get back to the previous page.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="39"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="167"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="511"/>
         <source>Page {0}</source>
-        <translation>第 {0} 页</translation>
+        <translation>Page {0}</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="40"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="512"/>
         <source>Next</source>
-        <translation>后一页</translation>
+        <translation>Next</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="41"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="513"/>
         <source>Click to jump to the next page.</source>
-        <translation>点击跳转到下一页。</translation>
+        <translation>Click to jump to the next page.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="58"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="516"/>
         <source>Remove</source>
-        <translation>删除</translation>
+        <translation>Remove</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="60"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="517"/>
         <source>Remove All</source>
-        <translation>删除所有</translation>
+        <translation>Remove All</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="64"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="519"/>
         <source>Show Chart</source>
-        <translation>显示图表</translation>
+        <translation>Show Chart</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="69"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="521"/>
         <source>Show Loss Series</source>
-        <translation>显示损失变化序列</translation>
+        <translation>Show Loss Series</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="110"/>
         <source>Info</source>
-        <translation>信息</translation>
+        <translation>Info</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="113"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="251"/>
         <source>Warning</source>
-        <translation>警告</translation>
+        <translation>Warning</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="116"/>
         <source>Error</source>
-        <translation>错误</translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="197"/>
         <source>Distribution Type</source>
-        <translation>分布类型</translation>
+        <translation>Distribution Type</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="198"/>
         <source>Number of Components</source>
-        <translation>组分的数量</translation>
+        <translation>Number of Components</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="199"/>
         <source>Number of Iterations</source>
-        <translation>迭代的次数</translation>
+        <translation>Number of Iterations</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="200"/>
         <source>Spent Time [s]</source>
-        <translation>使用的时间 [s]</translation>
+        <translation>Spent Time [s]</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="76"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="201"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="525"/>
         <source>Final Loss</source>
-        <translation>最终损失</translation>
+        <translation>Final Loss</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="48"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="514"/>
         <source>Loss</source>
-        <translation>损失函数</translation>
+        <translation>Loss</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="49"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="515"/>
         <source>The function to calculate the difference between prediction and observation.</source>
-        <translation>该函数被用来计算预测和观测数据之间的差异。</translation>
+        <translation>The function to calculate the difference between prediction and observation.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="202"/>
         <source>Has Reference</source>
-        <translation>是否有参考</translation>
+        <translation>Has Reference</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="212"/>
         <source>Yes</source>
-        <translation>是</translation>
+        <translation>Yes</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="212"/>
         <source>No</source>
-        <translation>否</translation>
+        <translation>No</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="252"/>
         <source>Are you sure to remove all SSU results?</source>
-        <translation>你确定要删除所有SSU结果吗？</translation>
+        <translation>Are you sure to remove all SSU results?</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="284"/>
         <source>The variation history was not recorded, can not calculate the loss series.</source>
-        <translation>拟合结果的变化历史没有被记录，无法计算损失变化序列。</translation>
+        <translation>The variation history was not recorded, can not calculate the loss series.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="327"/>
         <source>The grain size classes of the SSU results in binary file are inconsistent with that in list.</source>
-        <translation>二进制文件中的SSU结果的粒级与列表中的并不一致。</translation>
+        <translation>The grain size classes of the SSU results in binary file are inconsistent with that in list.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="333"/>
         <source>The binary file is invalid (i.e., the objects in it are not SSU results).</source>
-        <translation>该二进制文件是无效的（储存的对象不是SSU的结果）。</translation>
+        <translation>The binary file is invalid (i.e., the objects in it are not SSU results).</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="337"/>
@@ -2492,34 +2491,34 @@ Deviation</source>
         <location filename="QGrain/ui/SSUResultViewer.py" line="398"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="432"/>
         <source>There is no SSU result.</source>
-        <translation>没有SSU的结果。</translation>
+        <translation>There is no SSU result.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="340"/>
         <source>Choose a filename to save the SSU Results</source>
-        <translation>选取一个文件来保存SSU的结果</translation>
+        <translation>Choose a filename to save the SSU Results</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="347"/>
         <source>Cancel</source>
-        <translation>取消</translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="377"/>
         <source>There are {0} results were evaluated as the outliers. Please check the logs for more details. Do you want to remove them?</source>
-        <translation>有 {0} 个结果被评估为异常值。请检查日志以获取更多信息。你想要删除他们吗？</translation>
+        <translation>There are {0} results were evaluated as the outliers. Please check the logs for more details. Do you want to remove them?</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="401"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="435"/>
         <source>The number of results is not enough.</source>
-        <translation>结果的数量不足。</translation>
+        <translation>The number of results is not enough.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="73"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="523"/>
         <source>Check</source>
-        <translation>检查</translation>
+        <translation>Check</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="74"/>
@@ -2531,59 +2530,59 @@ Deviation</source>
         <location filename="QGrain/ui/SSUResultViewer.py" line="78"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="526"/>
         <source>Mean</source>
-        <translation>均值粒径</translation>
+        <translation>Mean</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="82"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="528"/>
         <source>Skewness</source>
-        <translation>偏度</translation>
+        <translation>Skewness</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="84"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="529"/>
         <source>Kurtosis</source>
-        <translation>峰度</translation>
+        <translation>Kurtosis</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="86"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="530"/>
         <source>Proportion</source>
-        <translation>含量</translation>
+        <translation>Proportion</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="299"/>
         <source>Choose the file which stores the dumped SSU results</source>
-        <translation>选择一个储存了转存的SSU结果的文件</translation>
+        <translation>Choose the file which stores the dumped SSU results</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="347"/>
         <source>Saving the SSU results...</source>
-        <translation>正在保存SSU的结果...</translation>
+        <translation>Saving the SSU results...</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="80"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="527"/>
         <source>Sorting Coefficient</source>
-        <translation>分选系数</translation>
+        <translation>Sorting Coefficient</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="71"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="522"/>
         <source>Show Parameters</source>
-        <translation>显示参数</translation>
+        <translation>Show Parameters</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="62"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="518"/>
         <source>Refer Parameters</source>
-        <translation>参考参数</translation>
+        <translation>Refer Parameters</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUResultViewer.py" line="66"/>
         <location filename="QGrain/ui/SSUResultViewer.py" line="520"/>
         <source>Auto Show</source>
-        <translation>自动显示</translation>
+        <translation>Auto Show</translation>
     </message>
 </context>
 <context>
@@ -2592,123 +2591,123 @@ Deviation</source>
         <location filename="QGrain/ui/SSUSettings.py" line="11"/>
         <location filename="QGrain/ui/SSUSettings.py" line="144"/>
         <source>SSU Settings</source>
-        <translation>SSU设置</translation>
+        <translation>SSU Settings</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="14"/>
         <location filename="QGrain/ui/SSUSettings.py" line="145"/>
         <source>Loss Function</source>
-        <translation>损失函数</translation>
+        <translation>Loss Function</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="16"/>
         <location filename="QGrain/ui/SSUSettings.py" line="147"/>
         <source>The function to calculate the difference between prediction and observation.</source>
-        <translation>该函数被用来计算预测和观测数据之间的差异。</translation>
+        <translation>The function to calculate the difference between prediction and observation.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="23"/>
         <location filename="QGrain/ui/SSUSettings.py" line="150"/>
         <source>Optimizer</source>
-        <translation>优化器</translation>
+        <translation>Optimizer</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="24"/>
         <location filename="QGrain/ui/SSUSettings.py" line="151"/>
         <source>The optimizer to find the minimum of loss function.</source>
-        <translation>被用来寻找损失函数最小值的优化器。</translation>
+        <translation>The optimizer to find the minimum of loss function.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="31"/>
         <location filename="QGrain/ui/SSUSettings.py" line="154"/>
         <source>Global Optimization</source>
-        <translation>全局优化</translation>
+        <translation>Global Optimization</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="33"/>
         <location filename="QGrain/ui/SSUSettings.py" line="155"/>
         <source>Try global optimization or not.</source>
-        <translation>是否尝试全局优化算法。</translation>
+        <translation>Try global optimization or not.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="36"/>
         <location filename="QGrain/ui/SSUSettings.py" line="156"/>
         <source>Maximum Number of Iterations</source>
-        <translation>最大迭代次数</translation>
+        <translation>Maximum Number of Iterations</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="37"/>
         <location filename="QGrain/ui/SSUSettings.py" line="157"/>
         <source>Maximum number of iterations of global optimization.</source>
-        <translation>全局优化过程中的最大迭代次数。</translation>
+        <translation>Maximum number of iterations of global optimization.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="43"/>
         <location filename="QGrain/ui/SSUSettings.py" line="158"/>
         <source>Success Number of Iterations</source>
-        <translation>成功迭代次数</translation>
+        <translation>Success Number of Iterations</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="45"/>
         <location filename="QGrain/ui/SSUSettings.py" line="160"/>
         <source>The number of iterations that reaching the same minimum value.</source>
-        <translation>达到同一个最小值的次数。</translation>
+        <translation>The number of iterations that reaching the same minimum value.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="51"/>
         <location filename="QGrain/ui/SSUSettings.py" line="161"/>
         <source>Step Size</source>
-        <translation>步长</translation>
+        <translation>Step Size</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="52"/>
         <location filename="QGrain/ui/SSUSettings.py" line="162"/>
         <source>The step size of searching the global minimum.</source>
-        <translation>搜索全局最小值的步长。</translation>
+        <translation>The step size of searching the global minimum.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="58"/>
         <location filename="QGrain/ui/SSUSettings.py" line="163"/>
         <source>Maximum Number of Iterations of Optimizer</source>
-        <translation>优化器的最大迭代次数</translation>
+        <translation>Maximum Number of Iterations of Optimizer</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="60"/>
         <location filename="QGrain/ui/SSUSettings.py" line="165"/>
         <source>Maximum number of iterations of the optimizer in global and local optimization.</source>
-        <translation>全局和局部优化过程中使用的优化器的最大迭代次数。</translation>
+        <translation>Maximum number of iterations of the optimizer in global and local optimization.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="66"/>
         <location filename="QGrain/ui/SSUSettings.py" line="166"/>
         <source>Need History</source>
-        <translation>需要历史</translation>
+        <translation>Need History</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="68"/>
         <location filename="QGrain/ui/SSUSettings.py" line="167"/>
         <source>Record the variation history of parameters or not.</source>
-        <translation>是否记录参数变化历史。</translation>
+        <translation>Record the variation history of parameters or not.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="73"/>
         <source>1 Norm</source>
-        <translation>1-范数</translation>
+        <translation>1 Norm</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="74"/>
         <source>2 Norm</source>
-        <translation>2-范数</translation>
+        <translation>2 Norm</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="75"/>
         <source>3 Norm</source>
-        <translation>3-范数</translation>
+        <translation>3 Norm</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="76"/>
         <source>4 Norm</source>
-        <translation>4-范数</translation>
+        <translation>4 Norm</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="77"/>
@@ -2787,64 +2786,64 @@ Deviation</source>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="25"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="408"/>
         <source>Tips</source>
-        <translation>提示</translation>
+        <translation>Tips</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="35"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="419"/>
         <source>Previous</source>
-        <translation>前一页</translation>
+        <translation>Previous</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="36"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="420"/>
         <source>Click to back to the previous page.</source>
-        <translation>点击回到之前的页面。</translation>
+        <translation>Click to back to the previous page.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="39"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="414"/>
         <source>No Page</source>
-        <translation>无页面</translation>
+        <translation>No Page</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="40"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="221"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="418"/>
         <source>Page {0}</source>
-        <translation>第 {0} 页</translation>
+        <translation>Page {0}</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="42"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="421"/>
         <source>Next</source>
-        <translation>后一页</translation>
+        <translation>Next</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="43"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="422"/>
         <source>Click to jump to the next page.</source>
-        <translation>点击跳转到下一页。</translation>
+        <translation>Click to jump to the next page.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="48"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="244"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="424"/>
         <source>Geometric [unit is {0}]</source>
-        <translation>几何的 [单位是 {0}]</translation>
+        <translation>Geometric [unit is {0}]</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="52"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="257"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="430"/>
         <source>Method of Statistical Moments</source>
-        <translation>统计参数法</translation>
+        <translation>Method of Statistical Moments</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="64"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="433"/>
         <source>Plot Cumulative Frequency Chart</source>
-        <translation>绘制累计曲线图</translation>
+        <translation>Plot Cumulative Frequency Chart</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="65"/>
@@ -2866,7 +2865,7 @@ Deviation</source>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="469"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="474"/>
         <source>Plot</source>
-        <translation>绘制</translation>
+        <translation>Plot</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="68"/>
@@ -2888,7 +2887,7 @@ Deviation</source>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="470"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="475"/>
         <source>Append</source>
-        <translation>追加</translation>
+        <translation>Append</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="71"/>
@@ -2910,7 +2909,7 @@ Deviation</source>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="471"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="476"/>
         <source>Plot All</source>
-        <translation>绘制所有</translation>
+        <translation>Plot All</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="74"/>
@@ -2932,194 +2931,196 @@ Deviation</source>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="472"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="477"/>
         <source>Append All</source>
-        <translation>追加所有</translation>
+        <translation>Append All</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="77"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="438"/>
         <source>Plot Frequency Distribution Chart</source>
-        <translation>绘制频率分布图</translation>
+        <translation>Plot Frequency Distribution Chart</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="90"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="443"/>
         <source>Plot Frequency 3D Chart</source>
-        <translation>绘制频率3D图</translation>
+        <translation>Plot Frequency 3D Chart</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="103"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="448"/>
         <source>Plot Frequency Heatmap</source>
-        <translation>绘制频率热力图</translation>
+        <translation>Plot Frequency Heatmap</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="116"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="453"/>
         <source>Plot GSM Diagram (Folk, 1954)</source>
-        <translation>绘制GSM图解 (Folk, 1954)</translation>
+        <translation>Plot GSM Diagram (Folk, 1954)</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="129"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="458"/>
         <source>Plot SSC Diagram (Folk, 1954)</source>
-        <translation>绘制SSC图解 (Folk, 1954)</translation>
+        <translation>Plot SSC Diagram (Folk, 1954)</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="142"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="463"/>
         <source>Plot GSM Diagram (Blott and Pye, 2012)</source>
-        <translation>绘制GSM图解 (Blott and Pye, 2012)</translation>
+        <translation>Plot GSM Diagram (Blott and Pye, 2012)</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="155"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="468"/>
         <source>Plot SSC Diagram (Blott and Pye, 2012)</source>
-        <translation>绘制SSC图解 (Blott and Pye, 2012)</translation>
+        <translation>Plot SSC Diagram (Blott and Pye, 2012)</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="168"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="473"/>
         <source>Plot C-M Diagram</source>
-        <translation>绘制C-M图解</translation>
+        <translation>Plot C-M Diagram</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="205"/>
         <source>Info</source>
-        <translation>信息</translation>
+        <translation>Info</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="208"/>
         <source>Warning</source>
-        <translation>警告</translation>
+        <translation>Warning</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="211"/>
         <source>Error</source>
-        <translation>错误</translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="232"/>
         <source>By clicking the option at menu bar, you can load the grain size distributions 
                 (Menu -&gt; Open -&gt; Grain Size Dataset).</source>
-        <translation>通过点击菜单栏中的选项（菜单 -&gt; 打开 -&gt; 粒度数据集），你可以将加载粒度分布。</translation>
+        <translation>By clicking the option at menu bar, you can load the grain size distributions 
+                (Menu -&gt; Open -&gt; Grain Size Dataset).</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="234"/>
         <source>By clicking the option at menu bar, you can save the statistical parameters and 
                 classification groups to a Excel file (Menu -&gt; Save -&gt; Statistical Result).</source>
-        <translation>通过点击菜单栏中的选项（菜单 -&gt; 保存 -&gt; 统计学结果），你可以将统计学参数和分组结果保存到一个Excel文件中。</translation>
+        <translation>By clicking the option at menu bar, you can save the statistical parameters and 
+                classification groups to a Excel file (Menu -&gt; Save -&gt; Statistical Result).</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="236"/>
         <source>By right clicking at the table region, you can open the menu to draw charts.</source>
-        <translation>通过右击图标区域，你可以打开用来绘制图表的菜单。</translation>
+        <translation>By right clicking at the table region, you can open the menu to draw charts.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="246"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="426"/>
         <source>Logarithmic [unit is {0}]</source>
-        <translation>对数的 [单位是 {0}]</translation>
+        <translation>Logarithmic [unit is {0}]</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="255"/>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="428"/>
         <source>Method of Folk and Ward (1957)</source>
-        <translation>Folk and Ward (1957) 图解法</translation>
+        <translation>Method of Folk and Ward (1957)</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="263"/>
         <source>Gravel, Sand, Mud</source>
-        <translation>砾石-砂-泥</translation>
+        <translation>Gravel, Sand, Mud</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="264"/>
         <source>Sand, Silt, Clay</source>
-        <translation>砂-粉砂-粘土</translation>
+        <translation>Sand, Silt, Clay</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="265"/>
         <source>Boulder, Gravel, Sand, Silt, Clay</source>
-        <translation>卵石-砾石-砂-粉砂-粘土</translation>
+        <translation>Boulder, Gravel, Sand, Silt, Clay</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="311"/>
         <source>Mean [{0}]</source>
-        <translation>均值 [{0}]</translation>
+        <translation>Mean [{0}]</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="312"/>
         <source>Mean Description</source>
-        <translation>均值的描述</translation>
+        <translation>Mean Description</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="313"/>
         <source>Median [{0}]</source>
-        <translation>中值 [{0}]</translation>
+        <translation>Median [{0}]</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="314"/>
         <source>Modes [{0}]</source>
-        <translation>所有峰值 [{0}]</translation>
+        <translation>Modes [{0}]</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="315"/>
         <source>Sorting Coefficient</source>
-        <translation>分选系数</translation>
+        <translation>Sorting Coefficient</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="316"/>
         <source>Sorting Description</source>
-        <translation>分选的描述</translation>
+        <translation>Sorting Description</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="317"/>
         <source>Skewness</source>
-        <translation>偏度</translation>
+        <translation>Skewness</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="318"/>
         <source>Skewness Description</source>
-        <translation>偏度的描述</translation>
+        <translation>Skewness Description</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="319"/>
         <source>Kurtosis</source>
-        <translation>峰度</translation>
+        <translation>Kurtosis</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="320"/>
         <source>Kurtosis Description</source>
-        <translation>峰度的描述</translation>
+        <translation>Kurtosis Description</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="321"/>
         <source>({0}) Proportion [%]</source>
-        <translation>({0}) 含量 [%]</translation>
+        <translation>({0}) Proportion [%]</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="322"/>
         <source>Group (Folk, 1954)</source>
-        <translation>分组 (Folk, 1954)</translation>
+        <translation>Group (Folk, 1954)</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="323"/>
         <source>Group Symbol (Blott and Pye, 2012)</source>
-        <translation>分组符号 (Blott and Pye, 2012)</translation>
+        <translation>Group Symbol (Blott and Pye, 2012)</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="325"/>
         <source>Group (Blott and Pye, 2012)</source>
-        <translation>分组 (Blott and Pye, 2012)</translation>
+        <translation>Group (Blott and Pye, 2012)</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="392"/>
         <source>The dataset has not been loaded.</source>
-        <translation>数据集尚未被加载。</translation>
+        <translation>The dataset has not been loaded.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="394"/>
         <source>No sample was selected.</source>
-        <translation>没有样本被选择。</translation>
+        <translation>No sample was selected.</translation>
     </message>
 </context>
 <context>
@@ -3128,127 +3129,127 @@ Deviation</source>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="35"/>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="296"/>
         <source>UDM Analyzer</source>
-        <translation>UDM分析</translation>
+        <translation>UDM Analyzer</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="38"/>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="297"/>
         <source>Control</source>
-        <translation>控制</translation>
+        <translation>Control</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="41"/>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="298"/>
         <source>Kernel Type</source>
-        <translation>内核类型</translation>
+        <translation>Kernel Type</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="47"/>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="299"/>
         <source>Number of Components</source>
-        <translation>组分的数量</translation>
+        <translation>Number of Components</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="53"/>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="300"/>
         <source>Try Fit</source>
-        <translation>尝试拟合</translation>
+        <translation>Try Fit</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="56"/>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="301"/>
         <source>Edit Parameters</source>
-        <translation>编辑参数</translation>
+        <translation>Edit Parameters</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="61"/>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="302"/>
         <source>Result</source>
-        <translation>结果</translation>
+        <translation>Result</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="66"/>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="303"/>
         <source>Remove</source>
-        <translation>删除</translation>
+        <translation>Remove</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="68"/>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="304"/>
         <source>Show</source>
-        <translation>显示</translation>
+        <translation>Show</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="74"/>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="305"/>
         <source>Chart</source>
-        <translation>图表</translation>
+        <translation>Chart</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="97"/>
         <source>Info</source>
-        <translation>信息</translation>
+        <translation>Info</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="100"/>
         <source>Warning</source>
-        <translation>警告</translation>
+        <translation>Warning</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="103"/>
         <source>Error</source>
-        <translation>错误</translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="146"/>
         <source>The dataset has not been loaded.</source>
-        <translation>数据集尚未被加载。</translation>
+        <translation>The dataset has not been loaded.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="166"/>
         <source>The dataset size exceeded the limitation of remote grpc server.</source>
-        <translation>数据集的大小超出了远程GRPC服务器的限制。</translation>
+        <translation>The dataset size exceeded the limitation of remote grpc server.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="176"/>
         <source>The UDM fitting task failed, please check the logs for more details.</source>
-        <translation>UDM的拟合任务失败了，请检查日志以获取详情。</translation>
+        <translation>The UDM fitting task failed, please check the logs for more details.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="184"/>
         <source>Performing the UDM algorithm...</source>
-        <translation>正在执行UDM算法...</translation>
+        <translation>Performing the UDM algorithm...</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="242"/>
         <source>Choose the file which stores the dumped UDM result</source>
-        <translation>选则储存了UDM结果的文件</translation>
+        <translation>Choose the file which stores the dumped UDM result</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="253"/>
         <source>The binary file is invalid (i.e., the object in it is not the UDM result).</source>
-        <translation>这个二进制文件是无效的（里面的对象不是UDM结果）。</translation>
+        <translation>The binary file is invalid (i.e., the object in it is not the UDM result).</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="258"/>
         <source>There is no UDM result.</source>
-        <translation>UDM结果不存在。</translation>
+        <translation>There is no UDM result.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="261"/>
         <source>Choose a filename to save the selected UDM result</source>
-        <translation>选取一个文件来保存选中的UDM结果</translation>
+        <translation>Choose a filename to save the selected UDM result</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="269"/>
         <source>Saving the UDM result...</source>
-        <translation>正在保存UDM结果...</translation>
+        <translation>Saving the UDM result...</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="184"/>
         <location filename="QGrain/ui/UDMAnalyzer.py" line="269"/>
         <source>Cancel</source>
-        <translation>取消</translation>
+        <translation>Cancel</translation>
     </message>
 </context>
 <context>
@@ -3257,51 +3258,51 @@ Deviation</source>
         <location filename="QGrain/charts/UDMResultChart.py" line="28"/>
         <location filename="QGrain/charts/UDMResultChart.py" line="313"/>
         <source>UDM Chart</source>
-        <translation>UDM图表</translation>
+        <translation>UDM Chart</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="30"/>
         <location filename="QGrain/charts/UDMResultChart.py" line="317"/>
         <source>Scale</source>
-        <translation>标尺</translation>
+        <translation>Scale</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="42"/>
         <location filename="QGrain/charts/UDMResultChart.py" line="320"/>
         <source>Animated</source>
-        <translation>动画</translation>
+        <translation>Animated</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="47"/>
         <location filename="QGrain/charts/UDMResultChart.py" line="321"/>
         <source>Animation Interval</source>
-        <translation>动画间隔</translation>
+        <translation>Animation Interval</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="59"/>
         <location filename="QGrain/charts/UDMResultChart.py" line="324"/>
         <source>Repeat Animation</source>
-        <translation>循环播放</translation>
+        <translation>Repeat Animation</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="68"/>
         <source>Log-linear</source>
-        <translation>对数线性</translation>
+        <translation>Log-linear</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="69"/>
         <source>Log</source>
-        <translation>对数</translation>
+        <translation>Log</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="70"/>
         <source>Phi</source>
-        <translation>Phi值</translation>
+        <translation>Phi</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="71"/>
         <source>Linear</source>
-        <translation>线性</translation>
+        <translation>Linear</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="76"/>
@@ -3333,80 +3334,80 @@ Deviation</source>
         <location filename="QGrain/charts/UDMResultChart.py" line="123"/>
         <location filename="QGrain/charts/UDMResultChart.py" line="125"/>
         <source>Grain size ({0})</source>
-        <translation>粒径 ({0})</translation>
+        <translation>Grain size ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="121"/>
         <source>Ln(grain size) ({0})</source>
-        <translation>Ln(粒径) ({0})</translation>
+        <translation>Ln(grain size) ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="129"/>
         <source>Frequency ({0})</source>
-        <translation>频率 ({0})</translation>
+        <translation>Frequency ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="162"/>
         <location filename="QGrain/charts/UDMResultChart.py" line="223"/>
         <source>GSDs</source>
-        <translation>粒度分布</translation>
+        <translation>GSDs</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="171"/>
         <location filename="QGrain/charts/UDMResultChart.py" line="232"/>
         <source>Iteration</source>
-        <translation>迭代次数</translation>
+        <translation>Iteration</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="172"/>
         <location filename="QGrain/charts/UDMResultChart.py" line="233"/>
         <source>Loss value</source>
-        <translation>损失值</translation>
+        <translation>Loss value</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="173"/>
         <location filename="QGrain/charts/UDMResultChart.py" line="234"/>
         <source>Loss variation</source>
-        <translation>损失变化</translation>
+        <translation>Loss variation</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="187"/>
         <location filename="QGrain/charts/UDMResultChart.py" line="244"/>
         <source>Components</source>
-        <translation>组分</translation>
+        <translation>Components</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="195"/>
         <location filename="QGrain/charts/UDMResultChart.py" line="249"/>
         <source>Sample index</source>
-        <translation>样本索引</translation>
+        <translation>Sample index</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="196"/>
         <location filename="QGrain/charts/UDMResultChart.py" line="250"/>
         <source>Proportion ({0})</source>
-        <translation>比例 ({0})</translation>
+        <translation>Proportion ({0})</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="197"/>
         <location filename="QGrain/charts/UDMResultChart.py" line="251"/>
         <source>Proportions</source>
-        <translation>比例</translation>
+        <translation>Proportions</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="314"/>
         <source>Edit Figure</source>
-        <translation>编辑图片</translation>
+        <translation>Edit Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="315"/>
         <source>Configure Subplots</source>
-        <translation>设置子图</translation>
+        <translation>Configure Subplots</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="316"/>
         <source>Save Figure</source>
-        <translation>保存图片</translation>
+        <translation>Save Figure</translation>
     </message>
 </context>
 <context>
@@ -3415,79 +3416,79 @@ Deviation</source>
         <location filename="QGrain/ui/UDMSettings.py" line="18"/>
         <location filename="QGrain/ui/UDMSettings.py" line="153"/>
         <source>UDM Settings</source>
-        <translation>UDM设置</translation>
+        <translation>UDM Settings</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="21"/>
         <location filename="QGrain/ui/UDMSettings.py" line="154"/>
         <source>Device</source>
-        <translation>设备</translation>
+        <translation>Device</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="23"/>
         <location filename="QGrain/ui/UDMSettings.py" line="156"/>
         <source>PyTorch can use the NVIDIA GPU to do calculations.</source>
-        <translation>PyTorch可以使用NVIDIA的GPU进行计算。</translation>
+        <translation>PyTorch can use the NVIDIA GPU to do calculations.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="27"/>
         <location filename="QGrain/ui/UDMSettings.py" line="157"/>
         <source>Pretrain Epochs</source>
-        <translation>预训练轮数</translation>
+        <translation>Pretrain Epochs</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="30"/>
         <location filename="QGrain/ui/UDMSettings.py" line="160"/>
         <source>The number of epochs before formal training. The pretrain process only update the proportions of end members.</source>
-        <translation>正式训练之前的训练轮数。预训练过程只更新端元的相对含量。</translation>
+        <translation>The number of epochs before formal training. The pretrain process only update the proportions of end members.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="36"/>
         <location filename="QGrain/ui/UDMSettings.py" line="161"/>
         <source>Minimum Number of Epochs</source>
-        <translation>最小轮数</translation>
+        <translation>Minimum Number of Epochs</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="37"/>
         <location filename="QGrain/ui/UDMSettings.py" line="162"/>
         <source>Minimum number of epochs to be performed.</source>
-        <translation>算法执行的最小轮数。</translation>
+        <translation>Minimum number of epochs to be performed.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="43"/>
         <location filename="QGrain/ui/UDMSettings.py" line="163"/>
         <source>Maximum Number of Epochs</source>
-        <translation>最大轮数</translation>
+        <translation>Maximum Number of Epochs</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="44"/>
         <location filename="QGrain/ui/UDMSettings.py" line="164"/>
         <source>Maximum number of epochs to be performed.</source>
-        <translation>算法执行的最大轮数。</translation>
+        <translation>Maximum number of epochs to be performed.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="50"/>
         <location filename="QGrain/ui/UDMSettings.py" line="165"/>
         <source>Precision</source>
-        <translation>精度</translation>
+        <translation>Precision</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="52"/>
         <location filename="QGrain/ui/UDMSettings.py" line="167"/>
         <source>It controls the precision of final loss.</source>
-        <translation>它决定了算法最终损失值的精度。</translation>
+        <translation>It controls the precision of final loss.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="58"/>
         <location filename="QGrain/ui/UDMSettings.py" line="168"/>
         <source>Learning Rate (x10&lt;sup&gt;-3&lt;/sup&gt;)</source>
-        <translation>学习率 (x10&lt;sup&gt;-3&lt;/sup&gt;)</translation>
+        <translation>Learning Rate (x10&lt;sup&gt;-3&lt;/sup&gt;)</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="60"/>
         <location filename="QGrain/ui/UDMSettings.py" line="170"/>
         <source>The learning rate of the neural network to update its weights from gradient.</source>
-        <translation>神经网络从梯度更新权重时的学习率。</translation>
+        <translation>The learning rate of the neural network to update its weights from gradient.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="67"/>
@@ -3501,7 +3502,7 @@ Deviation</source>
         <location filename="QGrain/ui/UDMSettings.py" line="173"/>
         <location filename="QGrain/ui/UDMSettings.py" line="176"/>
         <source>Betas are the coefficients used for computing running averages of gradient and its square.</source>
-        <translation>Beta值是用于滑动平均梯度的系数。</translation>
+        <translation>Betas are the coefficients used for computing running averages of gradient and its square.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="76"/>
@@ -3513,24 +3514,24 @@ Deviation</source>
         <location filename="QGrain/ui/UDMSettings.py" line="85"/>
         <location filename="QGrain/ui/UDMSettings.py" line="177"/>
         <source>Constraint Level</source>
-        <translation>约束等级</translation>
+        <translation>Constraint Level</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="88"/>
         <source>It controls the constraint intensity of the end member diversity between different samples. When the constraint level is high, the end members of different samples tend to be equal.</source>
-        <translation>它决定了对于不同样本中同一端元的差异性的约束强度。当约束等级很高的时候，不同样本中的同一端元趋近于相同。</translation>
+        <translation>It controls the constraint intensity of the end member diversity between different samples. When the constraint level is high, the end members of different samples tend to be equal.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="95"/>
         <location filename="QGrain/ui/UDMSettings.py" line="181"/>
         <source>Need History</source>
-        <translation>需要历史</translation>
+        <translation>Need History</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="96"/>
         <location filename="QGrain/ui/UDMSettings.py" line="182"/>
         <source>Record the variation history of parameters or not.</source>
-        <translation>是否记录参数的变化历史。</translation>
+        <translation>Record the variation history of parameters or not.</translation>
     </message>
 </context>
 </TS>

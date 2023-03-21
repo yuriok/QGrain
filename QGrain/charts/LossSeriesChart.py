@@ -14,8 +14,8 @@ class LossSeriesChart(BaseChart):
 
     def show_loss_series(self, series: Sequence[float], ylabel: str, title: str = ""):
         self._axes.clear()
-        self._axes.plot(series, label="series")
-        self._axes.set_xlabel("Iteration index")
+        self._axes.plot(series, label="loss_series")
+        self._axes.set_xlabel(self.tr("Iteration"))
         self._axes.set_ylabel(ylabel)
         self._axes.set_title(title)
         self._figure.tight_layout()
@@ -31,4 +31,5 @@ class LossSeriesChart(BaseChart):
     def retranslate(self):
         self.setWindowTitle(self.tr("Loss Series"))
         self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.configure_subplots_action.setText(self.tr("Configure Subplots"))
         self.save_figure_action.setText(self.tr("Save Figure"))

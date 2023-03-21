@@ -118,7 +118,7 @@ class MainWindow(QtWidgets.QMainWindow):
         for key, name in self.supported_languages:
             action = self.language_group.addAction(name)
             action.setCheckable(True)
-            action.triggered.connect(lambda checked=False, language=key: self.switch_language(language))
+            action.triggered.connect(lambda checked=False, language_key=key: self.switch_language(language_key))
             self.language_menu.addAction(action)
             self.language_actions.append(action)
 

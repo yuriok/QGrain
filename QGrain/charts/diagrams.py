@@ -196,6 +196,7 @@ class Folk54GSMDiagramChart(DiagramChart):
     def retranslate(self):
         self.setWindowTitle(self.tr("GSM Diagram (Folk, 1954)"))
         self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.configure_subplots_action.setText(self.tr("Configure Subplots"))
         self.save_figure_action.setText(self.tr("Save Figure"))
 
 
@@ -282,6 +283,7 @@ class Folk54SSCDiagramChart(DiagramChart):
     def retranslate(self):
         self.setWindowTitle(self.tr("SSC Diagram (Folk, 1954)"))
         self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.configure_subplots_action.setText(self.tr("Configure Subplots"))
         self.save_figure_action.setText(self.tr("Save Figure"))
 
 
@@ -542,6 +544,7 @@ class BP12GSMDiagramChart(DiagramChart):
     def retranslate(self):
         self.setWindowTitle(self.tr("GSM Diagram (Blott & Pye, 2012)"))
         self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.configure_subplots_action.setText(self.tr("Configure Subplots"))
         self.save_figure_action.setText(self.tr("Save Figure"))
 
 
@@ -804,6 +807,7 @@ class BP12SSCDiagramChart(DiagramChart):
     def retranslate(self):
         self.setWindowTitle(self.tr("SSC Diagram (Blott & Pye, 2012)"))
         self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.configure_subplots_action.setText(self.tr("Configure Subplots"))
         self.save_figure_action.setText(self.tr("Save Figure"))
 
 
@@ -1011,4 +1015,5 @@ class CMDiagramChart(DiagramChart):
     def retranslate(self):
         self.setWindowTitle(self.tr("C-M Diagram"))
         self.edit_figure_action.setText(self.tr("Edit Figure"))
+        self.configure_subplots_action.setText(self.tr("Configure Subplots"))
         self.save_figure_action.setText(self.tr("Save Figure"))
