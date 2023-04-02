@@ -563,7 +563,7 @@ The result of `all_statistics` function is a `dict`, you can check the following
   ('Medium', 'Clay'): 0.0251,
   ('Fine', 'Clay'): 0.006,
   ('Very fine', 'Clay'): 0.0007999999999999999},
- 'group_folk54': 'Slit',
+ 'group_folk54': 'Silt',
  '_group_bp12_symbols': ['(s)', '(c)', 'SI'],
  'group_bp12_symbol': '(s)(c)SI',
  'group_bp12': 'Slightly Sandy Slightly Clayey Silt'}
