@@ -671,14 +671,14 @@ def group_ssc_folk54(sand: float, silt: float, clay: float):
         elif ratio < 2 / 3:
             return "Mud"
         else:
-            return "Slit"
+            return "Silt"
     elif sand < 0.5:
         if ratio < 1 / 3:
             return "Sandy Clay"
         elif ratio < 2 / 3:
             return "Sandy Mud"
         else:
-            return "Sandy Slit"
+            return "Sandy Silt"
     elif sand < 0.9:
         if ratio < 1 / 3:
             return "Clayey Sand"
