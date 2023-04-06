@@ -14,7 +14,7 @@ setup(
     install_requires=[
         "psutil",
         "numpy",
-        "scipy",
+        "scipy<=1.8.1",
         "scikit-learn",
         "grpcio",
         "protobuf",
