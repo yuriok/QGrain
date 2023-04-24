@@ -480,6 +480,12 @@
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
+    <message>
+        <location filename="QGrain/ui/DatasetGenerator.py" line="369"/>
+        <location filename="QGrain/ui/DatasetGenerator.py" line="376"/>
+        <source>Artificial Sample</source>
+        <translation>人造样本</translation>
+    </message>
 </context>
 <context>
     <name>DatasetLoader</name>
@@ -1580,27 +1586,27 @@
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="67"/>
         <source>Shape</source>
-        <translation>Shape</translation>
+        <translation>α</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="67"/>
         <source>Location</source>
-        <translation>Location</translation>
+        <translation>μ</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="67"/>
         <source>Scale</source>
-        <translation>Scale</translation>
+        <translation>σ</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="68"/>
         <source>Weight</source>
-        <translation>Weight</translation>
+        <translation>ω</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="81"/>
         <location filename="QGrain/ui/DatasetGenerator.py" line="128"/>
-        <source>Mean</source>
+        <source>Average</source>
         <translation>平均值</translation>
     </message>
     <message>
@@ -1621,8 +1627,9 @@ Deviation</source>
     </message>
     <message>
         <location filename="QGrain/charts/HierarchicalChart.py" line="28"/>
-        <source>Sample count/index</source>
-        <translation>样本数量/索引</translation>
+        <source>Sample index (count)</source>
+        <oldsource>Sample count/index</oldsource>
+        <translation>样本索引 (数量)</translation>
     </message>
     <message>
         <location filename="QGrain/charts/HierarchicalChart.py" line="29"/>
@@ -1759,37 +1766,37 @@ Deviation</source>
         <location filename="QGrain/ui/MainWindow.py" line="50"/>
         <location filename="QGrain/ui/MainWindow.py" line="410"/>
         <source>Generator</source>
-        <translation>Generator</translation>
+        <translation>生成</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="54"/>
         <location filename="QGrain/ui/MainWindow.py" line="412"/>
         <source>PCA</source>
-        <translation>PCA</translation>
+        <translation>主成分分析</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="56"/>
         <location filename="QGrain/ui/MainWindow.py" line="413"/>
         <source>Clustering</source>
-        <translation>Clustering</translation>
+        <translation>聚类分析</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="58"/>
         <location filename="QGrain/ui/MainWindow.py" line="414"/>
         <source>SSU</source>
-        <translation>SSU</translation>
+        <translation>分样本分解</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="60"/>
         <location filename="QGrain/ui/MainWindow.py" line="415"/>
         <source>EMMA</source>
-        <translation>EMMA</translation>
+        <translation>端元分析</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="62"/>
         <location filename="QGrain/ui/MainWindow.py" line="416"/>
         <source>UDM</source>
-        <translation>UDM</translation>
+        <translation>通用分解模型</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="77"/>
@@ -1864,7 +1871,7 @@ Deviation</source>
         <location filename="QGrain/ui/MainWindow.py" line="52"/>
         <location filename="QGrain/ui/MainWindow.py" line="411"/>
         <source>Statistics</source>
-        <translation>Statistics</translation>
+        <translation>统计学参数</translation>
     </message>
     <message>
         <location filename="QGrain/ui/MainWindow.py" line="70"/>
@@ -2029,22 +2036,22 @@ Deviation</source>
     <message>
         <location filename="QGrain/ui/ParameterEditor.py" line="58"/>
         <source>Shape</source>
-        <translation>Shape</translation>
+        <translation>α</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ParameterEditor.py" line="58"/>
         <source>Location</source>
-        <translation>Location</translation>
+        <translation>μ</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ParameterEditor.py" line="58"/>
         <source>Scale</source>
-        <translation>Scale</translation>
+        <translation>σ</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ParameterEditor.py" line="59"/>
         <source>Weight</source>
-        <translation>Weight</translation>
+        <translation>ω</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ParameterEditor.py" line="71"/>
@@ -2105,22 +2112,22 @@ Deviation</source>
     <message>
         <location filename="QGrain/ui/ParameterTable.py" line="20"/>
         <source>Shape</source>
-        <translation>Shape</translation>
+        <translation>α</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ParameterTable.py" line="20"/>
         <source>Location</source>
-        <translation>Location</translation>
+        <translation>μ</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ParameterTable.py" line="20"/>
         <source>Scale</source>
-        <translation>Scale</translation>
+        <translation>σ</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ParameterTable.py" line="21"/>
         <source>Weight</source>
-        <translation>Weight</translation>
+        <translation>ω</translation>
     </message>
     <message>
         <location filename="QGrain/ui/ParameterTable.py" line="23"/>
@@ -3040,6 +3047,16 @@ Deviation</source>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="265"/>
         <source>Boulder, Gravel, Sand, Silt, Clay</source>
         <translation>卵石-砾石-砂-粉砂-粘土</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/StatisticalAnalyzer.py" line="284"/>
+        <source>micron</source>
+        <translation>微米</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/StatisticalAnalyzer.py" line="286"/>
+        <source>phi</source>
+        <translation>phi值</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="311"/>

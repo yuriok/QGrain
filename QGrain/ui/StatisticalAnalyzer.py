@@ -281,7 +281,7 @@ class StatisticalAnalyzer(QtWidgets.QWidget):
 
     @property
     def unit(self) -> str:
-        return "μm" if self.is_geometric else "φ"
+        return self.tr("micron") if self.is_geometric else self.tr("phi")
 
     def update_page(self, page_index: int):
         if self._dataset is None:

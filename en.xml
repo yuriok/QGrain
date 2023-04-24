@@ -478,6 +478,12 @@
         <source>Cancel</source>
         <translation>Cancel</translation>
     </message>
+    <message>
+        <location filename="QGrain/ui/DatasetGenerator.py" line="369"/>
+        <location filename="QGrain/ui/DatasetGenerator.py" line="376"/>
+        <source>Artificial Sample</source>
+        <translation>Artificial Sample</translation>
+    </message>
 </context>
 <context>
     <name>DatasetLoader</name>
@@ -1598,8 +1604,8 @@
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="81"/>
         <location filename="QGrain/ui/DatasetGenerator.py" line="128"/>
-        <source>Mean</source>
-        <translation>Mean</translation>
+        <source>Average</source>
+        <translation>Average</translation>
     </message>
     <message>
         <location filename="QGrain/ui/DatasetGenerator.py" line="83"/>
@@ -1620,8 +1626,9 @@ Deviation</translation>
     </message>
     <message>
         <location filename="QGrain/charts/HierarchicalChart.py" line="28"/>
-        <source>Sample count/index</source>
-        <translation>Sample count/index</translation>
+        <source>Sample index (count)</source>
+        <oldsource>Sample count/index</oldsource>
+        <translation>Sample index (count)</translation>
     </message>
     <message>
         <location filename="QGrain/charts/HierarchicalChart.py" line="29"/>
@@ -3041,6 +3048,16 @@ Deviation</translation>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="265"/>
         <source>Boulder, Gravel, Sand, Silt, Clay</source>
         <translation>Boulder, Gravel, Sand, Silt, Clay</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/StatisticalAnalyzer.py" line="284"/>
+        <source>micron</source>
+        <translation>micron</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/StatisticalAnalyzer.py" line="286"/>
+        <source>phi</source>
+        <translation>phi</translation>
     </message>
     <message>
         <location filename="QGrain/ui/StatisticalAnalyzer.py" line="311"/>
