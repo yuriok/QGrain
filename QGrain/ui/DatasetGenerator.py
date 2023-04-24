@@ -78,7 +78,7 @@ class GeneratorComponent(QtWidgets.QWidget):
         self.widgets = []  # type: list[tuple[QtWidgets.QLabel, QtWidgets.QDoubleSpinBox, QtWidgets.QDoubleSpinBox]]
         self.name_label = QtWidgets.QLabel(name)
         self.name_label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
-        self.mean_label = QtWidgets.QLabel(self.tr("Mean"))
+        self.mean_label = QtWidgets.QLabel(self.tr("Average"))
         self.mean_label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
         self.std_label = QtWidgets.QLabel(self.tr("Standard\nDeviation"))
         self.std_label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
@@ -125,7 +125,7 @@ class GeneratorComponent(QtWidgets.QWidget):
             self.retranslate()
 
     def retranslate(self):
-        self.mean_label.setText(self.tr("Mean"))
+        self.mean_label.setText(self.tr("Average"))
         self.std_label.setText(self.tr("Standard\nDeviation"))
         settings = self.SETTING_MAP[self._distribution_type]
         for param_name, (param_label, _, _) in zip(settings["parameter_names"], self.widgets):
@@ -300,12 +300,12 @@ class DatasetGenerator(QtWidgets.QWidget):
     def _add_components(self):
         for i in range(4):
             param_holder = QtWidgets.QWidget()
-            self.parameter_tab_widget.addTab(param_holder, f"AC{i * 3 + 1}-{i * 3 + 3}")
+            self.parameter_tab_widget.addTab(param_holder, f"C{i * 3 + 1}-{i * 3 + 3}")
             param_layout = QtWidgets.QGridLayout(param_holder)
             param_layout.setContentsMargins(0, 0, 0, 0)
             components = []
             for j in range(3):
-                component = GeneratorComponent(f"AC{i * 3 + j + 1}", self.distribution_type)
+                component = GeneratorComponent(f"C{i * 3 + j + 1}", self.distribution_type)
                 component.value_changed.connect(self.on_value_changed)
                 param_layout.addWidget(component, 0, j)
                 components.append(component)
@@ -365,14 +365,14 @@ class DatasetGenerator(QtWidgets.QWidget):
         if self.minimum_size_input.value() == self.maximum_size_input.value():
             return
         sample = random_sample(**self.generate_kwargs)
-        sample.name = "Artificial Sample"
+        sample.name = self.tr("Artificial Sample")
         return sample
 
     def get_mean_sample(self):
         if self.minimum_size_input.value() == self.maximum_size_input.value():
             return
         sample = random_mean_sample(**self.generate_kwargs)
-        sample.name = "Artificial Sample"
+        sample.name = self.tr("Artificial Sample")
         return sample
 
     def get_random_dataset(self, n_samples: int):
