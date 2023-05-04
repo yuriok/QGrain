@@ -61,9 +61,10 @@ def setup_app(language="en", theme="default"):
     else:
         app = QtWidgets.QApplication.instance()
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
-    fonts_path = os.path.join(QGRAIN_ROOT_PATH, "assets", "fonts")
+    fonts_path = os.path.join(QGRAIN_ROOT_PATH, "assets")
     for font in os.listdir(fonts_path):
-        QtGui.QFontDatabase.addApplicationFont(os.path.join(fonts_path, font))
+        if font[-4:] == ".ttf":
+            QtGui.QFontDatabase.addApplicationFont(os.path.join(fonts_path, font))
     pixmap = QtGui.QPixmap(os.path.join(QGRAIN_ROOT_PATH, "assets", "icon.png"))
     create_necessary_folders()
     app.setWindowIcon(QtGui.QIcon(pixmap))

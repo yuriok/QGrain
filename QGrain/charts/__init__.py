@@ -46,9 +46,10 @@ def setup_matplotlib():
     plt.style.use(["science", "no-latex"])
     plt.set_cmap("tab10")
     plt.rcParams['axes.unicode_minus'] = False
-    fonts_path = os.path.join(QGRAIN_ROOT_PATH, "assets", "fonts")
+    fonts_path = os.path.join(QGRAIN_ROOT_PATH, "assets")
     for font in os.listdir(fonts_path):
-        font_manager.fontManager.addfont(os.path.join(fonts_path, font))
+        if font[-4:] == ".ttf":
+            font_manager.fontManager.addfont(os.path.join(fonts_path, font))
     plt.rcParams["font.family"] = "Source Han Sans CN"
     plt.rcParams["font.size"] = 8
     plt.rcParams["axes.titlesize"] = 8
