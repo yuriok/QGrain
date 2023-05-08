@@ -5,6 +5,7 @@ from typing import *
 
 import numpy as np
 from numpy import ndarray
+from scipy.stats import wasserstein_distance
 
 from ..statistics import interval_phi
 from ..models import DistributionType, ArtificialSample, Sample
@@ -212,8 +213,14 @@ class SSUResult:
         return component
 
     def loss(self, name: str):
-        loss_func = loss_numpy(name)
-        return loss_func(self.distribution, self.sample.distribution, None)
+        if name == "wasserstein":
+            return wasserstein_distance(
+                self.classes_phi, self.classes_phi,
+                np.clip(self.distribution, 1e-8, 1.0),
+                np.clip(self.sample.distribution, 1e-8, 1.0))
+        else:
+            loss_func = loss_numpy(name)
+            return loss_func(self.distribution, self.sample.distribution, None)
 
     def loss_series(self, name: str):
         n_iterations, n_parameters, n_components = self._parameters.shape
@@ -223,7 +230,16 @@ class SSUResult:
         proportions, components, _ = distribution_class.interpret(
             self._parameters, classes, self._sample.interval_phi)
         distributions = (proportions @ components)[:, 0, :]
-        targets = np.expand_dims(self._sample.distribution, 0).repeat(n_iterations, 0)
-        loss_func = loss_numpy(name)
-        loss_series = loss_func(distributions, targets, 1)
-        return loss_series
+        if name == "wasserstein":
+            loss_series = np.zeros(n_iterations)
+            for i in range(n_iterations):
+                loss_series[i] = wasserstein_distance(
+                    self.classes_phi, self.classes_phi,
+                    np.clip(distributions[i], 1e-8, 1.0),
+                    np.clip(self.sample.distribution, 1e-8, 1.0))
+            return loss_series
+        else:
+            targets = np.expand_dims(self._sample.distribution, 0).repeat(n_iterations, 0)
+            loss_func = loss_numpy(name)
+            loss_series = loss_func(distributions, targets, 1)
+            return loss_series
