@@ -155,7 +155,10 @@ class DistributionChart(BaseChart):
         self._last_result = result
         self._axes.clear()
         if self._animation is not None:
-            self._animation._stop()
+            try:
+                self._animation._stop()
+            except AttributeError:
+                pass
             self._animation = None
         x = self.transfer(result.classes_phi)
         self._axes.set_title(result.name)
@@ -191,7 +194,10 @@ class DistributionChart(BaseChart):
         self._last_result = result
         self._axes.clear()
         if self._animation is not None:
-            self._animation._stop()
+            try:
+                self._animation._stop()
+            except AttributeError:
+                pass
             self._animation = None
         x = self.transfer(result.classes_phi)
         if self.xlog:
