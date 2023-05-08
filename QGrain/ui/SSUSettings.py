@@ -80,7 +80,8 @@ class SSUSettings(QtWidgets.QDialog):
                   ("rmlse", self.tr("RMLSE")),
                   ("lmse", self.tr("LMSE")),
                   ("cosine", self.tr("Cosine")),
-                  ("angular", self.tr("Angular")))
+                  ("angular", self.tr("Angular")),
+                  ("wasserstein", self.tr("Wasserstein")))
         return losses
 
     @property

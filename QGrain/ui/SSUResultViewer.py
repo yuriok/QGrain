@@ -9,7 +9,6 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from ..models import SSUResult
 from ..ssu import built_in_losses
-from ..metrics import loss_numpy
 from ..charts.BoxplotChart import BoxplotChart
 from ..charts.LossSeriesChart import LossSeriesChart
 from ..io import save_ssu
@@ -118,10 +117,6 @@ class SSUResultViewer(QtWidgets.QWidget):
     @property
     def loss_name(self) -> str:
         return self.loss_combo_box.currentText()
-
-    @property
-    def distance_function(self) -> Callable:
-        return loss_numpy(self.loss_combo_box.currentText())
 
     @property
     def page_index(self) -> int:

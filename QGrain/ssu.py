@@ -7,6 +7,7 @@ from typing import *
 
 import numpy as np
 from numpy import ndarray
+from scipy.stats import wasserstein_distance
 from scipy.optimize import basinhopping, minimize
 
 from .models import DistributionType, Dataset, Sample, SSUResult, ArtificialSample, ArtificialDataset
@@ -16,7 +17,8 @@ from .metrics import loss_numpy
 # "cosine" metric has problem
 built_in_losses = (
     "1-norm", "2-norm", "3-norm", "4-norm",
-    "mae", "mse", "rmse", "rmlse", "lmse", "angular", "cosine")
+    "mae", "mse", "rmse", "rmlse", "lmse",
+    "angular", "cosine", "wasserstein")
 
 
 def check_loss(loss: str):
@@ -50,7 +52,11 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
         assert x0.ndim == 2
         assert x0.shape == (distribution_class.N_PARAMETERS + 1, n_components)
     check_loss(loss)
-    loss_func = loss_numpy(loss)
+    if loss == "wasserstein":
+        def loss_func(values, targets, _):
+            return np.log(wasserstein_distance(sample.classes_phi, sample.classes_phi, values, targets))
+    else:
+        loss_func = loss_numpy(loss)
     check_optimizer(optimizer)
     assert isinstance(global_max_niter, int)
     assert isinstance(global_niter_success, int)
@@ -90,7 +96,7 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
         x = x.reshape((1, distribution_class.N_PARAMETERS + 1, n_components))
         proportions, components, _ = distribution_class.interpret(x, classes, sample.interval_phi)
         pred_distribution = (proportions[0] @ components[0]).squeeze()
-        return loss_func(pred_distribution, sample.distribution, None)
+        return loss_func(np.clip(pred_distribution, 1e-8, 1.0), np.clip(sample.distribution, 1e-8, 1.0), None)
 
     def callback(x: ndarray):
         nonlocal iteration
