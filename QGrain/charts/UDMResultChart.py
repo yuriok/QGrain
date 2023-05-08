@@ -145,7 +145,10 @@ class UDMResultChart(BaseChart):
         self._last_result = result
         self._figure.clear()
         if self._animation is not None:
-            self._animation._stop()
+            try:
+                self._animation._stop()
+            except AttributeError:
+                pass
             self._animation = None
         interval = max(1, result.n_samples // self.N_DISPLAY_SAMPLES)
         iteration_indexes = np.linspace(1, len(result.loss_series("total")), len(result.loss_series("total")))
@@ -204,7 +207,10 @@ class UDMResultChart(BaseChart):
         self._last_result = result
         self._figure.clear()
         if self._animation is not None:
-            self._animation._stop()
+            try:
+                self._animation._stop()
+            except AttributeError:
+                pass
             self._animation = None
         interval = max(1, result.n_samples // self.N_DISPLAY_SAMPLES)
         iteration_indexes = np.linspace(1, len(result.loss_series("total")), len(result.loss_series("total")))

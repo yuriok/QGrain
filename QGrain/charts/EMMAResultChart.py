@@ -173,7 +173,10 @@ class EMMAResultChart(BaseChart):
         self._last_result = result
         self._figure.clear()
         if self._animation is not None:
-            self._animation._stop()
+            try:
+                self._animation._stop()
+            except AttributeError:
+                pass
             self._animation = None
         classes = self.transfer(result.dataset.classes_phi)
         loss_key, loss_name = self.loss
@@ -225,7 +228,10 @@ class EMMAResultChart(BaseChart):
         self._last_result = result
         self._figure.clear()
         if self._animation is not None:
-            self._animation._stop()
+            try:
+                self._animation._stop()
+            except AttributeError:
+                pass
             self._animation = None
         classes = self.transfer(result.dataset.classes_phi)
         loss_key, loss_name = self.loss
