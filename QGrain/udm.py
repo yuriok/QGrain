@@ -6,7 +6,8 @@ from typing import *
 
 import numpy as np
 import torch
-from numpy import ndarray
+from scipy.special import softmax
+from scipy.spatial.distance import pdist
 
 from .models import KernelType, Dataset, UDMResult, ArtificialDataset
 from .kernels import ProportionModule, get_kernel
@@ -43,15 +44,16 @@ class UDMModule(torch.nn.Module):
         return all_parameters
 
 
-def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType, n_components: int, x0: ndarray = None,
-            device="cpu", pretrain_epochs=200, min_epochs=200, max_epochs=2000, precision: Union[int, float] = 6,
-            learning_rate=5e-3, betas=(0.8, 0.5), constraint_level: Union[int, float] = 2.0, need_history=True,
+def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType, n_components: int,
+            x0: np.ndarray = None, device="cpu", pretrain_epochs=200, min_epochs=200, max_epochs=2000,
+            precision: Union[int, float] = 6, learning_rate=5e-3, betas=(0.8, 0.5),
+            consider_distance=False, constraint_level: Union[int, float] = 2.0, need_history=True,
             logger: logging.Logger = None, progress_callback: Callable[[float], None] = None) -> UDMResult:
     assert isinstance(dataset, (ArtificialDataset, Dataset))
     assert isinstance(kernel_type, KernelType)
     assert isinstance(n_components, int)
     if x0 is not None:
-        assert isinstance(x0, ndarray)
+        assert isinstance(x0, np.ndarray)
         assert x0.ndim == 2
         assert x0.shape[1] == n_components
         x0 = x0.astype(np.float64)
@@ -97,6 +99,7 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
     Precision decimals (10^-x): {precision}
     Learning rate: {learning_rate}
     Betas of weight decay: {betas}
+    Consider distance: {consider_distance}
     Constraint level: {constraint_level}
     Need history: {need_history}"""
     logger.debug(start_text)
@@ -106,7 +109,7 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
     optimizer = torch.optim.Adam(udm.parameters(), lr=learning_rate, betas=betas)
     distribution_loss_series = []
     component_loss_series = []
-    history: List[ndarray] = [udm.all_parameters]
+    history: List[np.ndarray] = [udm.all_parameters]
     udm.components.requires_grad_(False)
     max_total_epochs = pretrain_epochs + max_epochs
     start = time.time()
@@ -126,13 +129,52 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
             progress_callback(pretrain_epoch / max_total_epochs)
 
     udm.components.requires_grad_(True)
+
+    if consider_distance and len(dataset) <= 200:
+        # sample depth
+        space_locations = np.zeros((len(dataset), 3), dtype=np.float64)
+        space_locations[:, -1] = np.linspace(0, 1, len(dataset), dtype=np.float64)
+        space_distances = pdist(space_locations)
+        space_weights = softmax(np.max(space_distances, keepdims=True) - space_distances)
+        space_weights = torch.from_numpy(space_weights).to(device)
+    elif consider_distance and len(dataset) > 200:
+        space_locations = np.zeros((len(dataset), 3), dtype=np.float64)
+        space_locations[:, -1] = np.linspace(0, 1, len(dataset), dtype=np.float64)
+        map_space_weights = {}
+        start = 0
+        while start < len(dataset)-2:
+            space_distances = pdist(space_locations[start:start+200])
+            space_weights = softmax(np.max(space_distances, keepdims=True) - space_distances)
+            space_weights = torch.from_numpy(space_weights).to(device)
+            map_space_weights[start] = space_weights
+            start += 100
+
     for epoch in range(max_epochs):
         # train
         proportions, components = udm()
         prediction = (proportions @ components).squeeze(1)
         distribution_loss = torch.log10(torch.mean(torch.square(prediction - observation)))
-        # component_loss = torch.log10(torch.mean(torch.std(components, dim=0)))
-        component_loss = torch.mean(torch.std(components, dim=0))
+
+        if consider_distance and len(dataset) <= 200:
+            component_loss = 0
+            component_ratios = torch.softmax(torch.sum(torch.std(components, dim=0), dim=1), dim=0)
+            for i in range(n_components):
+                component_loss += torch.sum(torch.nn.functional.pdist(components[:, i, :]) *
+                                            space_weights) * component_ratios[i]
+        elif consider_distance and len(dataset) > 200:
+            component_loss = 0
+            start = 0
+            while start < len(dataset) - 2:
+                component_ratios = torch.softmax(torch.sum(torch.std(components[start: start+50], dim=0), dim=1), dim=0)
+                for i in range(n_components):
+                    component_loss += torch.sum(torch.nn.functional.pdist(components[start: start+200, i, :]) *
+                                                map_space_weights[start]) * component_ratios[i]
+                start += 100
+            component_loss /= len(map_space_weights)
+        else:
+            # component_loss = torch.log10(torch.mean(torch.std(components, dim=0)))
+            component_loss = torch.mean(torch.std(components, dim=0))
+
         loss = distribution_loss + (10 ** constraint_level) * component_loss
         if np.isnan(loss.item()):
             logger.warning("Loss is NaN, training has beem terminated.")
@@ -157,8 +199,8 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
         torch.cuda.synchronize()
     time_spent = time.time() - start
     settings = dict(device=device, pretrain_epochs=pretrain_epochs, min_epochs=min_epochs,
-                    max_epochs=max_epochs, precision=precision, learning_rate=learning_rate,
-                    betas=betas, constraint_level=constraint_level, need_history=need_history)
+                    max_epochs=max_epochs, precision=precision, learning_rate=learning_rate, betas=betas,
+                    consider_distance=consider_distance, constraint_level=constraint_level, need_history=need_history)
     distribution_loss_series = np.array(distribution_loss_series)
     component_loss_series = np.array(component_loss_series)
     loss_series = {"total": distribution_loss_series + component_loss_series,

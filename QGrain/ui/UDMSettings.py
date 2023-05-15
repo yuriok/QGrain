@@ -82,6 +82,12 @@ class UDMSettings(QtWidgets.QDialog):
         self.beta2_input.setValue(0.5000)
         self.main_layout.addWidget(self.beta2_label, 7, 0)
         self.main_layout.addWidget(self.beta2_input, 7, 1)
+        self.consider_distance_checkbox = QtWidgets.QCheckBox(self.tr("Consider Distance"))
+        self.consider_distance_checkbox.setToolTip(self.tr(
+            "If consider the space distances of samples while "
+            "using the component constraint to limit the variations of components."))
+        self.consider_distance_checkbox.setChecked(False)
+        self.main_layout.addWidget(self.consider_distance_checkbox, 8, 0, 1, 2)
         self.constraint_level_label = QtWidgets.QLabel(self.tr("Constraint Level"))
         self.constraint_level_label.setToolTip(self.tr(
             "It controls the constraint intensity of the end member diversity between different samples. "
@@ -90,12 +96,12 @@ class UDMSettings(QtWidgets.QDialog):
         self.constraint_level_input.setDecimals(4)
         self.constraint_level_input.setRange(-10, 10.0)
         self.constraint_level_input.setValue(2.0)
-        self.main_layout.addWidget(self.constraint_level_label, 8, 0)
-        self.main_layout.addWidget(self.constraint_level_input, 8, 1)
+        self.main_layout.addWidget(self.constraint_level_label, 9, 0)
+        self.main_layout.addWidget(self.constraint_level_input, 9, 1)
         self.need_history_checkbox = QtWidgets.QCheckBox(self.tr("Need History"))
         self.need_history_checkbox.setToolTip(self.tr("Record the variation history of parameters or not."))
         self.need_history_checkbox.setChecked(True)
-        self.main_layout.addWidget(self.need_history_checkbox, 9, 0, 1, 2)
+        self.main_layout.addWidget(self.need_history_checkbox, 10, 0, 1, 2)
         self._update_device_list()
 
     @property
@@ -108,6 +114,7 @@ class UDMSettings(QtWidgets.QDialog):
             precision=self.precision_input.value(),
             learning_rate=self.learning_rate_input.value() / 1000.0,
             betas=(self.beta1_input.value(), self.beta2_input.value()),
+            consider_distance=self.consider_distance_checkbox.isChecked(),
             constraint_level=self.constraint_level_input.value(),
             need_history=self.need_history_checkbox.isChecked())
         return settings
@@ -123,6 +130,7 @@ class UDMSettings(QtWidgets.QDialog):
         beta1, beta2 = s["betas"]
         self.beta1_input.setValue(beta1)
         self.beta2_input.setValue(beta2)
+        self.consider_distance_checkbox.setChecked(s["consider_distance"])
         self.constraint_level_input.setValue(s["constraint_level"])
         self.need_history_checkbox.setChecked(s["need_history"])
 
@@ -174,6 +182,10 @@ class UDMSettings(QtWidgets.QDialog):
         self.beta2_label.setText(self.tr("Beta 2"))
         self.beta2_label.setToolTip(self.tr(
             "Betas are the coefficients used for computing running averages of gradient and its square."))
+        self.consider_distance_checkbox.setText(self.tr("Consider Distance"))
+        self.consider_distance_checkbox.setToolTip(self.tr(
+            "If consider the space distances of samples while "
+            "using the component constraint to limit the variations of components."))
         self.constraint_level_label.setText(self.tr("Constraint Level"))
         self.constraint_level_label.setToolTip(
             "It controls the constraint intensity of the end member diversity between different samples. "

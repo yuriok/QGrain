@@ -985,6 +985,7 @@ def save_udm(result: UDMResult, filename: str, progress_callback: Callable[[floa
             Learning Rate: {"Unknown" if result.settings is None else result.settings["learning_rate"]}
             Precision: {"Unknown" if result.settings is None else result.settings["precision"]}
             Betas: {"Unknown" if result.settings is None else result.settings["betas"]}
+            Consider Distance: {"Unknown" if result.settings is None else result.settings["consider_distance"]}
             Constraint Level: {"Unknown" if result.settings is None else result.settings["constraint_level"]}
             Need History: {"Unknown" if result.settings is None else result.settings["need_history"]}
         """
