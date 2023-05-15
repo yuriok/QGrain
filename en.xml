@@ -107,209 +107,209 @@
 <context>
     <name>ClusteringAnalyzer</name>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="32"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="404"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="34"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="414"/>
         <source>Clustering Analyzer</source>
         <translation>Clustering Analyzer</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="70"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="420"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="72"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="430"/>
         <source>The linkage method for calculating the distance between the newly formed cluster and each observation vector.</source>
         <translation>The linkage method for calculating the distance between the newly formed cluster and each observation vector.</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="68"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="418"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="70"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="428"/>
         <source>Linkage</source>
         <translation>Linkage</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="37"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="405"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="39"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="415"/>
         <source>PCA</source>
         <translation>PCA</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="38"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="406"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="40"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="416"/>
         <source>If use the decomposed features of PCA.</source>
         <translation>If use the decomposed features of PCA.</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="40"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="407"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="42"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="417"/>
         <source>Variance Ratio</source>
         <translation>Variance Ratio</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="41"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="408"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="43"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="418"/>
         <source>It determines the numbers of PCs.</source>
         <translation>It determines the numbers of PCs.</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="46"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="409"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="48"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="419"/>
         <source>Mean</source>
         <translation>Mean</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="47"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="410"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="49"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="420"/>
         <source>Mode</source>
         <translation>Mode</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="48"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="411"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="50"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="421"/>
         <source>First Percentile (C)</source>
         <translation>First Percentile (C)</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="49"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="412"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="51"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="422"/>
         <source>Median (M)</source>
         <translation>Median (M)</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="50"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="413"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="52"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="423"/>
         <source>Sorting Coefficient</source>
         <translation>Sorting Coefficient</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="51"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="414"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="53"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="424"/>
         <source>Skewness</source>
         <translation>Skewness</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="52"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="415"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="54"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="425"/>
         <source>Kurtosis</source>
         <translation>Kurtosis</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="53"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="416"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="55"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="426"/>
         <source>Standardize</source>
         <translation>Standardize</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="54"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="417"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="56"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="427"/>
         <source>Standardization is necessary to balance different features.</source>
         <oldsource>Standardization is necessary to balance different feature.</oldsource>
         <translation>Standardization is necessary to balance different features.</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="74"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="421"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="76"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="431"/>
         <source>Metric</source>
         <translation>Metric</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="75"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="422"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="77"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="432"/>
         <source>The distance metric.</source>
         <translation>The distance metric.</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="83"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="423"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="85"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="433"/>
         <source>p</source>
         <translation>p</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="84"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="424"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="86"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="434"/>
         <source>The number of leaves at the bottom level of the figure.</source>
         <translation>The number of leaves at the bottom level of the figure.</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="89"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="425"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="91"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="435"/>
         <source>Number of Clusters</source>
         <translation>Number of Clusters</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="90"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="426"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="92"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="436"/>
         <source>The number of clusters.</source>
         <translation>The number of clusters.</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="93"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="427"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="95"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="437"/>
         <source>Perform</source>
         <translation>Perform</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="95"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="428"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="97"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="438"/>
         <source>Preview</source>
         <translation>Preview</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="97"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="429"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="99"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="439"/>
         <source>Close Preview Charts</source>
         <translation>Close Preview Charts</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="99"/>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="430"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="101"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="440"/>
         <source>Show C-M Diagram</source>
         <translation>Show C-M Diagram</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="119"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="121"/>
         <source>Info</source>
         <translation>Info</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="122"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="124"/>
         <source>Warning</source>
         <translation>Warning</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="125"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="127"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="271"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="281"/>
         <source>The linkage method is not compatible with the distance metric.</source>
         <translation>The linkage method is not compatible with the distance metric.</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="354"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="364"/>
         <source>The dataset has not been loaded.</source>
         <translation>The dataset has not been loaded.</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="358"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="368"/>
         <source>The clustering algorithm has not been performed.</source>
         <translation>The clustering algorithm has not been performed.</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="361"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="371"/>
         <source>Choose a filename to save the clustering result</source>
         <translation>Choose a filename to save the clustering result</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="365"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="375"/>
         <source>Saving the clustering result...</source>
         <translation>Saving the clustering result...</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="366"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="376"/>
         <source>Cancel</source>
         <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="388"/>
+        <location filename="QGrain/ui/ClusteringAnalyzer.py" line="398"/>
         <source>An unknown exception was raised. Please check the logs for more details.</source>
         <translation>An unknown exception was raised. Please check the logs for more details.</translation>
     </message>
@@ -596,19 +596,19 @@
     <name>DistributionChart</name>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="23"/>
-        <location filename="QGrain/charts/DistributionChart.py" line="294"/>
+        <location filename="QGrain/charts/DistributionChart.py" line="300"/>
         <source>Scale</source>
         <translation>Scale</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="50"/>
-        <location filename="QGrain/charts/DistributionChart.py" line="300"/>
+        <location filename="QGrain/charts/DistributionChart.py" line="306"/>
         <source>Animation Interval</source>
         <translation>Animation Interval</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="62"/>
-        <location filename="QGrain/charts/DistributionChart.py" line="303"/>
+        <location filename="QGrain/charts/DistributionChart.py" line="309"/>
         <source>Repeat Animation</source>
         <translation>Repeat Animation</translation>
     </message>
@@ -676,55 +676,55 @@
         <translation>Frequency ({0})</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/DistributionChart.py" line="165"/>
-        <location filename="QGrain/charts/DistributionChart.py" line="203"/>
-        <location filename="QGrain/charts/DistributionChart.py" line="263"/>
+        <location filename="QGrain/charts/DistributionChart.py" line="168"/>
+        <location filename="QGrain/charts/DistributionChart.py" line="209"/>
+        <location filename="QGrain/charts/DistributionChart.py" line="269"/>
         <source>Observation</source>
         <translation>Observation</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/DistributionChart.py" line="170"/>
-        <location filename="QGrain/charts/DistributionChart.py" line="220"/>
-        <location filename="QGrain/charts/DistributionChart.py" line="263"/>
+        <location filename="QGrain/charts/DistributionChart.py" line="173"/>
+        <location filename="QGrain/charts/DistributionChart.py" line="226"/>
+        <location filename="QGrain/charts/DistributionChart.py" line="269"/>
         <source>Prediction (LMSE={0:.2f})</source>
         <translation>Prediction (LMSE={0:.2f})</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/DistributionChart.py" line="291"/>
+        <location filename="QGrain/charts/DistributionChart.py" line="297"/>
         <source>Edit Figure</source>
         <translation>Edit Figure</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/DistributionChart.py" line="292"/>
+        <location filename="QGrain/charts/DistributionChart.py" line="298"/>
         <source>Configure Subplots</source>
         <translation>Configure Subplots</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/DistributionChart.py" line="293"/>
+        <location filename="QGrain/charts/DistributionChart.py" line="299"/>
         <source>Save Figure</source>
         <translation>Save Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="35"/>
-        <location filename="QGrain/charts/DistributionChart.py" line="297"/>
+        <location filename="QGrain/charts/DistributionChart.py" line="303"/>
         <source>Show Mode Lines</source>
         <translation>Show Mode Lines</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="21"/>
-        <location filename="QGrain/charts/DistributionChart.py" line="290"/>
+        <location filename="QGrain/charts/DistributionChart.py" line="296"/>
         <source>Distribution Chart</source>
         <translation>Distribution Chart</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="40"/>
-        <location filename="QGrain/charts/DistributionChart.py" line="298"/>
+        <location filename="QGrain/charts/DistributionChart.py" line="304"/>
         <source>Show Legend</source>
         <translation>Show Legend</translation>
     </message>
     <message>
         <location filename="QGrain/charts/DistributionChart.py" line="45"/>
-        <location filename="QGrain/charts/DistributionChart.py" line="299"/>
+        <location filename="QGrain/charts/DistributionChart.py" line="305"/>
         <source>Animated</source>
         <translation>Animated</translation>
     </message>
@@ -877,31 +877,31 @@
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="25"/>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="320"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="326"/>
         <source>Scale</source>
         <translation>Scale</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="23"/>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="316"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="322"/>
         <source>EMMA Chart</source>
         <translation>EMMA Chart</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="37"/>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="323"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="329"/>
         <source>Loss Function</source>
         <translation>Loss Function</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="54"/>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="327"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="333"/>
         <source>Animation Interval</source>
         <translation>Animation Interval</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="66"/>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="330"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="336"/>
         <source>Repeat Animation</source>
         <translation>Repeat Animation</translation>
     </message>
@@ -1008,65 +1008,65 @@
         <translation>Frequency ({0})</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="192"/>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="246"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="195"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="252"/>
         <source>GSDs</source>
         <translation>GSDs</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="196"/>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="250"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="199"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="256"/>
         <source>Iteration</source>
         <translation>Iteration</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="198"/>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="252"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="201"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="258"/>
         <source>Loss variation</source>
         <translation>Loss variation</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="209"/>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="260"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="212"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="266"/>
         <source>End members</source>
         <translation>End members</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="217"/>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="265"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="220"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="271"/>
         <source>Sample index</source>
         <translation>Sample index</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="218"/>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="266"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="221"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="272"/>
         <source>Proportion ({0})</source>
         <translation>Proportion ({0})</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="219"/>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="267"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="222"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="273"/>
         <source>Proportions</source>
         <translation>Proportions</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="317"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="323"/>
         <source>Edit Figure</source>
         <translation>Edit Figure</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="318"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="324"/>
         <source>Configure Subplots</source>
         <translation>Configure Subplots</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="319"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="325"/>
         <source>Save Figure</source>
         <translation>Save Figure</translation>
     </message>
     <message>
         <location filename="QGrain/charts/EMMAResultChart.py" line="49"/>
-        <location filename="QGrain/charts/EMMAResultChart.py" line="326"/>
+        <location filename="QGrain/charts/EMMAResultChart.py" line="332"/>
         <source>Animated</source>
         <translation>Animated</translation>
     </message>
@@ -2342,252 +2342,252 @@ Deviation</translation>
 <context>
     <name>SSUResultViewer</name>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="28"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="507"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="27"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="502"/>
         <source>SSU Result Viewer</source>
         <translation>SSU Result Viewer</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="36"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="508"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="35"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="503"/>
         <source>Previous</source>
         <translation>Previous</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="37"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="509"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="36"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="504"/>
         <source>Click to get back to the previous page.</source>
         <translation>Click to get back to the previous page.</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="39"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="167"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="511"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="38"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="162"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="506"/>
         <source>Page {0}</source>
         <translation>Page {0}</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="40"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="512"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="39"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="507"/>
         <source>Next</source>
         <translation>Next</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="41"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="513"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="40"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="508"/>
         <source>Click to jump to the next page.</source>
         <translation>Click to jump to the next page.</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="58"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="516"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="57"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="511"/>
         <source>Remove</source>
         <translation>Remove</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="60"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="517"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="59"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="512"/>
         <source>Remove All</source>
         <translation>Remove All</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="64"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="519"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="63"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="514"/>
         <source>Show Chart</source>
         <translation>Show Chart</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="69"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="521"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="68"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="516"/>
         <source>Show Loss Series</source>
         <translation>Show Loss Series</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="110"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="109"/>
         <source>Info</source>
         <translation>Info</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="113"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="251"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="112"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="246"/>
         <source>Warning</source>
         <translation>Warning</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="116"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="115"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="197"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="192"/>
         <source>Distribution Type</source>
         <translation>Distribution Type</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="198"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="193"/>
         <source>Number of Components</source>
         <translation>Number of Components</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="199"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="194"/>
         <source>Number of Iterations</source>
         <translation>Number of Iterations</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="200"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="195"/>
         <source>Spent Time [s]</source>
         <translation>Spent Time [s]</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="76"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="201"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="525"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="75"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="196"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="520"/>
         <source>Final Loss</source>
         <translation>Final Loss</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="48"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="514"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="47"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="509"/>
         <source>Loss</source>
         <translation>Loss</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="49"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="515"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="48"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="510"/>
         <source>The function to calculate the difference between prediction and observation.</source>
         <translation>The function to calculate the difference between prediction and observation.</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="202"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="197"/>
         <source>Has Reference</source>
         <translation>Has Reference</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="212"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="207"/>
         <source>Yes</source>
         <translation>Yes</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="212"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="207"/>
         <source>No</source>
         <translation>No</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="252"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="247"/>
         <source>Are you sure to remove all SSU results?</source>
         <translation>Are you sure to remove all SSU results?</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="284"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="279"/>
         <source>The variation history was not recorded, can not calculate the loss series.</source>
         <translation>The variation history was not recorded, can not calculate the loss series.</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="327"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="322"/>
         <source>The grain size classes of the SSU results in binary file are inconsistent with that in list.</source>
         <translation>The grain size classes of the SSU results in binary file are inconsistent with that in list.</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="333"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="328"/>
         <source>The binary file is invalid (i.e., the objects in it are not SSU results).</source>
         <translation>The binary file is invalid (i.e., the objects in it are not SSU results).</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="337"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="385"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="398"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="432"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="332"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="380"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="393"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="427"/>
         <source>There is no SSU result.</source>
         <translation>There is no SSU result.</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="340"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="335"/>
         <source>Choose a filename to save the SSU Results</source>
         <translation>Choose a filename to save the SSU Results</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="347"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="342"/>
         <source>Cancel</source>
         <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="377"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="372"/>
         <source>There are {0} results were evaluated as the outliers. Please check the logs for more details. Do you want to remove them?</source>
         <translation>There are {0} results were evaluated as the outliers. Please check the logs for more details. Do you want to remove them?</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="401"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="435"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="396"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="430"/>
         <source>The number of results is not enough.</source>
         <translation>The number of results is not enough.</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="73"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="523"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="72"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="518"/>
         <source>Check</source>
         <translation>Check</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="74"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="524"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="73"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="519"/>
         <source>NaN / Inf</source>
         <translation>NaN / Inf</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="78"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="526"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="77"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="521"/>
         <source>Mean</source>
         <translation>Mean</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="82"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="528"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="81"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="523"/>
         <source>Skewness</source>
         <translation>Skewness</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="84"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="529"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="83"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="524"/>
         <source>Kurtosis</source>
         <translation>Kurtosis</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="86"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="530"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="85"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="525"/>
         <source>Proportion</source>
         <translation>Proportion</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="299"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="294"/>
         <source>Choose the file which stores the dumped SSU results</source>
         <translation>Choose the file which stores the dumped SSU results</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="347"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="342"/>
         <source>Saving the SSU results...</source>
         <translation>Saving the SSU results...</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="80"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="527"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="79"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="522"/>
         <source>Sorting Coefficient</source>
         <translation>Sorting Coefficient</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="71"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="522"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="70"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="517"/>
         <source>Show Parameters</source>
         <translation>Show Parameters</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="62"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="518"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="61"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="513"/>
         <source>Refer Parameters</source>
         <translation>Refer Parameters</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="66"/>
-        <location filename="QGrain/ui/SSUResultViewer.py" line="520"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="65"/>
+        <location filename="QGrain/ui/SSUResultViewer.py" line="515"/>
         <source>Auto Show</source>
         <translation>Auto Show</translation>
     </message>
@@ -2596,103 +2596,103 @@ Deviation</translation>
     <name>SSUSettings</name>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="11"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="144"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="145"/>
         <source>SSU Settings</source>
         <translation>SSU Settings</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="14"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="145"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="146"/>
         <source>Loss Function</source>
         <translation>Loss Function</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="16"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="147"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="148"/>
         <source>The function to calculate the difference between prediction and observation.</source>
         <translation>The function to calculate the difference between prediction and observation.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="23"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="150"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="151"/>
         <source>Optimizer</source>
         <translation>Optimizer</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="24"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="151"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="152"/>
         <source>The optimizer to find the minimum of loss function.</source>
         <translation>The optimizer to find the minimum of loss function.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="31"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="154"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="155"/>
         <source>Global Optimization</source>
         <translation>Global Optimization</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="33"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="155"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="156"/>
         <source>Try global optimization or not.</source>
         <translation>Try global optimization or not.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="36"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="156"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="157"/>
         <source>Maximum Number of Iterations</source>
         <translation>Maximum Number of Iterations</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="37"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="157"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="158"/>
         <source>Maximum number of iterations of global optimization.</source>
         <translation>Maximum number of iterations of global optimization.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="43"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="158"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="159"/>
         <source>Success Number of Iterations</source>
         <translation>Success Number of Iterations</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="45"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="160"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="161"/>
         <source>The number of iterations that reaching the same minimum value.</source>
         <translation>The number of iterations that reaching the same minimum value.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="51"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="161"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="162"/>
         <source>Step Size</source>
         <translation>Step Size</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="52"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="162"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="163"/>
         <source>The step size of searching the global minimum.</source>
         <translation>The step size of searching the global minimum.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="58"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="163"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="164"/>
         <source>Maximum Number of Iterations of Optimizer</source>
         <translation>Maximum Number of Iterations of Optimizer</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="60"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="165"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="166"/>
         <source>Maximum number of iterations of the optimizer in global and local optimization.</source>
         <translation>Maximum number of iterations of the optimizer in global and local optimization.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="66"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="166"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="167"/>
         <source>Need History</source>
         <translation>Need History</translation>
     </message>
     <message>
         <location filename="QGrain/ui/SSUSettings.py" line="68"/>
-        <location filename="QGrain/ui/SSUSettings.py" line="167"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="168"/>
         <source>Record the variation history of parameters or not.</source>
         <translation>Record the variation history of parameters or not.</translation>
     </message>
@@ -2752,37 +2752,42 @@ Deviation</translation>
         <translation>Angular</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUSettings.py" line="88"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="84"/>
+        <source>Wasserstein</source>
+        <translation>Wasserstein</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/SSUSettings.py" line="89"/>
         <source>Nelder-Mead</source>
         <translation>Nelder-Mead</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUSettings.py" line="89"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="90"/>
         <source>Powell</source>
         <translation>Powell</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUSettings.py" line="90"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="91"/>
         <source>CG</source>
         <translation>CG</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUSettings.py" line="91"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="92"/>
         <source>BFGS</source>
         <translation>BFGS</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUSettings.py" line="92"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="93"/>
         <source>L-BFGS-B</source>
         <translation>L-BFGS-B</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUSettings.py" line="93"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="94"/>
         <source>TNC</source>
         <translation>TNC</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/SSUSettings.py" line="94"/>
+        <location filename="QGrain/ui/SSUSettings.py" line="95"/>
         <source>SLSQP</source>
         <translation>SLSQP</translation>
     </message>
@@ -3273,31 +3278,31 @@ Deviation</translation>
     <name>UDMResultChart</name>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="28"/>
-        <location filename="QGrain/charts/UDMResultChart.py" line="313"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="319"/>
         <source>UDM Chart</source>
         <translation>UDM Chart</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="30"/>
-        <location filename="QGrain/charts/UDMResultChart.py" line="317"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="323"/>
         <source>Scale</source>
         <translation>Scale</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="42"/>
-        <location filename="QGrain/charts/UDMResultChart.py" line="320"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="326"/>
         <source>Animated</source>
         <translation>Animated</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="47"/>
-        <location filename="QGrain/charts/UDMResultChart.py" line="321"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="327"/>
         <source>Animation Interval</source>
         <translation>Animation Interval</translation>
     </message>
     <message>
         <location filename="QGrain/charts/UDMResultChart.py" line="59"/>
-        <location filename="QGrain/charts/UDMResultChart.py" line="324"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="330"/>
         <source>Repeat Animation</source>
         <translation>Repeat Animation</translation>
     </message>
@@ -3364,65 +3369,65 @@ Deviation</translation>
         <translation>Frequency ({0})</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/UDMResultChart.py" line="162"/>
-        <location filename="QGrain/charts/UDMResultChart.py" line="223"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="165"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="229"/>
         <source>GSDs</source>
         <translation>GSDs</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/UDMResultChart.py" line="171"/>
-        <location filename="QGrain/charts/UDMResultChart.py" line="232"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="174"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="238"/>
         <source>Iteration</source>
         <translation>Iteration</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/UDMResultChart.py" line="172"/>
-        <location filename="QGrain/charts/UDMResultChart.py" line="233"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="175"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="239"/>
         <source>Loss value</source>
         <translation>Loss value</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/UDMResultChart.py" line="173"/>
-        <location filename="QGrain/charts/UDMResultChart.py" line="234"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="176"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="240"/>
         <source>Loss variation</source>
         <translation>Loss variation</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/UDMResultChart.py" line="187"/>
-        <location filename="QGrain/charts/UDMResultChart.py" line="244"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="190"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="250"/>
         <source>Components</source>
         <translation>Components</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/UDMResultChart.py" line="195"/>
-        <location filename="QGrain/charts/UDMResultChart.py" line="249"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="198"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="255"/>
         <source>Sample index</source>
         <translation>Sample index</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/UDMResultChart.py" line="196"/>
-        <location filename="QGrain/charts/UDMResultChart.py" line="250"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="199"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="256"/>
         <source>Proportion ({0})</source>
         <translation>Proportion ({0})</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/UDMResultChart.py" line="197"/>
-        <location filename="QGrain/charts/UDMResultChart.py" line="251"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="200"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="257"/>
         <source>Proportions</source>
         <translation>Proportions</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/UDMResultChart.py" line="314"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="320"/>
         <source>Edit Figure</source>
         <translation>Edit Figure</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/UDMResultChart.py" line="315"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="321"/>
         <source>Configure Subplots</source>
         <translation>Configure Subplots</translation>
     </message>
     <message>
-        <location filename="QGrain/charts/UDMResultChart.py" line="316"/>
+        <location filename="QGrain/charts/UDMResultChart.py" line="322"/>
         <source>Save Figure</source>
         <translation>Save Figure</translation>
     </message>
@@ -3431,122 +3436,134 @@ Deviation</translation>
     <name>UDMSettings</name>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="18"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="153"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="161"/>
         <source>UDM Settings</source>
         <translation>UDM Settings</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="21"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="154"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="162"/>
         <source>Device</source>
         <translation>Device</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="23"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="156"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="164"/>
         <source>PyTorch can use the NVIDIA GPU to do calculations.</source>
         <translation>PyTorch can use the NVIDIA GPU to do calculations.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="27"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="157"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="165"/>
         <source>Pretrain Epochs</source>
         <translation>Pretrain Epochs</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="30"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="160"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="168"/>
         <source>The number of epochs before formal training. The pretrain process only update the proportions of end members.</source>
         <translation>The number of epochs before formal training. The pretrain process only update the proportions of end members.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="36"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="161"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="169"/>
         <source>Minimum Number of Epochs</source>
         <translation>Minimum Number of Epochs</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="37"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="162"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="170"/>
         <source>Minimum number of epochs to be performed.</source>
         <translation>Minimum number of epochs to be performed.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="43"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="163"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="171"/>
         <source>Maximum Number of Epochs</source>
         <translation>Maximum Number of Epochs</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="44"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="164"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="172"/>
         <source>Maximum number of epochs to be performed.</source>
         <translation>Maximum number of epochs to be performed.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="50"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="165"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="173"/>
         <source>Precision</source>
         <translation>Precision</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="52"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="167"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="175"/>
         <source>It controls the precision of final loss.</source>
         <translation>It controls the precision of final loss.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="58"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="168"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="176"/>
         <source>Learning Rate (x10&lt;sup&gt;-3&lt;/sup&gt;)</source>
         <translation>Learning Rate (x10&lt;sup&gt;-3&lt;/sup&gt;)</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="60"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="170"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="178"/>
         <source>The learning rate of the neural network to update its weights from gradient.</source>
         <translation>The learning rate of the neural network to update its weights from gradient.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="67"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="171"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="179"/>
         <source>Beta 1</source>
         <translation>Beta 1</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="69"/>
         <location filename="QGrain/ui/UDMSettings.py" line="78"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="173"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="176"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="181"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="184"/>
         <source>Betas are the coefficients used for computing running averages of gradient and its square.</source>
         <translation>Betas are the coefficients used for computing running averages of gradient and its square.</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="76"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="174"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="182"/>
         <source>Beta 2</source>
         <translation>Beta 2</translation>
     </message>
     <message>
         <location filename="QGrain/ui/UDMSettings.py" line="85"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="177"/>
+        <source>Consider Distance</source>
+        <translation>Consider Distance</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/UDMSettings.py" line="88"/>
+        <source>If consider the space distances of samples while using the component constraint to limit the variations of components.</source>
+        <translation>If consider the space distances of samples while using the component constraint to limit the variations of components.</translation>
+    </message>
+    <message>
+        <location filename="QGrain/ui/UDMSettings.py" line="91"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="185"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="189"/>
         <source>Constraint Level</source>
         <translation>Constraint Level</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMSettings.py" line="88"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="94"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="188"/>
         <source>It controls the constraint intensity of the end member diversity between different samples. When the constraint level is high, the end members of different samples tend to be equal.</source>
         <translation>It controls the constraint intensity of the end member diversity between different samples. When the constraint level is high, the end members of different samples tend to be equal.</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMSettings.py" line="95"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="181"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="101"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="193"/>
         <source>Need History</source>
         <translation>Need History</translation>
     </message>
     <message>
-        <location filename="QGrain/ui/UDMSettings.py" line="96"/>
-        <location filename="QGrain/ui/UDMSettings.py" line="182"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="102"/>
+        <location filename="QGrain/ui/UDMSettings.py" line="194"/>
         <source>Record the variation history of parameters or not.</source>
         <translation>Record the variation history of parameters or not.</translation>
     </message>
