@@ -72,7 +72,7 @@ def to_cumulative(distribution: ndarray, expand=False) -> ndarray:
         cumulative = np.zeros(len(distribution) + 2)
         cumulative[0] = 0.0
         cumulative[-1] = 1.0
-        cumulative[1:-1] = np.cumsum(distribution)
+        cumulative[1:-1] = np.cumsum(distribution + np.random.randn(len(distribution)) * 1e-8)
     else:
         cumulative = np.cumsum(distribution)
     return cumulative
