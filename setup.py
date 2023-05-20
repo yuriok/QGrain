@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="QGrain",
-    version="0.5.4.0",
+    version="0.5.4.1",
     description="An easy-to-use software for the comprehensive analysis of grain size distributions",
     platforms="all",
     author="Yuming Liu",
@@ -22,7 +22,7 @@ setup(
         "openpyxl",
         "PySide6>=6.2.0",
         "matplotlib>=3.5.0",
-        "SciencePlots<=1.0.8",
+        "SciencePlots",
         "qt-material"],
     extras_require={"server": ["torch"]},
     classifiers=[

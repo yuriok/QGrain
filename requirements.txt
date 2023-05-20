@@ -8,5 +8,5 @@ xlrd
 openpyxl
 PySide6>=6.2.0
 matplotlib>=3.5.0
-SciencePlots<=1.0.8
+SciencePlots
 qt-material
