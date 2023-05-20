@@ -8,6 +8,7 @@ from matplotlib import font_manager
 from matplotlib.animation import FFMpegWriter, FuncAnimation, ImageMagickWriter
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT as NavigationToolbar
+import scienceplots
 
 from .. import QGRAIN_ROOT_PATH
 
