@@ -13,10 +13,15 @@ from ..statistics import to_microns
 from ..utils import get_image_by_proportions
 
 
-def summarize(components: ndarray, q=0.01):
-    mean = np.mean(components, axis=0)
-    upper = np.quantile(components, q=1 - q, axis=0)
-    lower = np.quantile(components, q=q, axis=0)
+def summarize(proportions: ndarray, components: ndarray, q=0.01):
+    mean = np.zeros((components.shape[1], components.shape[2]))
+    upper = np.zeros((components.shape[1], components.shape[2]))
+    lower = np.zeros((components.shape[1], components.shape[2]))
+    for i in range(components.shape[1]):
+        key = proportions[:, 0, i] > 1e-3
+        mean[i] = np.mean(components[:, i, :][key], axis=0)
+        upper[i] = np.quantile(components[:, i, :][key], q=1 - q, axis=0)
+        lower[i] = np.quantile(components[:, i, :][key], q=q, axis=0)
     return mean, lower, upper
 
 
@@ -176,7 +181,7 @@ class UDMResultChart(BaseChart):
         loss_axes.set_title(self.tr("Loss variation"))
         loss_axes.legend(loc="upper right")
         component_axes = self._figure.add_subplot(2, 2, 3)
-        mean, lower, upper = summarize(result.components, q=0.01)
+        mean, lower, upper = summarize(result.proportions, result.components, q=0.01)
         for i in range(result.n_components):
             component_axes.plot(classes, mean[i]*100, c=plt.get_cmap()(i), zorder=20 + i)
             component_axes.fill_between(classes, lower[i]*100, upper[i]*100, lw=0.02,
@@ -240,7 +245,7 @@ class UDMResultChart(BaseChart):
         loss_axes.set_title(self.tr("Loss variation"))
         loss_axes.legend(loc="upper right")
         component_axes = self._figure.add_subplot(2, 2, 3)
-        mean, lower, upper = summarize(result.components, q=0.01)
+        mean, lower, upper = summarize(result.proportions, result.components, q=0.01)
         if self.xlog:
             component_axes.set_xscale("log")
         component_axes.set_xlim(classes[0], classes[-1])
@@ -268,7 +273,7 @@ class UDMResultChart(BaseChart):
             nonlocal proportion_image
             if iteration_line is None:
                 iteration_line = loss_axes.plot([1, 1], [min_distance, max_distance], c=normal_color())[0]
-                mean, lower, upper = summarize(result.components, q=0.01)
+                mean, lower, upper = summarize(result.proportions, result.components, q=0.01)
                 for i in range(result.n_components):
                     curve = component_axes.plot(classes, mean[i]*100, c=plt.get_cmap()(i), zorder=20 + i)[0]
                     shadow = component_axes.fill_between(classes, lower[i]*100, upper[i]*100, lw=0.02,
@@ -287,7 +292,7 @@ class UDMResultChart(BaseChart):
             nonlocal component_shadows
             nonlocal proportion_image
             iteration, current = args
-            mean, lower, upper = summarize(current.components, q=0.01)
+            mean, lower, upper = summarize(current.proportions, current.components, q=0.01)
             iteration_line.set_xdata([iteration, iteration])
             for i in range(current.n_components):
                 component_curves[i].set_ydata(mean[i]*100)
