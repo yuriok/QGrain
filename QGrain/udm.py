@@ -107,6 +107,7 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
     observation = torch.from_numpy(dataset.distributions.astype(np.float64)).to(device)
     udm = UDMModule(len(dataset), n_components, dataset.classes_phi.astype(np.float64), kernel_type, x0).to(device)
     optimizer = torch.optim.Adam(udm.parameters(), lr=learning_rate, betas=betas)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=500, gamma=0.9)
     distribution_loss_series = []
     component_loss_series = []
     history: List[np.ndarray] = [udm.all_parameters]
@@ -129,25 +130,14 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
             progress_callback(pretrain_epoch / max_total_epochs)
 
     udm.components.requires_grad_(True)
-
-    if consider_distance and len(dataset) <= 200:
-        # sample depth
-        space_locations = np.zeros((len(dataset), 3), dtype=np.float64)
-        space_locations[:, -1] = np.linspace(0, 1, len(dataset), dtype=np.float64)
-        space_distances = pdist(space_locations)
-        space_weights = softmax(np.max(space_distances, keepdims=True) - space_distances)
-        space_weights = torch.from_numpy(space_weights).to(device)
-    elif consider_distance and len(dataset) > 200:
-        space_locations = np.zeros((len(dataset), 3), dtype=np.float64)
-        space_locations[:, -1] = np.linspace(0, 1, len(dataset), dtype=np.float64)
-        map_space_weights = {}
-        start = 0
-        while start < len(dataset)-2:
-            space_distances = pdist(space_locations[start:start+200])
-            space_weights = softmax(np.max(space_distances, keepdims=True) - space_distances)
-            space_weights = torch.from_numpy(space_weights).to(device)
-            map_space_weights[start] = space_weights
-            start += 100
+    n_batches = 0
+    start = 0
+    while start < len(dataset) - 2:
+        start += 150
+        n_batches += 1
+    space_locations = np.zeros((len(dataset), 3), dtype=np.float64)
+    space_locations[:, -1] = np.linspace(1, len(dataset) / 5, len(dataset), dtype=np.float64)
+    space_locations = torch.from_numpy(space_locations).to(device)
 
     for epoch in range(max_epochs):
         # train
@@ -155,22 +145,30 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
         prediction = (proportions @ components).squeeze(1)
         distribution_loss = torch.log10(torch.mean(torch.square(prediction - observation)))
 
-        if consider_distance and len(dataset) <= 200:
+        if consider_distance and len(dataset) <= 400:
             component_loss = 0
             component_ratios = torch.softmax(torch.sum(torch.std(components, dim=0), dim=1), dim=0)
+            # component_ratios = torch.mean(proportions[:, 0], dim=0)
             for i in range(n_components):
-                component_loss += torch.sum(torch.nn.functional.pdist(components[:, i, :]) *
-                                            space_weights) * component_ratios[i]
-        elif consider_distance and len(dataset) > 200:
+                key = proportions[:, 0, i] > 1e-3
+                space_distances = torch.nn.functional.pdist(space_locations[key])
+                space_weights = torch.softmax(-space_distances, dim=0)
+                component_distances = torch.nn.functional.pdist(components[:, i, :][key])
+                component_loss += torch.sum(component_distances * space_weights) * component_ratios[i]
+        elif consider_distance and len(dataset) > 400:
             component_loss = 0
             start = 0
             while start < len(dataset) - 2:
-                component_ratios = torch.softmax(torch.sum(torch.std(components[start: start+50], dim=0), dim=1), dim=0)
+                component_ratios = torch.softmax(torch.sum(torch.std(components[start: start+200], dim=0), dim=1), dim=0)
+                # component_ratios = torch.mean(proportions[start: start + 200, 0], dim=0)
                 for i in range(n_components):
-                    component_loss += torch.sum(torch.nn.functional.pdist(components[start: start+200, i, :]) *
-                                                map_space_weights[start]) * component_ratios[i]
-                start += 100
-            component_loss /= len(map_space_weights)
+                    key = proportions[start: start+200, 0, i] > 1e-3
+                    space_distances = torch.nn.functional.pdist(space_locations[start: start+200][key])
+                    space_weights = torch.softmax(-space_distances, dim=0)
+                    component_distances = torch.nn.functional.pdist(components[start: start+200, i, :][key])
+                    component_loss += torch.sum(component_distances * space_weights) * component_ratios[i]
+                start += 150
+            component_loss /= n_batches
         else:
             # component_loss = torch.log10(torch.mean(torch.std(components, dim=0)))
             component_loss = torch.mean(torch.std(components, dim=0))
@@ -185,6 +183,7 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
         loss.backward()
         torch.nn.utils.clip_grad_norm_(udm.parameters(), 1e-1)
         optimizer.step()
+        scheduler.step()
         if need_history:
             history.append(udm.all_parameters)
         if progress_callback is not None:
