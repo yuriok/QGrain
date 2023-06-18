@@ -52,7 +52,7 @@ def validate_classes(classes: Sequence[float]) -> Tuple[bool, Union[ndarray, str
     if classes is None:
         return False, "The passed classes can not be `None`."
     try:
-        array: ndarray = np.array(classes, dtype=np.float64)
+        array: ndarray = np.array(classes, dtype=np.float32)
     except ValueError as e:
         return False, "Can not convert the classes to a numerical array, " \
                       f"it may contains invalid values (e.g. text). {e}"
@@ -93,7 +93,7 @@ def validate_distributions(distributions: Sequence[Sequence[float]]) -> Tuple[bo
     if distributions is None:
         return False, "The passed distributions can not be `None`."
     try:
-        array: ndarray = np.array(distributions, dtype=np.float64)
+        array: ndarray = np.array(distributions, dtype=np.float32)
     except ValueError as e:
         return False, "Can not convert the distributions to a numerical array, " \
                       f"it may contains invalid values (e.g. text). {e}"

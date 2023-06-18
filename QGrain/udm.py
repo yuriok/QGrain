@@ -12,7 +12,7 @@ from scipy.spatial.distance import pdist
 from .models import KernelType, Dataset, UDMResult, ArtificialDataset
 from .kernels import ProportionModule, get_kernel
 
-torch.set_default_dtype(torch.float64)
+torch.set_default_dtype(torch.float32)
 
 
 class UDMModule(torch.nn.Module):
@@ -56,7 +56,7 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
         assert isinstance(x0, np.ndarray)
         assert x0.ndim == 2
         assert x0.shape[1] == n_components
-        x0 = x0.astype(np.float64)
+        x0 = x0.astype(np.float32)
     available_devices = ["cpu"]
     if torch.cuda.is_available():
         available_devices.append("cuda")
@@ -104,8 +104,8 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
     Need history: {need_history}"""
     logger.debug(start_text)
 
-    observation = torch.from_numpy(dataset.distributions.astype(np.float64)).to(device)
-    udm = UDMModule(len(dataset), n_components, dataset.classes_phi.astype(np.float64), kernel_type, x0).to(device)
+    observation = torch.from_numpy(dataset.distributions.astype(np.float32)).to(device)
+    udm = UDMModule(len(dataset), n_components, dataset.classes_phi.astype(np.float32), kernel_type, x0).to(device)
     optimizer = torch.optim.Adam(udm.parameters(), lr=learning_rate, betas=betas)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=500, gamma=0.9)
     distribution_loss_series = []
@@ -113,7 +113,7 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
     history: List[np.ndarray] = [udm.all_parameters]
     udm.components.requires_grad_(False)
     max_total_epochs = pretrain_epochs + max_epochs
-    start = time.time()
+    start_time = time.time()
     for pretrain_epoch in range(pretrain_epochs):
         proportions, components = udm()
         prediction = (proportions @ components).squeeze(1)
@@ -135,8 +135,8 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
     while start < len(dataset) - 2:
         start += 150
         n_batches += 1
-    space_locations = np.zeros((len(dataset), 3), dtype=np.float64)
-    space_locations[:, -1] = np.linspace(1, len(dataset) / 5, len(dataset), dtype=np.float64)
+    space_locations = np.zeros((len(dataset), 3), dtype=np.float32)
+    space_locations[:, -1] = np.linspace(1, len(dataset) / 5, len(dataset), dtype=np.float32)
     space_locations = torch.from_numpy(space_locations).to(device)
 
     for epoch in range(max_epochs):
@@ -196,7 +196,7 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
     # algorithm finished, preparing the result
     if device[:4] == "cuda":
         torch.cuda.synchronize()
-    time_spent = time.time() - start
+    time_spent = time.time() - start_time
     settings = dict(device=device, pretrain_epochs=pretrain_epochs, min_epochs=min_epochs,
                     max_epochs=max_epochs, precision=precision, learning_rate=learning_rate, betas=betas,
                     consider_distance=consider_distance, constraint_level=constraint_level, need_history=need_history)

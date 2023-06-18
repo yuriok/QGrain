@@ -14,8 +14,8 @@ class TestValidateClasses:
         assert isinstance(array_or_msg, np.ndarray)
         assert array_or_msg.ndim == 1
 
-    def test_np_float64(self):
-        valid, _ = validate_classes(self.valid_data.astype(np.float64))
+    def test_np_float32(self):
+        valid, _ = validate_classes(self.valid_data.astype(np.float32))
         assert valid
 
     def test_sliced(self):
@@ -120,8 +120,8 @@ class TestValidateDistributions:
         assert array_or_msg.ndim == 2
         assert np.all(np.less(np.sum(array_or_msg, axis=1) - 1.0, 1e-4))
 
-    def test_np_float64(self):
-        valid, _ = validate_distributions(self.valid_data.astype(np.float64))
+    def test_np_float32(self):
+        valid, _ = validate_distributions(self.valid_data.astype(np.float32))
         assert valid
 
     def test_sliced(self):

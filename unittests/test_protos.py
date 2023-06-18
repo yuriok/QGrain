@@ -39,7 +39,7 @@ class TestServer:
         # if not success, the `parameters` is empty bytes
         if len(response.parameters) != 0:
             shape = (response.n_iterations, response.n_parameters, response.n_components)
-            parameters = np.frombuffer(response.parameters, np.float64).copy().reshape(shape)
+            parameters = np.frombuffer(response.parameters, np.float32).copy().reshape(shape)
             result = SSUResult(self.dataset[0], DistributionType.Normal, parameters, response.time_spent)
         else:
             print(response.message)
@@ -56,9 +56,9 @@ class TestServer:
         if len(response.losses) != 0:
             proportions_shape = (response.n_iterations, response.n_samples, response.n_members)
             end_members_shape = (response.n_iterations, response.n_members, response.n_classes)
-            proportions = np.frombuffer(response.proportions, dtype=np.float64).copy().reshape(proportions_shape)
-            end_members = np.frombuffer(response.end_members, dtype=np.float64).copy().reshape(end_members_shape)
-            losses = {"lmse": np.array(response.losses, dtype=np.float64)}
+            proportions = np.frombuffer(response.proportions, dtype=np.float32).copy().reshape(proportions_shape)
+            end_members = np.frombuffer(response.end_members, dtype=np.float32).copy().reshape(end_members_shape)
+            losses = {"lmse": np.array(response.losses, dtype=np.float32)}
             result = EMMAResult(self.dataset, KernelType.Normal, 3, proportions, end_members, response.time_spent,
                                 x0=None, loss_series=losses, settings=settings)
         else:
@@ -75,10 +75,10 @@ class TestServer:
         response = server.get_udm_result(request, None)
         if len(response.parameters) != 0:
             shape = (response.n_iterations, response.n_samples, n_parameters, response.n_components)
-            parameters = np.frombuffer(response.parameters, dtype=np.float64).copy().reshape(shape)
-            losses = {"total": np.array(response.total_losses, dtype=np.float64),
-                      "distribution": np.array(response.distribution_losses, dtype=np.float64),
-                      "component": np.array(response.component_losses, dtype=np.float64)}
+            parameters = np.frombuffer(response.parameters, dtype=np.float32).copy().reshape(shape)
+            losses = {"total": np.array(response.total_losses, dtype=np.float32),
+                      "distribution": np.array(response.distribution_losses, dtype=np.float32),
+                      "component": np.array(response.component_losses, dtype=np.float32)}
             result = UDMResult(self.dataset, KernelType.Normal, 3, parameters, response.time_spent, x0=None,
                                loss_series=losses, settings=settings)
         else:

@@ -151,7 +151,7 @@ class UDMAnalyzer(QtWidgets.QWidget):
             self.logger.info("The parameters in Parameter Editor are enabled. They will be used preferentially!")
             settings["kernel_type"] = KernelType.__members__[self.parameter_editor.distribution_type.name]
             settings["n_components"] = self.parameter_editor.n_components
-            settings["x0"] = self.parameter_editor.parameters[:-1, :].astype(np.float64)
+            settings["x0"] = self.parameter_editor.parameters[:-1, :].astype(np.float32)
         else:
             settings["kernel_type"] = self.kernel_type
             settings["n_components"] = self.n_members

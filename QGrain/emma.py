@@ -15,7 +15,7 @@ built_in_losses = (
     "1-norm", "2-norm", "3-norm", "4-norm",
     "mae", "mse", "rmse", "rmlse", "lmse", "angular", "cosine")
 
-torch.set_default_dtype(torch.float64)
+torch.set_default_dtype(torch.float32)
 
 
 class EMMAModule(torch.nn.Module):
@@ -53,7 +53,7 @@ def try_emma(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType
         assert isinstance(x0, ndarray)
         assert x0.ndim == 2
         assert x0.shape[1] == n_members
-        x0 = x0.astype(np.float64)
+        x0 = x0.astype(np.float32)
     available_devices = ["cpu"]
     if torch.cuda.is_available():
         available_devices.append("cuda")
@@ -100,8 +100,8 @@ def try_emma(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType
     Need history: {need_history}"""
     logger.debug(start_text)
 
-    observation = torch.from_numpy(dataset.distributions.astype(np.float64)).to(device)
-    emma = EMMAModule(len(dataset), n_members, dataset.classes_phi.astype(np.float64), kernel_type, x0).to(device)
+    observation = torch.from_numpy(dataset.distributions.astype(np.float32)).to(device)
+    emma = EMMAModule(len(dataset), n_members, dataset.classes_phi.astype(np.float32), kernel_type, x0).to(device)
     loss_func = loss_torch(loss)
     optimizer = torch.optim.Adam(emma.parameters(), lr=learning_rate, betas=betas)
     total_loss_series = []

@@ -30,7 +30,7 @@ class QGrainClient:
     def _to_dataset_pb2(cls, dataset: Union[ArtificialDataset, Dataset]) -> qgrain_pb2.Dataset:
         dataset_pb2 = qgrain_pb2.Dataset(name=dataset.name, n_samples=len(dataset), n_classes=len(dataset.classes),
                                          sample_names=dataset.sample_names, classes=dataset.classes,
-                                         distributions=dataset.distributions.astype(np.float64).tobytes())
+                                         distributions=dataset.distributions.astype(np.float32).tobytes())
         return dataset_pb2
 
     @classmethod
@@ -88,7 +88,7 @@ class QGrainClient:
             stub = qgrain_pb2_grpc.QGrainStub(channel)
             sample_pb2 = self._to_sample_pb2(sample)
             distribution_type_pb2 = distribution_type.value
-            x0_pb2 = bytes() if x0 is None else x0.astype(np.float64).tobytes()
+            x0_pb2 = bytes() if x0 is None else x0.astype(np.float32).tobytes()
             settings = dict(loss=loss, optimizer=optimizer, try_global=try_global, global_max_niter=global_max_niter,
                             global_niter_success=global_niter_success, global_step_size=global_step_size,
                             optimizer_max_niter=optimizer_max_niter, need_history=need_history)
@@ -98,7 +98,7 @@ class QGrainClient:
             # if not success, the `parameters` is empty bytes
             if len(response.parameters) != 0:
                 shape = (response.n_iterations, response.n_parameters, response.n_components)
-                parameters = np.frombuffer(response.parameters, np.float64).copy().reshape(shape)
+                parameters = np.frombuffer(response.parameters, np.float32).copy().reshape(shape)
                 result = SSUResult(sample, distribution_type, parameters, response.time_spent, x0=x0, settings=settings)
                 return result
             else:
@@ -113,7 +113,7 @@ class QGrainClient:
                 ('grpc.max_receive_message_length', MAX_MESSAGE_LENGTH)]) as channel:
             stub = qgrain_pb2_grpc.QGrainStub(channel)
             dataset_pb2 = self._to_dataset_pb2(dataset)
-            x0_pb2 = bytes() if x0 is None else x0.astype(np.float64).tobytes()
+            x0_pb2 = bytes() if x0 is None else x0.astype(np.float32).tobytes()
             settings = dict(device=device, loss=loss, pretrain_epochs=pretrain_epochs, min_epochs=min_epochs,
                             max_epochs=max_epochs, precision=precision, learning_rate=learning_rate, betas=betas,
                             update_end_members=update_end_members, need_history=need_history)
@@ -123,9 +123,9 @@ class QGrainClient:
             if len(response.losses) != 0:
                 proportions_shape = (response.n_iterations, response.n_samples, response.n_members)
                 end_members_shape = (response.n_iterations, response.n_members, response.n_classes)
-                proportions = np.frombuffer(response.proportions, dtype=np.float64).copy().reshape(proportions_shape)
-                end_members = np.frombuffer(response.end_members, dtype=np.float64).copy().reshape(end_members_shape)
-                losses = {loss: np.array(response.losses, dtype=np.float64)}
+                proportions = np.frombuffer(response.proportions, dtype=np.float32).copy().reshape(proportions_shape)
+                end_members = np.frombuffer(response.end_members, dtype=np.float32).copy().reshape(end_members_shape)
+                losses = {loss: np.array(response.losses, dtype=np.float32)}
                 result = EMMAResult(dataset, kernel_type, n_members, proportions, end_members, response.time_spent,
                                     x0=x0, loss_series=losses, settings=settings)
                 return result
@@ -141,7 +141,7 @@ class QGrainClient:
                 ('grpc.max_receive_message_length', MAX_MESSAGE_LENGTH)]) as channel:
             stub = qgrain_pb2_grpc.QGrainStub(channel)
             dataset_pb2 = self._to_dataset_pb2(dataset)
-            x0_pb2 = bytes() if x0 is None else x0.astype(np.float64).tobytes()
+            x0_pb2 = bytes() if x0 is None else x0.astype(np.float32).tobytes()
             n_parameters = get_distribution(DistributionType.__members__[kernel_type.name]).N_PARAMETERS + 1
             settings = dict(device=device, pretrain_epochs=pretrain_epochs, min_epochs=min_epochs,
                             max_epochs=max_epochs, precision=precision, learning_rate=learning_rate, betas=betas,
@@ -151,10 +151,10 @@ class QGrainClient:
             response = stub.get_udm_result(request)
             if len(response.parameters) != 0:
                 shape = (response.n_iterations, response.n_samples, n_parameters, response.n_components)
-                parameters = np.frombuffer(response.parameters, dtype=np.float64).copy().reshape(shape)
-                losses = {"total": np.array(response.total_losses, dtype=np.float64),
-                          "distribution": np.array(response.distribution_losses, dtype=np.float64),
-                          "component": np.array(response.component_losses, dtype=np.float64)}
+                parameters = np.frombuffer(response.parameters, dtype=np.float32).copy().reshape(shape)
+                losses = {"total": np.array(response.total_losses, dtype=np.float32),
+                          "distribution": np.array(response.distribution_losses, dtype=np.float32),
+                          "component": np.array(response.component_losses, dtype=np.float32)}
                 result = UDMResult(dataset, kernel_type, n_components, parameters, response.time_spent, x0=x0,
                                    loss_series=losses, settings=settings)
                 return result

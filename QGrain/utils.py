@@ -39,7 +39,7 @@ def udm_to_ssu(result: UDMResult, logger: logging.Logger = None,
         assert isinstance(logger, logging.Logger)
     distribution_type = DistributionType.__members__[result.kernel_type.name]
     weight = np.ones((1, result.n_components))
-    x0 = np.concatenate([result.x0, weight], axis=0).astype(np.float64)
+    x0 = np.concatenate([result.x0, weight], axis=0).astype(np.float32)
     time_spent = result.time_spent / result.n_samples
     ssu_results = []
     for i in range(result.n_samples):

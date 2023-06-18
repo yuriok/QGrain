@@ -176,7 +176,7 @@ def load_dataset(filename: str,
                 logger.warning(f"The sample name at row {row} is empty, use `EMPTY` to covert it.")
 
             try:
-                distribution = np.array(row_values[start_col:], dtype=np.float64)
+                distribution = np.array(row_values[start_col:], dtype=np.float32)
             except ValueError as e:
                 logger.error(f"Can not convert the frequencies at row {row} to a numerical array, "
                              f"it may contains invalid values (e.g. text or empty cell). {e}")

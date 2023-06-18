@@ -37,21 +37,21 @@ class QGrainServicer(qgrain_pb2_grpc.QGrainServicer):
         valid, array_or_msg = validate_classes(sample_pb2.classes)
         if not valid:
             raise ValueError(array_or_msg)
-        classes = array_or_msg.astype(np.float64)
+        classes = array_or_msg.astype(np.float32)
         classes_phi = to_phi(classes)
         valid, array_or_msg = validate_distributions([sample_pb2.distribution])
         if not valid:
             raise ValueError(array_or_msg)
-        distribution = array_or_msg.astype(np.float64)[0]
+        distribution = array_or_msg.astype(np.float32)[0]
         sample = Sample(sample_pb2.name, classes, classes_phi, distribution)
         return sample
 
     @classmethod
     def _to_dataset(cls, dataset_pb2: qgrain_pb2.Dataset) -> Dataset:
         sample_names = list(dataset_pb2.sample_names)
-        classes = np.array(dataset_pb2.classes, dtype=np.float64)
+        classes = np.array(dataset_pb2.classes, dtype=np.float32)
         shape = (dataset_pb2.n_samples, dataset_pb2.n_classes)
-        distributions = np.frombuffer(dataset_pb2.distributions, dtype=np.float64).copy().reshape(shape)
+        distributions = np.frombuffer(dataset_pb2.distributions, dtype=np.float32).copy().reshape(shape)
         dataset = Dataset(dataset_pb2.name, sample_names, classes, distributions)
         return dataset
 
@@ -105,7 +105,7 @@ class QGrainServicer(qgrain_pb2_grpc.QGrainServicer):
         if len(request.x0) == 0:
             x0 = None
         else:
-            x0 = np.frombuffer(request.x0, dtype=np.float64).copy().reshape(n_parameters, request.n_components)
+            x0 = np.frombuffer(request.x0, dtype=np.float32).copy().reshape(n_parameters, request.n_components)
         settings = dict(loss=request.loss, optimizer=request.optimizer, try_global=request.try_global,
                         global_max_niter=request.global_max_niter, global_niter_success=request.global_niter_success,
                         global_step_size=request.global_step_size, optimizer_max_niter=request.optimizer_max_niter,
@@ -119,7 +119,7 @@ class QGrainServicer(qgrain_pb2_grpc.QGrainServicer):
             response = qgrain_pb2.SSUResponse(
                 message=f"Success! The SSU result of sample {sample.name} is available.", time_spent=result.time_spent,
                 n_iterations=result.n_iterations, n_parameters=result.n_parameters, n_components=len(result),
-                parameters=result.parameters.astype(np.float64).tobytes())
+                parameters=result.parameters.astype(np.float32).tobytes())
             return response
         else:
             response = qgrain_pb2.SSUResponse(message=message)
@@ -138,7 +138,7 @@ class QGrainServicer(qgrain_pb2_grpc.QGrainServicer):
         if len(request.x0) == 0:
             x0 = None
         else:
-            x0 = np.frombuffer(request.x0, dtype=np.float64).copy().reshape(n_parameters, request.n_members)
+            x0 = np.frombuffer(request.x0, dtype=np.float32).copy().reshape(n_parameters, request.n_members)
         settings = dict(device=request.device, loss=request.loss, pretrain_epochs=request.pretrain_epochs,
                         min_epochs=request.min_epochs, max_epochs=request.max_epochs, precision=request.precision,
                         learning_rate=request.learning_rate, betas=tuple(request.betas),
@@ -150,8 +150,8 @@ class QGrainServicer(qgrain_pb2_grpc.QGrainServicer):
         response = qgrain_pb2.EMMAResponse(
             message=f"Success! The EMMA result of dataset {dataset.name} is available.", time_spent=result.time_spent,
             n_iterations=result.n_iterations, n_samples=result.n_samples, n_members=result.n_members,
-            n_classes=result.n_classes, proportions=result._proportions.astype(np.float64).tobytes(),
-            end_members=result._end_members.astype(np.float64).tobytes(), losses=result.loss_series(request.loss))
+            n_classes=result.n_classes, proportions=result._proportions.astype(np.float32).tobytes(),
+            end_members=result._end_members.astype(np.float32).tobytes(), losses=result.loss_series(request.loss))
         return response
 
     def get_udm_result(self, request: qgrain_pb2.UDMRequest, context):
@@ -167,7 +167,7 @@ class QGrainServicer(qgrain_pb2_grpc.QGrainServicer):
         if len(request.x0) == 0:
             x0 = None
         else:
-            x0 = np.frombuffer(request.x0, dtype=np.float64).copy().reshape(n_parameters, request.n_components)
+            x0 = np.frombuffer(request.x0, dtype=np.float32).copy().reshape(n_parameters, request.n_components)
         settings = dict(device=request.device, pretrain_epochs=request.pretrain_epochs, min_epochs=request.min_epochs,
                         max_epochs=request.max_epochs, precision=request.precision, learning_rate=request.learning_rate,
                         betas=tuple(request.betas), constraint_level=request.constraint_level,
@@ -180,7 +180,7 @@ class QGrainServicer(qgrain_pb2_grpc.QGrainServicer):
         response = qgrain_pb2.UDMResponse(
             message=f"Success! The UDM result of dataset {dataset.name} is available.", time_spent=result.time_spent,
             n_iterations=result.n_iterations, n_samples=result.n_samples, n_components=result.n_components,
-            n_classes=result.n_classes, parameters=result.parameters.astype(np.float64).tobytes(),
+            n_classes=result.n_classes, parameters=result.parameters.astype(np.float32).tobytes(),
             distribution_losses=result.loss_series("distribution"), component_losses=result.loss_series("component"),
             total_losses=result.loss_series("total"))
         return response
