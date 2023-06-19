@@ -106,8 +106,9 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
 
     observation = torch.from_numpy(dataset.distributions.astype(np.float32)).to(device)
     udm = UDMModule(len(dataset), n_components, dataset.classes_phi.astype(np.float32), kernel_type, x0).to(device)
+    x0_parameters = [torch.detach_copy(p.data) for p in udm.parameters()]
     optimizer = torch.optim.Adam(udm.parameters(), lr=learning_rate, betas=betas)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=500, gamma=0.9)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=200, gamma=0.5)
     distribution_loss_series = []
     component_loss_series = []
     history: List[np.ndarray] = [udm.all_parameters]
@@ -122,7 +123,7 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
         component_loss_series.append(0.0)
         optimizer.zero_grad()
         distribution_loss.backward()
-        torch.nn.utils.clip_grad_norm_(udm.parameters(), 1e-1)
+        # torch.nn.utils.clip_grad_norm_(udm.parameters(), 0.1)
         optimizer.step()
         if need_history:
             history.append(udm.all_parameters)
@@ -147,26 +148,36 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
 
         if consider_distance and len(dataset) <= 400:
             component_loss = 0
-            component_ratios = torch.softmax(torch.sum(torch.std(components, dim=0), dim=1), dim=0)
+            # component_ratios = torch.softmax(torch.sum(torch.std(components, dim=0), dim=1), dim=0)
             # component_ratios = torch.mean(proportions[:, 0], dim=0)
+            component_ratios = torch.softmax(torch.mean(proportions[:, 0], dim=0), dim=0)
             for i in range(n_components):
                 key = proportions[:, 0, i] > 1e-3
+                if len(key) < 5:
+                    continue
                 space_distances = torch.nn.functional.pdist(space_locations[key])
                 space_weights = torch.softmax(-space_distances, dim=0)
                 component_distances = torch.nn.functional.pdist(components[:, i, :][key])
-                component_loss += torch.sum(component_distances * space_weights) * component_ratios[i]
+                _batch_component_loss = torch.sum(component_distances * space_weights) * component_ratios[i]
+                if not torch.isnan(_batch_component_loss):
+                    component_loss += _batch_component_loss
         elif consider_distance and len(dataset) > 400:
             component_loss = 0
             start = 0
             while start < len(dataset) - 2:
-                component_ratios = torch.softmax(torch.sum(torch.std(components[start: start+200], dim=0), dim=1), dim=0)
+                # component_ratios = torch.softmax(torch.sum(torch.std(components[start: start+200], dim=0), dim=1), dim=0)
                 # component_ratios = torch.mean(proportions[start: start + 200, 0], dim=0)
+                component_ratios = torch.softmax(torch.mean(proportions[:, 0], dim=0), dim=0)
                 for i in range(n_components):
                     key = proportions[start: start+200, 0, i] > 1e-3
+                    if len(key) < 5:
+                        continue
                     space_distances = torch.nn.functional.pdist(space_locations[start: start+200][key])
                     space_weights = torch.softmax(-space_distances, dim=0)
                     component_distances = torch.nn.functional.pdist(components[start: start+200, i, :][key])
-                    component_loss += torch.sum(component_distances * space_weights) * component_ratios[i]
+                    _batch_component_loss = torch.sum(component_distances * space_weights) * component_ratios[i]
+                    if not torch.isnan(_batch_component_loss):
+                        component_loss += _batch_component_loss
                 start += 150
             component_loss /= n_batches
         else:
@@ -174,22 +185,35 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
             component_loss = torch.mean(torch.std(components, dim=0))
 
         loss = distribution_loss + (10 ** constraint_level) * component_loss
-        if np.isnan(loss.item()):
-            logger.warning("Loss is NaN, training has beem terminated.")
+
+        if torch.isnan(loss) and not torch.isnan(distribution_loss) and not torch.isnan(component_loss):
+            logger.error("Loss is NaN, the constraint level is too high.")
             break
+        elif torch.isnan(loss) and torch.isnan(distribution_loss) and not torch.isnan(component_loss):
+            logger.warning("Loss is NaN, using component loss only.")
+            loss = (10 ** constraint_level) * component_loss
+        elif torch.isnan(loss) and not torch.isnan(distribution_loss) and torch.isnan(component_loss):
+            logger.warning("Loss is NaN, using distribution loss only.")
+            loss = distribution_loss
+        elif torch.isnan(loss) and torch.isnan(distribution_loss) and torch.isnan(component_loss):
+            logger.warning("Loss is NaN, this training step skipped.")
+            continue
         distribution_loss_series.append(distribution_loss.item())
         component_loss_series.append((10 ** constraint_level) * component_loss.item())
         optimizer.zero_grad()
         loss.backward()
-        torch.nn.utils.clip_grad_norm_(udm.parameters(), 1e-1)
+        # torch.nn.utils.clip_grad_norm_(udm.parameters(), 0.1)
         optimizer.step()
         scheduler.step()
+        for p, p0 in zip(udm.parameters(), x0_parameters):
+            key = torch.logical_or(torch.isnan(p.data), torch.logical_or(p.data < -400.0, p.data > 400.0))
+            p.data[key] = p0[key]
         if need_history:
             history.append(udm.all_parameters)
         if progress_callback is not None:
             progress_callback((pretrain_epochs + epoch) / max_total_epochs)
         if epoch > min_epochs:
-            delta_loss = np.mean(distribution_loss_series[-100:-80]) - np.mean(distribution_loss_series[-20:])
+            delta_loss = abs(np.mean(distribution_loss_series[-100:-80]) - np.mean(distribution_loss_series[-20:]))
             if delta_loss < 10 ** (-precision):
                 break
 
