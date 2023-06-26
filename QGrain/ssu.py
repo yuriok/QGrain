@@ -116,7 +116,7 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
 
     if try_global:
         global_result = basinhopping(
-            closure, x0=x0, minimizer_kwargs=dict(
+            closure, x0=x0.reshape(-1), minimizer_kwargs=dict(
                 method=optimizer, callback=callback, options=dict(maxiter=optimizer_max_niter)),
             niter_success=global_niter_success, niter=global_max_niter,
             stepsize=global_step_size, callback=global_callback)
@@ -127,7 +127,7 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
             logger.error(f"The fitting process terminated with a error: {global_result.message}.")
             return None, global_result.message
     else:
-        local_result = minimize(closure, x0=x0, method=optimizer,
+        local_result = minimize(closure, x0=x0.reshape(-1), method=optimizer,
                                 callback=callback, options=dict(maxiter=optimizer_max_niter))
         if local_result.success or local_result.status == 9:
             parameters = np.reshape(local_result.x, (1, distribution_class.N_PARAMETERS + 1, n_components))
