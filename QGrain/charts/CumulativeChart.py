@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PySide6 import QtGui, QtWidgets
 from numpy import ndarray
+from scipy.stats import norm
 
 from . import BaseChart
 from ..models import Sample
@@ -94,17 +95,20 @@ class CumulativeChart(BaseChart):
             if self.xlog:
                 self._axes.set_xscale("log")
             x = self.transfer(samples[0].classes_phi)
+            y_ticks = [0.0001, 0.001, 0.01, 0.1, 0.3, 0.5, 0.7, 0.9, 0.99, 0.999, 0.9999]
             self._axes.set_title(title)
             self._axes.set_xlabel(self.x_label)
             self._axes.set_ylabel(self.y_label)
+            self._axes.set_yticks(norm.ppf(y_ticks), [f"{y * 100}" for y in y_ticks])
+            self._axes.set_yticks([], minor=True)
             self._axes.set_xlim(x[0], x[-1])
-            self._axes.set_ylim(0.0, 100.0)
+            self._axes.set_ylim(norm.ppf(0.0001), norm.ppf(0.9999))
         for i, sample in enumerate(samples):
             self._last_samples.append(sample)
             x = self.transfer(samples[0].classes_phi)
             cumulative_frequency = to_cumulative(sample.distribution)
             c = plt.get_cmap()(i % 10)
-            self._axes.plot(x, cumulative_frequency*100, c=c, marker=".", mfc=c, mec=c, label=sample.name)
+            self._axes.plot(x, norm.ppf(cumulative_frequency), c=c, marker=".", mfc=c, mec=c, label=sample.name)
         self._figure.tight_layout()
         self._canvas.draw()
 
