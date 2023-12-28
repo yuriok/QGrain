@@ -154,6 +154,8 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
 
 def _execute(args: Tuple[Union[ArtificialSample, Sample], DistributionType, int, Dict[str, Any]]):
     sample, distribution_type, n_components, options = args
+    if options is None:
+        options = {}
     return try_ssu(sample, distribution_type, n_components, **options)
 
 
