@@ -123,6 +123,8 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
         if global_result.lowest_optimization_result.success or global_result.lowest_optimization_result.status == 9:
             parameters = np.reshape(global_result.x, (1, distribution_class.N_PARAMETERS + 1, n_components))
             message = global_result.message
+            if need_history:
+                history.append(parameters)
         else:
             logger.error(f"The fitting process terminated with a error: {global_result.message}.")
             return None, global_result.message
