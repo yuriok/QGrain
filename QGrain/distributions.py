@@ -147,13 +147,17 @@ def get_distribution(distribution_type: DistributionType):
         raise NotImplementedError(distribution_type)
 
 
-def get_sorted_indexes(
-        distribution_type: DistributionType,
-        parameters: np.ndarray,
-        classes: np.ndarray,
-        interval: float) -> typing.Tuple[int]:
-    distribution_class = get_distribution(distribution_type)
-    proportions, components, (m, std, s, k) = distribution_class.interpret(parameters, classes, interval)
+def get_sorted_indexes(distribution_type: DistributionType, parameters: np.ndarray) -> typing.Tuple[int]:
+    if distribution_type == DistributionType.Normal:
+        m = norm.stats(loc=parameters[:, 0, :], scale=parameters[:, 1, :], moments="m")
+    elif distribution_type == DistributionType.SkewNormal:
+        m = skewnorm.stats(parameters[:, 0, :], loc=parameters[:, 1, :], scale=parameters[:, 2, :], moments="m")
+    elif distribution_type == DistributionType.Weibull:
+        m = weibull_min.stats(parameters[:, 0, :], scale=parameters[:, 1, :], moments="m")
+    elif distribution_type == DistributionType.GeneralWeibull:
+        m = weibull_min.stats(parameters[:, 0, :], loc=parameters[:, 1, :], scale=parameters[:, 2, :], moments="m")
+    else:
+        raise NotImplementedError(distribution_type)
     mean_values = [(i, mean) for i, mean in enumerate(np.median(m, axis=0))]
     # sort them by mean size
     mean_values.sort(key=lambda x: x[1], reverse=True)
@@ -161,12 +165,8 @@ def get_sorted_indexes(
     return sorted_indexes
 
 
-def sort_parameters(
-        distribution_type: DistributionType,
-        parameters: np.ndarray,
-        classes: np.ndarray,
-        interval: float) -> np.ndarray:
-    sorted_indexes = get_sorted_indexes(distribution_type, parameters, classes, interval)
+def sort_parameters(distribution_type: DistributionType, parameters: np.ndarray) -> np.ndarray:
+    sorted_indexes = get_sorted_indexes(distribution_type, parameters)
     sorted_parameters = np.zeros_like(parameters)
     for i, j in enumerate(sorted_indexes):
         sorted_parameters[:, :, i] = parameters[:, :, j]
