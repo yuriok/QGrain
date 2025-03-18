@@ -37,10 +37,10 @@ def check_optimizer(optimizer: str):
 
 
 def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: DistributionType, n_components: int,
-            x0: ndarray = None, loss: str = "lmse", optimizer: str = "L-BFGS-B", try_global: bool = False,
-            global_max_niter: int = 100, global_niter_success: int = 5, global_step_size: float = 0.2,
-            optimizer_max_niter: int = 10000, need_history: bool = True, logger: logging.Logger = None,
-            progress_callback: Callable[[float], None] = None) -> Tuple[Optional[SSUResult], str]:
+            x0: ndarray = None, loss: str = "lmse", optimizer: str = "L-BFGS-B", optimizer_options: dict = None,
+            try_global: bool = False, global_options: dict = None, logger: logging.Logger = None,
+            progress_callback: Callable[[float], None] = None,
+            need_history: bool = True) -> Tuple[Optional[SSUResult], str]:
     assert isinstance(sample, (ArtificialSample, Sample))
     assert isinstance(distribution_type, DistributionType)
     assert isinstance(n_components, int)
@@ -58,14 +58,28 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
     else:
         loss_func = loss_numpy(loss)
     check_optimizer(optimizer)
-    assert isinstance(global_max_niter, int)
-    assert isinstance(global_niter_success, int)
-    assert isinstance(global_step_size, (int, float))
-    assert isinstance(optimizer_max_niter, int)
-    assert global_max_niter > 0
-    assert global_niter_success > 0
-    assert global_step_size > 0.0
-    assert optimizer_max_niter > 0
+    if optimizer_options is not None:
+        assert isinstance(optimizer_options, dict)
+        if "maxiter" in optimizer_options:
+            assert isinstance(optimizer_options["maxiter"], int)
+            assert optimizer_options["maxiter"] > 0
+    else:
+        optimizer_options = dict(maxiter=200)
+
+    if global_options is not None:
+        assert isinstance(global_options, dict)
+        if "niter" in global_options:
+            assert isinstance(global_options["niter"], int)
+            assert global_options["niter"] > 0
+        if "niter_success" in global_options:
+            assert isinstance(global_options["niter_success"], int)
+            assert global_options["niter_success"] > 0
+        if "stepsize" in global_options:
+            assert isinstance(global_options["stepsize"], float)
+            assert global_options["stepsize"] > 0
+    else:
+        global_options = dict(niter=100, niter_success=5, stepsize=0.2)
+
     if logger is None:
         logger = logging.getLogger("QGrain")
     else:
@@ -77,18 +91,19 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
     x0: {x0 if x0 is None else x0.tolist()}
     Loss: {loss}
     Optimizer: {optimizer}
+    Optimizer options: {optimizer_options}
     Try global optimization: {try_global}
-    Global maximum number of iterations: {global_max_niter}
-    Global number of success iterations: {global_niter_success}
-    Global step size: {global_step_size}
-    Optimizer maximum number of iterations: {optimizer_max_niter}
+    Global optimization: {global_options}
     Need history: {need_history}"""
     logger.debug(start_text)
 
     start_time = time.time()
     global_iteration = 0
     iteration = 0
-    max_iterations = global_max_niter * optimizer_max_niter if try_global else optimizer_max_niter
+    if try_global:
+        max_iterations = global_options["niter"] * optimizer_options["maxiter"]
+    else:
+        max_iterations = optimizer_options["maxiter"]
     history = [np.expand_dims(x0, axis=0)]
     classes = np.expand_dims(np.expand_dims(sample.classes_phi, 0), 0).repeat(n_components, 1)
 
@@ -96,7 +111,9 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
         x = x.reshape((1, distribution_class.N_PARAMETERS + 1, n_components))
         proportions, components, _ = distribution_class.interpret(x, classes, sample.interval_phi)
         pred_distribution = (proportions[0] @ components[0]).squeeze()
-        return loss_func(np.clip(pred_distribution, 1e-8, 1.0), np.clip(sample.distribution, 1e-8, 1.0), None)
+        loss_value = loss_func(np.clip(pred_distribution, 1e-8, 1.0),
+                               np.clip(sample.distribution, 1e-8, 1.0), None)
+        return loss_value
 
     def callback(x: ndarray):
         nonlocal iteration
@@ -116,10 +133,9 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
 
     if try_global:
         global_result = basinhopping(
-            closure, x0=x0.reshape(-1), minimizer_kwargs=dict(
-                method=optimizer, callback=callback, options=dict(maxiter=optimizer_max_niter)),
-            niter_success=global_niter_success, niter=global_max_niter,
-            stepsize=global_step_size, callback=global_callback)
+            closure, x0=x0.reshape(-1), callback=global_callback,
+            minimizer_kwargs=dict(method=optimizer, callback=callback, options=optimizer_options),
+            **global_options)
         if global_result.lowest_optimization_result.success or global_result.lowest_optimization_result.status == 9:
             parameters = np.reshape(global_result.x, (1, distribution_class.N_PARAMETERS + 1, n_components))
             message = global_result.message
@@ -130,7 +146,7 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
             return None, global_result.message
     else:
         local_result = minimize(closure, x0=x0.reshape(-1), method=optimizer,
-                                callback=callback, options=dict(maxiter=optimizer_max_niter))
+                                callback=callback, options=optimizer_options)
         if local_result.success or local_result.status == 9:
             parameters = np.reshape(local_result.x, (1, distribution_class.N_PARAMETERS + 1, n_components))
             message = local_result.message
@@ -139,8 +155,6 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
             return None, local_result.message
 
     time_spent = time.time() - start_time
-    # sort the components by their grain sizes (from fine to coarse)
-    sorted_indexes = get_sorted_indexes(distribution_type, parameters, classes, sample.interval_phi)
     if need_history:
         parameters = np.concatenate(history, axis=0)
     # sort the components by their grain sizes (from fine to coarse)
