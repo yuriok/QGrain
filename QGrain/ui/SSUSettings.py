@@ -108,11 +108,11 @@ class SSUSettings(QtWidgets.QDialog):
         s = dict(
             loss=self.loss,
             optimizer=self.optimizer,
+            optimizer_options=dict(maxiter=self.optimizer_max_niter_input.value()),
             try_global=self.try_global_checkbox.isChecked(),
-            global_max_niter=self.global_max_niter_input.value(),
-            global_niter_success=self.global_niter_success_input.value(),
-            global_step_size=self.global_step_size_input.value(),
-            optimizer_max_niter=self.optimizer_max_niter_input.value(),
+            global_options=dict(niter=self.global_max_niter_input.value(),
+                                niter_success=self.global_niter_success_input.value(),
+                                stepsize=self.global_step_size_input.value()),
             need_history=self.need_history_checkbox.isChecked())
         return s
 
@@ -124,11 +124,11 @@ class SSUSettings(QtWidgets.QDialog):
         assert s["optimizer"] in optimizer_map
         self.loss_combo_box.setCurrentIndex(loss_map[s["loss"]])
         self.optimizer_combo_box.setCurrentIndex(optimizer_map[s["optimizer"]])
+        self.optimizer_max_niter_input.setValue(s["optimizer_options"]["maxiter"])
         self.try_global_checkbox.setChecked(s["try_global"])
-        self.global_max_niter_input.setValue(s["global_max_niter"])
-        self.global_niter_success_input.setValue(s["global_niter_success"])
-        self.global_step_size_input.setValue(s["global_step_size"])
-        self.optimizer_max_niter_input.setValue(s["optimizer_max_niter"])
+        self.global_max_niter_input.setValue(s["global_options"]["niter"])
+        self.global_niter_success_input.setValue(s["global_options"]["niter_success"])
+        self.global_niter_success_input.setValue(s["global_options"]["stepsize"])
         self.need_history_checkbox.setChecked(s["need_history"])
 
     def on_try_global_changed(self):
