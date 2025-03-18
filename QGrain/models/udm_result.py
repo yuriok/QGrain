@@ -7,7 +7,7 @@ import numpy as np
 from numpy import ndarray
 
 from ..models import DistributionType, KernelType, ArtificialDataset, Dataset
-from ..distributions import get_distribution, get_sorted_indexes
+from ..distributions import get_distribution, sort_components
 from ..metrics import loss_numpy
 
 
@@ -25,10 +25,9 @@ class UDMResult:
         self._classes_phi = np.expand_dims(np.expand_dims(self.dataset.classes_phi, axis=0), axis=0).repeat(
             self.n_samples, axis=0).repeat(self.n_components, axis=1)
         self._interval_phi = np.abs((self.dataset.classes_phi[0] - self.dataset.classes_phi[-1]) / (self.n_classes - 1))
-        indexes = get_sorted_indexes(self.distribution_type, parameters[-1])
         sorted_parameters = np.zeros_like(parameters)
-        for i, j in enumerate(indexes):
-            sorted_parameters[:, :, :, i] = parameters[:, :, :, j]
+        for i in range(parameters.shape[1]):
+            sorted_parameters[:, i, :, :] = sort_components(self.distribution_type, parameters[:, i, :, :])
         self._parameters = sorted_parameters
         self._update(-1)
 

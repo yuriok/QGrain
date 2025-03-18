@@ -8,7 +8,7 @@ from numpy import ndarray
 
 from ..statistics import interval_phi
 from ..models import DistributionType, SSUResult, ArtificialDataset
-from ..distributions import sort_parameters
+from ..distributions import sort_components
 from ..charts.DistributionChart import DistributionChart
 
 
@@ -205,7 +205,7 @@ class ParameterEditor(QtWidgets.QDialog):
                     parameters.append(component.parameters)
         parameters = np.expand_dims(np.array(parameters).T, axis=0)
         classes = np.expand_dims(np.expand_dims(self._classes_phi, axis=0), axis=0).repeat(self.n_components, axis=1)
-        sorted_parameters = sort_parameters(self.distribution_type, parameters)
+        sorted_parameters = sort_components(self.distribution_type, parameters)
         return sorted_parameters[0]
 
     def _clear_components(self):

@@ -1,5 +1,5 @@
 __all__ = ["Normal", "SkewNormal", "Weibull", "GeneralWeibull",
-           "get_distribution", "get_sorted_indexes", "sort_parameters"]
+           "get_distribution", "sort_components"]
 
 import typing
 
@@ -147,7 +147,7 @@ def get_distribution(distribution_type: DistributionType):
         raise NotImplementedError(distribution_type)
 
 
-def get_sorted_indexes(distribution_type: DistributionType, parameters: np.ndarray) -> typing.Tuple[int]:
+def _get_means(distribution_type: DistributionType, parameters: np.ndarray) -> np.ndarray:
     if distribution_type == DistributionType.Normal:
         m = norm.stats(loc=parameters[:, 0, :], scale=parameters[:, 1, :], moments="m")
     elif distribution_type == DistributionType.SkewNormal:
@@ -158,16 +158,31 @@ def get_sorted_indexes(distribution_type: DistributionType, parameters: np.ndarr
         m = weibull_min.stats(parameters[:, 0, :], loc=parameters[:, 1, :], scale=parameters[:, 2, :], moments="m")
     else:
         raise NotImplementedError(distribution_type)
-    mean_values = [(i, mean) for i, mean in enumerate(np.median(m, axis=0))]
-    # sort them by mean size
-    mean_values.sort(key=lambda x: x[1], reverse=True)
-    sorted_indexes = tuple([i for i, _ in mean_values])
-    return sorted_indexes
+    return m
 
 
-def sort_parameters(distribution_type: DistributionType, parameters: np.ndarray) -> np.ndarray:
-    sorted_indexes = get_sorted_indexes(distribution_type, parameters)
+def sort_components(distribution_type: DistributionType, parameters: np.ndarray, mode="last") -> np.ndarray:
+    assert parameters.ndim == 3
+    # modes = ["first", "last", "median", "respective"]
     sorted_parameters = np.zeros_like(parameters)
-    for i, j in enumerate(sorted_indexes):
-        sorted_parameters[:, :, i] = parameters[:, :, j]
+    sort_keys = -_get_means(distribution_type, parameters)
+    if mode == "first":
+        indexes = np.argsort(sort_keys[0], axis=-1)
+        for i, j in enumerate(indexes):
+            sorted_parameters[:, :, i] = parameters[:, :, j]
+    elif mode == "last":
+        indexes = np.argsort(sort_keys[-1], axis=-1)
+        for i, j in enumerate(indexes):
+            sorted_parameters[:, :, i] = parameters[:, :, j]
+    elif mode == "median":
+        indexes = np.argsort(np.median(sort_keys, axis=0), axis=-1)
+        for i, j in enumerate(indexes):
+            sorted_parameters[:, :, i] = parameters[:, :, j]
+    elif mode == "respective":
+        indexes = np.argsort(sort_keys)
+        for i in range(parameters.shape[0]):
+            for j in range(parameters.shape[2]):
+                sorted_parameters[i, :, j] = parameters[i, :, indexes[i, j]]
+    else:
+        raise NotImplementedError(mode)
     return sorted_parameters
