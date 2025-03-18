@@ -11,7 +11,7 @@ from scipy.stats import wasserstein_distance
 from scipy.optimize import basinhopping, minimize
 
 from .models import DistributionType, Dataset, Sample, SSUResult, ArtificialSample, ArtificialDataset
-from .distributions import get_distribution, get_sorted_indexes
+from .distributions import get_distribution, sort_components
 from .metrics import loss_numpy
 
 # "cosine" metric has problem
@@ -143,12 +143,10 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
     sorted_indexes = get_sorted_indexes(distribution_type, parameters, classes, sample.interval_phi)
     if need_history:
         parameters = np.concatenate(history, axis=0)
-    sorted_parameters = np.zeros_like(parameters)
-    for i, j in enumerate(sorted_indexes):
-        sorted_parameters[:, :, i] = parameters[:, :, j]
-    settings = dict(loss=loss, optimizer=optimizer, try_global=try_global, global_max_niter=global_max_niter,
-                    global_niter_success=global_max_niter, global_step_size=global_step_size,
-                    optimizer_max_niter=optimizer_max_niter, need_history=need_history)
+    # sort the components by their grain sizes (from fine to coarse)
+    sorted_parameters = sort_components(distribution_type, parameters, mode="last")
+    settings = dict(loss=loss, optimizer=optimizer, try_global=try_global,
+                    global_options=global_options, need_history=need_history)
     ssu_result = SSUResult(sample, distribution_type, sorted_parameters, time_spent, x0=x0, settings=settings)
     logger.debug(f"The fitting process successfully finished. {message}")
     return ssu_result, message
