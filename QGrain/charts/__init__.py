@@ -38,10 +38,6 @@ def synchronize_theme():
     plt.rcParams["ytick.color"] = os.environ["QTMATERIAL_SECONDARYTEXTCOLOR"]
     plt.rcParams["ytick.labelcolor"] = os.environ["QTMATERIAL_SECONDARYTEXTCOLOR"]
 
-    plt.rcParams["savefig.dpi"] = 1200.0
-    plt.rcParams["savefig.transparent"] = False
-    plt.rcParams["figure.max_open_warning"] = False
-
 
 def setup_matplotlib():
     plt.style.use(["science", "no-latex"])
@@ -57,9 +53,12 @@ def setup_matplotlib():
     plt.rcParams["axes.labelsize"] = 8
     plt.rcParams["xtick.labelsize"] = 7
     plt.rcParams["ytick.labelsize"] = 7
-    plt.rcParams["legend.title_fontsize"] = 8
-    plt.rcParams["legend.fontsize"] = 7
+    plt.rcParams["legend.title_fontsize"] = 7
+    plt.rcParams["legend.fontsize"] = 6
     plt.rcParams["mathtext.fontset"] = "dejavusans"
+    plt.rcParams["savefig.dpi"] = 1200.0
+    plt.rcParams["savefig.transparent"] = False
+    plt.rcParams["figure.max_open_warning"] = False
     synchronize_theme()
 
 
