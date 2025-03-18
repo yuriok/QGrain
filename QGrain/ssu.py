@@ -168,14 +168,14 @@ def try_dataset(
         n_processes: int = 1,
         options: Dict[str, Any] = None):
     multiprocessing.freeze_support()
-    pool = multiprocessing.Pool(n_processes)
-    args = [(sample, distribution_type, n_components, options) for sample in dataset]
-    results = pool.map(_execute, args)
-    succeeded_results: List[SSUResult] = []
-    failed_samples: List[Tuple[int, str]] = []
-    for i, (result, message) in enumerate(results):
-        if isinstance(result, SSUResult):
-            succeeded_results.append(result)
-        else:
-            failed_samples.append((i, message))
+    with multiprocessing.Pool(n_processes) as pool:
+        args = [(sample, distribution_type, n_components, options) for sample in dataset]
+        results = pool.map(_execute, args)
+        succeeded_results: List[SSUResult] = []
+        failed_samples: List[Tuple[int, str]] = []
+        for i, (result, message) in enumerate(results):
+            if isinstance(result, SSUResult):
+                succeeded_results.append(result)
+            else:
+                failed_samples.append((i, message))
     return succeeded_results, failed_samples
