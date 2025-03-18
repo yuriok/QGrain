@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PySide6 import QtCore, QtWidgets, QtGui
 from scipy.cluster.hierarchy import fcluster, linkage
+from scipy.spatial.distance import pdist
+from scipy.special import softmax
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
@@ -262,6 +264,15 @@ class ClusteringAnalyzer(QtWidgets.QWidget):
             f"method ({self.linkage_name}) and metric ({self.metric_name}).")
         data, data_key = self._get_data_for_clustering()
         try:
+            # TODO: Take space distances of samples into consideration for clustering
+            # space_locations = np.zeros((len(data), 3), dtype=np.float32)
+            # space_locations[:, -1] = np.linspace(0, 1, len(data), dtype=np.float32)
+            # space_distances = softmax(pdist(space_locations))
+            # space_distances /= np.max(space_distances)
+            # data_distances = pdist(data)
+            # data_distances /= np.max(data_distances)
+            # linkage_matrix = linkage(data_distances + 0.1 * space_distances,
+            #                          method=self.linkage_name, metric=self.metric_name)
             linkage_matrix = linkage(data, method=self.linkage_name, metric=self.metric_name)
             self._last_result = (data_key, self.linkage_name, self.metric_name, linkage_matrix)
             self.chart.show_matrix(linkage_matrix, p=self.p)
