@@ -177,11 +177,11 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
     else:
         local_result = minimize(closure, x0=x0.reshape(-1), method=optimizer,
                                 callback=callback, options=_optimizer_options)
-        if local_result.success or local_result.status == 9:
+        if local_result.success or local_result.status == 2 or local_result.status == 9:
             parameters = np.reshape(local_result.x, (1, distribution_class.N_PARAMETERS + 1, n_components))
             message = local_result.message
         else:
-            logger.error(f"The fitting process terminated with a error: {local_result.message}.")
+            logger.error(f"The fitting process terminated with a error: {local_result.message}.\n    {local_result}")
             return None, local_result.message
 
     time_spent = time.time() - start_time

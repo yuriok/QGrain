@@ -109,7 +109,13 @@ class SSUResult:
         self._moments = (m, std, s, k)
 
     def __repr__(self):
-        return f"SSUResult({self._sample.name}, {self._parameters.shape[2]}, {self._distribution_type.name})"
+        info = f"SSUResult({self._sample.name}, {self._parameters.shape[2]}, {self._distribution_type.name})" + \
+            f"\n  initial parameters: {self.x0.tolist()}" + \
+            f"\n  fitting parameters: {self._parameters[-1].tolist()}" + \
+            f"\n  number of iterations: {self.n_iterations}" + \
+            f"\n  time spent: {self._time_spent:.4f} ms" + \
+            f"\n  logarithmic mean squared error: {self.loss('lmse'):.4f}"
+        return info
 
     def __len__(self):
         return len(self._components)
@@ -157,6 +163,10 @@ class SSUResult:
     @property
     def x0(self) -> ndarray:
         return self._x0
+
+    @property
+    def x(self) -> ndarray:
+        return self._parameters[-1]
 
     @property
     def parameters(self) -> ndarray:
