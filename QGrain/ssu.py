@@ -14,7 +14,7 @@ from .models import DistributionType, Dataset, Sample, SSUResult, ArtificialSamp
 from .distributions import get_distribution, sort_components
 from .metrics import loss_numpy
 
-# "cosine" metric has problem
+
 built_in_losses = (
     "1-norm", "2-norm", "3-norm", "4-norm",
     "mae", "mse", "rmse", "rmlse", "lmse",
@@ -28,7 +28,28 @@ def check_loss(loss: str):
 
 built_in_optimizers = (
     "Nelder-Mead", "Powell", "CG", "BFGS",
-    "L-BFGS-B", "TNC", "SLSQP")
+    "L-BFGS-B", "TNC", "COBYLA", "SLSQP")
+
+
+def _get_default_optimizer_options(optimizer: str):
+    if optimizer == "Nelder-Mead":
+        return dict(xatol=1e-8, fatol=1e-8, adaptive=True, maxiter=500)
+    elif optimizer == "Powell":
+        return dict(maxiter=500)
+    elif optimizer == "CG":
+        return dict(eps=1e-8, gtol=1e-8, norm=2.0, maxiter=500)
+    elif optimizer == "BFGS":
+        return dict(eps=1e-8, gtol=1e-8, norm=2.0, maxiter=500)
+    elif optimizer == "L-BFGS-B":
+        return dict(eps=1e-8, ftol=1e-20, gtol=1e-8, maxls=20, maxiter=500)
+    elif optimizer == "TNC":
+        return dict(eps=1e-8, xtol=1e-8, ftol=1e-20, gtol=1e-8, eta=0.25, stepmx=20, maxfun=500)
+    elif optimizer == "COBYLA":
+        return dict(tol=1e-20, maxiter=500)
+    elif optimizer == "SLSQP":
+        return dict(eps=1e-8, ftol=1e-20, maxiter=500)
+    else:
+        raise NotImplementedError(optimizer)
 
 
 def check_optimizer(optimizer: str):
@@ -37,7 +58,7 @@ def check_optimizer(optimizer: str):
 
 
 def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: DistributionType, n_components: int,
-            x0: ndarray = None, loss: str = "lmse", optimizer: str = "L-BFGS-B", optimizer_options: dict = None,
+            x0: ndarray = None, loss: str = "mse", optimizer: str = "SLSQP", optimizer_options: dict = None,
             try_global: bool = False, global_options: dict = None, logger: logging.Logger = None,
             progress_callback: Callable[[float], None] = None,
             need_history: bool = True) -> Tuple[Optional[SSUResult], str]:
@@ -58,13 +79,16 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
     else:
         loss_func = loss_numpy(loss)
     check_optimizer(optimizer)
+    _optimizer_options = _get_default_optimizer_options(optimizer)
     if optimizer_options is not None:
         assert isinstance(optimizer_options, dict)
         if "maxiter" in optimizer_options:
             assert isinstance(optimizer_options["maxiter"], int)
             assert optimizer_options["maxiter"] > 0
-    else:
-        optimizer_options = dict(maxiter=200)
+        if "maxfun" in optimizer_options:
+            assert isinstance(optimizer_options["maxfun"], int)
+            assert optimizer_options["maxfun"] > 0
+        _optimizer_options.update(optimizer_options)
 
     if global_options is not None:
         assert isinstance(global_options, dict)
@@ -91,7 +115,7 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
     x0: {x0 if x0 is None else x0.tolist()}
     Loss: {loss}
     Optimizer: {optimizer}
-    Optimizer options: {optimizer_options}
+    Optimizer options: {_optimizer_options}
     Try global optimization: {try_global}
     Global optimization: {global_options}
     Need history: {need_history}"""
@@ -101,9 +125,15 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
     global_iteration = 0
     iteration = 0
     if try_global:
-        max_iterations = global_options["niter"] * optimizer_options["maxiter"]
+        if optimizer == "TNC":
+            max_iterations = global_options["niter"] * _optimizer_options["maxfun"]
+        else:
+            max_iterations = global_options["niter"] * _optimizer_options["maxiter"]
     else:
-        max_iterations = optimizer_options["maxiter"]
+        if optimizer == "TNC":
+            max_iterations = _optimizer_options["maxfun"]
+        else:
+            max_iterations = _optimizer_options["maxiter"]
     history = [np.expand_dims(x0, axis=0)]
     classes = np.expand_dims(np.expand_dims(sample.classes_phi, 0), 0).repeat(n_components, 1)
 
@@ -134,7 +164,7 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
     if try_global:
         global_result = basinhopping(
             closure, x0=x0.reshape(-1), callback=global_callback,
-            minimizer_kwargs=dict(method=optimizer, callback=callback, options=optimizer_options),
+            minimizer_kwargs=dict(method=optimizer, callback=callback, options=_optimizer_options),
             **global_options)
         if global_result.lowest_optimization_result.success or global_result.lowest_optimization_result.status == 9:
             parameters = np.reshape(global_result.x, (1, distribution_class.N_PARAMETERS + 1, n_components))
@@ -146,7 +176,7 @@ def try_ssu(sample: Union[ArtificialSample, Sample], distribution_type: Distribu
             return None, global_result.message
     else:
         local_result = minimize(closure, x0=x0.reshape(-1), method=optimizer,
-                                callback=callback, options=optimizer_options)
+                                callback=callback, options=_optimizer_options)
         if local_result.success or local_result.status == 9:
             parameters = np.reshape(local_result.x, (1, distribution_class.N_PARAMETERS + 1, n_components))
             message = local_result.message

@@ -25,7 +25,7 @@ class SSUSettings(QtWidgets.QDialog):
         self.optimizer_combo_box = QtWidgets.QComboBox()
         for key, name in self.supported_optimizers:
             self.optimizer_combo_box.addItem(name)
-        self.optimizer_combo_box.setCurrentIndex(6)
+        self.optimizer_combo_box.setCurrentIndex(7)
         self.main_layout.addWidget(self.optimizer_label, 1, 0)
         self.main_layout.addWidget(self.optimizer_combo_box, 1, 1)
         self.try_global_checkbox = QtWidgets.QCheckBox(self.tr("Global Optimization"))
@@ -92,6 +92,7 @@ class SSUSettings(QtWidgets.QDialog):
                       ("BFGS", self.tr("BFGS")),
                       ("L-BFGS-B", self.tr("L-BFGS-B")),
                       ("TNC", self.tr("TNC")),
+                      ("COBYLA", self.tr("COBYLA")),
                       ("SLSQP", self.tr("SLSQP")))
         return optimizers
 
@@ -108,12 +109,15 @@ class SSUSettings(QtWidgets.QDialog):
         s = dict(
             loss=self.loss,
             optimizer=self.optimizer,
-            optimizer_options=dict(maxiter=self.optimizer_max_niter_input.value()),
             try_global=self.try_global_checkbox.isChecked(),
             global_options=dict(niter=self.global_max_niter_input.value(),
                                 niter_success=self.global_niter_success_input.value(),
                                 stepsize=self.global_step_size_input.value()),
             need_history=self.need_history_checkbox.isChecked())
+        if self.optimizer == "TNC":
+            s["optimizer_options"] = dict(maxfun=self.optimizer_max_niter_input.value())
+        else:
+            s["optimizer_options"] = dict(maxiter=self.optimizer_max_niter_input.value())
         return s
 
     @settings.setter
@@ -124,7 +128,10 @@ class SSUSettings(QtWidgets.QDialog):
         assert s["optimizer"] in optimizer_map
         self.loss_combo_box.setCurrentIndex(loss_map[s["loss"]])
         self.optimizer_combo_box.setCurrentIndex(optimizer_map[s["optimizer"]])
-        self.optimizer_max_niter_input.setValue(s["optimizer_options"]["maxiter"])
+        if s["optimizer"] == "TNC":
+            self.optimizer_max_niter_input.setValue(s["optimizer_options"]["maxfun"])
+        else:
+            self.optimizer_max_niter_input.setValue(s["optimizer_options"]["maxiter"])
         self.try_global_checkbox.setChecked(s["try_global"])
         self.global_max_niter_input.setValue(s["global_options"]["niter"])
         self.global_niter_success_input.setValue(s["global_options"]["niter_success"])
