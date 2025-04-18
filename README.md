@@ -12,4 +12,4 @@ If you use the universal decomposition model, please cite:
 
 Feel free to contact the author below.
 
-* Yuming Liu, a PhD student of IEECAS, [liuyuming@ieecas.cn](mailto:liuyuming@ieecas.cn)
+* Yuming Liu, [liuyuming2024@gmail.com](mailto:liuyuming2024@gmail.com)
