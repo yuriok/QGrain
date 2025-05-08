@@ -119,10 +119,15 @@ class NonparametricKernel(torch.nn.Module):
         if parameters is None:
             self._params = torch.nn.Parameter(torch.randn(n_samples, n_members, n_classes) + 2.0, requires_grad=True)
         else:
-            assert parameters.ndim == 2
-            assert parameters.shape == (n_members, n_classes)
-            self._params = torch.nn.Parameter(
-                torch.from_numpy(np.expand_dims(parameters, 0).repeat(n_samples, 0)), requires_grad=True)
+            assert isinstance(parameters, np.ndarray)
+            if parameters.ndim == 2:
+                assert parameters.shape == (n_members, n_classes)
+                self._params = torch.nn.Parameter(
+                    torch.from_numpy(np.expand_dims(parameters, 0).repeat(n_samples, 0)), requires_grad=True)
+            else:
+                assert parameters.ndim == 3
+                assert parameters.shape == (n_samples, n_members, n_classes)
+                self._params = torch.nn.Parameter(torch.from_numpy(parameters), requires_grad=True)
 
     def forward(self, classes: torch.Tensor, interval: float):
         assert classes.shape == (self.n_samples, self.n_members, self.n_classes)
@@ -142,10 +147,15 @@ class NormalKernel(torch.nn.Module):
             self._params = torch.nn.Parameter(
                 torch.randn(n_samples, self.N_PARAMETERS, n_members) + 5.0, requires_grad=True)
         else:
-            assert parameters.ndim == 2
-            assert parameters.shape == (self.N_PARAMETERS, n_members)
-            self._params = torch.nn.Parameter(
-                torch.from_numpy(np.expand_dims(parameters, 0).repeat(n_samples, 0)), requires_grad=True)
+            assert isinstance(parameters, np.ndarray)
+            if parameters.ndim == 2:
+                assert parameters.shape == (self.N_PARAMETERS, n_members)
+                self._params = torch.nn.Parameter(
+                    torch.from_numpy(np.expand_dims(parameters, 0).repeat(n_samples, 0)), requires_grad=True)
+            else:
+                assert parameters.ndim == 3
+                assert parameters.shape == (n_samples, self.N_PARAMETERS, n_members)
+                self._params = torch.nn.Parameter(torch.from_numpy(parameters), requires_grad=True)
 
     def forward(self, classes: torch.Tensor, interval: float):
         assert classes.shape == (self.n_samples, self.n_members, self.n_classes)
@@ -167,10 +177,15 @@ class SkewNormalKernel(torch.nn.Module):
             self._params = torch.nn.Parameter(
                 torch.randn(n_samples, self.N_PARAMETERS, n_members) + 5.0, requires_grad=True)
         else:
-            assert parameters.ndim == 2
-            assert parameters.shape == (self.N_PARAMETERS, n_members)
-            self._params = torch.nn.Parameter(
-                torch.from_numpy(np.expand_dims(parameters, 0).repeat(n_samples, 0)), requires_grad=True)
+            assert isinstance(parameters, np.ndarray)
+            if parameters.ndim == 2:
+                assert parameters.shape == (self.N_PARAMETERS, n_members)
+                self._params = torch.nn.Parameter(
+                    torch.from_numpy(np.expand_dims(parameters, 0).repeat(n_samples, 0)), requires_grad=True)
+            else:
+                assert parameters.ndim == 3
+                assert parameters.shape == (n_samples, self.N_PARAMETERS, n_members)
+                self._params = torch.nn.Parameter(torch.from_numpy(parameters), requires_grad=True)
 
     def forward(self, classes: torch.Tensor, interval: float):
         assert classes.shape == (self.n_samples, self.n_members, self.n_classes)
@@ -193,10 +208,15 @@ class WeibullKernel(torch.nn.Module):
             self._params = torch.nn.Parameter(
                 torch.randn(n_samples, self.N_PARAMETERS, n_members) + 5.0, requires_grad=True)
         else:
-            assert parameters.ndim == 2
-            assert parameters.shape == (self.N_PARAMETERS, n_members)
-            self._params = torch.nn.Parameter(
-                torch.from_numpy(np.expand_dims(parameters, 0).repeat(n_samples, 0)), requires_grad=True)
+            assert isinstance(parameters, np.ndarray)
+            if parameters.ndim == 2:
+                assert parameters.shape == (self.N_PARAMETERS, n_members)
+                self._params = torch.nn.Parameter(
+                    torch.from_numpy(np.expand_dims(parameters, 0).repeat(n_samples, 0)), requires_grad=True)
+            else:
+                assert parameters.ndim == 3
+                assert parameters.shape == (n_samples, self.N_PARAMETERS, n_members)
+                self._params = torch.nn.Parameter(torch.from_numpy(parameters), requires_grad=True)
 
     def forward(self, classes: torch.Tensor, interval: float):
         assert classes.shape == (self.n_samples, self.n_members, self.n_classes)
@@ -219,10 +239,15 @@ class GeneralWeibullKernel(torch.nn.Module):
             self._params = torch.nn.Parameter(
                 torch.randn(n_samples, self.N_PARAMETERS, n_members) + 5.0, requires_grad=True)
         else:
-            assert parameters.ndim == 2
-            assert parameters.shape == (self.N_PARAMETERS, n_members)
-            self._params = torch.nn.Parameter(
-                torch.from_numpy(np.expand_dims(parameters, 0).repeat(n_samples, 0)), requires_grad=True)
+            assert isinstance(parameters, np.ndarray)
+            if parameters.ndim == 2:
+                assert parameters.shape == (self.N_PARAMETERS, n_members)
+                self._params = torch.nn.Parameter(
+                    torch.from_numpy(np.expand_dims(parameters, 0).repeat(n_samples, 0)), requires_grad=True)
+            else:
+                assert parameters.ndim == 3
+                assert parameters.shape == (n_samples, self.N_PARAMETERS, n_members)
+                self._params = torch.nn.Parameter(torch.from_numpy(parameters), requires_grad=True)
 
     def forward(self, classes: torch.Tensor, interval: float):
         assert classes.shape == (self.n_samples, self.n_members, self.n_classes)

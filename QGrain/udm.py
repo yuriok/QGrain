@@ -54,7 +54,7 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
     assert isinstance(n_components, int)
     if x0 is not None:
         assert isinstance(x0, np.ndarray)
-        assert x0.ndim == 2
+        assert x0.ndim == 2 or x0.ndim == 3
         assert x0.shape[1] == n_components
         x0 = x0.astype(np.float32)
     available_devices = ["cpu"]
