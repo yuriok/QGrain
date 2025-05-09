@@ -16,8 +16,6 @@ setup(
         "numpy",
         "scipy",
         "scikit-learn",
-        "grpcio",
-        "protobuf",
         "xlrd",
         "openpyxl",
         "PySide6>=6.2.0",

@@ -6,11 +6,9 @@ from typing import *
 
 import numpy as np
 from PySide6 import QtCore, QtWidgets
-from grpc._channel import _InactiveRpcError
 
 from ..models import KernelType, Dataset, EMMAResult
 from ..charts.EMMAResultChart import EMMAResultChart
-from ..protos.client import QGrainClient
 from ..io import save_emma
 from .EMMASettings import EMMASettings
 from .ParameterEditor import ParameterEditor
@@ -25,14 +23,12 @@ class EMMAAnalyzer(QtWidgets.QWidget):
         (KernelType.Weibull, "Weibull"),
         (KernelType.GeneralWeibull, "General Weibull"))
 
-    def __init__(self, setting_dialog: EMMASettings, parameter_editor: ParameterEditor,
-                 client: QGrainClient = None, parent: QtWidgets.QWidget = None):
+    def __init__(self, setting_dialog: EMMASettings, parameter_editor: ParameterEditor, parent: QtWidgets.QWidget = None):
         super().__init__(parent=parent)
         assert setting_dialog is not None
         assert parameter_editor is not None
         self.setting_dialog = setting_dialog
         self.parameter_editor = parameter_editor
-        self._client = client
         self.setWindowTitle(self.tr("EMMA Analyzer"))
         self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
         self.main_layout = QtWidgets.QGridLayout(self)
@@ -157,28 +153,6 @@ class EMMAAnalyzer(QtWidgets.QWidget):
             settings["kernel_type"] = self.kernel_type
             settings["n_members"] = self.n_members
         self.logger.debug(f"Try to perform the EMMA algorithm. Algorithm settings: {settings}.")
-
-        if self._client is not None and self._client.has_target:
-            try:
-                server_state = self._client.get_service_state()
-                if len(self._dataset) > server_state["max_dataset_size"]:
-                    self.logger.error(
-                        f"The dataset size ({len(self._dataset)} samples) exceeded the limitation of remote grpc server.")
-                    self.show_error(self.tr("The dataset size exceeded the limitation of remote grpc server."))
-                    return
-                # TODO: async & progress report
-                result_or_msg = self._client.get_emma_result(self._dataset, **settings)
-                if isinstance(result_or_msg, EMMAResult):
-                    self.logger.info(f"The result has been received from the remote grpc server {self._client._target}.")
-                    self.add_results([result_or_msg])
-                    self.result_chart.show_result(result_or_msg)
-                    return
-                else:
-                    self.logger.error(f"The EMMA fitting task failed: {result_or_msg}.")
-                    self.show_error(self.tr("The EMMA fitting task failed, please check the logs for more details."))
-                    return
-            except _InactiveRpcError:
-                self.logger.warning("The remote grpc server is not available.")
 
         self.try_fit_button.setEnabled(False)
         self.edit_parameter_button.setEnabled(False)

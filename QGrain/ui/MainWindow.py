@@ -8,7 +8,6 @@ from qt_material import apply_stylesheet, list_themes
 
 from .. import QGRAIN_ROOT_PATH
 from ..models import Dataset
-from ..protos.client import QGrainClient
 from ..io import save_pca, save_statistics
 from ..utils import udm_to_ssu
 from . import EXTRA
@@ -36,11 +35,10 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__()
         self._dataset: Optional[Dataset] = None
         self._translator: Optional[QtCore.QTranslator] = None
-        self._client = QGrainClient()
         self.setWindowTitle("QGrain")
         self.ssu_setting_dialog = SSUSettings(self)
-        self.emma_setting_dialog = EMMASettings(parent=self, client=self._client)
-        self.udm_setting_dialog = UDMSettings(parent=self, client=self._client)
+        self.emma_setting_dialog = EMMASettings(parent=self)
+        self.udm_setting_dialog = UDMSettings(parent=self)
         self.parameter_editor = ParameterEditor(self)
         self.ssu_multicore_analyzer = SSUMulticoreAnalyzer(self)
         self.tab_widget = QtWidgets.QTabWidget(self)
@@ -56,9 +54,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tab_widget.addTab(self.clustering_analyzer, self.tr("Clustering"))
         self.ssu_analyzer = SSUAnalyzer(self.ssu_setting_dialog, self.parameter_editor, parent=self)
         self.tab_widget.addTab(self.ssu_analyzer, self.tr("SSU"))
-        self.emma_analyzer = EMMAAnalyzer(self.emma_setting_dialog, self.parameter_editor, client=self._client, parent=self)
+        self.emma_analyzer = EMMAAnalyzer(self.emma_setting_dialog, self.parameter_editor, parent=self)
         self.tab_widget.addTab(self.emma_analyzer, self.tr("EMMA"))
-        self.udm_analyzer = UDMAnalyzer(self.udm_setting_dialog, self.parameter_editor, client=self._client, parent=self)
+        self.udm_analyzer = UDMAnalyzer(self.udm_setting_dialog, self.parameter_editor, parent=self)
         self.tab_widget.addTab(self.udm_analyzer, self.tr("UDM"))
 
         # Open

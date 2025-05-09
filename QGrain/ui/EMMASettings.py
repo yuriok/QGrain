@@ -4,9 +4,7 @@ import logging
 from typing import *
 
 from PySide6 import QtCore, QtWidgets
-from grpc._channel import _InactiveRpcError
 
-from ..protos.client import QGrainClient
 
 built_in_losses = (
     "1-norm", "2-norm", "3-norm", "4-norm",
@@ -16,9 +14,8 @@ built_in_losses = (
 class EMMASettings(QtWidgets.QDialog):
     logger = logging.getLogger("QGrain.EMMASettings")
 
-    def __init__(self, client: QGrainClient = None, parent: QtWidgets.QWidget = None):
+    def __init__(self, parent: QtWidgets.QWidget = None):
         super().__init__(parent=parent)
-        self._client = client
         self.setWindowTitle(self.tr("EMMA Settings"))
         self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
         self.main_layout = QtWidgets.QGridLayout(self)
@@ -156,15 +153,6 @@ class EMMASettings(QtWidgets.QDialog):
         self.need_history_checkbox.setChecked(s["need_history"])
 
     def _update_device_list(self):
-        if self._client is not None and self._client.has_target:
-            try:
-                server_state = self._client.get_service_state()
-                available_devices = server_state["available_devices"]
-                self.device_combo_box.addItems(available_devices)
-                return
-            except _InactiveRpcError:
-                self.logger.warning("The remote grpc server is not available.")
-
         import torch
         available_devices = ["cpu"]
         if torch.cuda.is_available():

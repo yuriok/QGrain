@@ -1,6 +1,4 @@
 import sys
-import time
-from multiprocessing import Process
 
 import pytest
 import numpy as np
@@ -9,11 +7,9 @@ from qt_material import apply_stylesheet
 
 from QGrain.models import *
 from QGrain.generate import *
-from QGrain.protos.client import QGrainClient
 from QGrain.ssu import *
 from QGrain.emma import *
 from QGrain.udm import *
-from QGrain.protos.server import QGrainServicer
 from QGrain.charts import *
 from QGrain.ui.About import About
 from QGrain.ui.ClusteringAnalyzer import ClusteringAnalyzer
@@ -24,17 +20,10 @@ from QGrain.ui.EMMASettings import EMMASettings
 from QGrain.ui.ParameterEditor import ParameterEditor
 
 
-def start_server():
-    server = QGrainServicer()
-    server.serve()
-
-
 if QtWidgets.QApplication.instance() is None:
     app = QtWidgets.QApplication(sys.argv)
 else:
     app = QtWidgets.QApplication.instance()
-
-service_process = Process(target=start_server)
 
 
 def setup_module():
@@ -42,12 +31,9 @@ def setup_module():
     apply_stylesheet(app, theme="light_cyan.xml", invert_secondary=True)
     setup_matplotlib()
     os.makedirs("./.temp", exist_ok=True)
-    service_process.start()
-    time.sleep(5)
 
 
 def teardown_module():
-    service_process.terminate()
     app.closeAllWindows()
     app.exit()
 
@@ -206,11 +192,10 @@ class TestUI:
 
     def test_emma_analyzer(self):
         dataset = random_dataset(**SIMPLE_PRESET, n_samples=200)
-        client = QGrainClient()
-        settings = EMMASettings(client=client)
+        settings = EMMASettings()
         settings.show()
         editor = ParameterEditor()
-        main = EMMAAnalyzer(settings, editor, client=client)
+        main = EMMAAnalyzer(settings, editor)
         main.show()
         main.on_dataset_loaded(dataset)
         app.exec()
