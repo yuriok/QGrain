@@ -129,7 +129,7 @@ class NonparametricKernel(torch.nn.Module):
                 assert parameters.shape == (n_samples, n_members, n_classes)
                 self._params = torch.nn.Parameter(torch.from_numpy(parameters), requires_grad=True)
 
-    def forward(self, classes: torch.Tensor, interval: float):
+    def forward(self, classes: torch.Tensor, interval: torch.Tensor):
         assert classes.shape == (self.n_samples, self.n_members, self.n_classes)
         end_members = torch.softmax(self._params, dim=-1)
         return end_members
@@ -157,7 +157,7 @@ class NormalKernel(torch.nn.Module):
                 assert parameters.shape == (n_samples, self.N_PARAMETERS, n_members)
                 self._params = torch.nn.Parameter(torch.from_numpy(parameters), requires_grad=True)
 
-    def forward(self, classes: torch.Tensor, interval: float):
+    def forward(self, classes: torch.Tensor, interval: torch.Tensor):
         assert classes.shape == (self.n_samples, self.n_members, self.n_classes)
         locations = self._params[:, 0, :].unsqueeze(2).repeat(1, 1, self.n_classes)
         scales = (torch.relu(self._params[:, 1, :]) + _INFINITESIMAL).unsqueeze(2).repeat(1, 1, self.n_classes)
@@ -187,7 +187,7 @@ class SkewNormalKernel(torch.nn.Module):
                 assert parameters.shape == (n_samples, self.N_PARAMETERS, n_members)
                 self._params = torch.nn.Parameter(torch.from_numpy(parameters), requires_grad=True)
 
-    def forward(self, classes: torch.Tensor, interval: float):
+    def forward(self, classes: torch.Tensor, interval: torch.Tensor):
         assert classes.shape == (self.n_samples, self.n_members, self.n_classes)
         shapes = self._params[:, 0, :].unsqueeze(2).repeat(1, 1, self.n_classes)
         locations = self._params[:, 1, :].unsqueeze(2).repeat(1, 1, self.n_classes)
@@ -218,7 +218,7 @@ class WeibullKernel(torch.nn.Module):
                 assert parameters.shape == (n_samples, self.N_PARAMETERS, n_members)
                 self._params = torch.nn.Parameter(torch.from_numpy(parameters), requires_grad=True)
 
-    def forward(self, classes: torch.Tensor, interval: float):
+    def forward(self, classes: torch.Tensor, interval: torch.Tensor):
         assert classes.shape == (self.n_samples, self.n_members, self.n_classes)
         shapes = (torch.relu(self._params[:, 0, :]) + _INFINITESIMAL).unsqueeze(2).repeat(1, 1, self.n_classes)
         scales = (torch.relu(self._params[:, 1, :]) + _INFINITESIMAL).unsqueeze(2).repeat(1, 1, self.n_classes)
@@ -249,7 +249,7 @@ class GeneralWeibullKernel(torch.nn.Module):
                 assert parameters.shape == (n_samples, self.N_PARAMETERS, n_members)
                 self._params = torch.nn.Parameter(torch.from_numpy(parameters), requires_grad=True)
 
-    def forward(self, classes: torch.Tensor, interval: float):
+    def forward(self, classes: torch.Tensor, interval: torch.Tensor):
         assert classes.shape == (self.n_samples, self.n_members, self.n_classes)
         shapes = (torch.relu(self._params[:, 0, :]) + _INFINITESIMAL).unsqueeze(2).repeat(1, 1, self.n_classes)
         locations = self._params[:, 1, :].unsqueeze(2).repeat(1, 1, self.n_classes)

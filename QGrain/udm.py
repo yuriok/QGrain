@@ -23,8 +23,8 @@ class UDMModule(torch.nn.Module):
         self.n_components = n_components
         self.n_classes = len(classes_phi)
         self._interval_phi = np.abs((classes_phi[0] - classes_phi[-1]) / (classes_phi.shape[0] - 1))
-        self._classes_phi = torch.nn.Parameter(torch.from_numpy(classes_phi).repeat(n_samples, n_components, 1),
-                                               requires_grad=False)
+        self._interval_phi = torch.nn.Parameter(torch.Tensor([self._interval_phi]), requires_grad=False)
+        self._classes_phi = torch.nn.Parameter(torch.from_numpy(classes_phi).repeat(n_samples, n_components, 1), requires_grad=False)
         self.kernel_type = kernel_type
         if x0 is None:
             proportions_x0 = None
