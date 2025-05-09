@@ -259,9 +259,19 @@ class GeneralWeibullKernel(torch.nn.Module):
 
 
 class ProportionModule(torch.nn.Module):
-    def __init__(self, n_samples: int, n_members: int):
+    def __init__(self, n_samples: int, n_members: int, parameters: np.ndarray = None):
         super().__init__()
-        self._params = torch.nn.Parameter(torch.rand(n_samples, 1, n_members), requires_grad=True)
+        if parameters is None:
+            self._params = torch.nn.Parameter(torch.rand(n_samples, 1, n_members), requires_grad=True)
+        else:
+            if parameters.ndim == 2:
+                assert parameters.shape == (1, n_members)
+                self._params = torch.nn.Parameter(
+                    torch.from_numpy(np.expand_dims(parameters, 0).repeat(n_samples, 0)), requires_grad=True)
+            else:
+                assert parameters.ndim == 3
+                assert parameters.shape == (n_samples, 1, n_members)
+                self._params = torch.nn.Parameter(torch.from_numpy(parameters), requires_grad=True)
 
     def forward(self):
         # n_samples x 1 x n_members

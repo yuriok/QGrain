@@ -11,7 +11,7 @@ from QGrain.udm import try_udm
 class TestTryUDM:
     dataset = random_dataset(**SIMPLE_PRESET, n_samples=100)
     x0 = np.array([[mean for (mean, std) in component] for component in SIMPLE_PRESET["target"]]).T
-    x0 = x0[1:-1]
+    x0 = x0[1:]
 
     @classmethod
     def log_message(cls, result: UDMResult):

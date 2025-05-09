@@ -39,7 +39,12 @@ def udm_to_ssu(result: UDMResult, logger: logging.Logger = None,
         assert isinstance(logger, logging.Logger)
     distribution_type = DistributionType.__members__[result.kernel_type.name]
     weight = np.ones((1, result.n_components))
-    x0 = np.concatenate([result.x0, weight], axis=0).astype(np.float32)
+    if result.x0.ndim == 2:
+        weight = np.ones((1, result.n_components))
+        x0 = np.concatenate([result.x0, weight], axis=0).astype(np.float32)
+    elif result.x0.ndim == 3:
+        weight = np.ones((result.n_samples, 1, result.n_components))
+        x0 = np.concatenate([result.x0, weight], axis=1).astype(np.float32)
     time_spent = result.time_spent / result.n_samples
     ssu_results = []
     for i in range(result.n_samples):
@@ -48,8 +53,12 @@ def udm_to_ssu(result: UDMResult, logger: logging.Logger = None,
         else:
             history = [np.expand_dims(result.parameters[j][i], axis=0) for j in range(result.n_iterations)]
             parameters = np.concatenate(history, axis=0)
-        ssu_result = SSUResult(result.dataset[i], distribution_type, parameters, time_spent,
-                               x0=x0, settings=result.settings)
+        if result.x0.ndim == 2:
+            ssu_result = SSUResult(result.dataset[i], distribution_type, parameters, time_spent,
+                                   x0=x0, settings=result.settings)
+        elif result.x0.ndim == 3:
+            ssu_result = SSUResult(result.dataset[i], distribution_type, parameters, time_spent,
+                                   x0=x0[i], settings=result.settings)
         ssu_results.append(ssu_result)
         if progress_callback is not None:
             progress_callback(i / result.n_samples)

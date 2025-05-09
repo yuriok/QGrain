@@ -26,9 +26,18 @@ class UDMModule(torch.nn.Module):
         self._classes_phi = torch.nn.Parameter(torch.from_numpy(classes_phi).repeat(n_samples, n_components, 1),
                                                requires_grad=False)
         self.kernel_type = kernel_type
-        self.proportions = ProportionModule(n_samples, n_components)
-        self.components = get_kernel(kernel_type, n_samples, self.n_components, self.n_classes, x0)
-
+        if x0 is None:
+            proportions_x0 = None
+            components_x0 = None
+        elif x0.ndim == 2:
+            proportions_x0 = x0[np.newaxis, -1]
+            components_x0 = x0[:-1]
+        else:
+            assert x0.ndim == 3
+            proportions_x0 = x0[:, np.newaxis, -1]
+            components_x0 = x0[:, :-1]
+        self.proportions = ProportionModule(n_samples, n_components, proportions_x0)
+        self.components = get_kernel(kernel_type, n_samples, n_components, self.n_classes, components_x0)
     def forward(self) -> Tuple[torch.Tensor, torch.Tensor]:
         # n_samples x 1 x n_members
         proportions = self.proportions()
@@ -55,7 +64,6 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
     if x0 is not None:
         assert isinstance(x0, np.ndarray)
         assert x0.ndim == 2 or x0.ndim == 3
-        assert x0.shape[1] == n_components
         x0 = x0.astype(np.float32)
     available_devices = ["cpu"]
     if torch.cuda.is_available():
@@ -106,7 +114,6 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
 
     observation = torch.from_numpy(dataset.distributions.astype(np.float32)).to(device)
     udm = UDMModule(len(dataset), n_components, dataset.classes_phi.astype(np.float32), kernel_type, x0).to(device)
-    x0_parameters = [torch.detach_copy(p.data) for p in udm.parameters()]
     optimizer = torch.optim.Adam(udm.parameters(), lr=learning_rate, betas=betas)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=200, gamma=0.5)
     distribution_loss_series = []
@@ -205,9 +212,6 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
         # torch.nn.utils.clip_grad_norm_(udm.parameters(), 0.1)
         optimizer.step()
         scheduler.step()
-        for p, p0 in zip(udm.parameters(), x0_parameters):
-            key = torch.logical_or(torch.isnan(p.data), torch.logical_or(p.data < -400.0, p.data > 400.0))
-            p.data[key] = p0[key]
         if need_history:
             history.append(udm.all_parameters)
         if progress_callback is not None:

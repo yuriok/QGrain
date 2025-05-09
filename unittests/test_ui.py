@@ -166,7 +166,7 @@ class TestEMMAResultChart:
 class TestUDMResultChart:
     dataset = random_dataset(**SIMPLE_PRESET, n_samples=100)
     x0 = np.array([[mean for (mean, std) in component] for component in SIMPLE_PRESET["target"]]).T
-    x0 = x0[1:-1]
+    x0 = x0[1:]
     udm_result = try_udm(dataset, KernelType.Normal, 3, x0=x0, learning_rate=1e-1, pretrain_epochs=20, max_epochs=200)
 
     def test_plot(self):
