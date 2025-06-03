@@ -6,7 +6,8 @@ class DistributionType(Enum):
     Normal = 1
     SkewNormal = 2
     Weibull = 3
-    GeneralWeibull = 4
+    SymmetricWeibull = 4
+    GeneralWeibull = 5
 
 
 @unique
@@ -15,7 +16,8 @@ class KernelType(Enum):
     Normal = 1
     SkewNormal = 2
     Weibull = 3
-    GeneralWeibull = 4
+    SymmetricWeibull = 4
+    GeneralWeibull = 5
 
 
 from .dataset import *

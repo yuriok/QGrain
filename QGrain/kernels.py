@@ -10,7 +10,7 @@ from torch import Tensor
 from .models import KernelType
 
 _INFINITESIMAL = 1e-8
-
+_WEIBULL_SHAPE_WHEN_SKEWNESS_IS_ZERO = 3.6023494257189443
 
 # P-Norm
 def p_norm_torch(values: Tensor, targets: Tensor, p=2) -> Tensor:
@@ -226,6 +226,37 @@ class WeibullKernel(torch.nn.Module):
         return end_members
 
 
+class SymmetricWeibullKernel(torch.nn.Module):
+    N_PARAMETERS = 2
+
+    def __init__(self, n_samples: int, n_members: int, n_classes: int, parameters: np.ndarray = None):
+        super().__init__()
+        self.n_samples = n_samples
+        self.n_members = n_members
+        self.n_classes = n_classes
+        if parameters is None:
+            self._params = torch.nn.Parameter(
+                torch.randn(n_samples, self.N_PARAMETERS, n_members) + 5.0, requires_grad=True)
+        else:
+            assert isinstance(parameters, np.ndarray)
+            if parameters.ndim == 2:
+                assert parameters.shape == (self.N_PARAMETERS, n_members)
+                self._params = torch.nn.Parameter(
+                    torch.from_numpy(np.expand_dims(parameters, 0).repeat(n_samples, 0)), requires_grad=True)
+            else:
+                assert parameters.ndim == 3
+                assert parameters.shape == (n_samples, self.N_PARAMETERS, n_members)
+                self._params = torch.nn.Parameter(torch.from_numpy(parameters), requires_grad=True)
+        self._shapes = torch.nn.Parameter(torch.ones(n_samples, n_members, n_classes) * _WEIBULL_SHAPE_WHEN_SKEWNESS_IS_ZERO, requires_grad=False)
+
+    def forward(self, classes: torch.Tensor, interval: torch.Tensor):
+        assert classes.shape == (self.n_samples, self.n_members, self.n_classes)
+        locations = self._params[:, 0, :].unsqueeze(2).repeat(1, 1, self.n_classes)
+        scales = (torch.relu(self._params[:, 1, :]) + _INFINITESIMAL).unsqueeze(2).repeat(1, 1, self.n_classes)
+        end_members = general_weibull_pdf(classes, self._shapes, locations, scales) * interval
+        return end_members
+        
+
 class GeneralWeibullKernel(torch.nn.Module):
     N_PARAMETERS = 3
 
@@ -288,6 +319,8 @@ def get_kernel(kernel_type: KernelType, n_samples: int, n_members: int, n_classe
         return SkewNormalKernel(n_samples, n_members, n_classes, parameters)
     elif kernel_type == KernelType.Weibull:
         return NormalKernel(n_samples, n_members, n_classes, parameters)
+    elif kernel_type == KernelType.SymmetricWeibull:
+        return SymmetricWeibullKernel(n_samples, n_members, n_classes, parameters)
     elif kernel_type == KernelType.GeneralWeibull:
         return GeneralWeibullKernel(n_samples, n_members, n_classes, parameters)
     else:

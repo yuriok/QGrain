@@ -10,6 +10,7 @@ from scipy.stats import norm, skewnorm, weibull_min
 from .models import DistributionType
 
 _INFINITESIMAL = 1e-8
+_WEIBULL_SHAPE_WHEN_SKEWNESS_IS_ZERO = 3.6023494257189443
 
 
 def relu(x):
@@ -101,6 +102,35 @@ class Weibull:
         defaults[1] = np.random.random((n_components,)) * 0.1 + 3.0
         defaults[2] = np.random.random((n_components,)) * 0.1 + 2.0
         return defaults
+    
+    
+class SymmetricWeibull:
+    NAME = "Symmetric Weibull"
+    N_PARAMETERS = 2
+    PARAMETER_NAMES = ("Location", "Scale")
+    PARAMETER_BOUNDS = ((None, None),
+                        (_INFINITESIMAL, None))
+
+    @staticmethod
+    def interpret(parameters: np.ndarray, classes: np.ndarray, interval: float):
+        n_samples, n_components, n_classes = classes.shape
+        assert parameters.ndim == 3
+        assert parameters.shape == (n_samples, SymmetricWeibull.N_PARAMETERS + 1, n_components)
+        shapes = np.ones_like(classes) * _WEIBULL_SHAPE_WHEN_SKEWNESS_IS_ZERO
+        locations = np.expand_dims(parameters[:, 0, :], 2).repeat(n_classes, 2)
+        scales = np.expand_dims(relu(parameters[:, 1, :]), 2).repeat(n_classes, 2)
+        proportions = np.expand_dims(softmax(parameters[:, 2, :], axis=1), 1)
+        components = weibull_min.pdf(classes, shapes, loc=locations, scale=scales) * interval
+        m, v, s, k = weibull_min.stats(shapes[:, :, 0], loc=locations[:, :, 0], scale=scales[:, :, 0], moments="mvsk")
+        return proportions, components, (m, np.sqrt(v), s, k)
+
+    @staticmethod
+    def get_defaults(n_components: int):
+        defaults = np.zeros((SymmetricWeibull.N_PARAMETERS + 1, n_components))
+        defaults[0] = np.random.random((n_components,)) * 2.0 + 5.0
+        defaults[1] = np.random.random((n_components,)) * 0.1 + 3.0
+        defaults[2] = np.random.random((n_components,)) * 0.1 + 2.0
+        return defaults
 
 
 class GeneralWeibull:
@@ -141,6 +171,8 @@ def get_distribution(distribution_type: DistributionType):
         return SkewNormal
     elif distribution_type == DistributionType.Weibull:
         return Weibull
+    elif distribution_type == DistributionType.SymmetricWeibull:
+        return SymmetricWeibull
     elif distribution_type == DistributionType.GeneralWeibull:
         return GeneralWeibull
     else:
@@ -154,6 +186,9 @@ def _get_means(distribution_type: DistributionType, parameters: np.ndarray) -> n
         m = skewnorm.stats(parameters[:, 0, :], loc=parameters[:, 1, :], scale=parameters[:, 2, :], moments="m")
     elif distribution_type == DistributionType.Weibull:
         m = weibull_min.stats(parameters[:, 0, :], scale=parameters[:, 1, :], moments="m")
+    elif distribution_type == DistributionType.SymmetricWeibull:
+        shapes = np.ones_like(parameters[:, 0, :]) * _WEIBULL_SHAPE_WHEN_SKEWNESS_IS_ZERO
+        m = weibull_min.stats(shapes, loc=parameters[:, 0, :], scale=parameters[:, 1, :], moments="m")
     elif distribution_type == DistributionType.GeneralWeibull:
         m = weibull_min.stats(parameters[:, 0, :], loc=parameters[:, 1, :], scale=parameters[:, 2, :], moments="m")
     else:

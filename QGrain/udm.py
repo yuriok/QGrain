@@ -1,4 +1,4 @@
-__all__ = ["try_udm"]
+__all__ = ["try_udm", "try_ssu_like_udm"]
 
 import logging
 import time
@@ -38,6 +38,7 @@ class UDMModule(torch.nn.Module):
             components_x0 = x0[:, :-1]
         self.proportions = ProportionModule(n_samples, n_components, proportions_x0)
         self.components = get_kernel(kernel_type, n_samples, n_components, self.n_classes, components_x0)
+    
     def forward(self) -> Tuple[torch.Tensor, torch.Tensor]:
         # n_samples x 1 x n_members
         proportions = self.proportions()
@@ -52,10 +53,117 @@ class UDMModule(torch.nn.Module):
             all_parameters = all_parameters.detach().cpu().numpy()
         return all_parameters
 
+def try_ssu_like_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,n_components: int,
+            x0: np.ndarray = None, device="cpu", min_epochs=200, max_epochs=2000,
+            precision: Union[int, float] = 6, learning_rate=5e-3, betas=(0.5, 0.999), need_history=True,
+            logger: logging.Logger = None, progress_callback: Callable[[float], None] = None) -> UDMResult:
+    assert isinstance(dataset, (ArtificialDataset, Dataset))
+    assert isinstance(kernel_type, KernelType)
+    assert isinstance(n_components, int)
+    if x0 is not None:
+        assert isinstance(x0, np.ndarray)
+        assert x0.ndim == 2 or x0.ndim == 3
+        x0 = x0.astype(np.float32)
+    available_devices = ["cpu"]
+    if torch.cuda.is_available():
+        available_devices.append("cuda")
+    available_devices.extend([f"cuda:{i}" for i in range(torch.cuda.device_count())])
+    if "cuda:0" in available_devices:
+        available_devices.remove("cuda:0")
+    assert device in available_devices
+    assert isinstance(min_epochs, int)
+    assert isinstance(max_epochs, int)
+    assert isinstance(precision, (int, float))
+    assert isinstance(learning_rate, float)
+    assert isinstance(betas, tuple)
+    assert len(betas) == 2
+    beta1, beta2 = betas
+    assert isinstance(beta1, float)
+    assert isinstance(beta2, float)
+    assert min_epochs > 0
+    assert max_epochs > 0
+    assert 1.0 < precision < 100.0
+    assert learning_rate > 0.0
+    assert 0.0 < beta1 < 1.0
+    assert 0.0 < beta2 < 1.0
+    if logger is None:
+        logger = logging.getLogger("QGrain")
+    else:
+        assert isinstance(logger, logging.Logger)
+    
+    start_text = f"""Performing the SSU-like UDM algorithm on the dataset ({dataset.name}).
+    Kernel type: {kernel_type.name}
+    Number of end members: {n_components}
+    x0: {x0 if x0 is None else x0.tolist()}
+    Device: {device}
+    Pretrain epochs: {0}
+    Minimum epochs: {min_epochs}
+    Maximum epochs: {max_epochs}
+    Precision decimals (10^-x): {precision}
+    Learning rate: {learning_rate}
+    Betas of weight decay: {betas}
+    Consider distance: {False}
+    Constraint level: {-np.inf}
+    Need history: {need_history}"""
+    logger.debug(start_text)
+    
+    observation = torch.from_numpy(dataset.distributions.astype(np.float32)).to(device)
+    udm = UDMModule(len(dataset), n_components, dataset.classes_phi.astype(np.float32), kernel_type, x0).to(device)
+    optimizer = torch.optim.Adam(udm.parameters(), lr=learning_rate, betas=betas)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=200, gamma=0.9)
+    loss_fn = torch.nn.MSELoss(reduction="sum")
+    loss_series = []
+    history: List[np.ndarray] = [udm.all_parameters]
+    start_time = time.time()
+
+    def train_step(model, optimizer, loss_fn, observation):
+        proportions, components = model()
+        prediction = (proportions @ components).squeeze(1)
+        loss = loss_fn(prediction, observation)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        scheduler.step()
+        return loss.item()
+
+    for epoch in range(max_epochs):
+        # train
+        loss = train_step(udm, optimizer, loss_fn, observation)
+        loss_series.append(loss)
+        if need_history:
+            history.append(udm.all_parameters)
+        if progress_callback is not None:
+            progress_callback((epoch + 1) / max_epochs)
+        if epoch > min_epochs:
+            delta_loss = abs(np.median(loss_series[-100:-80]) - np.median(loss_series[-20:]))
+            if delta_loss < 10 ** (-precision):
+                break
+
+    # algorithm finished, preparing the result
+    if device[:4] == "cuda":
+        torch.cuda.synchronize()
+    time_spent = time.time() - start_time
+    settings = dict(device=device, pretrain_epochs=0, min_epochs=min_epochs,
+                    max_epochs=max_epochs, precision=precision, learning_rate=learning_rate, betas=betas,
+                    consider_distance=False, constraint_level=-9.9, need_history=need_history)
+    loss_series = np.array(loss_series)
+    loss_series = {"total": loss_series,
+                   "distribution": loss_series,
+                   "component": np.zeros_like(loss_series)}
+    if need_history:
+        parameters = np.concatenate([np.expand_dims(p, axis=0) for p in history], axis=0)
+    else:
+        parameters = np.expand_dims(udm.all_parameters, axis=0)
+    
+    result = UDMResult(dataset, kernel_type, n_components, parameters, time_spent, x0, settings, loss_series)
+    if progress_callback is not None:
+        progress_callback(1.0)
+    return result
+
 
 def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType, n_components: int,
             x0: np.ndarray = None, device="cpu", pretrain_epochs=200, min_epochs=200, max_epochs=2000,
-            precision: Union[int, float] = 6, learning_rate=5e-3, betas=(0.8, 0.5),
+            precision: Union[int, float] = 6, learning_rate=5e-3, betas=(0.5, 0.999),
             consider_distance=False, constraint_level: Union[int, float] = 2.0, need_history=True,
             logger: logging.Logger = None, progress_callback: Callable[[float], None] = None) -> UDMResult:
     assert isinstance(dataset, (ArtificialDataset, Dataset))
