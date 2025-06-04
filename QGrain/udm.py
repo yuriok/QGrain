@@ -53,7 +53,7 @@ class UDMModule(torch.nn.Module):
             all_parameters = all_parameters.detach().cpu().numpy()
         return all_parameters
 
-def try_ssu_like_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,n_components: int,
+def try_ssu_like_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType, n_components: int,
             x0: np.ndarray = None, device="cpu", min_epochs=200, max_epochs=2000,
             precision: Union[int, float] = 6, learning_rate=5e-3, betas=(0.5, 0.999), need_history=True,
             logger: logging.Logger = None, progress_callback: Callable[[float], None] = None) -> UDMResult:
@@ -140,8 +140,19 @@ def try_ssu_like_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: Ke
                 break
 
     # algorithm finished, preparing the result
+    if need_history:
+        parameters = np.concatenate([np.expand_dims(p, axis=0) for p in history], axis=0)
+    else:
+        parameters = np.expand_dims(udm.all_parameters, axis=0)
+        
+    del udm
+    del observation
+    del optimizer
+    del scheduler
     if device[:4] == "cuda":
+        torch.cuda.empty_cache()
         torch.cuda.synchronize()
+    
     time_spent = time.time() - start_time
     settings = dict(device=device, pretrain_epochs=0, min_epochs=min_epochs,
                     max_epochs=max_epochs, precision=precision, learning_rate=learning_rate, betas=betas,
@@ -150,11 +161,6 @@ def try_ssu_like_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: Ke
     loss_series = {"total": loss_series,
                    "distribution": loss_series,
                    "component": np.zeros_like(loss_series)}
-    if need_history:
-        parameters = np.concatenate([np.expand_dims(p, axis=0) for p in history], axis=0)
-    else:
-        parameters = np.expand_dims(udm.all_parameters, axis=0)
-    
     result = UDMResult(dataset, kernel_type, n_components, parameters, time_spent, x0, settings, loss_series)
     if progress_callback is not None:
         progress_callback(1.0)
@@ -162,8 +168,8 @@ def try_ssu_like_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: Ke
 
 
 def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType, n_components: int,
-            x0: np.ndarray = None, device="cpu", pretrain_epochs=200, min_epochs=200, max_epochs=2000,
-            precision: Union[int, float] = 6, learning_rate=5e-3, betas=(0.5, 0.999),
+            x0: np.ndarray = None, device="cpu", pretrain_epochs=0, min_epochs=200, max_epochs=2000,
+            precision: Union[int, float] = 10, learning_rate=5e-3, betas=(0.5, 0.999),
             consider_distance=False, constraint_level: Union[int, float] = 2.0, need_history=True,
             logger: logging.Logger = None, progress_callback: Callable[[float], None] = None) -> UDMResult:
     assert isinstance(dataset, (ArtificialDataset, Dataset))
@@ -223,7 +229,7 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
     observation = torch.from_numpy(dataset.distributions.astype(np.float32)).to(device)
     udm = UDMModule(len(dataset), n_components, dataset.classes_phi.astype(np.float32), kernel_type, x0).to(device)
     optimizer = torch.optim.Adam(udm.parameters(), lr=learning_rate, betas=betas)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=200, gamma=0.5)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=200, gamma=0.9)
     distribution_loss_series = []
     component_loss_series = []
     history: List[np.ndarray] = [udm.all_parameters]
@@ -330,8 +336,19 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
                 break
 
     # algorithm finished, preparing the result
+    if need_history:
+        parameters = np.concatenate([np.expand_dims(p, axis=0) for p in history], axis=0)
+    else:
+        parameters = np.expand_dims(udm.all_parameters, axis=0)
+        
+    del udm
+    del observation
+    del optimizer
+    del scheduler
     if device[:4] == "cuda":
+        torch.cuda.empty_cache()
         torch.cuda.synchronize()
+    
     time_spent = time.time() - start_time
     settings = dict(device=device, pretrain_epochs=pretrain_epochs, min_epochs=min_epochs,
                     max_epochs=max_epochs, precision=precision, learning_rate=learning_rate, betas=betas,
@@ -341,10 +358,6 @@ def try_udm(dataset: Union[ArtificialDataset, Dataset], kernel_type: KernelType,
     loss_series = {"total": distribution_loss_series + component_loss_series,
                    "distribution": distribution_loss_series,
                    "component": component_loss_series}
-    if need_history:
-        parameters = np.concatenate([np.expand_dims(p, axis=0) for p in history], axis=0)
-    else:
-        parameters = np.expand_dims(udm.all_parameters, axis=0)
     result = UDMResult(dataset, kernel_type, n_components, parameters, time_spent, x0, settings, loss_series)
     if progress_callback is not None:
         progress_callback(1.0)
