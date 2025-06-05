@@ -40,7 +40,7 @@ def _error_text(array: ndarray, index: int):
     return error_text
 
 
-def validate_classes(classes: Sequence[float]) -> Tuple[bool, Union[ndarray, str]]:
+def validate_classes(classes: Sequence[float], even_spaced=True, mae_threshold=0.05) -> Tuple[bool, Union[ndarray, str]]:
     """
     Check if the series of grain size classes is valid.
 
@@ -69,15 +69,16 @@ def validate_classes(classes: Sequence[float]) -> Tuple[bool, Union[ndarray, str
     if not incremental:
         error_text = _error_text(array, index)
         return False, f"The series of grain size classes is not incremental.\n{error_text}"
-    classes_phi = -np.log2(array / 1000)
-    mean_interval = interval_phi(classes_phi)
-    intervals = classes_phi[:-1] - classes_phi[1:]
-    absolute_errors = np.abs(intervals - mean_interval)
-    index = np.argmax(absolute_errors)
-    if absolute_errors[index] > 0.05:
-        error_text = _error_text(array, index)
-        return False, (f"The grain size classes are not evenly spaced on a log scale. "
-                       f"The max absolute error of intervals is {absolute_errors[index]} phi.\n{error_text}")
+    if even_spaced:
+        classes_phi = -np.log2(array / 1000)
+        mean_interval = interval_phi(classes_phi)
+        intervals = classes_phi[:-1] - classes_phi[1:]
+        absolute_errors = np.abs(intervals - mean_interval)
+        index = np.argmax(absolute_errors)
+        if absolute_errors[index] > mae_threshold:
+            error_text = _error_text(array, index)
+            return False, (f"The grain size classes are not evenly spaced on a log scale. "
+                        f"The max absolute error of intervals is {absolute_errors[index]} phi.\n{error_text}")
     return True, array
 
 

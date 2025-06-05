@@ -103,11 +103,22 @@ class TestValidateClasses:
         valid, _ = validate_classes(data)
         assert valid
 
+    def test_quasi_evenly_spaced_but_with_strict_mae(self):
+        data = np.round(self.valid_data, 3)
+        valid, msg = validate_classes(data, mae_threshold=0.01)
+        print("\n", "While it's quasi-evenly spaced but with strict MAE threshold, the error messages:", msg, end="\n")
+        assert not valid
+
     def test_not_evenly_spaced(self):
         data = np.linspace(1, 100, 101)
         valid, msg = validate_classes(data)
         print("\n", "While it's not evenly spaced, the error messages:", msg, end="\n")
         assert not valid
+
+    def test_not_evenly_spaced_but_with_flag(self):
+        data = np.linspace(1, 100, 101)
+        valid, _ = validate_classes(data, even_spaced=False)
+        assert valid
 
 
 class TestValidateDistributions:
@@ -249,4 +260,4 @@ class TestGrainSizeDataset:
 
 
 if __name__ == "__main__":
-    pytest.main(["-s"])
+    pytest.main(["-vs", "./unittests/test_dataset.py"])
