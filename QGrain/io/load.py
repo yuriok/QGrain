@@ -11,28 +11,24 @@ from typing import *
 from ..models.dataset import Dataset, validate_classes, validate_distributions
 
 
-def check_layout(class_row: int, name_col: int, start_row: int, start_col: int):
-    assert isinstance(class_row, int)
-    assert isinstance(name_col, int)
-    assert isinstance(start_row, int)
-    assert isinstance(start_col, int)
-    if class_row < 0 or \
-            name_col < 0 or \
-            start_row < 0 or \
-            start_col < 0:
-        raise ValueError("The index of row or column must be non-negative.")
-    if class_row >= start_row:
-        raise ValueError("The start row index of distributions must be greater than the row index of classes.")
-    if name_col >= start_col:
-        raise ValueError("The start column index of distributions must be greater "
-                         "than the column index of sample names.")
-
+CLASS_ROW_INDEX = 0
+DISTRIBUTION_START_ROW_INDEX = 1
+NAME_COL_INDEX = 0
+SPACE_POSITION_COL_INDEXES = (1, 2, 3)
 
 @unique
 class ReadFileType(Enum):
     XLS = 0
     XLSX = 1
     CSV = 2
+
+
+@unique
+class ClassValueStyle(Enum):
+    Midpoint = 0
+    LeftBoundary = 1
+    RightBoundary = 2
+    EntireBoundary = 3
 
 
 def get_file_type(filename: str):
@@ -88,16 +84,12 @@ def _get_raw_table(
     return raw_table
 
 
-def load_dataset(filename: str,
-                 dataset_name: str = None,
-                 sheet_index: int = 0,
-                 class_row: int = 0,
-                 name_col: int = 0,
-                 start_row: int = 1,
-                 start_col: int = 1,
-                 skip_invalid_rows=True,
-                 progress_callback: Callable[[float], None] = None,
-                 logger: logging.Logger = None) -> Union[Dataset, None]:
+def load_dataset(
+        filename: str, dataset_name: str = None, sheet_index: int = 0,
+        class_value_style: ClassValueStyle = ClassValueStyle.RightBoundary,
+        contain_positions = False, skip_invalid_rows=True,
+        progress_callback: Callable[[float], None] = None,
+        logger: logging.Logger = None) -> Union[Dataset, None]:
     """
     Try to load the grain size dataset from a file.
 
@@ -113,10 +105,8 @@ def load_dataset(filename: str,
     :param dataset_name: The name of this dataset. If not indicate it, it will use the filename.
     :param sheet_index: If it is an Excel file (`*.xls` or `*.xlsx`), please indicate the sheet index,
         otherwise it will use the first sheet.
-    :param class_row: The row index of the grain size classes.
-    :param name_col: The column index of the sample names.
-    :param start_row: The start row index of the grain size distributions.
-    :param start_col: The start column index of the grain size distributions.
+    :param class_value_style: It controls the behavior of processing the values in the class row.
+    :param contain_positions: If `True`, it will use column 2 to 4 to represent the spatial position of the samples.
     :param skip_invalid_rows: If `True`, it will skip the invalid rows, rather than break up.
     :param progress_callback: The callable object which will be called at each step to report the progress.
     :param logger: The logger which will be used to log the information of loading.
@@ -131,31 +121,41 @@ def load_dataset(filename: str,
         assert len(dataset_name) != 0
     assert isinstance(sheet_index, int)
     assert sheet_index >= 0
-    check_layout(class_row, name_col, start_row, start_col)
+    assert isinstance(class_value_style, ClassValueStyle)
+    assert isinstance(contain_positions, bool)
+    assert isinstance(skip_invalid_rows, bool)
+    assert isinstance(progress_callback, Callable) or progress_callback is None
+    assert isinstance(logger, logging.Logger) or logger is None
+
     if logger is None:
         logger = logging.getLogger("QGrain")
-    else:
-        assert isinstance(logger, logging.Logger)
-
     file_type = get_file_type(filename)
+    if contain_positions:
+        DISTRIBUTION_START_COL = max(SPACE_POSITION_COL_INDEXES) + 1
+    else:
+        DISTRIBUTION_START_COL = min(SPACE_POSITION_COL_INDEXES)
     try:
         raw_table = _get_raw_table(
             filename, file_type, sheet_index,
             progress_callback=None if progress_callback is None else lambda p: progress_callback(p * 0.5))
-        class_values = raw_table[class_row][start_col:]
-        valid, array_or_msg = validate_classes(class_values)
+        class_values = raw_table[CLASS_ROW_INDEX][DISTRIBUTION_START_COL:]
+        even_spaced = class_value_style != ClassValueStyle.EntireBoundary
+        valid, array_or_msg = validate_classes(class_values, even_spaced=even_spaced)
         if valid:
-            classes = array_or_msg
-            logger.debug(f"Grain size classes in μm: [{','.join([f'{x: 0.4f}' for x in classes])}].")
+            class_values = array_or_msg
+            class_values_phi = -np.log2(class_values / 1000.0)
+            average_class_interval_phi = np.mean(np.diff(class_values_phi))
+            logger.debug(f"Grain size classes in microns: [{','.join([f'{x: 0.4f}' for x in class_values])}].")
         else:
             logger.error(f"The assigned series of grain size classes is invalid. {array_or_msg}")
             return None
         sample_names = []
+        positions = []
         distributions = []
-        for row, row_values in enumerate(raw_table[start_row:], start_row + 1):
+        for row, row_values in enumerate(raw_table[DISTRIBUTION_START_ROW_INDEX:], DISTRIBUTION_START_ROW_INDEX):
             # check if it's an empty row, i.e. the values all are empty string
             is_empty_row = True
-            for frequency in row_values[start_col:]:
+            for frequency in row_values[DISTRIBUTION_START_COL:]:
                 if frequency is not None and frequency != "":
                     is_empty_row = False
                     break
@@ -164,7 +164,7 @@ def load_dataset(filename: str,
                 logger.warning(f"Row {row} is empty, skip to next row.")
                 continue
 
-            sample_name = row_values[name_col]
+            sample_name = row_values[NAME_COL_INDEX]
             if sample_name is None:
                 sample_name = "NONE"
                 logger.warning(f"The sample name at row {row} is `None`, use 'NONE' instead.")
@@ -175,8 +175,18 @@ def load_dataset(filename: str,
                 sample_name = "EMPTY"
                 logger.warning(f"The sample name at row {row} is empty, use `EMPTY` to covert it.")
 
+            if contain_positions:
+                try:
+                    position = [float(row_values[i]) for i in SPACE_POSITION_COL_INDEXES]
+                except ValueError as e:
+                    logger.error(f"The space position at row {row} contains invalid values, please check. {e}")
+                if skip_invalid_rows:
+                    continue
+                else:
+                    return None
+
             try:
-                distribution = np.array(row_values[start_col:], dtype=np.float32)
+                distribution = np.array(row_values[DISTRIBUTION_START_COL:], dtype=np.float32)
             except ValueError as e:
                 logger.error(f"Can not convert the frequencies at row {row} to a numerical array, "
                              f"it may contains invalid values (e.g. text or empty cell). {e}")
@@ -185,6 +195,8 @@ def load_dataset(filename: str,
                 else:
                     return None
             sample_names.append(sample_name)
+            if contain_positions:
+                positions.append(position)
             distributions.append(distribution)
             # logger.debug(f"The validation of sample [{sample_name}] at row [{current_row}] is passed.")
             if progress_callback is not None:
@@ -192,15 +204,34 @@ def load_dataset(filename: str,
                 progress_callback(progress)
 
         valid, array_or_msg = validate_distributions(distributions)
-        if valid:
-            distributions = array_or_msg
-            dataset = Dataset(dataset_name, sample_names, classes, distributions)
-            if progress_callback is not None:
-                progress_callback(1.0)
-            logger.info("This dataset has been loaded successfully.")
-            return dataset
-        else:
+        if not valid:
             logger.error(f"There is at least one grain size distribution is invalid. {array_or_msg}")
+            return None
+        distributions = array_or_msg
+
+        boundaries = np.zeros(len(class_values) + 1)
+        if class_value_style == ClassValueStyle.Midpoint:
+            boundaries[:-1] = class_values_phi - average_class_interval_phi / 2
+            boundaries[-1] = boundaries[-2] + average_class_interval_phi
+        elif class_value_style == ClassValueStyle.LeftBoundary:
+            boundaries[:-1] = class_values_phi
+            boundaries[-1] = boundaries[-2] + average_class_interval_phi
+        elif class_value_style == ClassValueStyle.RightBoundary:
+            boundaries[1:] = class_values_phi
+            boundaries[0] = boundaries[1] - average_class_interval_phi
+        elif class_value_style == ClassValueStyle.EntireBoundary:
+            boundaries = class_values_phi
+        else:
+            raise NotImplementedError(class_value_style)
+        assert len(boundaries) == distributions.shape[1]
+
+        dataset = Dataset(dataset_name, sample_names, boundaries, distributions,
+                          positions=positions if contain_positions else None)
+        if progress_callback is not None:
+            progress_callback(1.0)
+        logger.info("This dataset has been loaded successfully.")
+        return dataset
+
     except IOError as e:
         logger.error(f"Can not open this file. {e}")
         return None

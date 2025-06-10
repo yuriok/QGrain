@@ -40,11 +40,14 @@ def _error_text(array: ndarray, index: int):
     return error_text
 
 
-def validate_classes(classes: Sequence[float], even_spaced=True, mae_threshold=0.05) -> Tuple[bool, Union[ndarray, str]]:
+def validate_classes(classes: Sequence[float], even_spaced=True, error_threshold=0.05) -> \
+        Tuple[bool, Union[ndarray, str]]:
     """
     Check if the series of grain size classes is valid.
 
     :param classes: The grain size classes.
+    :param even_spaced: Check if the grain size classes are evenly spaced on a log scale.
+    :param error_threshold: The threshold of the absolute error of the intervals of the grain size classes.
     :returns:
         is_valid: If the series of classes is valid.
         array_or_msg: If it is valid, return a new numpy array, else return the error message.
@@ -70,23 +73,26 @@ def validate_classes(classes: Sequence[float], even_spaced=True, mae_threshold=0
         error_text = _error_text(array, index)
         return False, f"The series of grain size classes is not incremental.\n{error_text}"
     if even_spaced:
-        classes_phi = -np.log2(array / 1000)
+        classes_phi = -np.log2(array / 1000.0)
         mean_interval = interval_phi(classes_phi)
-        intervals = classes_phi[:-1] - classes_phi[1:]
+        intervals = np.abs(np.diff(classes_phi))
         absolute_errors = np.abs(intervals - mean_interval)
         index = np.argmax(absolute_errors)
-        if absolute_errors[index] > mae_threshold:
+        if absolute_errors[index] > error_threshold:
             error_text = _error_text(array, index)
             return False, (f"The grain size classes are not evenly spaced on a log scale. "
                         f"The max absolute error of intervals is {absolute_errors[index]} phi.\n{error_text}")
     return True, array
 
 
-def validate_distributions(distributions: Sequence[Sequence[float]]) -> Tuple[bool, Union[ndarray, str]]:
+def validate_distributions(distributions: Sequence[Sequence[float]], check_sum=True, error_threshold=0.05) -> \
+        Tuple[bool, Union[ndarray, str]]:
     """
     Check if the data of grain size distributions is valid.
 
     :param distributions: The grain size distributions.
+    :param check_sum: Check if the sum of distributions is equal to 1 or 100.
+    :param error_threshold: The threshold of the absolute error of the sum of distributions.
     :returns:
         is_valid: If the data is valid.
         array_or_msg: If it is valid, return a new numpy array, else return the error message.
@@ -110,13 +116,17 @@ def validate_distributions(distributions: Sequence[Sequence[float]]) -> Tuple[bo
         return False, (f"There is at least one NaN value in the passed distributions. "
                        f"See the cell(s): {', '.join(cells)}")
     rows = np.arange(n_samples)
-    summed = np.sum(array, axis=1)
-    valid = (np.greater(summed, 0.95) & np.less(summed, 1.05)) | (np.greater(summed, 95) & np.less(summed, 105))
-    invalid_rows = rows[np.logical_not(valid)]
-    if len(invalid_rows) > 0:
-        return False, (f"There is at least one distribution which has the sum not equal to 1 or 100. "
-                       f"Check the following row(s): {', '.join(invalid_rows.astype(str))}.")
-    array = array / np.sum(array, axis=1, keepdims=True)
+    if check_sum:
+        summed = np.sum(array, axis=1)
+        # if sum <= 50.0, target_sum = 1.0, else target_sum = 100.0
+        target_sum = np.where(summed <= 50.0, 1.0, 100.0)
+        absolute_errors = np.abs(summed - target_sum) / target_sum
+        valid = absolute_errors < error_threshold
+        invalid_rows = rows[np.logical_not(valid)]
+        if len(invalid_rows) > 0:
+            return False, (f"There is at least one distribution which has the sum not equal to 1 or 100. "
+                        f"Check the following row(s): {', '.join(invalid_rows.astype(str))}.")
+        array = array / np.sum(array, axis=1, keepdims=True)
     return True, array
 
 
@@ -179,16 +189,18 @@ class Dataset:
     * Get the number of samples, `len(dataset)`.
     """
     def __init__(self, name: str, sample_names: Sequence[str],
-                 classes: Sequence[Union[int, float]],
-                 distributions: Sequence[Sequence[Union[int, float]]]):
+                 boundaries: Sequence[Union[int, float]],
+                 distributions: Sequence[Sequence[Union[int, float]]],
+                 positions: Sequence[Sequence[Union[int, float]]] = None):
         """
         Construct an instance of the `Dataset` class.
 
         :param name: The name of this dataset.
         :param sample_names: The names of samples in this dataset.
-        :param classes: The grain size classes in microns.
+        :param boundaries: The boundaries of grain size classes in microns.
         :param distributions: The grain size distributions of all samples.
             Note, the sum of frequencies of each sample should be equal to 1.
+        :param positions: The spatial positions of samples in this dataset.
         :return: An instance of the `Dataset` class.
         :raises TypeError: If the name of dataset or any sample is not a string.
         :raises ValueError: If the name of dataset or any sample is empty.
@@ -206,17 +218,27 @@ class Dataset:
                 raise TypeError(f"The name of sample must be a string. This error raised at the index: {i}.")
             if len(sample_name) == 0:
                 raise ValueError(f"The name of sample can not be empty. This error raised at the index: {i}.")
-        valid, array_or_msg = validate_classes(classes)
+        # validate the boundaries, the boundaries can not be evenly spaced
+        valid, array_or_msg = validate_classes(boundaries, even_spaced=False)
         if not valid:
             raise ValueError(array_or_msg)
-        self._classes = array_or_msg
+        self._boundaries = array_or_msg
         valid, array_or_msg = validate_distributions(distributions)
         if not valid:
             raise ValueError(array_or_msg)
         self._distributions = array_or_msg
         self._name = name
-        self._classes_phi = -np.log2(self._classes / 1000)
+        self._boundaries_phi = -np.log2(self._boundaries / 1000.0)
+        self._midpoints = 0.5 * (self._boundaries[:-1] + self._boundaries[1:])
+        self._classes = np.exp2(-self._midpoints) * 1000.0
+        self._classes_phi = self._midpoints
+        self._intervals = np.abs(np.diff(self._boundaries))
+        self._intervals_phi = np.abs(np.diff(self._boundaries_phi))
         self._sample_names = list(sample_names)
+        if positions is not None:
+            self._positions = np.array(positions, dtype=np.float32)
+        else:
+            self._positions = None
 
     def __repr__(self) -> str:
         return f"Dataset({self._name})"
